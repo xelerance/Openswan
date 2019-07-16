@@ -1,6 +1,12 @@
 ./parentR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./parentR1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentR1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./parentR1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./parentR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./parentR1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./parentR1 loading secrets from "../samples/jj.secrets"
 ./parentR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
@@ -163,7 +169,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -293,6 +299,7 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 ./parentR1 leak: rfc3110 format of public key [created], item size: X
 ./parentR1 leak: pubkey, item size: X
 ./parentR1 leak: secret, item size: X
-./parentR1 leak: 2 * hasher name, item size: X
+./parentR1 leak: 4 * hasher name, item size: X
+./parentR1 leak: 10 * group description, item size: X
 ./parentR1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

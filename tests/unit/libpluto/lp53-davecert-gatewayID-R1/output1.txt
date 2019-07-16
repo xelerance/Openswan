@@ -1,6 +1,12 @@
 ./davecert-R1-id ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./davecert-R1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecert-R1-id loading secrets from "../samples/gatewaycert.secrets"
 ./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (CERT bytes)
@@ -191,7 +197,7 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -430,6 +436,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: default conf conffile, item size: X
 ./davecert-R1-id leak: default conf ipsecd_dir, item size: X
 ./davecert-R1-id leak: default conf ipsec_conf_dir, item size: X
-./davecert-R1-id leak: 2 * hasher name, item size: X
+./davecert-R1-id leak: 4 * hasher name, item size: X
+./davecert-R1-id leak: 10 * group description, item size: X
 ./davecert-R1-id leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
