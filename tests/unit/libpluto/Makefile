@@ -63,12 +63,12 @@ UNITTESTS_I1+=lp18-certificateselfI1
 
 UNITTESTS_I1+=lp23-davecertI1
 
-UNITTESTS_R1+=lp70-certreplydaveR1
-UNITTESTS_I2+=lp26-davecertI2
-UNITTESTS_R2+=lp24-certreplydaveR2
+#algo UNITTESTS_R1+=lp70-certreplydaveR1
+#algo UNITTESTS_I2+=lp26-davecertI2
+#algo UNITTESTS_R2+=lp24-certreplydaveR2
 
 # disabled due to issue #6602
-UNITTESTS_R2+=lp25-wrongcacert
+#algo UNITTESTS_R2+=lp25-wrongcacert
 
 UNITTESTS_I1+=lp27-dnsloadI1
 
@@ -167,8 +167,8 @@ UNITTESTS_I4+=lp66-natt-replaceI
 #algo UNITTESTS_I4+=lp72-msg1nopropchosen
 
 # these three do not work yet, #6602
-UNITTESTS_I4+=lp71-childTSwrong
-UNITTESTS_I4+=lp72-msg1nopropchosen
+#algo UNITTESTS_I4+=lp71-childTSwrong
+#algo UNITTESTS_I4+=lp72-msg1nopropchosen
 
 UNITTESTS_I1+=lp87-rekeyv2-inval-I1
 #core UNITTESTS_R1+=lp88-rekeyv2-inval-R1
