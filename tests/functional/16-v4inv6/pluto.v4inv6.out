@@ -5,7 +5,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -31,5 +30,5 @@ Could not change to directory 'moon/crls': 2 No such file or directory
   loaded host cert file 'moon/certs/sunCert.pem' (1493 bytes)
 adding connection: "net-net"
 no secrets filename matched "moon.secrets"
+Makefile:56: recipe for target 'step5' failed
 "net-net": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
