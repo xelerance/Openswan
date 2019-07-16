@@ -25,6 +25,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 OUTPUTS=OUTPUT
 
 include Makefile.testcase
