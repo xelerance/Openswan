@@ -1,6 +1,12 @@
 ./davecertI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./davecertI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./davecertI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./davecertI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecertI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./davecertI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./davecertI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./davecertI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./davecertI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./davecertI1 adjusting ipsec.d to ../samples/davecert
 ./davecertI1 loading secrets from "../samples/davecert.secrets"
 ./davecertI1   loaded private key file '../samples/davecert/private/daveKey.pem' (CERT bytes)
@@ -589,5 +595,6 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1 leak: default conf conffile, item size: X
 ./davecertI1 leak: default conf ipsecd_dir, item size: X
 ./davecertI1 leak: default conf ipsec_conf_dir, item size: X
-./davecertI1 leak: 2 * hasher name, item size: X
+./davecertI1 leak: 4 * hasher name, item size: X
+./davecertI1 leak: 10 * group description, item size: X
 ./davecertI1 leak detective found Z leaks, total size X
