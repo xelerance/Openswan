@@ -5,10 +5,7 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-<<<<<<< HEAD
-=======
 NSS support [disabled]
->>>>>>> e5d925886... bring in t7257 functional test cases
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
