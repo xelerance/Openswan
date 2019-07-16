@@ -35,15 +35,9 @@ UNITTESTS_0+=lp41-orientmoon
 UNITTESTS_0+=lp42-loadbobdefaultroute
 #algo UNITTESTS_0+=lp50-rekey-no-reply-rekey
 UNITTESTS_0+=lp60-bestif
-<<<<<<< HEAD
-#algo UNITTESTS_0+=lp66-db2ops
-#algo UNITTESTS_0+=lp67-ike2ops
-#algo UNITTESTS_0+=lp68-badproposal
-=======
 UNITTESTS_0+=lp66-db2ops
 UNITTESTS_0+=lp67-ike2ops
 UNITTESTS_0+=lp68-badproposal
->>>>>>> 35a530d7d... bring in t7257 test cases from libpluto
 UNITTESTS_0+=lp70-invalid-init-msg
 
 UNITTESTS_I1+=lp02-parentI1
@@ -69,21 +63,12 @@ UNITTESTS_I1+=lp18-certificateselfI1
 
 UNITTESTS_I1+=lp23-davecertI1
 
-<<<<<<< HEAD
-#algo UNITTESTS_R1+=lp70-certreplydaveR1
-#algo UNITTESTS_I2+=lp26-davecertI2
-#algo UNITTESTS_R2+=lp24-certreplydaveR2
-
-# disabled due to issue #6602
-#algo UNITTESTS_R2+=lp25-wrongcacert
-=======
 UNITTESTS_R1+=lp70-certreplydaveR1
 UNITTESTS_I2+=lp26-davecertI2
 UNITTESTS_R2+=lp24-certreplydaveR2
 
 # disabled due to issue #6602
 UNITTESTS_R2+=lp25-wrongcacert
->>>>>>> 35a530d7d... bring in t7257 test cases from libpluto
 
 UNITTESTS_I1+=lp27-dnsloadI1
 
@@ -175,10 +160,6 @@ UNITTESTS_I4+=lp66-natt-replaceI
 # these three do not work yet, #6602
 #algo UNITTESTS_I4+=lp71-childTSwrong
 #algo UNITTESTS_I4+=lp72-msg1nopropchosen
-
-# these three do not work yet, #6602
-UNITTESTS_I4+=lp71-childTSwrong
-UNITTESTS_I4+=lp72-msg1nopropchosen
 
 UNITTESTS_I1+=lp87-rekeyv2-inval-I1
 #core UNITTESTS_R1+=lp88-rekeyv2-inval-R1
