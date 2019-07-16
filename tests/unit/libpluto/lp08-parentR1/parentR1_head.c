@@ -37,6 +37,10 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 
+#ifndef SAMPLEDIR
+#define SAMPLEDIR "../samples/"
+#endif
+
  /*
  * Local Variables:
  * c-style: pluto
