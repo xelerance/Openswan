@@ -1,6 +1,12 @@
 ./parentI2duplicate ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -242,7 +248,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -691,5 +697,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI2duplicate leak: default conf conffile, item size: X
 ./parentI2duplicate leak: default conf ipsecd_dir, item size: X
 ./parentI2duplicate leak: default conf ipsec_conf_dir, item size: X
-./parentI2duplicate leak: 2 * hasher name, item size: X
+./parentI2duplicate leak: 4 * hasher name, item size: X
+./parentI2duplicate leak: 10 * group description, item size: X
 ./parentI2duplicate leak detective found Z leaks, total size X
