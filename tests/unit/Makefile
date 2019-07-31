@@ -18,9 +18,9 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 testlist clean check programs:
 	@${MAKE} -C libopenswan $@
-	@${MAKE} -C libalgoparse $@
+	: @${MAKE} -C libalgoparse $@
 	@${MAKE} -C libcrypto   $@
-	@${MAKE} -C policy      $@
+	: @${MAKE} -C policy      $@
 	@${MAKE} -C libpluto    $@
 	@${MAKE} -C ikev2crypto $@
 	@${MAKE} -C liboswkeys  $@
