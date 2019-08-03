@@ -75,10 +75,7 @@ static struct starter_comments_list *_parser_comments;
  * Config file
  */
 
-config_file:
-        blanklines versionstmt blanklines sections
-        | blanklines sections
-        ;
+config_file: blanklines versionstmt sections ;
 
 /* check out the version number - this is optional (and we're phasing out its use) */
 /* we have configs shipped with version 2 (INTEGER) and with version 2.0 (STRING, now  NUMBER/float was removed */
@@ -90,11 +87,10 @@ versionstmt:
 
 blanklines: /* NULL */
 	| blanklines EOL
-	| blanklines FIRST_SPACES EOL
 	;
 
 sections: /* NULL */
-	| sections section_or_include
+	| sections section_or_include blanklines
 	;
 
 section_or_include:
