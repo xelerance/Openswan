@@ -379,7 +379,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_INTERNAL_ERROR;
     }
 
-    close_message(&md->rbody);
+    /* IKEv2 should not add additional padding after the last payload; we used
+     * to call close_message(&md->rbody) here, but that added additional
+     * padding bytes after the last payload, and would mess up auth hashing */
+    close_output_pbs(&md->rbody);
     close_output_pbs(&reply_stream);
 
     /* let TCL hack it before we mark the length. */
