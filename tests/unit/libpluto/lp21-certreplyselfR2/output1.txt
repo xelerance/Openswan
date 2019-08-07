@@ -795,25 +795,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    length: 1051
 |    ikev2 cert encoding: CERT_X509_SIGNATURE
 | processing payload: ISAKMP_NEXT_v2CERT (len=1051)
-| **parse IKEv2 Authentication Payload:
-|    critical bit: none
-|    length: 200
-|    auth method: v2_AUTH_RSA
-| processing payload: ISAKMP_NEXT_v2AUTH (len=200)
-| **parse IKEv2 Security Association Payload:
-|    critical bit: none
-|    length: 156
-| processing payload: ISAKMP_NEXT_v2SA (len=156)
-| **parse IKEv2 Traffic Selector Payload:
-|    critical bit: none
-|    length: 24
-|    number of TS: 1
-| processing payload: ISAKMP_NEXT_v2TSi (len=24)
-| **parse IKEv2 Traffic Selector Payload:
-|    critical bit: none
-|    length: 24
-|    number of TS: 1
-| processing payload: ISAKMP_NEXT_v2TSr (len=24)
 | DER ASN1 DN:  30 4b 31 0b  30 09 06 03  55 04 06 13  02 43 41 31
 |   0b 30 09 06  03 55 04 08  0c 02 4f 4e  31 12 30 10
 |   06 03 55 04  0a 0c 09 58  65 6c 65 72  61 6e 63 65
