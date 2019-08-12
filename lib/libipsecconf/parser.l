@@ -5,7 +5,7 @@
 /* Openswan config file parser (parser.l)
  * Copyright (C) 2001 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008 D. Hugh Redelmeier <hugh@mimosa.com>
+ * Copyright (C) 2008, 2014 D. Hugh Redelmeier <hugh@mimosa.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -322,10 +322,19 @@ int parser_y_eof(void)
 
 [\t ]+			/* ignore spaces in line */ ;
 
-<USERDEF>[0-9]+         { /* process a number */
-                           yylval.num = strtoul(yytext, NULL, 10);
+<INITIAL,USERDEF>[0-9]+ { /* process a number */
+                           unsigned long val = (errno = 0, strtoul(yytext, NULL, 10));
+                           if (errno != 0 || val > UINT_MAX) {
+                               char ebuf[128];
+                          
+                               snprintf(ebuf, sizeof(ebuf),
+                                   "number too large: %s",
+                                   yytext);
+                               yyerror(ebuf);
+                           }
+                           yylval.num = val;
                            BEGIN INITIAL;
-			   return INTEGER;
+                           return INTEGER;
                         }
 
 <USERDEF>%forever       { /* a number, really 0 */

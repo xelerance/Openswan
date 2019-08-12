@@ -22,10 +22,18 @@
 #include <assert.h>
 #include <limits.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
 #include "ipsecconf/confread.h"
+
+/* used for duration */
+enum {
+       secs_per_minute = 60,
+       secs_per_hour = 60 * secs_per_minute,
+       secs_per_day = 24 * secs_per_hour
+};
 
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
@@ -69,6 +77,8 @@ static struct starter_comments_list *_parser_comments;
 %token <k>      BOOLWORD
 %token <k>      PERCENTWORD
 %token <k>      COMMENT
+
+%type <num>	duration
 %%
 
 /*
@@ -234,61 +244,22 @@ statement_kw:
 		    yyerror("can't allocate memory in statement_kw");
 		}
 	}
-	| TIMEWORD EQUAL STRING {
-		struct kw_list *new;
-		char *endptr, *str;
-                unsigned int val;
-		struct keyword kw = $1;
-		bool fail;
-                char buf[80];
-
-
-		fail = FALSE;
-
-		str = $3;
-
-		val = strtoul(str, &endptr, 10);
-
-		if(endptr == str) {
-                  snprintf(buf, 80, "bad duration value %s=%s", kw.keydef->keyname, str);
-                  yyerror(buf);
-		  fail = TRUE;
-
-		}
-
-		if(!fail)
-                {
-		  if(*endptr == '\0') { /* nothing */ }
-		  else if ((*endptr == 's') && (endptr[1] == '\0')) { }
-		  else if ((*endptr == 'm') && (endptr[1] == '\0')) { val *= 60; }
-		  else if ((*endptr == 'h') && (endptr[1] == '\0')) { val *= 3600; }
-		  else if ((*endptr == 'd') && (endptr[1] == '\0')) { val *= 3600*24; }
-		  else if ((*endptr == 'w') && (endptr[1] == '\0')) { val *= 7*3600*24; }
-		  else {
-                    snprintf(buf, 80, "bad duration multiplier '%c' on %s", *endptr, str);
-                    yyerror(buf);
-                    fail=TRUE;
-                  }
+        | TIMEWORD EQUAL duration {
+                assert(_parser_kw != NULL);
+                struct kw_list *new = alloc_kwlist(parser_cur_lineno());
+                if (new == NULL) {
+                        yyerror("can't allocate memory in statement_kw");
+                } else {
+                        new->keyword = $1;
+                        new->number = $3;
+                        new->next = NULL;
+                        if (_parser_kw_last)
+                                _parser_kw_last->next = new;
+                        _parser_kw_last = new;
+                        if (*_parser_kw == NULL)
+                                *_parser_kw = new;
                 }
-
-	        if(!fail)
-                {
-		  assert(_parser_kw != NULL);
-                  new = alloc_kwlist(parser_cur_lineno());
-		  if (new) {
-		    new->keyword = $1;
-		    new->number = val;
-		    new->next = NULL;
-		    if (_parser_kw_last)
-			_parser_kw_last->next = new;
-		    _parser_kw_last = new;
-		    if (!*_parser_kw) *_parser_kw = new;
-		  }
-		  else {
-		    yyerror("can't allocate memory in statement_kw");
-		  }
-                }
-	}
+        }
 	| PERCENTWORD EQUAL STRING {
 		struct kw_list *new;
 		char *endptr, *str;
@@ -361,6 +332,58 @@ statement_kw:
 	| KEYWORD EQUAL { /* this is meaningless, we ignore it */ }
 	;
 
+duration:
+	INTEGER {
+		$$ = $1;
+	}
+	| STRING {
+		const char *const str = $1;
+		/*const*/ char *endptr;
+		char buf[80];
+
+		unsigned long val = (errno = 0, strtoul(str, &endptr, 10));
+		int strtoul_errno = errno;
+
+		if (endptr == str) {
+			snprintf(buf, sizeof(buf), "bad duration value \"%s\"", str);
+			yyerror(buf);
+		} else {
+			bool bad_suffix = FALSE;
+			unsigned scale;
+
+			if (*endptr == '\0') {
+				/* seconds: no scaling */
+				scale = 1;
+			} else if (endptr[1] == '\0') {
+				/* single character suffix */
+				switch (*endptr) {
+				case 's': scale = 1; break;
+				case 'm': scale = secs_per_minute; break;
+				case 'h': scale = secs_per_hour; break;
+				case 'd': scale = secs_per_day; break;
+				case 'w': scale = 7*secs_per_day; break;
+				default:
+					bad_suffix = TRUE;
+				}
+			} else {
+				bad_suffix = TRUE;
+			}
+
+			if (bad_suffix) {
+				snprintf(buf, sizeof(buf),
+					"bad duration multiplier \"%s\" on %s",
+					endptr, str);
+				yyerror(buf);
+			} else if (strtoul_errno != 0 || UINT_MAX / scale < val) {
+				snprintf(buf, sizeof(buf),
+					"duration too large: \"%s\" is more than %u seconds",
+					str, UINT_MAX);
+				yyerror(buf);
+			} else {
+				$$ = val * scale;
+			}
+		}
+	};
 %%
 
 void yyerror(const char *s)
