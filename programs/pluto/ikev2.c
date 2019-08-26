@@ -1421,10 +1421,15 @@ void complete_v2_state_transition(struct msg_digest **mdp
     case STF_TOOMUCHCRYPTO:
 	/* well, this should never happen during a whack, since
 	 * a whack will always force crypto.
+	 *
+	 * There is a good chance we don't have a st here. In IKEv2 I1/R1
+	 * we have already deleted the state when we saw STF_TOOMUCHCRYPTO
+	 * returned by build_ke() or build_nonce().
 	 */
-	passert(st);
-	set_suspended(st, NULL);
-	pexpect(st->st_calculating == FALSE);
+	if (st) {
+		set_suspended(st, NULL);
+		pexpect(st->st_calculating == FALSE);
+	}
 	openswan_log("message in state %s ignored due to "
 	             "cryptographic overload"
 	             , from_state_name);
