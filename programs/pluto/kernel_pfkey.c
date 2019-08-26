@@ -73,7 +73,7 @@ typedef u_int32_t pfkey_seq_t;
 static pfkey_seq_t pfkey_seq = 0;	/* sequence number for our PF_KEY messages */
 
 /* The orphaned_holds table records %holds for which we
- * scan_proc_shunts found no representation of in any connection.
+ * pfkey_scan_proc_shunts found no representation of in any connection.
  * The corresponding ACQUIRE message might have been lost.
  */
 struct eroute_info *orphaned_holds = NULL;
@@ -1505,7 +1505,7 @@ read_proto(const char * s, size_t * len, int * transport_proto)
  * searches could be implemented (hash or radix tree, for example).
  */
 void
-scan_proc_shunts(void)
+pfkey_scan_proc_shunts(void)
 {
     static const char procname[] = "/proc/net/ipsec_eroute";
     FILE *f;

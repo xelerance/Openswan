@@ -133,7 +133,6 @@ struct kernel_ops {
     enum kernel_interface type;
     const char *kern_name;
     bool inbound_eroute;
-    bool policy_lifetime;
     bool overlap_supported;
     bool sha2_truncbug_support;
     int  replay_window;
@@ -192,7 +191,9 @@ struct kernel_ops {
 		      , struct state *st);
     void (*process_ifaces)(struct raw_iface *rifaces);
     bool (*exceptsocket)(int socketfd, int family);
-
+    /* generate EVENT_SHUNT_SCAN every SHUNT_SCAN_INTERVAL, for the purposes
+     * of shunt eroute maintenance, like expiration of old shunts */
+    void (*scan_shunts)(void);
 };
 
 extern int create_socket(struct raw_iface *ifp, const char *v_name, int port);
@@ -296,6 +297,7 @@ struct bare_shunt {
     struct bare_shunt *next;
 };
 extern void show_shunt_status(void);
+extern struct bare_shunt *bare_shunts;
 
 #ifdef DEBUG
 extern void DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs);
@@ -325,7 +327,8 @@ extern void record_and_initiate_opportunistic(const ip_subnet *
                                               , const char *why);
 extern void init_kernel(void);
 
-extern void scan_proc_shunts(void);
+extern void pfkey_scan_proc_shunts(void);
+extern void netlink_scan_bare_shunts(void);
 
 struct connection;	/* forward declaration of tag */
 extern bool trap_connection(struct connection *c);

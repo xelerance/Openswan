@@ -1090,7 +1090,6 @@ const struct kernel_ops bsdkame_kernel_ops = {
     get_spi: NULL,
     eroute_idle: bsdkame_was_eroute_idle,
     inbound_eroute: FALSE,
-    policy_lifetime: TRUE,
     init: bsdkame_init_pfkey,
     exceptsocket: bsdkame_except_socket,
     docommand: bsdkame_do_command,
@@ -1099,6 +1098,8 @@ const struct kernel_ops bsdkame_kernel_ops = {
     process_ifaces: bsdkame_process_raw_ifaces,
     overlap_supported: FALSE,
     sha2_truncbug_support: FALSE,
+    /* should define scan_shunts() if needed */
+    scan_shunts: NULL,
 };
 
 

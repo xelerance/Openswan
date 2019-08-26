@@ -484,12 +484,11 @@ handle_a_timer_event(struct event *ev)
 	    init_secret();
 	    break;
 
-#ifdef KLIPS
 	case EVENT_SHUNT_SCAN:
-	    passert(st == NULL);
-	    scan_proc_shunts();
+	    passert(st == NULL);		// we are not attached to a state
+	    passert(kernel_ops->scan_shunts);	// checked for in init_kernel()
+	    kernel_ops->scan_shunts();
 	    break;
-#endif
 
         case EVENT_PENDING_DDNS:
 	    passert(st == NULL);

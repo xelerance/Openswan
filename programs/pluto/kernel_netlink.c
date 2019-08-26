@@ -63,6 +63,8 @@
 #include "kernel_alg.h"
 #include "crypto/aes_cbc.h"
 #include "ike_alg.h"
+#include "oswtime.h"
+#include "timer.h"
 
 /* required for Linux 2.6.26 kernel and later */
 #ifndef XFRM_STATE_AF_UNSPEC
@@ -2465,11 +2467,57 @@ netkey_do_command(struct connection *c, const struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
+/* called periodically to cleanup expired bare shunts, like what 
+ * pfkey_scan_proc_shunts() does for KLIPS shunts */
+void
+netlink_scan_bare_shunts(void)
+{
+    struct bare_shunt **bspp;
+    time_t nw = now();
+
+    event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
+
+    DBG(DBG_CONTROL, DBG_log("scanning for expired bare shunts"));
+
+    for(bspp = &bare_shunts;;) {
+        struct bare_shunt *bsp;
+        time_t age;
+	bool success;
+
+        bsp = READ_ONCE(*bspp);
+
+        if (!bsp)
+            break;
+
+        age = nw - bsp->last_activity;
+
+        if (age <= SHUNT_PATIENCE) {
+            DBG_bare_shunt_log("keeping recent", bsp);
+            bspp = &bsp->next;
+            continue;
+        }
+        /* need to expire this entry */
+        DBG_bare_shunt_log("removing expired", bsp);
+
+	success = delete_bare_shunt_ptr(bspp, "delete expired bare shunts");
+
+	if (success) {
+		/* shunt was removed, and the bspp should now point
+		 * to the next entry */
+		passert(bsp != READ_ONCE(*bspp));
+	} else {
+		/* if we failed to remove this shunt, we have to skip
+		 * to the next entry to avoid getting stuck on this entry */
+		if (bsp == READ_ONCE(*bspp))
+			bspp = &bsp->next;
+	}
+    }
+}
+
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,
     inbound_eroute:  TRUE,
-    policy_lifetime: TRUE,
     async_fdp: &netlink_bcast_fd,
     replay_window: 32,
 
@@ -2497,6 +2545,7 @@ const struct kernel_ops netkey_kernel_ops = {
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     overlap_supported: FALSE,
     sha2_truncbug_support: TRUE,
+    scan_shunts: netlink_scan_bare_shunts,
 };
 #endif /* linux && NETKEY_SUPPORT */
 

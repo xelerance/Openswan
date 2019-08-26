@@ -149,7 +149,7 @@ const struct kernel_ops noklips_kernel_ops = {
     shunt_eroute: noklips_shunt_eroute,
     get_spi: NULL,
     inbound_eroute: FALSE,
-    policy_lifetime: FALSE,
+    scan_shunts: pfkey_scan_proc_shunts,
     exceptsocket: NULL,
     docommand: NULL,
     kern_name: "noklips",

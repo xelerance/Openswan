@@ -105,7 +105,7 @@ const struct pfkey_proto_info null_proto_info[2] = {
         }
 };
 
-static struct bare_shunt *bare_shunts = NULL;
+struct bare_shunt *bare_shunts = NULL;
 #ifdef IPSEC_CONNECTION_LIMIT
 static int num_ipsec_eroute = 0;
 #endif
@@ -116,7 +116,7 @@ static void free_bare_shunt(struct bare_shunt **pp);
 void
 DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
 {
-    DBG(DBG_KLIPS,
+    DBG(DBG_KLIPS|DBG_OPPOINFO,
         {
             int ourport = ntohs(portof(&(bs)->ours.addr));
             int hisport = ntohs(portof(&(bs)->his.addr));
@@ -124,14 +124,15 @@ DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
             char hist[SUBNETTOT_BUF];
             char sat[SATOT_BUF];
             char prio[POLICY_PRIO_BUF];
+            time_t age = now() - bs->last_activity;
 
             subnettot(&(bs)->ours, 0, ourst, sizeof(ourst));
             subnettot(&(bs)->his, 0, hist, sizeof(hist));
             satot(&(bs)->said, 0, sat, sizeof(sat));
             fmt_policy_prio(bs->policy_prio, prio);
-            DBG_log("%s bare shunt %p %s:%d --%d--> %s:%d => %s %s    %s"
+            DBG_log("%s bare shunt %p %s:%d --%d--> %s:%d => %s %s    %s    (%lds)"
                 , op, (const void *)(bs), ourst, ourport, (bs)->transport_proto, hist, hisport
-                , sat, prio, (bs)->why);
+                , sat, prio, (bs)->why, age);
         });
 }
 #endif
@@ -912,15 +913,16 @@ show_shunt_status(void)
         char hist[SUBNETTOT_BUF];
         char sat[SATOT_BUF];
         char prio[POLICY_PRIO_BUF];
+	time_t age = now() - bs->last_activity;
 
         subnettot(&(bs)->ours, 0, ourst, sizeof(ourst));
         subnettot(&(bs)->his, 0, hist, sizeof(hist));
         satot(&(bs)->said, 0, sat, sizeof(sat));
         fmt_policy_prio(bs->policy_prio, prio);
 
-        whack_log(RC_COMMENT, "%s:%d -%d-> %s:%d => %s %s    %s"
+        whack_log(RC_COMMENT, "%s:%d -%d-> %s:%d => %s %s    %s    (%lds)"
             , ourst, ourport, bs->transport_proto, hist, hisport, sat
-            , prio, bs->why);
+            , prio, bs->why, age);
     }
 }
 
@@ -2431,8 +2433,7 @@ init_kernel(void)
 	kernel_ops->pfkey_register();
     }
 
-    if (!kernel_ops->policy_lifetime)
-    {
+    if (kernel_ops->scan_shunts) {
         event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
     }
 }
