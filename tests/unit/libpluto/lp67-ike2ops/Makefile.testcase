@@ -1,0 +1,2 @@
+TESTNAME=lp67-ike2ops
+TESTSRC=ike2opstest.c
