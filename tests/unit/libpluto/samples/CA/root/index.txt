@@ -1,0 +1,8 @@
+V	211207234023Z		00	unknown	/C=CA/ST=ON/O=Xelerance/CN=Openswan Unit Testing node dave
+V	211207234033Z		01	unknown	/C=CA/ST=ON/O=Xelerance/CN=Openswan Unit Testing node carol
+V	211207234033Z		02	unknown	/C=CA/ST=ON/O=Xelerance/CN=Openswan Unit Testing node moon
+V	211207234033Z		03	unknown	/C=CA/ST=ON/O=Xelerance/CN=Openswan Unit Testing node bob
+V	211211041559Z		04	unknown	/C=CA/ST=ON/O=Xelerance/CN=dave@openswan.org
+V	211211041559Z		05	unknown	/C=CA/ST=ON/O=Xelerance/CN=carol@openswan.org
+V	211211041559Z		06	unknown	/C=CA/ST=ON/O=Xelerance/CN=moon@openswan.org
+V	211211041559Z		07	unknown	/C=CA/ST=ON/O=Xelerance/CN=bob@openswan.org
