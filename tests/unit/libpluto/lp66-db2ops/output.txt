@@ -1,0 +1,33 @@
+| proposals: cnt=0 (next=1)
+| proposals: cnt=1 (next=1)
+| 1:  protoid="PROTO_ISAKMP" [trans: 6]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+|     trans-type-encr value="aes_ctr" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-integ value="aes_xcbc_96" [attrs: 0]
+| proposals: cnt=2 (next=2)
+| 1:  protoid="PROTO_ISAKMP" [trans: 6]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+|     trans-type-encr value="aes_ctr" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-integ value="aes_xcbc_96" [attrs: 0]
+| 1:  protoid="PROTO_ISAKMP" [trans: 5]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-encr value="aes_gcm_12" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="aes_128_gmac" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+./lp66-db2ops leak: db_context->attrs, item size: 88
+./lp66-db2ops leak: db_context->trans, item size: 240
+./lp66-db2ops leak: 2 * db_context->conj, item size: 88
+./lp66-db2ops leak detective found 4 leaks, total size 416
