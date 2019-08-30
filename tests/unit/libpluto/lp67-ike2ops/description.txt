@@ -1,0 +1,3 @@
+The purpose of this test case is to transform and ike=blah,blah,blah line
+into a db2ops structure, and print it correctly.
+
