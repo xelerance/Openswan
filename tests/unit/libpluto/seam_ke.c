@@ -1,4 +1,7 @@
 #ifndef _seam_ke_c
+
+void delete_cryptographic_continuation(struct state *st) {}
+
 stf_status build_ke(struct pluto_crypto_req_cont *cn
 		    , struct state *st
 		    , const struct oakley_group_desc *group

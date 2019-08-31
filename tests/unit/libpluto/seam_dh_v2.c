@@ -1,4 +1,5 @@
-#ifndef SEAM_DH_V2
+#ifndef __seam_dh_v2__
+#define __seam_dh_v2__
 struct pluto_crypto_req;
 
 stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
@@ -20,5 +21,4 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
 }
 
-#define SEAM_DH_V2
 #endif

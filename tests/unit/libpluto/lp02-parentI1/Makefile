@@ -20,7 +20,7 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
-include ../lp13-objectlist.make
+include ../../libpluto/lp13-objectlist.make
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
