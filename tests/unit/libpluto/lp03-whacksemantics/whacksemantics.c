@@ -52,6 +52,8 @@ const char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 
+void delete_cryptographic_continuation(struct state *st) {}
+
 int main(int argc, char *argv[])
 {
     err_t err = NULL;

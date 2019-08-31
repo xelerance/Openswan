@@ -47,6 +47,7 @@
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_delete.c"
+#include "seam_ke.c"
 
 const char *progname=NULL;
 int verbose=0;

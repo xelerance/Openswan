@@ -6,6 +6,8 @@
 #include "../seam_host_jamesjohnson.c"
 #include "ikev2_microcode.h"
 
+#include "seam_rsasig.c"
+
 #define TESTNAME "respondselfR1"
 
 static inline void init_local_interface(void)

@@ -3,8 +3,6 @@
 #include "seam_dh_v2.c"
 #include "seam_ke.c"
 
-void delete_cryptographic_continuation(struct state *st) {}
-
 bool ikev2_calculate_rsa_sha1(struct state *st
 			      , enum phase1_role role
 			      , unsigned char *idhash

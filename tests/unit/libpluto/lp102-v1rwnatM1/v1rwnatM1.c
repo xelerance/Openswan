@@ -6,7 +6,6 @@
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_pending.c"
-#include "seam_whack.c"
 #include "seam_initiate.c"
 #include "seam_dnskey.c"
 #include "seam_gi_sha1.c"
