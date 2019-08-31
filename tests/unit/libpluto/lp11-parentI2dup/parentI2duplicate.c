@@ -38,6 +38,8 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 
+#include "seam_rsasig.c"
+
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include "seam_gi_sha1.c"

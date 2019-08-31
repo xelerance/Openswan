@@ -4,6 +4,7 @@
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+#include "seam_rsasig.c"
 #include "ike_continuations.h"
 
 static void init_fake_secrets(void)

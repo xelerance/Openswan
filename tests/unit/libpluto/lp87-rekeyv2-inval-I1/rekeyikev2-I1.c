@@ -6,6 +6,7 @@
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_debug.c"
+#include "seam_rsasig.c"
 
 static void init_fake_secrets(void)
 {
