@@ -25,6 +25,7 @@ include ../../libpluto/lp13-objectlist.make
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 
 include Makefile.testcase
 
@@ -44,7 +45,7 @@ OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
 ${WHACKFILE}:
@@ -53,7 +54,7 @@ ${WHACKFILE}:
 
 update: update1
 update1:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	${FILTERS} OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/I2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt
 
 clean:

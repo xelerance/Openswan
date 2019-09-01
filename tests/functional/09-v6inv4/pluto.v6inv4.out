@@ -14,9 +14,9 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
-  loaded CA cert file 'rootCA.pem' (1525 bytes)
+  loaded CA cert file 'rootCA.pem' (CERT bytes)
   loading certificate from moonCert.pem 
-  loaded host cert file '../../unit/libpluto/samples/moon/certs/moonCert.pem' (1411 bytes)
+  loaded host cert file '../../unit/libpluto/samples/moon/certs/moonCert.pem' (CERT bytes)
 adding connection: "net-net"
 loading secrets from "../../unit/libpluto/samples/moon.secrets"
   loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (1679 bytes)
@@ -56,7 +56,7 @@ loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D5
 000  
 000 "net-net": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@sun.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net":     myip=unset; hisip=unset; mycert=moonCert.pem;
-000 "net-net":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'...'%any'
+000 "net-net":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'%any'
 000 "net-net":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1 
 000 "net-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;

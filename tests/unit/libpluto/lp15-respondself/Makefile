@@ -75,6 +75,8 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+
 include Makefile.testcase
 
 Q=$(if ${V},,@)
@@ -90,7 +92,7 @@ OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
 
 ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
@@ -98,7 +100,7 @@ ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
 
 update: update1
 update1:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	${FILTERS} OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
 
 clean:

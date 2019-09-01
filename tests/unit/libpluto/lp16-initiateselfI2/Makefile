@@ -77,6 +77,8 @@ include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
 	@echo " CC ${TESTNAME}"
@@ -90,7 +92,7 @@ OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt ${SANITYARGS} | diff - output1.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_1.txt ${SANITYARGS} | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/${PCAPOUTPUT} | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
 ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf
@@ -99,7 +101,7 @@ ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf
 
 update: update1
 update1:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt ${SANITYARGS} >output1.txt
+	${FILTERS} OUTPUT/${TESTNAME}_1.txt ${SANITYARGS} >output1.txt
 	[ -f OUTPUT/I2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt
 
 clean:

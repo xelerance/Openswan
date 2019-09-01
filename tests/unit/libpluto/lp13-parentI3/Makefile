@@ -26,6 +26,7 @@ OUTPUTS=OUTPUT
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 include Makefile.testcase
 
 EF_DISABLE_BANNER=1
@@ -45,7 +46,7 @@ OUTPUT/${TESTNAME}_1.txt:	${WHACKFILE} ${TESTNAME} output1.txt
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@if [ -f OUTPUT/${TESTNAME}.pcap ]; then tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt; fi
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
@@ -53,7 +54,7 @@ ${WHACKFILE}:
 
 update: update1
 update1:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	${FILTERS} OUTPUT/${TESTNAME}_1.txt >output1.txt
 	if [ -f OUTPUT/I2-dump.txt ]; then sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt; fi
 
 clean:

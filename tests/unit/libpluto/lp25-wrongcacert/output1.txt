@@ -3,8 +3,8 @@
 ./wrongcacert ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./wrongcacert adjusting ipsec.d to ../samples/wrongcert
 ./wrongcacert loading secrets from "../samples/gatewaycert.secrets"
-./wrongcacert   loaded private key file '../samples/wrongcert/private/moonKey.pem' (1675 bytes)
-./wrongcacert loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
+./wrongcacert   loaded private key file '../samples/wrongcert/private/moonKey.pem' (CERT bytes)
+./wrongcacert loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -13,7 +13,7 @@ processing whack msg time: X size: Y
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./wrongcacert   loading certificate from moonCert.pem
-./wrongcacert   loaded host cert file '../samples/wrongcert/certs/moonCert.pem' (1411 bytes)
+./wrongcacert   loaded host cert file '../samples/wrongcert/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.testing.openswan.org is 0
 | counting wild cards for (none) is 15
@@ -33,7 +33,7 @@ processing whack msg time: X size: Y
 |   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw-any":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+RC=0 "rw-any":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 0: input from parentI1.pcap
@@ -876,30 +876,37 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | L3 - algorithm:
 |   'sha256WithRSAEncryption'
 | L1 - signatureValue:
-./wrongcacert issuer cacert not found
+|   aftercheck : 1567489105 > 1566831936
+./wrongcacert checking validity of "C=CH, O=Linux strongSwan, OU=Research, CN=carol@strongswan.org": X.509 certificate expired at Aug 26 15:05:36 UTC 2019 (it is now Sep 03 05:38:25 UTC 2019)
 ./wrongcacert X.509 certificate rejected
-| ikev2 verify required CA is 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+| ikev2 verify required CA is 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 |
 | List of X.509 End Certificates:
 |
 | NOW, count: 1
-|        subject: 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
-|        issuer:  'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-|        serial:   00:8c:b2:68:2f:b0:f4:5a:93
+|        subject: 'C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org'
+|        issuer:  'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+|        serial:   06
 |        pubkey:   2048 RSA Key AwEAAeOoT
-|        validity: not before Jan 16 16:48:38 UTC 2017 ok
-|                  not after  Nov 06 16:48:38 UTC 2019 ok
+|        validity: not before Sep 03 04:15:59 UTC 2019 ok
+|                  not after  Dec 11 04:15:59 UTC 2021 ok
+|        subjkey:  c2:64:69:e8:dc:88:e3:23:58:47:07:86:4b:5e:d4:b3:ea:bc:a7:10
+|        authkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
 | checking alg=1 == 1, keyid=@moon.testing.openswan.org same_id=0
-| checking alg=1 == 1, keyid=C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com same_id=0
+| checking alg=1 == 1, keyid=moon@openswan.org same_id=0
+| checking alg=1 == 1, keyid=C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org same_id=0
 RC=0
 RC=0 List of Public Keys:
 RC=0
-RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
+RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (has private key), until Dec 11 04:15:59 UTC 2021 ok
 RC=0        ID_FQDN '@moon.testing.openswan.org'
-RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
-RC=0        ID_DER_ASN1_DN 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
-RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+RC=0        Issuer 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (has private key), until Dec 11 04:15:59 UTC 2021 ok
+RC=0        ID_USER_FQDN 'moon@openswan.org'
+RC=0        Issuer 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (has private key), until Dec 11 04:15:59 UTC 2021 ok
+RC=0        ID_DER_ASN1_DN 'C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org'
+RC=0        Issuer 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 ./wrongcacert RSA authentication failed
 ./wrongcacert sending notification ISAKMP_v2_AUTH/v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
 | **emit ISAKMP Message:
@@ -974,12 +981,14 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 | List of X.509 End Certificates:
 |
 | NOW, count: 1
-|        subject: 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
-|        issuer:  'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-|        serial:   00:8c:b2:68:2f:b0:f4:5a:93
+|        subject: 'C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org'
+|        issuer:  'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+|        serial:   06
 |        pubkey:   2048 RSA Key AwEAAeOoT
-|        validity: not before Jan 16 16:48:38 UTC 2017 ok
-|                  not after  Nov 06 16:48:38 UTC 2019 ok
+|        validity: not before Sep 03 04:15:59 UTC 2019 ok
+|                  not after  Dec 11 04:15:59 UTC 2021 ok
+|        subjkey:  c2:64:69:e8:dc:88:e3:23:58:47:07:86:4b:5e:d4:b3:ea:bc:a7:10
+|        authkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
 | freeing state object #1
 ./wrongcacert leak: ikev2_inI2outR2 KE, item size: X
 ./wrongcacert leak: reply packet, item size: X
@@ -1003,6 +1012,12 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: keep id name, item size: X
 ./wrongcacert leak: pubkey entry, item size: X
 ./wrongcacert leak: pubkey, item size: X
+./wrongcacert leak: rfc3110 format of public key [created], item size: X
+./wrongcacert leak: issuer dn, item size: X
+./wrongcacert leak: keep id name, item size: X
+./wrongcacert leak: pubkey entry, item size: X
+./wrongcacert leak: pubkey, item size: X
+./wrongcacert leak: generalName, item size: X
 ./wrongcacert leak: x509cert, item size: X
 ./wrongcacert leak: host cert, item size: X
 ./wrongcacert leak: certificate filename, item size: X

@@ -72,7 +72,7 @@ OUTPUTS=OUTPUT
 include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
-
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c
@@ -85,7 +85,7 @@ check:	${WHACKFILE} ${TESTNAME} OUTPUT
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
 
 OUTPUT:
 	@mkdir -p OUTPUT
@@ -100,7 +100,7 @@ ${WHACKFILE}: ${WHACKREFFILE} OUTPUT
 endif
 
 update:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
 
 clean:
 	rm -f ${TESTNAME} ${WHACKFILE} *.o *~

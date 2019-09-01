@@ -81,7 +81,9 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
-SEDSCRIPTS = ${TESTUTILS}/leak-detective.sed ${TESTUTILS}/whack-processing.sed ${TESTUTILS}/sanity.sed
+# how to make this DRY?
+SEDSCRIPTS = ${TESTUTILS}/leak-detective.sed ${TESTUTILS}/whack-processing.sed ${TESTUTILS}/sanity.sed ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/sanity.sed -f ${TESTUTILS}/certsize.sed
 
 check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c ${SEDSCRIPTS}
 	@echo CC ${TESTNAME}.c
@@ -90,7 +92,7 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c ${SED
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
 	ls -l OUTPUT/${TESTNAME}.pcap
 	tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
@@ -98,7 +100,7 @@ ${WHACKFILE}: OUTPUT ${SAMPLEDIR}/${ENDNAME}.conf
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: OUTPUT
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT
