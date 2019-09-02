@@ -637,7 +637,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , const ip_subnet *this_client
 		   , const ip_address *that_host
 		   , const ip_subnet *that_client
-		   , ipsec_spi_t spi
+		   , ipsec_spi_t spi /* network byte order */
 		   , unsigned int proto
 		   , unsigned int transport_proto
 		   , enum eroute_type esatype
@@ -672,7 +672,7 @@ netlink_raw_eroute(const ip_address *this_host
         addrtot(that_host, 0, sa_that, sizeof(sa_that));
 
         DBG_log("creating SPD to %s->spi=%08x@%s proto=%u"
-                , sa_this, htonl(spi), sa_that, proto);
+                , sa_this, ntohl(spi), sa_that, proto);
     }
 
     policy = IPSEC_POLICY_IPSEC;
@@ -682,6 +682,7 @@ netlink_raw_eroute(const ip_address *this_host
         switch (ntohl(spi))
 	    {
 	    case SPI_PASS:
+                DBG(DBG_NETKEY, DBG_log("%s: SPI_PASS", __func__));
                 policy = IPSEC_POLICY_NONE;
                 break;
 	    case SPI_DROP:
@@ -693,11 +694,13 @@ netlink_raw_eroute(const ip_address *this_host
 	    case SPI_TRAPSUBNET:
                 if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 		    {
+                        DBG(DBG_NETKEY, DBG_log("%s: SPI_TRAP INBOUND implemented as no-op", __func__));
                         return TRUE;
 		    }
                 break;
                 /* Do we really need %hold under NETKEY? Seems not so we just ignore. */
 	    case SPI_HOLD:
+		DBG(DBG_NETKEY, DBG_log("%s: SPI_HOLD implemented as no-op", __func__));
                 return TRUE;
 	    }
     }

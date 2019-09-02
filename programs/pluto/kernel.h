@@ -150,7 +150,7 @@ struct kernel_ops {
 		       const ip_subnet *this_client,
 		       const ip_address *that_host,
 		       const ip_subnet *that_client,
-		       ipsec_spi_t spi,
+		       ipsec_spi_t spi, /* network byte order */
 		       unsigned int proto,
 		       unsigned int transport_proto,
 		       enum eroute_type satype,
