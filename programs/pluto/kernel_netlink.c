@@ -703,7 +703,8 @@ netlink_raw_eroute(const ip_address *this_host
     }
 
     /* log warning for RFC-breaking implementation in NETKEY/XFRM stack */
-    if( (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL)
+    if( (sadb_op != ERO_DELETE && sadb_op != ERO_DEL_INBOUND)
+	&& (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL)
 	&& (transport_proto != 0)) {
 	   DBG_log("warning: NETKEY/XFRM in transport mode accepts ALL encrypted protoport packets between the hosts in violation of RFC 4301, Section 5.2");
     }
