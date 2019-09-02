@@ -144,14 +144,44 @@ record_and_initiate_opportunistic(const ip_subnet *ours
                                   , struct xfrm_user_sec_ctx_ike *uctx
                                   , const char *why)
 {
+    ip_address af_any;
+    struct bare_shunt *bs;
+
     passert(samesubnettype(ours, his));
+    af_any = *aftoinfo(subnettypeof(ours))->any;
+
+    /* check if this shunt already exists */
+
+    for(bs = bare_shunts; bs; bs = bs->next) {
+        /* skip this entry if it does not match what we are adding */
+
+        if ( bs->said.proto != SA_INT || bs->said.spi != htonl(SPI_HOLD) )
+            continue;
+
+        if ( bs->transport_proto != transport_proto )
+            continue;
+
+        if ( ! samesubnet(&bs->ours, ours) )
+            continue;
+
+        if ( ! samesubnet(&bs->his, his) )
+            continue;
+
+        if ( ! sameaddr(&bs->said.dst, &af_any) )
+            continue;
+
+        /* found a matching entry -- update the time */
+        DBG_bare_shunt("dup", bs);
+        bs->last_activity = now();
+        return;
+    }
 
     /* Add the kernel shunt to the pluto bare shunt list.
      * We need to do this because the shunt was installed by KLIPS
      * which can't do this itself.
      */
     {
-        struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
+        bs = alloc_thing(struct bare_shunt, "bare shunt");
 
         bs->why = clone_str(why, "story for bare shunt");
         bs->ours = *ours;
@@ -161,7 +191,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
 
         bs->said.proto = SA_INT;
         bs->said.spi = htonl(SPI_HOLD);
-        bs->said.dst = *aftoinfo(subnettypeof(ours))->any;
+        bs->said.dst = af_any;
 
         bs->count = 0;
         bs->last_activity = now();
