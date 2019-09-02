@@ -158,9 +158,26 @@ struct hidden_variables {
     ip_address     st_natd;
 };
 
-#define set_suspended(st,md) do { st->st_suspended_md=md; \
-                                  st->st_suspended_md_func=__FUNCTION__; \
-                                  st->st_suspended_md_line=__LINE__; } while(0)
+/* assign or clear (md==NULL) async crypto operation */
+#define set_suspended(_st,_md) do { \
+    struct msg_digest *had_md = READ_ONCE((_st)->st_suspended_md); \
+    if (_md) { /* we are about to suspend the md */ \
+        if (had_md) { \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=%p, already claimed by md=%p", \
+                    __func__, __LINE__, (_st)->st_serialno, (_md), had_md); \
+            impossible(); \
+        } \
+    } else { /* we are resuming a suspended md */ \
+        if (!had_md) { \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=NULL, but st_suspended_md was already NULL", \
+                    __func__, __LINE__, (_st)->st_serialno); \
+            impossible(); \
+        } \
+    } \
+    _st->st_suspended_md=(_md); \
+    _st->st_suspended_md_func=__FUNCTION__; \
+    _st->st_suspended_md_line=__LINE__; \
+} while(0)
 
 /* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
