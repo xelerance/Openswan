@@ -72,5 +72,15 @@ extern struct secret *pluto_secrets;
 #define DISCARD_CONST(vartype, varname) ((vartype)(uintptr_t)(varname))
 #endif
 
+/* a macro used to access a variable as if it were volatile.  this forces the
+ * compiler to explicitly access the variable, and not cache data in registers */
+#ifdef __GNUC__
+#define READ_ONCE(x) (__extension__({ \
+			const volatile typeof(x) *_p = &(x); \
+			*_p; \
+		    }))
+#else
+#define READ_ONCE(x) (*(volatile typeof(x) *)&(x))
+#endif
 
 #endif /* _DEFS_H */
