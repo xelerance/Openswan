@@ -341,6 +341,8 @@ extern bool replace_bare_shunt(const ip_address *src, const ip_address *dst
 			       , int transport_proto
 			       , const char *why);
 
+extern bool delete_bare_shunt_ptr(struct bare_shunt **bs_pp, const char *why);
+
 extern bool assign_hold(struct connection *c
 			, struct spd_route *sr
  			, int transport_proto

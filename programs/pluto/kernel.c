@@ -1177,6 +1177,41 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 
 }
 
+/* Delete a bare shunt whose location is known. */
+bool
+delete_bare_shunt_ptr(struct bare_shunt **bs_pp, const char *why)
+{
+    struct bare_shunt *bs = *bs_pp;
+    ip_subnet this_client, that_client;
+    int af;
+    const ip_address *null_host;
+    ipsec_spi_t spi;
+    unsigned int proto, transport_proto;
+
+    passert(subnettypeof(&bs->ours) == subnettypeof(&bs->his));
+    af = subnettypeof(&bs->ours);
+    null_host = aftoinfo(af)->any;
+    this_client = bs->ours;
+    that_client = bs->his;
+
+    proto = bs->said.proto;
+    spi = bs->said.spi; // htonl(SPI_HOLD) or htonl(SPI_PASS)
+    transport_proto = bs->transport_proto;
+
+    DBG(DBG_KLIPS|DBG_OPPOINFO, DBG_log("removing specific host-to-host bare shunt"));
+    if (raw_eroute(null_host, &this_client,
+                   null_host, &that_client
+                   , spi, proto, transport_proto
+                   , ET_INT, null_proto_info
+                   , SHUNT_PATIENCE, ERO_DELETE, why, NULL_POLICY)) {
+        /* delete bare eroute */
+        free_bare_shunt(bs_pp);
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
 bool eroute_connection(struct state *st
                        , const struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
