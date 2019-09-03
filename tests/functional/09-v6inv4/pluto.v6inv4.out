@@ -19,7 +19,7 @@ Using 'no_kernel' interface code on
   loaded host cert file '../../unit/libpluto/samples/moon/certs/moonCert.pem' (CERT bytes)
 adding connection: "net-net"
 loading secrets from "../../unit/libpluto/samples/moon.secrets"
-  loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (1679 bytes)
+  loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (CERT bytes)
 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 000 using kernel interface: noklips
 000 using secrets file: ../../unit/libpluto/samples/moon.secrets
