@@ -243,7 +243,7 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
 
     set_cur_state(st);

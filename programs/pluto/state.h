@@ -158,6 +158,26 @@ struct hidden_variables {
     ip_address     st_natd;
 };
 
+/* return true if the state has async crypto operation */
+#define is_suspended(st) ((READ_ONCE(st->st_suspended_md)) != NULL)
+
+/* assert that state and md are bound on async crypto operation */
+#define assert_suspended(_st,_md) do { \
+    passert((_st)); \
+    if ((_st)->st_suspended_md != (_md)) { \
+        DBG_log("%s:%u st=%p->st_suspended_md=%p != md=%p", \
+                __func__, __LINE__, (_st), \
+                (_st) ? (_st)->st_suspended_md : NULL, (_md)); \
+        impossible(); \
+    } \
+    if((_md) && (_md)->st != (_st)) { \
+        DBG_log("%s:%u md=%p->st=%p != st=%p", \
+                __func__, __LINE__, (_md), (_md)->st, (_st)); \
+        impossible(); \
+    } \
+} while(0)
+
+
 /* assign or clear (md==NULL) async crypto operation */
 #define set_suspended(_st,_md) do { \
     struct msg_digest *had_md = READ_ONCE((_st)->st_suspended_md); \

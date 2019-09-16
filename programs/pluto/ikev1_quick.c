@@ -1353,7 +1353,7 @@ quick_inI1_outR1_continue(struct adns_continuation *cr, err_t ugh)
     /* if st == NULL, our state has been deleted -- just clean up */
     if (st != NULL)
     {
-	passert(st->st_suspended_md == b->md);
+	assert_suspended(st, b->md);
 	set_suspended(st, NULL);	/* no longer connected or suspended */
 	cur_state = st;
 	if (!b->failure_ok && ugh != NULL)

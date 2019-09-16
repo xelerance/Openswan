@@ -915,7 +915,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1109,7 +1109,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1669,7 +1669,7 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -1911,7 +1911,7 @@ key_continue(struct adns_continuation *cr
     {
 	stf_status r;
 
-	passert(st->st_suspended_md == kc->md);
+	assert_suspended(st, kc->md);
 	set_suspended(st,NULL);	/* no longer connected or suspended */
 	cur_state = st;
 

@@ -1187,7 +1187,7 @@ ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == dh->md);
+    assert_suspended(st, dh->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1568,7 +1568,7 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
     set_cur_state(st);
 
@@ -1646,7 +1646,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
-    passert(st->st_suspended_md == dh->md);
+    assert_suspended(st, dh->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
     set_cur_state(st);
     st->st_calculating = FALSE;
@@ -1955,7 +1955,7 @@ static void ikev2child_inCR1_continue(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
-    passert(st->st_suspended_md == dh->md);
+    assert_suspended(st, dh->md);
     set_suspended(st, NULL);        /* no longer connected or suspended */
     set_cur_state(st);
     st->st_calculating = FALSE;

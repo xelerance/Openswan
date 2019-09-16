@@ -154,6 +154,10 @@ ikev2parent_outI1_withstate(struct state *st
                                         , c->spd.this.xauth_server
                                         , c->spd.this.xauth_client);
 
+    /* assumption is that we are starting with a new state,
+     * so there should never be a suspended MD here */
+    assert (!is_suspended(st));
+
     /* set up new state */
     st->st_ikev2 = TRUE;
     change_state(st, STATE_PARENT_I1);
@@ -298,7 +302,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st,NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);

@@ -129,7 +129,7 @@ aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -176,7 +176,7 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == ke->md);
+  assert_suspended(st, ke->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -685,7 +685,7 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -989,7 +989,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == ke->md);
+  assert_suspended(st, ke->md);
   set_suspended(st,NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
