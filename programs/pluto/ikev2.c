@@ -1427,7 +1427,8 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	 * returned by build_ke() or build_nonce().
 	 */
 	if (st) {
-		set_suspended(st, NULL);
+		if (st->st_suspended_md == md)
+                    set_suspended(st, NULL);
 		pexpect(st->st_calculating == FALSE);
 	}
 	openswan_log("message in state %s ignored due to "

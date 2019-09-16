@@ -46,6 +46,14 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* struct connection *c = st->st_connection; */
     pb_stream *keyex_pbs;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* record IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
     st->st_ike_min        = md->min;

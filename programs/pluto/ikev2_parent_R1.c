@@ -45,13 +45,22 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
     lset_t policy_hint = LEMPTY;
-    struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
+    struct connection *c;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (st && is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
+    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , md->iface->port
                                                 , KH_IPADDR
                                                 , &md->sender
                                                 , md->sender_port
                                                 , POLICY_IKEV2_ALLOW, LEMPTY, &policy_hint);
-
     if(c==NULL) {
         if(policy_hint & POLICY_IKEV2_ALLOW) {
             /* connection not found, because IKEv2 was not allowed */
