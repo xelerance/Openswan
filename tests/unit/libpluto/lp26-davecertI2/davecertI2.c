@@ -5,6 +5,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "seam_x509_list.c"
 #include "seam_host_dave.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "certificateselfI2"
 
