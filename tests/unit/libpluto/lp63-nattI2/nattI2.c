@@ -7,6 +7,7 @@
 #include "seam_keys.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "h2hI2"
 

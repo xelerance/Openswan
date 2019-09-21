@@ -14,6 +14,7 @@
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_rsa_check.c"
+#include "seam_rsasig.c"
 
 
 #define TESTNAME "v1rwnatM1"

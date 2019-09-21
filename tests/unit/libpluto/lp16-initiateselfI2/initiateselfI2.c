@@ -5,6 +5,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "seam_x509.c"
 #include "seam_host_rw.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "initiateselfI2"
 
