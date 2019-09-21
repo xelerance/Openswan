@@ -20,6 +20,7 @@
 #include "seam_unpend.c"
 #include "seam_command.c"
 #include "seam_rsa_check.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "v1certM2"
 

@@ -6,6 +6,7 @@
 #include "seam_x509_list.c"
 #include "../../programs/pluto/x509keys.c"
 #include "seam_host_parker.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "h2hI2"
 
