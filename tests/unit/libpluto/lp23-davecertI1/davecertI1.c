@@ -11,6 +11,7 @@
 #include "seam_initiate.c"
 #include "seam_dnskey.c"
 #include "seam_x509_list.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "davecertI1"
 
