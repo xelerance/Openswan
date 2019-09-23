@@ -1388,6 +1388,14 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
     ip_address client;
     err_t ugh;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(p1st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* Record that state is used by a suspended md */
     b->step = next_step;    /* not just vc->b.step */
     vc->b = *b;
@@ -1698,6 +1706,14 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	, *his_net = &b->his.net;
     struct end our, peer;
     struct hidden_variables hv;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(p1st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     zero(&our); zero(&peer);
     our.host_type  = KH_IPADDR;
@@ -2372,6 +2388,14 @@ stf_status
 quick_inR1_outI2(struct msg_digest *md)
 {
     struct state *const st = md->st;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* HASH(2) in */
     CHECK_QUICK_HASH(md

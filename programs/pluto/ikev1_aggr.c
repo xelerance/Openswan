@@ -581,6 +581,14 @@ aggr_inR1_outI2(struct msg_digest *md)
     struct state *st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     st->st_policy |= POLICY_AGGRESSIVE;
 
     if (!decode_peer_id(md, FALSE, TRUE))

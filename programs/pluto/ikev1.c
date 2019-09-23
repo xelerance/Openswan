@@ -2409,7 +2409,8 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* well, this should never happen during a whack, since
 	     * a whack will always force crypto.
 	     */
-	    set_suspended(st, NULL);
+	    if (st->st_suspended_md == md)
+		    set_suspended(st, NULL);
 	    pexpect(st->st_calculating == FALSE);
 	    openswan_log("message in state %s ignored due to cryptographic overload"
 			 , enum_name(&state_names, from_state));

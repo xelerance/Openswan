@@ -937,6 +937,14 @@ main_inR1_outI2(struct msg_digest *md)
 {
     struct state *const st = md->st;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* verify echoed SA */
     {
 	struct payload_digest *const sapd = md->chain[ISAKMP_NEXT_SA];
@@ -1129,6 +1137,15 @@ main_inI2_outR2(struct msg_digest *md)
 {
     struct state *const st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi"
 				 , st->st_oakley.group, keyex_pbs));
@@ -1696,6 +1713,14 @@ main_inR2_outI3(struct msg_digest *md)
     pb_stream *const keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
     struct state *const st = md->st;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr"
 				 , st->st_oakley.group, keyex_pbs));
@@ -1752,6 +1777,14 @@ oakley_id_and_auth(struct msg_digest *md
     u_char hash_val[MAX_DIGEST_LEN];
     size_t hash_len;
     stf_status r = STF_OK;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* ID Payload in.
      * Note: this may switch the connection being used!
