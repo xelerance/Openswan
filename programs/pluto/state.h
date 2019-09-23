@@ -183,14 +183,16 @@ struct hidden_variables {
     struct msg_digest *had_md = READ_ONCE((_st)->st_suspended_md); \
     if (_md) { /* we are about to suspend the md */ \
         if (had_md) { \
-            DBG_log("%s:%u set_suspended() called on #%lu with md=%p, already claimed by md=%p", \
-                    __func__, __LINE__, (_st)->st_serialno, (_md), had_md); \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=%p, already claimed by md=%p (at %s:%u)", \
+                    __func__, __LINE__, (_st)->st_serialno, (_md), had_md, \
+		    (_st)->st_suspended_md_func, (_st)->st_suspended_md_line); \
             impossible(); \
         } \
     } else { /* we are resuming a suspended md */ \
         if (!had_md) { \
-            DBG_log("%s:%u set_suspended() called on #%lu with md=NULL, but st_suspended_md was already NULL", \
-                    __func__, __LINE__, (_st)->st_serialno); \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=NULL, but st_suspended_md was already NULL (at %s:%u)", \
+                    __func__, __LINE__, (_st)->st_serialno, \
+		    (_st)->st_suspended_md_func, (_st)->st_suspended_md_line); \
             impossible(); \
         } \
     } \
