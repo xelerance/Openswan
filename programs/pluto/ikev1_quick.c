@@ -746,9 +746,10 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(ugh == NULL);
     passert(cur_state == NULL);
     passert(st != NULL);
+    passert(qke->md == NULL);	// there is no md, because we are initiating
 
     set_cur_state(st);	/* we must reset before exit */
-    set_suspended(st, NULL);
+    //set_suspended(st, NULL);
     e = quick_outI1_tail(pcrc, r, st);
     if (e == STF_INTERNAL_ERROR)
 	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
@@ -2027,6 +2028,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    if(ci < st->st_import) ci = st->st_import;
 
 	    qke->md = md;
+	    set_suspended(st, md);
 	    pcrc_init(&qke->qke_pcrc);
 	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue1;
 
