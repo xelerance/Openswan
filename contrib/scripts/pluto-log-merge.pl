@@ -451,10 +451,14 @@ sub create_event_reader {
             elsif ($txt =~ m/exchange type: (\S+)/) {
                 $self->{ev}->{exchange} = $1;
             }
-            elsif ($txt =~ m/message ID: (\S+)/) {
+            elsif ($txt =~ m/message ID:\s+(\S+)/) {
                 my $id = $1;
                 $id =~ s/ //g;
                 $self->{ev}->{msg_id} = hex($id);
+            }
+            elsif ($txt =~ m/processing version=(\S+)\s+packet.*msgid:\s+(\S+)/) {
+                $self->{ev}->{version} = $1;
+                $self->{ev}->{msg_id} = hex($2);
             }
             elsif ($txt =~ m/next-payload: ISAKMP_NEXT_(\S+) /) {
                 push @{$self->{ev}->{payloads}}, "$1";
