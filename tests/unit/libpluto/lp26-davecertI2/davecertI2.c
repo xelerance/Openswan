@@ -5,6 +5,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "seam_x509_list.c"
 #include "seam_host_dave.c"
+#include "seam_natt.c"
 #include "seam_rsasig.c"
 
 #define TESTNAME "certificateselfI2"
@@ -36,6 +37,7 @@ static void init_loaded(void)
     load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
 }
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
