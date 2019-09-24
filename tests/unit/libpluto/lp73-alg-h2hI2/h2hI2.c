@@ -5,6 +5,7 @@
 #include "seam_keys.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
+#include "seam_natt.c"
 #include "seam_rsasig.c"
 
 #define TESTNAME "h2hI2"
@@ -24,6 +25,7 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void) {}
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
