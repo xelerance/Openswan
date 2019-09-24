@@ -8,7 +8,9 @@ void recv_pcap_packet(u_char *user
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     call_counter++;
+#if 0
     DBG_log("%s() call %d: enter", __func__, call_counter);
+#endif
 
     enable_debugging_on_sa(1);
 

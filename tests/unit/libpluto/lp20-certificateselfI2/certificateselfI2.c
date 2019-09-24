@@ -5,6 +5,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "seam_x509_list.c"
 #include "seam_host_rw.c"
+#include "seam_natt.c"
 #include "seam_rsasig.c"
 
 #define TESTNAME "certificateselfI2"
@@ -27,6 +28,7 @@ static void init_fake_secrets(void)
 }
 static void init_loaded(void) {}
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
