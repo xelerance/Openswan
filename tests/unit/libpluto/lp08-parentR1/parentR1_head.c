@@ -28,6 +28,7 @@
 #include "seam_exitlog.c"
 #include "seam_natt.c"
 #include "seam_dnskey.c"
+#include "seam_kernelalgs.c"
 
 #ifndef SAMPLEDIR
 #define SAMPLEDIR "../samples/"
