@@ -3,35 +3,27 @@
 #include "pluto/nat_traversal.h"
 #include "pluto/vendor.h"
 
-/*
- * Unit test cases actually SHOULD have this really done.
- * this is NOT DRY... XXX fix.
- */
+/* send a single NAT VID */
 bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs, struct state *st)
 {
-	bool r = TRUE;
-	DBG(DBG_NATT
-	    , DBG_log("nat add vid. port: %d nonike: %d"
-		      , nat_traversal_support_port_floating
-		      , nat_traversal_support_non_ike));
+  unsigned char *data = "RFC 3947";
+  static unsigned char *vid = NULL;
+  static unsigned int   vid_len = 0;
+  if(vid == NULL) {
+    MD5_CTX ctx;
+    unsigned char *vidm =  alloc_bytes(MD5_DIGEST_SIZE,"VendorID MD5");
+    vid = (char *)vidm;
+    if (vidm) {
+      unsigned const char *d = data;
+      osMD5Init(&ctx);
+      osMD5Update(&ctx, d, strlen(data));
+      osMD5Final(vidm, &ctx);
+      vid_len = MD5_DIGEST_SIZE;
+    }
 
-	if (nat_traversal_support_port_floating) {
-	    if (st->st_connection->remotepeertype == CISCO) {
-	    if (r) r = out_vid(np, outs, VID_NATT_RFC);
-	    } else {
-	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_RFC);
-	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_03);
-	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_02_N);
-	    if (r)
-		r = out_vid(nat_traversal_support_non_ike ? ISAKMP_NEXT_VID : np,
-			outs, VID_NATT_IETF_02);
-	    }
-	}
-	if (nat_traversal_support_non_ike && st->st_connection->remotepeertype != CISCO) {
-	    if (r) r = out_vid(np, outs, VID_NATT_IETF_00);
-	}
-	return r;
+  }
+  return out_generic_raw(np, &isakmp_vendor_id_desc, outs,
+                         vid, vid_len, "V_ID");
 }
-
 
 #endif

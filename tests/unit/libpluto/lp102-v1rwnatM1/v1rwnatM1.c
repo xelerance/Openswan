@@ -1,8 +1,8 @@
 #define OMIT_MAIN_MODE 1
-#define FIREWALL_OUTSIDE "192.168.0.1"
-#define NAPT_ENABLED 1
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_host_alice.c"
+#include "seam_whack.c"
+#include "seam_natt.c"
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_pending.c"
@@ -11,6 +11,7 @@
 #include "seam_gi_sha1.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_rsa_check.c"
