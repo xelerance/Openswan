@@ -1,0 +1,7 @@
+This test case is an IKEv1 initiator.  The client is called carol, and
+has a certificate signed by a common CA.
+This is a piece by piece repeat of exactly DTP ikev1/alg-3des-md5,
+wherein the authentication comes via inline certificate.
+
+
+
