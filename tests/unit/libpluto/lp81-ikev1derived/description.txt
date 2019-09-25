@@ -1,0 +1,12 @@
+This test case is an IKEv1 initiator, it derives it's policy from the
+IKEv2 ike= that was set.
+
+This was created to help debug DTP complaint:
+     Mar  7 19:40:53 carol pluto[16130]: "home": can not extrapolate IKEv1 policy
+                                         from empty IKEv2 policy
+     Mar  7 19:40:53 carol pluto[16130]: "home": failed to create v1 IPsec policy
+                                         from v2 settings
+
+in test case:  ikev1/alg-3des-md5
+
+

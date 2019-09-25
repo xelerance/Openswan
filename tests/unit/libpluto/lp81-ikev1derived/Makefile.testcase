@@ -1,0 +1,18 @@
+# -*- makefile -*-
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+EXTRALIBS+=${LIBPLUTO}
+
+CONNNAME=t4901-ikev1
+ENDNAME=moon-ikev1
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=ikev1derived
+
+
+pcapupdate:
+	@true
+
