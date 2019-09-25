@@ -5,7 +5,6 @@ CONNNAME=rw-dave
 UNITTEST1PCAP=OUTPUT/davecertR2-id.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} davecertI1-id.pcap davecertI2-id.pcap
 ENDNAME=gatewaycert-id
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 
 PCAPDEPENDENCIES = ../lp52-davecert-gatewayID-I1/OUTPUT/davecertI1-id.pcap ../lp54-davecert-gatewayID-I2/OUTPUT/davecertI2-id.pcap
 include ../Makefile.pcapupdate

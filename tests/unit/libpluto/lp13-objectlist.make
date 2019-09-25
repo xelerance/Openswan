@@ -1,3 +1,4 @@
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
