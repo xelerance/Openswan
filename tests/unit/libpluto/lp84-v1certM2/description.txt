@@ -1,0 +1,14 @@
+This test case is an IKEv1 initiator, using main mode, sending the I2 packet.
+This version sends certificates.
+
+
+
+
+
+
+
+
+
+
+
+
