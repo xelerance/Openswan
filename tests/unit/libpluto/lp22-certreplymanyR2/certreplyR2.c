@@ -6,9 +6,6 @@
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
 
-#include "../../programs/pluto/hostpair.c"
-
-
 #define TESTNAME "certreplyselfR2"
 
 static void init_local_interface(void)

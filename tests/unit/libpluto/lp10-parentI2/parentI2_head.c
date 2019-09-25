@@ -6,14 +6,7 @@
 #define PRINT_SA_DEBUG 1
 #define USE_KEYRR 1
 
-#include "constants.h"
-#include "oswalloc.h"
-#include "whack.h"
-#include "oswconf.h"
-#include "oswcrypto.h"
-#include "../../programs/pluto/rcv_whack.h"
-
-#include "../../programs/pluto/connections.c"
+#include "unit_test_includes.h"
 
 #include "whackmsgtestlib.c"
 #include "seam_debug.c"

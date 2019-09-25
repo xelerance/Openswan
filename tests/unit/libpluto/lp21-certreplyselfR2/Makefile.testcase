@@ -7,7 +7,6 @@ UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2.p
 #UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST2PCAP} parentI1.pcap parentI2_wrongchildpolicy.pcap
 ENDNAME=gatewaycert
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 
 PCAPDEPENDENCIES = ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap ../lp20-certificateselfI2/OUTPUT/parentI2.pcap
 include ../Makefile.pcapupdate
