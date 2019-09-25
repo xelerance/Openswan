@@ -63,7 +63,7 @@ UNITTESTS_R2+=lp22-certreplymanyR2
 
 UNITTESTS_I1+=lp23-davecertI1
 
-#algo UNITTESTS_R1+=lp70-certreplydaveR1
+UNITTESTS_R1+=lp70-certreplydaveR1
 UNITTESTS_I2+=lp26-davecertI2
 UNITTESTS_R2+=lp24-certreplydaveR2
 

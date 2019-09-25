@@ -1,0 +1,19 @@
+# -*- makefile -*-
+TESTNAME=certreplydaveR1
+CONNNAME1=rw-any
+CONNNAME=${CONNNAME1} rw-carol rw-dave
+UNITTEST1PCAP=OUTPUT/parentR1dave.pcap
+LP24=../lp24-certreplydaveR2
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME1} ${UNITTEST1PCAP} ${LP24}/carolI1.pcap ${LP24}/carolI2.pcap ${LP24}/davecertI1.pcap
+ENDNAME=gatewaycert
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+
+# no updates because all packets come from LP24
+pcapupdate:
+	@true
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#
+
