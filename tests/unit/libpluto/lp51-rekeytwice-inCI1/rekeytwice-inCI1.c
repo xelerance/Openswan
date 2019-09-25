@@ -1,4 +1,5 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_gr_sha1_group14.c"
@@ -50,8 +51,8 @@ static void init_loaded(void)
 
 #define PCAP_INPUT_COUNT 4
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
+    recv_pcap_packet_with_ke,
+    recv_pcap_packet2_with_ke,
     recv_pcap_packetC1,
     recv_pcap_packetC1
 };

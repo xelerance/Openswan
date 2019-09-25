@@ -1,5 +1,6 @@
 #define WANT_THIS_DBG DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_gr_sha1_group14.c"

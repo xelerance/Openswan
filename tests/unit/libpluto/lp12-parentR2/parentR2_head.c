@@ -26,10 +26,13 @@
 #include "seam_whack.c"
 #include "seam_initiate.c"
 #include "seam_exitlog.c"
-#include "seam_natt.c"
 #include "seam_dnskey.c"
 #include "seam_kernelalgs.c"
 #include "seam_rsasig.c"
 
-void recv_pcap_packet(u_char *user		      , const struct pcap_pkthdr *h		      , const u_char *bytes);
-void recv_pcap_packet2(u_char *user                      , const struct pcap_pkthdr *h                      , const u_char *bytes);
+void recv_pcap_packet_with_ke(u_char *user
+                              , const struct pcap_pkthdr *h
+                              , const u_char *bytes);
+void recv_pcap_packet2_with_ke(u_char *user
+                               , const struct pcap_pkthdr *h
+                               , const u_char *bytes);

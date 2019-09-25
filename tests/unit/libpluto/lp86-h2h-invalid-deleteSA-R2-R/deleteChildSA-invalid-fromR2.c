@@ -1,4 +1,5 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_gr_sha1_group14.c"
@@ -36,7 +37,7 @@ void recv_pcap_packet2_and_delete(u_char *user
     enable_debugging_on_sa(1);
     enable_debugging_on_sa(2);
 
-    recv_pcap_packet2(user, h, bytes);
+    recv_pcap_packet2_with_ke(user, h, bytes);
 
     /* confirm that SA 1 is in R2 */
     pst = state_with_serialno(1);
@@ -87,7 +88,7 @@ void recv_pcap_packet3_end_delete(u_char *user
      * are going to process the response to it */
     st->st_state = STATE_DELETING;
 
-    recv_pcap_packet2(user, h, bytes);
+    recv_pcap_packet2_with_ke(user, h, bytes);
 
     DBG_log("%s() call %d: exit", __func__, call_counter);
 }
@@ -96,7 +97,7 @@ void recv_pcap_packet3_end_delete(u_char *user
 #ifndef PCAP_INPUT_COUNT
 #define PCAP_INPUT_COUNT 3
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
+    recv_pcap_packet_with_ke,
     recv_pcap_packet2_and_delete,
     recv_pcap_packet3_end_delete,
 };

@@ -4,6 +4,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "oswconf.h"
 #include "seam_x509_list.c"
+#include "seam_rsasig.c"
 #include "../../programs/pluto/x509keys.c"
 
 #define TESTNAME "h2hI3"
