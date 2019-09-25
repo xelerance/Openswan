@@ -1,0 +1,6 @@
+OUTPUT
+core.*
+*.o
+.gdb1init
+.gdbinit
+certreplydaveR1
