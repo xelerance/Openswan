@@ -1,0 +1,20 @@
+# -*- makefile -*-
+CONNNAME=rw
+ENDNAME=moon
+INPUTPCAPS=v1certM1.pcap v1certM2.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ${INPUTPCAPS}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=v1certN2
+
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+
+EXTRALIBS+=${LIBPLUTO}
+
+pcapupdate:
+	cp ../lp82-v1certM1/OUTPUT/v1certM1.pcap v1certM1.pcap
+	cp ../lp84-v1certM2/OUTPUT/v1certM2.pcap v1certM2.pcap
