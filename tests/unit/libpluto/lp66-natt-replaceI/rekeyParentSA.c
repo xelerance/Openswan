@@ -1,4 +1,3 @@
-#define NAPT_ENABLED 1
 #define NAT_TRAVERSAL
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -1,0 +1,8 @@
+OUTPUT
+core.*
+v1certN1
+*.o
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
