@@ -1,7 +1,8 @@
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
-/* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
-void recv_pcap_packet(u_char *user
+/* this is replicated in the unit test cases since
+ * the patching up of the crypto values is case specific */
+void recv_pcap_packet_with_ke(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
@@ -23,7 +24,7 @@ void recv_pcap_packet(u_char *user
     }
 }
 
-void recv_pcap_packet2(u_char *user
+void recv_pcap_packet2_with_ke(u_char *user
                       , const struct pcap_pkthdr *h
                       , const u_char *bytes)
 {
@@ -43,8 +44,8 @@ void recv_pcap_packet2(u_char *user
 #ifndef PCAP_INPUT_COUNT
 #define PCAP_INPUT_COUNT 2
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
+    recv_pcap_packet_with_ke,
+    recv_pcap_packet2_with_ke,
 };
 #endif
 

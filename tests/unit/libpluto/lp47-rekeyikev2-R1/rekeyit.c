@@ -24,8 +24,8 @@ void recv_pcap_packetC1(u_char *user
 
 #define PCAP_INPUT_COUNT 3
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
+    recv_pcap_packet_with_ke,
+    recv_pcap_packet2_with_ke,
     recv_pcap_packetC1
 };
 
