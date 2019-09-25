@@ -1,0 +1,10 @@
+This test case is an IKEv1 responder, receive I2 message, send the R2.
+
+
+
+
+
+
+
+
+
