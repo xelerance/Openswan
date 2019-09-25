@@ -1,6 +1,7 @@
 /* we want to link against the real timer code for this test */
 #define NAT_TRAVERSAL
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_debug.c"
@@ -43,7 +44,7 @@ void recv_pcap_packet2_and_rekey(u_char *user
     enable_debugging_on_sa(1);
     enable_debugging_on_sa(2);
 
-    recv_pcap_packet2(user, h, bytes);
+    recv_pcap_packet2_with_ke(user, h, bytes);
 
     DBG_log("%s() call %d: look at negotiated SAs", __func__, call_counter);
     show_states_status();
@@ -77,7 +78,7 @@ void recv_pcap_packet2_and_rekey(u_char *user
 #ifndef PCAP_INPUT_COUNT
 #define PCAP_INPUT_COUNT 2
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
+    recv_pcap_packet_with_ke,
     recv_pcap_packet2_and_rekey,
 };
 #endif

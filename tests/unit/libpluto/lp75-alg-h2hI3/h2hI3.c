@@ -1,6 +1,7 @@
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_x509.c"
 #include "seam_gi_md5.c"
+#include "seam_rsasig.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 

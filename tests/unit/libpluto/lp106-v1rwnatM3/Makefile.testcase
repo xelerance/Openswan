@@ -7,6 +7,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 EXTRALIBS+=${LIBPLUTO}
 
 CONNNAME=bobnet-ikev1
