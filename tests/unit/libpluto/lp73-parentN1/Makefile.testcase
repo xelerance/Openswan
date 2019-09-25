@@ -1,0 +1,19 @@
+# -*- makefile -*-
+CONNNAME=t4901
+ENDNAME=h2h-ikev1
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentM1.pcap OUTPUT/${TESTNAME}.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=parentN1
+
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+
+EXTRALIBS+=${LIBPLUTO}
+
+pcapupdate:
+	cp ../lp43-parentM1/OUTPUT/parentM1.pcap parentM1.pcap
+
+
