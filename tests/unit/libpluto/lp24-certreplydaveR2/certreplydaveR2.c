@@ -1,4 +1,5 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 #include "seam_gr_sha1_group14.c"
@@ -100,12 +101,10 @@ static void init_loaded(void)
 
 
 #define PCAP_INPUT_COUNT 4
-void recv_pcap_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes);
-void recv_pcap_packet2(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes);
 
 recv_pcap recv_inputs[]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
+    recv_pcap_packet_with_ke,
+    recv_pcap_packet2_with_ke,
     recv_pcap_packet3,
     recv_pcap_packet4
 };

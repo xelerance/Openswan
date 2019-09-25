@@ -11,7 +11,7 @@ void update_ngi(struct pcr_kenonce *kn)
     /* now fill in the KE values from a constant.. not calculated */
     clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(nr.ptr), SS(nr.len));
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gr.ptr), SS(gr.len));
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secretr.ptr), SS(secretr.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr), SS(secret.len));
 }
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
@@ -47,7 +47,7 @@ void recv_pcap_packet2(u_char *user
     st = state_with_serialno(1);
     if(st) {
       st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-      clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secretr.ptr),SS(secretr.len));
+      clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
     }
     clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
 

@@ -11,14 +11,16 @@
 #include "seam_ikev1_phase2.c"
 #include "seam_unpend.c"
 #include "seam_kernel.c"
-#include "seam_ikealg.c"
 #include "seam_crypt.c"
 #include "seam_x509.c"
 #include "seam_rsasig.c"
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
+#include "seam_command.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
+
+#include "nat_traversal.h"
 
 #define TESTNAME "v1rwcertN2"
 
