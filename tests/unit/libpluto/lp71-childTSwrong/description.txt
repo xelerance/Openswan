@@ -1,0 +1,18 @@
+This test case is an IKEv2 responder for an initiator which is behind a NAT.
+This test case is identical to lp64-nattR2, but the traffic selectors are not
+compatible, resulting in a child_sa_respond returning NO_PROPOSAL_CHOSEN,
+which should be sent as a notify along with the authenticated R2.
+(Since the connection authenticated correctly, it just was wrong TS)
+
+Since the connection is authenticated, the NO PROPOSAL CHOSEN Notify should
+be sent as part of the encrypted response to the R2.
+
+
+
+
+
+
+
+
+
+
