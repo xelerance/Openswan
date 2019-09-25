@@ -1,4 +1,4 @@
-#ifndef __seam_natt_c__
+#if !defined(__seam_natt_c__) && (!defined(NAPT_ENABLED) || NAPT_ENABLED!=1)
 #define __seam_natt_c__
 #include "pluto/nat_traversal.h"
 #include "pluto/vendor.h"
