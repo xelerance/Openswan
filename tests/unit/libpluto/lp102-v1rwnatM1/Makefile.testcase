@@ -2,7 +2,6 @@
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
 EXTRALIBS+=${LIBPLUTO}
 
 CONNNAME=bobnet-ikev1
