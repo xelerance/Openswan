@@ -1,0 +1,2 @@
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 364, bad cksum 0 (->d0c9)!)
+    93.184.216.34.55045 > 132.213.238.7.4500: NONESP-encap: isakmp 1.0 msgid 00000000: phase 1 ? ident[E]: [encrypted id]
