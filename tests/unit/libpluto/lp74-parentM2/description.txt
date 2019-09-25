@@ -1,0 +1,13 @@
+This test case is an IKEv1 initiator, using main mode, sending the I2 packet.
+It is part of the most basic IKEv1 unit test case.
+
+
+
+
+
+
+
+
+
+
+
