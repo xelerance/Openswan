@@ -3,6 +3,7 @@
 #include "seam_host_alice.c"
 #include "seam_whack.c"
 #include "seam_natt.c"
+#include "seam_natt_vid.c"
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_pending.c"

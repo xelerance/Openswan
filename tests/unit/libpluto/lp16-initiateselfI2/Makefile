@@ -21,7 +21,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
 include ../../libpluto/lp13-objectlist.make
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples

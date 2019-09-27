@@ -4,6 +4,7 @@
 #include "seam_x509_list.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 
 #define TESTNAME "wrongcacert"
 

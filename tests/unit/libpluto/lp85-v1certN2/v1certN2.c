@@ -19,6 +19,8 @@
 #include "seam_crypt.c"
 #include "seam_x509.c"
 #include "seam_rsasig.c"
+#include "seam_keys.c"
+#include "seam_rsa_check.c"
 #include "seam_host_moon.c"
 
 #define TESTNAME "v1certN2"
