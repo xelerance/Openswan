@@ -4,6 +4,7 @@
 #include "seam_finish.c"
 #include "../seam_host_jamesjohnson.c"
 #include "seam_rsasig.c"
+#include "seam_keys.c"
 #include "seam_x509_list.c"
 
 #define TESTNAME "certreplytselffR1"

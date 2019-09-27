@@ -7,6 +7,7 @@
 #include "seam_debug.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 
 #include "../../programs/pluto/replace.c"
 
