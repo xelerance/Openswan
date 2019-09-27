@@ -23,7 +23,7 @@ UNITTESTS+=ct12-parentR2
 UNITTESTS+=ct13-parentI3
 UNITTESTS+=ct14-bigkeyI2
 
-clean check:
+programs clean check:
 	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
