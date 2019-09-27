@@ -7,6 +7,15 @@ ENDNAME=parker
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/signatures.o
+
 # /dev/null is output pcap, as there is none.
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null parentR1.pcap cryptoR2.pcap
 

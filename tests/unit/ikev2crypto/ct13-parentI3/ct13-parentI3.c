@@ -1,5 +1,4 @@
 #define SEAM_RSASIG
-#define NAPT_ENABLED 1
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -10,12 +9,21 @@
 #include "seam_gi_sha256_group14.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_finish.c"
-#include "seam_cryptocontinue.c"
 
 static void init_loaded(void)
 {   /* nothing */ }
 
 #define TESTNAME "cryptoI3"
+
+long crl_check_interval = 0;
+
+static void init_fake_secrets(void)
+{
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL, NULL);
+}
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user
