@@ -13,6 +13,7 @@
 #include "seam_gi_sha256_group14.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_finish.c"
+#include "seam_rsa_check.c"
 
 #define TESTNAME "cryptoI1"
 
