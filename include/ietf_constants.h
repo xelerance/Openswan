@@ -872,7 +872,10 @@ enum oakley_enc_ikev1 {
   OAKLEY_3DES_CBC    =5,
   OAKLEY_CAST_CBC    =6,
   OAKLEY_AES_CBC     =7,
-  OAKLEY_CAMELLIA_CBC=8
+  OAKLEY_CAMELLIA_CBC=8,
+  OAKLEY_SERPENT_CBC             = 65004,
+  OAKLEY_TWOFISH_CBC             = 65005,
+  OAKLEY_TWOFISH_CBC_SSH         = 65289
 };
 
 #define OAKLEY_ENCRYPT_MAX      65535	/* pretty useless :) */
