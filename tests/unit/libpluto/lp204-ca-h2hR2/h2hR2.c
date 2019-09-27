@@ -5,6 +5,7 @@
 #include "../../programs/pluto/x509keys.c"
 #include "seam_gr_md5.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 
 #define TESTNAME "h2hR2"
 

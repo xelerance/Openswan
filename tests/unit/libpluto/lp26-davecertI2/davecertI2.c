@@ -7,6 +7,7 @@
 #include "seam_host_dave.c"
 #include "seam_natt.c"
 #include "seam_rsasig.c"
+#include "seam_keys.c"
 
 #define TESTNAME "certificateselfI2"
 
