@@ -5,6 +5,7 @@
 #include "seam_x509.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 
 #define TESTNAME "rekeyChildSA-fromR2"
 

@@ -3,6 +3,7 @@
 #include "seam_gi_md5.c"
 #include "seam_rsasig.c"
 #include "seam_finish.c"
+#include "seam_keys.c"
 #include "seam_ikev2_sendI1.c"
 
 #define TESTNAME "h2hI3"
