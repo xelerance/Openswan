@@ -75,9 +75,11 @@
 #include "tpm/tpm.h"
 
 enum smf2_flags {
-    SMF2_INITIATOR = LELEM(1),
-    SMF2_STATENEEDED = LELEM(2),
-    SMF2_REPLY = LELEM(3),
+    SMF2_INITIATOR      = LELEM(1),
+    SMF2_STATENEEDED    = LELEM(2),
+    SMF2_REPLY          = LELEM(3),     // microcode processor will generate a reply
+    SMF2_MATCH_REQUEST  = LELEM(4),     // microcode will only match incoming request messages
+    SMF2_MATCH_RESPONSE = LELEM(5),     // microcode will only match incoming request messages
 };
 
 /*
@@ -135,7 +137,7 @@ const struct state_v2_microcode ikev2_childrekey_microcode =
     { .svm_name   = "rekey-child",
       .state      = STATE_UNDEFINED,
       .next_state = STATE_CHILD_C1_REKEY,
-      .flags =  SMF2_INITIATOR,
+      .flags      =  SMF2_INITIATOR,
       .processor  = NULL,
     };
 
@@ -145,7 +147,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-V2_init",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_PARENT_I2,
-      .flags = SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Nr),
       .opt_clear_payloads = P(CERTREQ),
       .processor  = ikev2parent_inR1outI2,
@@ -156,7 +158,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-failure",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_IKESA_DEL,
-      .flags = SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
       .opt_clear_payloads = P(N),
       .processor  = ikev2parent_ntf_inR1,
@@ -167,7 +169,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-auth-process",
       .state      = STATE_CHILD_C0_KEYING,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_INITIATOR|SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDr) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
       .opt_enc_payloads = P(CERT),
@@ -180,7 +182,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "responder-V2_init",
       .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
-      .flags =  /* not SMF2_INITIATOR, not SMF2_STATENEEDED */ SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR, not SMF2_STATENEEDED */ SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Ni),
       .processor  = ikev2parent_inI1outR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
@@ -190,7 +192,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "responder-auth-process",
       .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R2,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDi) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
       .opt_enc_payloads = P(CERT) | P(CERTREQ) | P(IDr),
@@ -203,7 +205,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "none",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
+      .flags      = SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Nr),
       .opt_enc_payloads = 0,
@@ -216,7 +218,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-childSA-ack",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
       .opt_enc_payloads = 0,
@@ -230,7 +232,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-responder",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
@@ -243,7 +245,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "none",
       .state      = 0,
       .next_state = 0,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = 0,
       .req_enc_payloads = 0,
       .opt_enc_payloads = 0,
@@ -313,7 +315,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-initiator",
       .state      = STATE_PARENT_I3,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
@@ -326,7 +328,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "delete-child-SA-req",
       .state      = STATE_CHILD_C1_KEYED,
       .next_state = STATE_CHILDSA_DEL,
-      .flags =  SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .opt_enc_payloads = P(N) | P(D),
       .processor  =  process_informational_ikev2,
@@ -350,7 +352,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-initiator-2",
       .state      = STATE_CHILD_C1_KEYED,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
@@ -363,7 +365,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-auth-failure",
       .state      = STATE_CHILD_C0_KEYING,
       .next_state = STATE_IKESA_DEL,
-      .flags = SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
       .opt_clear_payloads = P(N),
       .processor  = ikev2parent_ntf_inR2,
@@ -794,6 +796,24 @@ process_v2_packet(struct msg_digest **mdp)
     for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm_num++,svm++) {
         DBG(DBG_CONTROLMORE, DBG_log("considering state entry: %u", svm_num));
         if(svm->processor == NULL) continue;  /* let there be empty states for historical reasons */
+
+	if(svm->flags & SMF2_MATCH_REQUEST) {
+            /* microcode matches request messages */
+            if(md->role == INITIATOR) {
+                /* message is a response */
+                DBG(DBG_CONTROLMORE,DBG_log("  reject: received response, needs request message"));
+                continue;
+            }
+        }
+	if(svm->flags & SMF2_MATCH_RESPONSE) {
+            /* microcode matches reply messages */
+            if(md->role == RESPONDER) {
+                /* message is a request */
+                DBG(DBG_CONTROLMORE,DBG_log("  reject: received request, needs response message"));
+                continue;
+            }
+        }
+
 	if(svm->flags & SMF2_STATENEEDED) {
 	    if(st==NULL) {
                 DBG(DBG_CONTROLMORE,DBG_log("  reject:state needed and state unavailable"));
