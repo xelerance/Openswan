@@ -153,6 +153,7 @@ ikev2parent_outI1_withstate(struct state *st
     int    policy_index = POLICY_ISAKMP(policy
                                         , c->spd.this.xauth_server
                                         , c->spd.this.xauth_client);
+    stf_status e;
 
     /* assumption is that we are starting with a new state,
      * so there should never be a suspended MD here */
@@ -168,6 +169,10 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_ike_min        = IKEv2_MINOR_VERSION;
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
     st->st_orig_initiator = TRUE;
+
+    e = allocate_msgid_from_parent(st, &st->st_msgid);
+    if(e != STF_OK)
+        return e;
 
     if (HAS_IPSEC_POLICY(policy))
         need_to_add_pending = 1;
