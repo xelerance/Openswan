@@ -372,6 +372,19 @@ struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_AUTH,
     },
 
+    /* state 19 */
+    { .svm_name   = "rekey-childSA-ack-R2",
+      .state      = STATE_PARENT_R2,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags      = SMF2_MATCH_RESPONSE | /* not SMF2_INITIATOR */ SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
+      .opt_enc_payloads = 0,
+      .processor  = ikev2child_inCR1,
+      .ntf_processor = ikev2child_inCR1_ntf,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_SA_REPLACE,
+    },
 
     /* last entry */
     { .svm_name   = "invalid-transition",
