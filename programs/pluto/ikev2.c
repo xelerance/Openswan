@@ -632,12 +632,20 @@ process_v2_packet(struct msg_digest **mdp)
     /* NOTE: in_struct() did not change the byte order, so make a copy in local order */
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
+    if(IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
+        /* message from the original initiator, that makes me the original responder */
+	DBG(DBG_CONTROL, DBG_log("I am the IKE SA Responder"));
+    } else {
+        /* message from the original responder, that makes me the original initiator */
+	DBG(DBG_CONTROL, DBG_log("I am the IKE SA Initiator"));
+    }
+
     if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
-	/* then I am the responder */
+	/* then I am the responder, to this request */
 
 	md->role = RESPONDER;
 
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
+	DBG(DBG_CONTROL, DBG_log("I am this exchange's Responder"));
 
         st = find_state_ikev2_child(md->hdr.isa_icookie
                                     , md->hdr.isa_rcookie
@@ -684,48 +692,38 @@ process_v2_packet(struct msg_digest **mdp)
 
 	md->role = INITIATOR;
 
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
+	DBG(DBG_CONTROL, DBG_log("I am this exchange's Initiator"));
 
-	if(md->msgid_received==MAINMODE_MSGID) {
-	    st = find_state_ikev2_parent(md->hdr.isa_icookie
-					 , md->hdr.isa_rcookie);
-	    if(st == NULL) {
-		st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
-		if(st) {
-		    /* responder inserted its cookie, record it */
-		    unhash_state(st);
-		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
-		    insert_state(st);
-		} else {
-                    /*
-                     * response is from some weird place. It probably does not
-                     * not belong.  It might be a sign that we have rebooted,
-                     * and we should rekey?
-                     * This logging should be rate limited by remote IP address,
-                     * and we need to find/make a library for rate-limited by remote.
-                     */
-                    openswan_log("ignored received packet with unknown cookies");
-                    /* cookies will have been dumped by state_hash() during lookup */
-                    return;
-                }
-	    }
-	} else {
-	    st = find_state_ikev2_child(md->hdr.isa_icookie
-					, md->hdr.isa_rcookie
-					, md->msgid_received);
-
-	    if(st) {
-		/* found this child state, so we'll use it */
-		/* note we update the st->st_msgid_lastack *AFTER* decryption*/
-	    } else {
-		/*
-		 * didn't find something with the msgid, so maybe it's
-		 * not valid?
-		 */
-		st = find_state_ikev2_parent(md->hdr.isa_icookie
-					     , md->hdr.isa_rcookie);
-	    }
+	st = find_state_ikev2_child(md->hdr.isa_icookie
+				    , md->hdr.isa_rcookie
+				    , md->msgid_received);
+	if (!st) {
+            /* try again, as parent state */
+            st = find_state_ikev2_parent(md->hdr.isa_icookie
+                                         , md->hdr.isa_rcookie);
 	}
+        if (!st) {
+            /* last attempt, parent, with zero cookie */
+            st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
+            if(st) {
+                /* responder inserted its cookie, record it */
+                unhash_state(st);
+                memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+                insert_state(st);
+            }
+        }
+        if (!st) {
+            /*
+             * response is from some weird place. It probably does not
+             * not belong.  It might be a sign that we have rebooted,
+             * and we should rekey?
+             * This logging should be rate limited by remote IP address,
+             * and we need to find/make a library for rate-limited by remote.
+             */
+            openswan_log("ignored received packet with unknown cookies");
+            /* cookies will have been dumped by state_hash() during lookup */
+            return;
+        }
 
         pst = st;
 
