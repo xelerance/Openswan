@@ -503,15 +503,11 @@ unshare_connection_strings(struct connection *c)
 
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
-#ifdef KERNEL_ALG
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
-#endif
     }
 
     if(c->alg_info_esp) {
-#ifdef KERNEL_ALG
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
-#endif
     }
 }
 
@@ -1002,7 +998,6 @@ add_connection(const struct whack_message *wm)
 		, c->name);
 
 	c->alg_info_esp = NULL;
-#ifdef KERNEL_ALG
 	if (wm->esp)
 	{
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
@@ -1051,7 +1046,6 @@ add_connection(const struct whack_message *wm)
 			return;
 		}
 	}
-#endif
 
 	c->alg_info_ike = NULL;
 	if (wm->ike)

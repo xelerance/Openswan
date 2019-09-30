@@ -306,9 +306,7 @@ pfkey_get(pfkey_buf *buf)
 	 *	K_SADB_ACQUIRE, K_SADB_REGISTER, K_SADB_X_NAT_T_NEW_MAPPING
 	 */
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)
-#ifdef KERNEL_ALG
 	|| (buf->msg.sadb_msg_type == SADB_REGISTER)
-#endif
 #ifdef NAT_TRAVERSAL
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == K_SADB_X_NAT_T_NEW_MAPPING)
 #endif
@@ -389,9 +387,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
     case K_SADB_SATYPE_AH:
 	break;
     case K_SADB_SATYPE_ESP:
-#ifdef KERNEL_ALG
 	kernel_alg_register_pfkey(msg, sizeof (pfkey_buf));
-#endif
 	break;
     case K_SADB_X_SATYPE_COMP:
 	/* ??? There ought to be an extension to list the

@@ -650,10 +650,8 @@ out_sa(pb_stream *outs
 
 return_out:
 
-#if defined(KERNEL_ALG) || defined(IKE_ALG)
     if (revised_sadb)
           free_sa(revised_sadb);
-#endif
     return ret;
 }
 
@@ -2331,22 +2329,18 @@ parse_ipsec_sa_body(
 
                     ugh = "no alg";
 
-#ifdef KERNEL_ALG
                     if(c->alg_info_esp) {
                         ugh = kernel_alg_esp_enc_ok(esp_attrs.transattrs.encrypt
                                                             , esp_attrs.transattrs.enckeylen
                                                             , c->alg_info_esp);
                     }
-#endif
 
                     if(ugh != NULL) {
                         switch (esp_attrs.transattrs.encrypt)
                               {
-#ifdef KERNEL_ALG          /* strictly use runtime information */
                               case ESP_AES:
                               case ESP_3DES:
                                   break;
-#endif
 
 #ifdef SUPPORT_ESP_NULL          /* should be about as secure as AH-only */
 #warning "Building with ESP-Null"
@@ -2379,9 +2373,7 @@ parse_ipsec_sa_body(
                               }
                     }
 
-#ifdef KERNEL_ALG
                     ugh = kernel_alg_esp_auth_ok(esp_attrs.transattrs.integ_hash, c->alg_info_esp);
-#endif
 
                     if(ugh != NULL) {
                         switch ((unsigned int)esp_attrs.transattrs.integ_hash)
@@ -2395,11 +2387,9 @@ parse_ipsec_sa_body(
                                             continue;   /* try another */
                                         }
                                   break;
-#ifdef KERNEL_ALG          /* strictly use runtime information */
                               case AUTH_ALGORITHM_HMAC_MD5:
                               case AUTH_ALGORITHM_HMAC_SHA1:
                                   break;
-#endif
                               default:
                                   loglog(RC_LOG_SERIOUS, "unsupported ESP auth alg %s from %s"
                                            , enum_show(&auth_alg_names, esp_attrs.transattrs.integ_hash)
@@ -2419,7 +2409,6 @@ parse_ipsec_sa_body(
               }
               if (tn == esp_proposal.isap_notrans)
                     continue;          /* we didn't find a nice one */
-#ifdef KERNEL_ALG
               /*
                * ML: at last check for allowed transforms in alg_info_esp
                *     (ALG_INFO_F_STRICT flag)
@@ -2429,7 +2418,6 @@ parse_ipsec_sa_body(
                     && !kernel_alg_esp_ok_final(esp_attrs.transattrs.encrypt, esp_attrs.transattrs.enckeylen,
                                                       esp_attrs.transattrs.integ_hash, c->alg_info_esp))
                         continue;
-#endif
               esp_attrs.spi = esp_spi;
               inner_proto = IPPROTO_ESP;
               if (esp_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
