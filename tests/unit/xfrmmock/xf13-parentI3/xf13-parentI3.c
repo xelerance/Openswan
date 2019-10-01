@@ -1,16 +1,17 @@
 #define NAPT_ENABLED 1
+#define NO_SEAM_KERNEL
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_mockxfrm.c"
+#include "seam_x509.c"
 #include "seam_ke.c"
 #include "seam_dh_v2.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_ikev2_sendI1.c"
-#include "seam_cryptocontinue.c"
 
 static void init_loaded(void)
 {
@@ -21,8 +22,6 @@ static void init_loaded(void)
 }
 
 #define TESTNAME "cryptoI3"
-
-void delete_cryptographic_continuation(struct state *st) {}
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user
@@ -67,6 +66,14 @@ void recv_pcap_I3_process(u_char *user
 
     fprintf(stderr, "now look at the resulting SAs produced.\n");
     show_states_status();
+}
+
+static void init_fake_secrets(void)
+{
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL, NULL);
 }
 
 #define PCAP_INPUT_COUNT 2

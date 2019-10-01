@@ -1,5 +1,5 @@
 #define OMIT_MAIN_MODE 1
-#define NAPT_ENABLED 1
+#define NO_SEAM_NATT
 
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_demux.c"
