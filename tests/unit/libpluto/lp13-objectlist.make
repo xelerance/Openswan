@@ -16,7 +16,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/replace.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
