@@ -29,11 +29,11 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
 include Makefile.testcase
 
-
+Q=$(if ${V},,@)
 ${TESTNAME} programs: ${TESTSRC} ${LIBPLUTO}
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
-	${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRALIBS}
+	${Q}${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRAOBJS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"       >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
