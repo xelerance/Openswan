@@ -1,5 +1,5 @@
 # -*- makefile -*-
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 SAMPLEDIR=../samples
 WHACKREFFILE=/dev/null
 ENDNAME=parker
