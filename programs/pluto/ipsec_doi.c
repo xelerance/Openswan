@@ -774,7 +774,7 @@ void initialize_new_state(struct state *st
     st->st_try   = try;
 
     st->st_import = importance;
-    st->st_msgid_nextuse = 0;
+    st->st_msgid_nextuse = c->first_msgid; // defaults to 0, firstmsgid=[0|1] from ipsec.conf
     st->st_msgid_lastack = INVALID_MSGID;
 
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {

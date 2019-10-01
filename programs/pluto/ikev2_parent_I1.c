@@ -170,9 +170,11 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
     st->st_orig_initiator = TRUE;
 
-    e = allocate_msgid_from_parent(st, &st->st_msgid);
-    if(e != STF_OK)
-        return e;
+    if (c->first_msgid == 0) {
+	    e = allocate_msgid_from_parent(st, &st->st_msgid);
+	    if(e != STF_OK)
+		    return e;
+    }
 
     if (HAS_IPSEC_POLICY(policy))
         need_to_add_pending = 1;
