@@ -14,11 +14,12 @@ int   nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type) {}
 
 void init_netlink(void) {}
 
-ipsec_spi_t spis[4]={ 0x12345678,
+static ipsec_spi_t mock_spis[4]={ 0x12345678,
 		      0x34567812,
 		      0x56781234,
 		      0x78123456};
-static int spinext=0;
+static int mock_spinext=0;
+/* spis, spinext is in seam_kernel.c */
 ipsec_spi_t mock_get_spi(const ip_address *src
                          , const ip_address *dst
                          , int proto
@@ -28,11 +29,9 @@ ipsec_spi_t mock_get_spi(const ip_address *src
                          , ipsec_spi_t max
                          , const char *text_said)
 {
-	if(spinext == 4) spinext=0;
-        return htonl(spis[spinext++]);
+	if(mock_spinext == 4) mock_spinext=0;
+        return htonl(mock_spis[mock_spinext++]);
 }
-
-void scan_proc_shunts(void) {}
 
 bool
 unit_do_command(struct connection *c, const struct spd_route *sr

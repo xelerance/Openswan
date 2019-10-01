@@ -6,6 +6,14 @@ CONNNAME=parker1--jj2
 ENDNAME=parker
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel_forces.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/signatures.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
+
 # /dev/null is output pcap, as there is none.
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap parentI1.pcap parentI2.pcap
 
