@@ -1116,6 +1116,8 @@ add_connection(const struct whack_message *wm)
         c->dpd_timeout = wm->dpd_timeout;
         c->dpd_action = wm->dpd_action;
 
+	c->first_msgid = wm->first_msgid;
+
         /* Cisco interop: remote peer type */
         c->remotepeertype=wm->remotepeertype;
 
@@ -3302,7 +3304,7 @@ show_one_connection(struct connection *c, logfunc logger)
 
     logger(RC_COMMENT
 	      , "\"%s\"%s:   ike_life: %lus; ipsec_life: %lus;"
-	      " rekey_margin: %lus; rekey_fuzz: %lu%%; keyingtries: %lu%s%s "
+	      " rekey_margin: %lus; rekey_fuzz: %lu%%; keyingtries: %lu%s%s; firstmsgid: %lu "
 	      , c->name
 	      , instance
 	      , (unsigned long) c->sa_ike_life_seconds
@@ -3312,6 +3314,7 @@ show_one_connection(struct connection *c, logfunc logger)
 	      , (unsigned long) c->sa_keying_tries
 	      , (c->sha2_truncbug) ? "; sha2_truncbug: yes" : ""
 	      , (c->forceencaps) ? "; force_encaps: yes" : ""
+	      , c->first_msgid
 	     );
 
     if (c->policy_next)

@@ -245,6 +245,8 @@ struct connection {
 
     struct spd_route spd;
 
+    unsigned int first_msgid;		/* what is the first msgid of this conn [0|1] */
+
     /* internal fields: */
 
     unsigned long instance_serial;

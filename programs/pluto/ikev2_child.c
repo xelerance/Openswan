@@ -1111,8 +1111,8 @@ stf_status ikev2child_outC1(int whack_sock
     st = duplicate_state(parentst);
     st->st_whack_sock = whack_sock;
     ret = allocate_msgid_from_parent(parentst, &st->st_msgid);
-
-    if(ret != STF_OK) return ret;
+    if(ret != STF_OK)
+	    return ret;
 
     insert_state(st);
 

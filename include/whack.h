@@ -167,6 +167,9 @@ struct whack_message {
     struct whack_end left;
     struct whack_end right;
 
+    /* what is the first msgid of this conn [0|1] */
+    unsigned int first_msgid;
+
     /* note: if the client is the gateway, the following must be equal */
     sa_family_t end_addr_family;	/* between gateways */
     sa_family_t tunnel_addr_family;	/* between clients */

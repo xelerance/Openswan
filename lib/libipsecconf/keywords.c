@@ -448,6 +448,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"dpdtimeout",     kv_conn|kv_auto, kt_time, KBF_DPDTIMEOUT, NOT_ENUM},
     {"dpdaction",      kv_conn|kv_auto, kt_enum, KBF_DPDACTION,  &kw_dpdaction_list},
 
+    {"firstmsgid",     kv_conn|kv_auto, kt_number, KBF_FIRSTMSGID, NOT_ENUM},
+
     {"mtu",            kv_conn|kv_auto,kt_number, KBF_CONNMTU, NOT_ENUM},
 
     /* aggr/xauth/modeconfig */
