@@ -16,12 +16,9 @@
 #include "seam_ikev1_crypto.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
-#include "seam_cryptocontinue.c"
 #include "seam_natt.c"
 
 #define TESTNAME "xf12-parentR2"
-
-void delete_cryptographic_continuation(struct state *st) {}
 
 static void init_loaded(void)
 {
