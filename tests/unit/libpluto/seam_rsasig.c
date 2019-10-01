@@ -1,4 +1,4 @@
-#ifndef __seam_rsasig__
+#if !defined(__seam_rsasig__) && !defined(NO_SEAM_RSASIG)
 #define __seam_rsasig__
 #include "seam_dh_v2.c"
 #include "seam_ke.c"

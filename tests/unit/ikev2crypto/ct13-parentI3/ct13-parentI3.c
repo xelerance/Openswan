@@ -1,4 +1,4 @@
-#define SEAM_RSASIG
+#define NO_SEAM_RSASIG
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
