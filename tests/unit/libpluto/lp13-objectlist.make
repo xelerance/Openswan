@@ -1,5 +1,4 @@
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
@@ -19,7 +18,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
