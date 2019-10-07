@@ -143,7 +143,12 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   12 11 34 5e  78 ab 84 55  96 7a 2b 38  63 63 32 03
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -532,7 +537,8 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
 |   fd a5 d5 ad  6f c6 8e 3e  13 3f 6c 98
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5

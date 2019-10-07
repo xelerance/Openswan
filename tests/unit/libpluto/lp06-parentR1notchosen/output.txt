@@ -168,7 +168,8 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    message ID:  00 00 00 00
 |    length: 836
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 6

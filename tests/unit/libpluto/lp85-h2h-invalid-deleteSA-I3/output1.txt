@@ -153,7 +153,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    message ID:  00 00 00 00
 |    length: 432
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -578,6 +583,7 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | corrupt_microcode() corrupting svm #13, 'delete-ike-sa' recv=0x25
 | corrupt_microcode() corrupting svm #15, 'delete-child-SA-req' recv=0x25
 | corrupt_microcode() corrupting svm #16, 'delete-child-SA-ack' recv=0x25
+| corrupt_microcode() corrupting svm #20, 'deleting-ack' recv=0x25
 | *received 380 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 7c  24 00 01 60
@@ -614,7 +620,8 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |    message ID:  00 00 00 01
 |    length: 380
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -859,7 +866,8 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |    message ID:  00 00 00 00
 |    length: 76
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_INFORMATIONAL (37), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Initiator
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -871,18 +879,18 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |    length: 48
 | processing payload: ISAKMP_NEXT_v2E (len=48)
 | considering state entry: 0
-|   reject: in state: STATE_PARENT_I3, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject: in state: STATE_PARENT_I3, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C0_KEYING
+|   reject: received request, needs response message
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
 |   reject: in state: STATE_PARENT_I3, needs STATE_PARENT_R1
 | considering state entry: 5
 | considering state entry: 6
-|   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C1_REKEY
+|   reject: received request, needs response message
 | considering state entry: 7
 |   reject: in state: STATE_PARENT_I3, needs STATE_PARENT_R2
 | considering state entry: 8
@@ -905,7 +913,11 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | considering state entry: 17
 |   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C1_KEYED
 | considering state entry: 18
-|   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C0_KEYING
+|   reject: received request, needs response message
+| considering state entry: 19
+|   reject: received request, needs response message
+| considering state entry: 20
+|   reject: received request, needs response message
 | did not find valid state; giving up
 ./deleteChildSA-invalid-msgInI3 sending encrypted notification ISAKMP_v2_INFORMATIONAL/v2N_INVALID_MESSAGE_ID to 132.213.238.7:500
 | **emit ISAKMP Message:

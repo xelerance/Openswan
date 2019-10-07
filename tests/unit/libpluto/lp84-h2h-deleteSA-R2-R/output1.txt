@@ -96,7 +96,8 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -106,11 +107,11 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
@@ -386,7 +387,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    message ID:  00 00 00 01
 |    length: 492
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -402,11 +404,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    length: 464
 | processing payload: ISAKMP_NEXT_v2E (len=464)
 | considering state entry: 0
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
+|   reject: received request, needs response message
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -883,41 +885,58 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    message ID:  00 00 00 00
 |    length: 76
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_INFORMATIONAL (37), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Responder
+| I am this exchange's Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| v2 peer and cookies match on #1
-| v2 state object #1 (mytunnel) found, in STATE_PARENT_R2
-| state found and its state is:STATE_PARENT_R2 msgid: 00000
+| v2 peer, cookies and msgid match on #2
+| v2 state object #2 found, in STATE_DELETING
+| state found and its state is:STATE_DELETING msgid: 00000
 | ***parse IKEv2 Encryption Payload:
 |    critical bit: none
 |    length: 48
 | processing payload: ISAKMP_NEXT_v2E (len=48)
 | considering state entry: 0
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I1
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_I1
 | considering state entry: 1
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I1
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C0_KEYING
+|   reject: in state: STATE_DELETING, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
-|   reject:state unneeded and state available
+|   reject: received response, needs request message
 | considering state entry: 4
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_R1
+|   reject: received response, needs request message
 | considering state entry: 5
 | considering state entry: 6
-|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
+|   reject: in state: STATE_DELETING, needs STATE_CHILD_C1_REKEY
 | considering state entry: 7
-|   reject: recv_type: ISAKMP_v2_INFORMATIONAL, needs ISAKMP_v2_CHILD_SA
+|   reject: received response, needs request message
 | considering state entry: 8
 | considering state entry: 9
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I2
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_I2
 | considering state entry: 10
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_R1
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_R1
 | considering state entry: 11
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I3
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_I3
 | considering state entry: 12
-| now proceed with state specific processing using state #12 responder-authenticated-informational
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_R2
+| considering state entry: 13
+|   reject: in state: STATE_DELETING, needs STATE_IKESA_DEL
+| considering state entry: 14
+|   reject: received response, needs request message
+| considering state entry: 15
+|   reject: in state: STATE_DELETING, needs STATE_CHILD_C1_KEYED
+| considering state entry: 16
+|   reject: in state: STATE_DELETING, needs STATE_CHILDSA_DEL
+| considering state entry: 17
+|   reject: received response, needs request message
+| considering state entry: 18
+|   reject: in state: STATE_DELETING, needs STATE_CHILD_C0_KEYING
+| considering state entry: 19
+|   reject: in state: STATE_DELETING, needs STATE_PARENT_R2
+| considering state entry: 20
+| now proceed with state specific processing using state #20 deleting-ack
 | received informational exchange response from INITIATOR
 | decrypting as RESPONDER, using INITIATOR keys
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -943,7 +962,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | v2 child state object #2 found, in STATE_DELETING
-| received delete request for #2 via #1, our PROTO_IPSEC_ESP SA spi: 0x12345678
+| received delete request for #2 via #2, our PROTO_IPSEC_ESP SA spi: 0x12345678
 ./deleteChildSA-fromR2 deleting state #2 (STATE_CHILDSA_DEL)
 | received request to delete child state
 | now deleting the child state
@@ -951,8 +970,8 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| processor 'responder-authenticated-informational' returned STF_IGNORE (0)
-| #1 complete v2 state transition with STF_IGNORE
+| processor 'deleting-ack' returned STF_IGNORE (0)
+| #2 complete v2 state transition with STF_IGNORE
 should have found a continuation, but none was found
 | recv_pcap_packet3_end_delete() call 1: exit
 | freeing state object #1
