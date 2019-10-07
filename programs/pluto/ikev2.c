@@ -386,6 +386,19 @@ struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 20: Informational Response */
+    { .svm_name   = "deleting-ack",
+      .state      = STATE_DELETING,
+      .next_state = STATE_PARENT_R2,
+      /* TODO: we should use flags|=SMF2_REPLY here, and remove send_packet
+       *       from process_informational_ikev2() */
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .opt_enc_payloads = P(N) | P(D) | P(CP),
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
     /* last entry */
     { .svm_name   = "invalid-transition",
       .state      = STATE_IKEv2_ROOF }
