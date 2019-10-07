@@ -924,7 +924,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 
 | releasing whack for #X (sock=Y)
 | recv_pcap_packet2_and_rekey() call 1: look at negotiated SAs
 RC=0 #2: "parker":55045 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
-RC=0 #1: "parker":55045 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
+RC=0 #1: "parker":55045 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=0,recv=1; msgid=0; idle; import:respond to friend
 | recv_pcap_packet2_and_rekey() call 1: start IKE SA replace
 ./rekeyParentSA SA REPLACE: #1 parent=Y orig_init=N nat_bhnd_{me=N peer=Y} (80000010)
 ./rekeyParentSA not initiating rekey on parent SA #1: peer is behind NAT-T

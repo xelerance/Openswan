@@ -3378,9 +3378,9 @@ sending 1436 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 |   07 a4 ec f0  bb 32 a8 d4  40 53 f0 94
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
-| #1: "rw-carol":500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
+| #1: "rw-carol":500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=0,recv=1; msgid=0; idle; import:respond to friend
 | #2: "rw-carol":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
-| #3: "rw-any"[1] 93.184.216.35:500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
+| #3: "rw-any"[1] 93.184.216.35:500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=0,recv=1; msgid=0; idle; import:respond to friend
 | #4: "rw-any"[1] 93.184.216.35:500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
 | freeing state object #1
 ./certreplydaveR2 leak: reply packet, item size: X
