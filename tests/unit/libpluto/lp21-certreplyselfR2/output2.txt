@@ -33,7 +33,7 @@ processing whack msg time: X size: Y
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 | Changed path to directory '../samples/gatewaycert/cacerts'
 ./certreplyselfR2   loaded CA cert file 'rootCA.pem' (1525 bytes)

@@ -35,7 +35,7 @@ processing whack msg time: X size: Y
 |   orient any1--jj2 finished with: 1 [132.213.238.7]
 RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
-RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parker1.pcap ========
 | *received 864 bytes from 192.168.1.1:500 on eth0 (port=500)

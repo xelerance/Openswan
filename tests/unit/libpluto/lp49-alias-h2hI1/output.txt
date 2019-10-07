@@ -26,7 +26,7 @@ processing whack msg time: X size: Y
 |   orient mytunnel finished with: 1 [192.168.1.1]
 RC=0 "mytunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
-RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)

@@ -52,7 +52,7 @@ loading named conns: host-host
 000  
 000 "host-host": fec0::1[@moon.strongswan.org]...fec0::2[@sun.strongswan.org]; unrouted; eroute owner: #0
 000 "host-host":     myip=unset; hisip=unset;
-000 "host-host":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0 
+000 "host-host":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0 
 000 "host-host":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 128,128; interface: ; kind=CK_PERMANENT
 000 "host-host":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  

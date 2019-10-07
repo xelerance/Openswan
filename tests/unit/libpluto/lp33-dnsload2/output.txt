@@ -29,7 +29,7 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "cpenohint": %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "cpenohint":     myip=unset; hisip=unset;
-RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'cpenohint'
 ./dnscpeI1 Can not initiate: no remote address available (yet)

@@ -67,7 +67,7 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 RC=0 "vzhost1-vzhost-mondev": 10.153.139.0/24===192.168.134.179[@vzhost1.xelerance.com]...192.168.135.215[@vzhost-mondev.xelerance.com]===10.153.140.0/24; unrouted; eroute owner: #0
 RC=0 "vzhost1-vzhost-mondev":     myip=10.153.139.1; hisip=10.153.140.1;
-RC=0 "vzhost1-vzhost-mondev":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "vzhost1-vzhost-mondev":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "vzhost1-vzhost-mondev":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 24,24; interface: ; kind=CK_PERMANENT
 RC=0 "vzhost1-vzhost-mondev":   IKE algorithms wanted: AES_CBC(7)_128-SHA2_256(4)_000-MODP4096(16); flags=strict
 RC=0 "vzhost1-vzhost-mondev":   IKE algorithms found:  AES_CBC(7)_128-SHA2_256(4)_000-MODP4096(16); flags=strict

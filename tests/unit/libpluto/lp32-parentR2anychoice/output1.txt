@@ -68,7 +68,7 @@ RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credi
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
 RC=0 "any1--jj2":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
 RC=0 "any1--jj2":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
-RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 0: input from parentI1.pcap
 |   =========== input from pcap file parentI1.pcap ========

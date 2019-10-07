@@ -35,7 +35,7 @@ processing whack msg time: X size: Y
 |   orient gateway--any finished with: 1 [132.213.238.7]
 RC=0 "gateway--any": 10.2.0.0/16===132.213.238.7[@jamesjohnson.emmjay.credil.org]...%any[@example.com]; unrouted; eroute owner: #0
 RC=0 "gateway--any":     myip=unset; hisip=unset;
-RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentI1.pcap ========
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)

@@ -34,7 +34,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
 RC=0 "parker1--jj2":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 0: input from ../lp12-parentR2/parentI1.pcap
 |   =========== input from pcap file ../lp12-parentR2/parentI1.pcap ========
