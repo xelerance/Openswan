@@ -876,6 +876,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./rekeyParentSA deleting state #1 (STATE_PARENT_R2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original RESPONDER of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

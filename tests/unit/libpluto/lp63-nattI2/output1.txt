@@ -586,6 +586,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to
 ./nattI2 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

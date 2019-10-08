@@ -899,6 +899,7 @@ sending 1612 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.35:500] to 1
 ./davecertI2 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   8d 0e 0f 10  11 12 13 14

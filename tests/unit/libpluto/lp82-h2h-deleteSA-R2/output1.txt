@@ -867,6 +867,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./deleteChildSA-fromR2 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete request
+| preparing to delete #2, we are the original RESPONDER of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
