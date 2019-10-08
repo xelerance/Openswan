@@ -177,9 +177,13 @@ process_packet(struct msg_digest **mdp)
 	bad_case(md->maj);
     }
 
-    if(cur_state!=NULL && cur_state->st_state == STATE_DELETING) {
+#if 0
+    st = md->st;
+    if(st!=NULL && st->st_state == STATE_DELETING) {
         free_state(st);
+        st = md->st = NULL;
     }
+#endif
 }
 
 /* wrapper for read_packet and process_packet
