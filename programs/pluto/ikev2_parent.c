@@ -1269,13 +1269,14 @@ void ikev2_delete_out(struct state *st)
             r_hdr.isa_msgid = htonl(st->st_msgid);
 
             /*set initiator bit if we are initiator*/
-            if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
-                role = INITIATOR;
-            }
-            else {
-                role = RESPONDER;
-            }
+	    role = IKEv2_ORIGINAL_ROLE(pst);
             r_hdr.isa_flags = IKEv2_ORIG_INITIATOR_FLAG(pst);
+
+           DBG(DBG_CONTROLMORE
+              , DBG_log("preparing to delete #%ld, we are the original %s of parent #%ld"
+			, st->st_serialno
+                        , (role == INITIATOR) ? "INITIATOR" : (role == RESPONDER) ? "RESPONDER" : "?"
+			, pst->st_serialno));
 
             if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
                 {
