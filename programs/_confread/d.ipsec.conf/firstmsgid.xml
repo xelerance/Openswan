@@ -1,0 +1,12 @@
+  <varlistentry>
+  <term><emphasis remap='B'>firstmsgid</emphasis></term>
+  <listitem>
+    <para>value of the message ID used, by this host, to generate the first
+      IKEv2 request message.  This value is only used when the initial
+      connection responder sends a request to the initial connection initiator,
+      like in the case of a child SA rekey.  The value must be either 0 (the
+      default) or 1.  The default value (0) is consistent with the RFCs and
+      compatible with strongSwan, while firstmsgid=1 allows for backwards
+      compatibility with OpenSWAN pre 2.6.52.</para>
+  </listitem>
+  </varlistentry>
