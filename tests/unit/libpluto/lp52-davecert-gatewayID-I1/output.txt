@@ -4,7 +4,7 @@
 ./davecertI1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecertI1-id loading secrets from "../samples/davecert.secrets"
 ./davecertI1-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (CERT bytes)
-./davecertI1-id loaded private key for keyid: PPK_RSA:AwEAAcX4z/938B B032 C83E 13EE D848 31FF 4D38 9EC5 8132 A998
+./davecertI1-id loaded private key for keyid: PPK_RSA:AwEAAde2n/E8F8 0E87 0ED9 CD01 1395 2890 A875 0A82 D9C5 899A
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -18,8 +18,8 @@ processing whack msg time: X size: Y
 | counting wild cards for dave@openswan.org is 0
 | counting wild cards for @moon.strongswan.org is 0
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
-| orient home matching on public/private keys: this=no[%address] that=yes[%defaultroute]
-|   orient home matched on that having private key
+| orient home matching on public/private keys: this=no[%address] that=no[%defaultroute]
+|   orient home matched on that being defaultroute, and this lacking private key
 | pick_if looking for port: 500, family: 2
 |   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
@@ -41,8 +41,8 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | find_phase1_state: no SA found for conn 'home'
 | creating state object #1 at Z
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
-| orient home matching on public/private keys: this=yes[%defaultroute] that=no[%address]
-|   orient home matched on this having private key
+| orient home matching on public/private keys: this=no[%defaultroute] that=no[%address]
+|   orient home matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 2
 |   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0

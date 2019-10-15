@@ -4,7 +4,7 @@
 ./davecert-R1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecert-R1-id loading secrets from "../samples/gatewaycert.secrets"
 ./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (CERT bytes)
-./davecert-R1-id loaded private key for keyid: PPK_RSA:AwEAAcEYl/6A98 ADDF C732 A7EF 2578 9566 C709 D9F8 2DF1 99F1
+./davecert-R1-id loaded private key for keyid: PPK_RSA:AwEAAat1z/59F2 B1D9 F02D 75A0 B4C9 3135 46F6 ACBB ABAA EEFD
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
