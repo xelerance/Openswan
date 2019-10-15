@@ -43,3 +43,18 @@
   * using pfs=yes
   * use a smaller ikelifetime= and keylife= on the newer version
     NOTE: this is not advised if the newer version is behind NATT
+
+* Openswan v2.6.52 changes the behaviour of IKEv2 rekeys initiated by the
+  original responder of the IKE SA.  That is to say, if the host that did not
+  initiate the connection later attempts to rekey the child SA, things may
+  break between older (pre v2.6.52) and latter (v2.6.52+) versions of Openswan.
+
+  This change makes Openswan interoperate with strongSwan.  With the change
+  Openswan will adhere to the RFCs more closely, and like strongSwan, will
+  use message id of 0 for the first request message sent from either side
+  of the connection.
+
+  A new conn variable was added for ipsec.conf which allows for backwards
+  compatibility with Openswan 2.6.51 and prior.  Setting firstmsgid=1 will
+  allow for seamless interoperability with older versions.  The variable
+  defaults to 0, which breaks backwards compatibility, but is RFC complaint.
