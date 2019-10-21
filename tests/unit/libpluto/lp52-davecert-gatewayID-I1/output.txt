@@ -4,7 +4,7 @@
 ./davecertI1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecertI1-id loading secrets from "../samples/davecert.secrets"
 ./davecertI1-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (CERT bytes)
-./davecertI1-id loaded private key for keyid: PPK_RSA:AwEAAde2n/E8F8 0E87 0ED9 CD01 1395 2890 A875 0A82 D9C5 899A
+./davecertI1-id loaded private key for keyid: PPK_RSA:AwEAAdzsB/71EF 2412 7A30 AD54 C288 FC00 B917 3DAB 8E76 4790
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -35,7 +35,7 @@ processing whack msg time: X size: Y
 |   orient home finished with: 1 [0.0.0.0]
 RC=0 "home": %any[dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
-RC=0 "home":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org, E=testing@xelerance.com'...'%any'
+RC=0 "home":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'...'%any'
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'home'
