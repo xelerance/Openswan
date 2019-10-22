@@ -1571,7 +1571,6 @@ send_invalid_ke_ntf:
     dc.ptr = (unsigned char *)&group_number;
     dc.len = 2;
     SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
-    delete_state(st);
     /* notification sent, return failure, but prevent another
      * notification from complete_v2_state_transition(). */
     md->note = 0;

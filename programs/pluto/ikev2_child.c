@@ -1625,7 +1625,8 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     return;
 
  returnerr:
-    /* XXX send an error notification to initiator, from variable e */
+    /* error notification was already sent, kill the state */
+    md->st = NULL;
     delete_state(st);
     reset_globals();
     return;
@@ -1878,8 +1879,10 @@ static stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
     /* Gr in */
     e = accept_v2_KE(md, st, &st->st_gr, "Gr");
     if(e != STF_OK) {
-        /* feel something shoud be done with e */
+        /* feel something should be done with e */
         loglog(RC_LOG_SERIOUS, "no valid KE payload found");
+        md->st = NULL;
+        delete_state(st);
         return STF_FAIL; /* XXX - invalid packet notify? */
     }
 

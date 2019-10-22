@@ -347,6 +347,9 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     if((notok = accept_v2_KE(md, st, &st->st_gi, "Gi"))!=STF_OK) {
+        /* error notification was already sent, kill the state */
+        md->st = NULL;
+        delete_state(st);
         return notok;
     }
 
