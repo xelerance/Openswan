@@ -345,6 +345,12 @@ unhash_state(struct state *st)
 	if(*p != st) {
 	    p = state_hash(st->st_icookie, zero_cookie, NULL);
 	}
+        if (!*p) {
+            DBG(DBG_CONTROL
+                , DBG_log("state object #%lu not found in state hash."
+                          , st->st_serialno));
+            return;
+        }
     } else {
 	p = &st->st_hashchain_prev->st_hashchain_next;
     }
