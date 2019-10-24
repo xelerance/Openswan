@@ -1267,8 +1267,8 @@ const char *const ikev2_trans_attr_name[]={
 };
 
 enum_names ikev2_trans_attr_descs = {
-    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
-    IKEv2_KEY_LENGTH + ISAKMP_ATTR_AF_TV,
+    IKEv2_KEY_LENGTH,
+    IKEv2_KEY_LENGTH,
     ikev2_trans_attr_name, NULL };
 
 /* for each IKEv2 attribute, which enum_names describes its values? */
