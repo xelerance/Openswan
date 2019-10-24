@@ -453,8 +453,8 @@ alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info)
 
 	ALG_INFO_IKE_FOREACH(alg_info, ike_info, cnt) {
 	    if (ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen)
-		/* && (ike_alg_integ_present(ike_info->ike_halg)) */
-		/* && (ike_alg_prf_present(ike_info->ike_prfalg)) */
+		&& (ikev2_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen))
+		&& (ike_alg_prf_present(ike_info->ike_prfalg))
 		&& (lookup_group(ike_info->ike_modp))) {
 
                 passert(ike_info != NULL);
