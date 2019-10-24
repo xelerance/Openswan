@@ -1,0 +1,9 @@
+This test case is an IKEv1 initiator.
+It has been given a sha512 HMAC policy which causes some problems when
+translated to IKEv1.
+
+This issue was found by DTP test cases: ikev1/alg-sha512.
+
+
+
+
