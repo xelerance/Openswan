@@ -24,6 +24,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
@@ -48,13 +49,14 @@ export EF_DISABLE_BANNER
 
 check: check1 check2 check3
 update: update1 update2 update3
+programs: ${TESTNAME}
 
 OUTPUT:
 	@mkdir -p OUTPUT
 
 ${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
-	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
+	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
 
 # --- test 1 ---
 

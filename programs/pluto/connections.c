@@ -57,7 +57,7 @@
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "pluto/server.h"
-#include "kernel.h"	/* needs connections.h */
+#include "pluto/kernel.h"	/* needs connections.h */
 #include "pluto/keys.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
