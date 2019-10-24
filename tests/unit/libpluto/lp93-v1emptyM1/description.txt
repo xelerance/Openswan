@@ -1,0 +1,13 @@
+This test case is an IKEv1 initiator.
+It has been given a policy which can not be translated to IKEv1, and
+so the resulting IKEv1 policy is empty, which causes the CONN to fail.
+
+This issue was found by DTP test cases: ikev1/alg-sha512, which fails
+because sha512 was not translated.  This test case uses a policy
+(v1empty) which can be translated because sha384 is not enabled.
+
+
+
+
+
+
