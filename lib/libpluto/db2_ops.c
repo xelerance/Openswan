@@ -236,7 +236,7 @@ db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
   ctx->conj_cur->protoid = protoid;
   ctx->conj_cur->spisize = spisize;
 
-  /* bump to next available transaction, if neccessary */
+  /* bump to next available transforms, if neccessary */
   db2_trans_increment(ctx);
   ctx->conj_cur->trans   = ctx->trans_cur;
   ctx->conj_cur->trans_cnt = 0;
@@ -307,7 +307,7 @@ db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
    *	0,1,2,4,8,13,20,31,47
    */
   passert(ctx->trans_cur != NULL);
-  if ((ctx->trans_cur - ctx->trans0) >= ctx->max_trans) {
+  if ((ctx->trans_cur - ctx->trans0) >= (ctx->max_trans-1)) {
     if (db2_trans_expand(ctx, ctx->max_trans/2 + 1)<0)
       return -1;
   }
