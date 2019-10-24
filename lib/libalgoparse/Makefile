@@ -31,7 +31,7 @@ MANDIR=$(MANTREE)/man3
 
 ONEFILE=alg_info.c
 SRCS=alg_info.c
-SRCS+=plutoalg.c ipsecalg.c kernel_alg.c ikev1_alg.c
+SRCS+=plutoalg.c ipsecalg.c kernel_alg.c
 SRCS+=klips_interface.c
 
 #

@@ -10,11 +10,15 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection OpenswanServer with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient OpenswanServer checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient OpenswanServer checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -37,10 +41,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with OpenswanServer
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:OpenswanServer
 | Added new connection MPDARM00000000000010 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDARM00000000000010 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDARM00000000000010 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDARM00000000000010 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -65,10 +73,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDARM00000000000010
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDARM00000000000010
 | Added new connection MPDSIN00000120121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDSIN00000120121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDSIN00000120121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDSIN00000120121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -94,10 +106,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDSIN00000120121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDSIN00000120121210
 | Added new connection MPDLOG00000220120210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLOG00000220120210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLOG00000220120210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLOG00000220120210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -124,10 +140,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLOG00000220120210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLOG00000220120210
 | Added new connection MPDHUE00000620111110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDHUE00000620111110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDHUE00000620111110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDHUE00000620111110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -155,10 +175,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDHUE00000620111110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDHUE00000620111110
 | Added new connection MPDSAN00000820120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDSAN00000820120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDSAN00000820120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDSAN00000820120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -187,10 +211,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDSAN00000820120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDSAN00000820120410
 | Added new connection MPDSAN00001420120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDSAN00001420120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDSAN00001420120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDSAN00001420120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -220,10 +248,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDSAN00001420120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDSAN00001420120910
 | Added new connection MPDSAN00001520120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDSAN00001520120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDSAN00001520120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDSAN00001520120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -254,10 +286,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDSAN00001520120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDSAN00001520120910
 | Added new connection MPDLAR00001820130110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLAR00001820130110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLAR00001820130110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLAR00001820130110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -289,10 +325,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLAR00001820130110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLAR00001820130110
 | Added new connection MPDGUI00002020121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDGUI00002020121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDGUI00002020121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDGUI00002020121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -325,10 +365,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDGUI00002020121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDGUI00002020121210
 | Added new connection MPDTEN00002120120210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDTEN00002120120210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDTEN00002120120210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDTEN00002120120210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -362,10 +406,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDTEN00002120120210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDTEN00002120120210
 | Added new connection MPDGIR00002220130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDGIR00002220130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDGIR00002220130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDGIR00002220130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -400,10 +448,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDGIR00002220130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDGIR00002220130410
 | Added new connection MPDCIU00002320120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCIU00002320120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCIU00002320120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCIU00002320120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -439,10 +491,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCIU00002320120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCIU00002320120910
 | Added new connection MPDCIU00002420120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCIU00002420120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCIU00002420120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCIU00002420120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -479,10 +535,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCIU00002420120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCIU00002420120910
 | Added new connection MPDHUE00002520121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDHUE00002520121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDHUE00002520121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDHUE00002520121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -520,10 +580,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDHUE00002520121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDHUE00002520121210
 | Added new connection MPDORE00002620120210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDORE00002620120210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDORE00002620120210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDORE00002620120210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -562,10 +626,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDORE00002620120210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDORE00002620120210
 | Added new connection MPDTER00002820131010 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDTER00002820131010 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDTER00002820131010 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDTER00002820131010 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -605,10 +673,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDTER00002820131010
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDTER00002820131010
 | Added new connection MPDJAE00002920100510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDJAE00002920100510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDJAE00002920100510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDJAE00002920100510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -649,10 +721,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDJAE00002920100510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDJAE00002920100510
 | Added new connection MPDLOG00003020121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLOG00003020121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLOG00003020121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLOG00003020121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -694,10 +770,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLOG00003020121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLOG00003020121210
 | Added new connection MPDSEV00003220110110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDSEV00003220110110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDSEV00003220110110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDSEV00003220110110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -740,10 +820,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDSEV00003220110110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDSEV00003220110110
 | Added new connection MPDBCN00003320061110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBCN00003320061110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBCN00003320061110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBCN00003320061110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -787,10 +871,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBCN00003320061110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBCN00003320061110
 | Added new connection MPDVIZ00003420120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVIZ00003420120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVIZ00003420120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVIZ00003420120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -835,10 +923,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVIZ00003420120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVIZ00003420120910
 | Added new connection MPDMEL00003620091210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMEL00003620091210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMEL00003620091210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMEL00003620091210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -884,10 +976,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMEL00003620091210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMEL00003620091210
 | Added new connection MPDZGZ00004020121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDZGZ00004020121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDZGZ00004020121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDZGZ00004020121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -934,10 +1030,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDZGZ00004020121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDZGZ00004020121210
 | Added new connection MPDORE00004120121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDORE00004120121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDORE00004120121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDORE00004120121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -985,10 +1085,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDORE00004120121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDORE00004120121210
 | Added new connection MPDMAL00004220090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00004220090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00004220090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00004220090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1037,10 +1141,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00004220090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00004220090610
 | Added new connection MPDVAL00004320080110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00004320080110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00004320080110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00004320080110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1090,10 +1198,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00004320080110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00004320080110
 | Added new connection MPDMAL00004420090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00004420090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00004420090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00004420090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1144,10 +1256,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00004420090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00004420090610
 | Added new connection MPDTEN00004520120810 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDTEN00004520120810 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDTEN00004520120810 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDTEN00004520120810 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1199,10 +1315,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDTEN00004520120810
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDTEN00004520120810
 | Added new connection MPDTEN00004620120810 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDTEN00004620120810 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDTEN00004620120810 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDTEN00004620120810 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1255,10 +1375,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDTEN00004620120810
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDTEN00004620120810
 | Added new connection MPDMAL00004720090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00004720090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00004720090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00004720090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1312,10 +1436,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00004720090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00004720090610
 | Added new connection MPDMAL00004820090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00004820090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00004820090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00004820090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1370,10 +1498,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00004820090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00004820090610
 | Added new connection MPDMAL00004920090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00004920090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00004920090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00004920090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1429,10 +1561,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00004920090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00004920090610
 | Added new connection MPDMAL00005020090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00005020090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00005020090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00005020090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1489,10 +1625,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00005020090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00005020090610
 | Added new connection MPDMAL00005120090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00005120090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00005120090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00005120090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1550,10 +1690,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00005120090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00005120090610
 | Added new connection MPDMUR00005420071010 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00005420071010 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00005420071010 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00005420071010 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1612,10 +1756,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00005420071010
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00005420071010
 | Added new connection MPDCOR00005920090610 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCOR00005920090610 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCOR00005920090610 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCOR00005920090610 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1675,10 +1823,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCOR00005920090610
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCOR00005920090610
 | Added new connection MPDALM00006220130110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALM00006220130110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALM00006220130110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALM00006220130110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1739,10 +1891,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALM00006220130110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALM00006220130110
 | Added new connection MPDALM00006320130110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALM00006320130110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALM00006320130110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALM00006320130110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1804,10 +1960,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALM00006320130110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALM00006320130110
 | Added new connection MPDALM00006420130110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALM00006420130110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALM00006420130110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALM00006420130110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1870,10 +2030,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALM00006420130110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALM00006420130110
 | Added new connection MPDBAL00007220120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00007220120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00007220120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00007220120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -1937,10 +2101,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00007220120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00007220120910
 | Added new connection MPDBAL00007320120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00007320120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00007320120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00007320120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2005,10 +2173,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00007320120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00007320120910
 | Added new connection MPDBAL00007420120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00007420120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00007420120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00007420120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2074,10 +2246,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00007420120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00007420120910
 | Added new connection MPDVIZ00007620131010 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVIZ00007620131010 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVIZ00007620131010 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVIZ00007620131010 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2144,10 +2320,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVIZ00007620131010
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVIZ00007620131010
 | Added new connection MPDALI00007720100510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALI00007720100510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALI00007720100510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALI00007720100510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2215,10 +2395,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALI00007720100510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALI00007720100510
 | Added new connection MPDVAL00007920080710 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00007920080710 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00007920080710 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00007920080710 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2287,10 +2471,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00007920080710
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00007920080710
 | Added new connection MPDVAL00008020080710 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00008020080710 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00008020080710 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00008020080710 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2360,10 +2548,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00008020080710
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00008020080710
 | Added new connection MPDGRA00008720121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDGRA00008720121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDGRA00008720121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDGRA00008720121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2434,10 +2626,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDGRA00008720121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDGRA00008720121210
 | Added new connection MPDLAS00009020120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLAS00009020120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLAS00009020120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLAS00009020120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2509,10 +2705,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLAS00009020120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLAS00009020120410
 | Added new connection MPDLAS00009120120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLAS00009120120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLAS00009120120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLAS00009120120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2585,10 +2785,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLAS00009120120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLAS00009120120410
 | Added new connection MPDLAS00009220120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLAS00009220120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLAS00009220120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLAS00009220120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2662,10 +2866,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLAS00009220120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLAS00009220120410
 | Added new connection MPDBAL00009820121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00009820121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00009820121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00009820121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2740,10 +2948,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00009820121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00009820121210
 | Added new connection MPDCAD00009920120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCAD00009920120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCAD00009920120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCAD00009920120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2819,10 +3031,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCAD00009920120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCAD00009920120910
 | Added new connection MPDBAL00010020121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00010020121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00010020121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00010020121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2899,10 +3115,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00010020121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00010020121210
 | Added new connection MPDBAL00010120121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00010120121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00010120121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00010120121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -2980,10 +3200,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00010120121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00010120121210
 | Added new connection MPDVAL00012020081210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00012020081210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00012020081210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00012020081210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3062,10 +3286,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00012020081210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00012020081210
 | Added new connection MPDMAD00012820101210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00012820101210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00012820101210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00012820101210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3145,10 +3373,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00012820101210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00012820101210
 | Added new connection MPDBCN00013220120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBCN00013220120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBCN00013220120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBCN00013220120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3229,10 +3461,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBCN00013220120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBCN00013220120410
 | Added new connection MPDLAS00013520121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDLAS00013520121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDLAS00013520121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDLAS00013520121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3314,10 +3550,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDLAS00013520121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDLAS00013520121210
 | Added new connection MPDBAL00015120131010 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDBAL00015120131010 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDBAL00015120131010 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDBAL00015120131010 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3400,10 +3640,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDBAL00015120131010
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDBAL00015120131010
 | Added new connection MPDMUR00015420120210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00015420120210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00015420120210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00015420120210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3487,10 +3731,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00015420120210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00015420120210
 | Added new connection MPDMUR00016120120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00016120120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00016120120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00016120120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3575,10 +3823,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00016120120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00016120120410
 | Added new connection MPDMUR00016220120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00016220120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00016220120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00016220120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3664,10 +3916,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00016220120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00016220120410
 | Added new connection MPDALI00016520101210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALI00016520101210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALI00016520101210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALI00016520101210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3754,10 +4010,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALI00016520101210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALI00016520101210
 | Added new connection MPDVAL00017320090910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00017320090910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00017320090910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00017320090910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3845,10 +4105,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00017320090910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00017320090910
 | Added new connection MPDVAL00017420090910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00017420090910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00017420090910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00017420090910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -3937,10 +4201,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00017420090910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00017420090910
 | Added new connection MPDCAD00017620130910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCAD00017620130910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCAD00017620130910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCAD00017620130910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4030,10 +4298,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCAD00017620130910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCAD00017620130910
 | Added new connection MPDMAL00020220120210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00020220120210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00020220120210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00020220120210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4124,10 +4396,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00020220120210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00020220120210
 | Added new connection MPDMUR00021120121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00021120121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00021120121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00021120121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4219,10 +4495,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00021120121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00021120121210
 | Added new connection MPDMUR00021220121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00021220121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00021220121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00021220121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4315,10 +4595,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00021220121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00021220121210
 | Added new connection MPDCAS00022220120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCAS00022220120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCAS00022220120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCAS00022220120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4412,10 +4696,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCAS00022220120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCAS00022220120410
 | Added new connection MPDCOR00023320120510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCOR00023320120510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCOR00023320120510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCOR00023320120510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4510,10 +4798,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCOR00023320120510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCOR00023320120510
 | Added new connection MPDCOR00023420120510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCOR00023420120510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCOR00023420120510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCOR00023420120510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4609,10 +4901,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCOR00023420120510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCOR00023420120510
 | Added new connection MPDCOR00023520120510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCOR00023520120510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCOR00023520120510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCOR00023520120510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4709,10 +5005,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCOR00023520120510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCOR00023520120510
 | Added new connection MPDMUR00024120130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMUR00024120130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMUR00024120130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMUR00024120130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4810,10 +5110,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMUR00024120130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMUR00024120130410
 | Added new connection MPDMAL00026020120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00026020120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00026020120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00026020120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -4912,10 +5216,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00026020120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00026020120910
 | Added new connection MPDMAL00026120120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00026120120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00026120120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00026120120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5015,10 +5323,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00026120120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00026120120910
 | Added new connection MPDMAL00026220120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00026220120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00026220120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00026220120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5119,10 +5431,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00026220120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00026220120910
 | Added new connection MPDMAD00026320120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00026320120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00026320120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00026320120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5224,10 +5540,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00026320120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00026320120910
 | Added new connection MPDMAD00026420120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00026420120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00026420120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00026420120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5330,10 +5650,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00026420120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00026420120910
 | Added new connection MPDCAS00027920130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDCAS00027920130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDCAS00027920130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDCAS00027920130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5437,10 +5761,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDCAS00027920130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDCAS00027920130410
 | Added new connection MPDALI00030220120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALI00030220120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALI00030220120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALI00030220120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5545,10 +5873,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALI00030220120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALI00030220120410
 | Added new connection MPDMAL00032520130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAL00032520130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAL00032520130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAL00032520130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5654,10 +5986,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAL00032520130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAL00032520130410
 | Added new connection MPDALI00033520120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALI00033520120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALI00033520120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALI00033520120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5764,10 +6100,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALI00033520120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALI00033520120910
 | Added new connection MPDMAD00034520121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00034520121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00034520121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00034520121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5875,10 +6215,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00034520121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00034520121210
 | Added new connection MPDMAD00034620121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00034620121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00034620121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00034620121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -5987,10 +6331,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00034620121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00034620121210
 | Added new connection MPDALI00036120130110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDALI00036120130110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDALI00036120130110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDALI00036120130110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6100,10 +6448,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDALI00036120130110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDALI00036120130110
 | Added new connection MPDMAD00043520130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00043520130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00043520130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00043520130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6214,10 +6566,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00043520130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00043520130410
 | Added new connection MPDMAD00043620130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00043620130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00043620130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00043620130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6329,10 +6685,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00043620130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00043620130410
 | Added new connection MPDMAD00043720130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00043720130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00043720130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00043720130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6445,10 +6805,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00043720130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00043720130410
 | Added new connection MPDMAD00045620130510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00045620130510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00045620130510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00045620130510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6562,10 +6926,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00045620130510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00045620130510
 | Added new connection MPDMAD00045720130510 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00045720130510 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00045720130510 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00045720130510 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6680,10 +7048,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00045720130510
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00045720130510
 | Added new connection MPDMAD00050320130910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDMAD00050320130910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDMAD00050320130910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDMAD00050320130910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6799,10 +7171,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDMAD00050320130910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDMAD00050320130910
 | Added new connection MPDVAL00052720111110 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00052720111110 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00052720111110 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00052720111110 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -6919,10 +7295,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00052720111110
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00052720111110
 | Added new connection MPDVAL00058020120410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00058020120410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00058020120410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00058020120410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7040,10 +7420,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00058020120410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00058020120410
 | Added new connection MPDVAL00064020120910 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00064020120910 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00064020120910 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00064020120910 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7162,10 +7546,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00064020120910
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00064020120910
 | Added new connection MPDVAL00067120121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00067120121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00067120121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00067120121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7285,10 +7673,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00067120121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00067120121210
 | Added new connection MPDVAL00067220121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00067220121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00067220121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00067220121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7409,10 +7801,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00067220121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00067220121210
 | Added new connection MPDVAL00067320121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00067320121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00067320121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00067320121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7534,10 +7930,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00067320121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00067320121210
 | Added new connection MPDVAL00067420121210 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00067420121210 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00067420121210 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00067420121210 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7660,10 +8060,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00067420121210
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00067420121210
 | Added new connection MPDVAL00072220130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00072220130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00072220130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00072220130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -7787,10 +8191,14 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with MPDVAL00072220130410
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:MPDVAL00072220130410
 | Added new connection MPDVAL00072320130410 with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=aes128-sha1
+| esp string values: aes_cbc(12)_128-auth-hmac-sha1-96(2)_000; flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./IDhostpair use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for @MPDVAL00072320130410 is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient MPDVAL00072320130410 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient MPDVAL00072320130410 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -8219,6 +8627,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8226,6 +8635,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8233,6 +8643,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8240,6 +8651,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8247,6 +8659,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8254,6 +8667,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8261,6 +8675,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8268,6 +8683,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8275,6 +8691,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8282,6 +8699,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8289,6 +8707,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8296,6 +8715,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8303,6 +8723,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8310,6 +8731,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8317,6 +8739,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8324,6 +8747,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8331,6 +8755,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8338,6 +8763,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8345,6 +8771,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8352,6 +8779,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8359,6 +8787,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8366,6 +8795,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8373,6 +8803,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8380,6 +8811,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8387,6 +8819,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8394,6 +8827,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8401,6 +8835,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8408,6 +8843,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8415,6 +8851,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8422,6 +8859,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8429,6 +8867,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8436,6 +8875,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8443,6 +8883,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8450,6 +8891,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8457,6 +8899,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8464,6 +8907,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8471,6 +8915,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8478,6 +8923,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8485,6 +8931,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8492,6 +8939,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8499,6 +8947,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8506,6 +8955,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8513,6 +8963,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8520,6 +8971,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8527,6 +8979,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8534,6 +8987,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8541,6 +8995,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8548,6 +9003,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8555,6 +9011,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8562,6 +9019,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8569,6 +9027,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8576,6 +9035,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8583,6 +9043,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8590,6 +9051,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8597,6 +9059,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8604,6 +9067,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8611,6 +9075,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8618,6 +9083,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8625,6 +9091,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8632,6 +9099,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8639,6 +9107,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8646,6 +9115,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8653,6 +9123,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8660,6 +9131,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8667,6 +9139,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8674,6 +9147,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8681,6 +9155,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8688,6 +9163,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8695,6 +9171,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8702,6 +9179,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8709,6 +9187,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8716,6 +9195,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8723,6 +9203,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8730,6 +9211,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8737,6 +9219,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8744,6 +9227,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8751,6 +9235,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8758,6 +9243,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8765,6 +9251,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8772,6 +9259,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8779,6 +9267,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8786,6 +9275,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8793,6 +9283,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8800,6 +9291,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8807,6 +9299,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8814,6 +9307,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8821,6 +9315,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8828,6 +9323,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8835,6 +9331,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8842,6 +9339,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8849,6 +9347,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8856,6 +9355,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8863,6 +9363,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8870,6 +9371,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8877,6 +9379,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8884,6 +9387,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8891,6 +9395,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8898,6 +9403,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8905,6 +9411,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8912,6 +9419,7 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: keep id name, item size: X
@@ -8919,12 +9427,14 @@ RC=2      OpenswanServer
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: ID host_pair, item size: X
 ./IDhostpair leak: host_pair, item size: X
 ./IDhostpair leak: host ip, item size: X
 ./IDhostpair leak: connection name, item size: X
+./IDhostpair leak: alg_info_esp, item size: X
 ./IDhostpair leak: struct connection, item size: X
 ./IDhostpair leak: alg_info_ike, item size: X
 ./IDhostpair leak: policies path, item size: X
