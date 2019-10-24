@@ -1,6 +1,6 @@
 #ifndef __seam_kernel_c__
 #define __seam_kernel_c__
-#include "kernel.h"
+#include "pluto/kernel.h"
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
