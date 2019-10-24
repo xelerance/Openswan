@@ -1192,21 +1192,21 @@ enum_names trans_type_prf_names =
 
 /* Transform-type Integrity */
 const char *const trans_type_integ_name[]={
-    "auth-none",
-    "auth-hmac-md5-96",
-    "auth-hmac-sha1-96",
-    "auth-des-mac",
-    "auth-kpdk-md5",
-    "auth-aes-xcbc-96",
-    "AUTH_HMAC_MD5_128",
-    "AUTH_HMAC_SHA1_160",
-    "AUTH_AES_CMAC_96",
-    "AUTH_AES_128_GMAC",
-    "AUTH_AES_192_GMAC",
-    "AUTH_AES_256_GMAC",
-    "AUTH_HMAC_SHA2_256_128",
-    "AUTH_HMAC_SHA2_384_192",
-    "AUTH_HMAC_SHA2_512_256",
+    "none",
+    "hmac_md5_96",
+    "hmac_sha1_96",
+    "des_mac",
+    "kpdk_md5",
+    "aes_xcbc_96",
+    "hmac_md5_128",
+    "hmac_sha1_160",
+    "aes_cmac_96",
+    "aes_128_gmac",
+    "aes_192_gmac",
+    "aes_256_gmac",
+    "hmac_sha2_256_128",
+    "hmac_sha2_384_192",
+    "hmac_sha2_512_256",
 };
 enum_names trans_type_integ_names =
 { IKEv2_AUTH_NONE, IKEv2_AUTH_HMAC_SHA2_512_256, trans_type_integ_name, NULL};
