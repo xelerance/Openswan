@@ -513,68 +513,22 @@ static const char *const ipsec_attr_name[] = {
 	"KEY_ROUNDS",
 	"COMPRESS_DICT_SIZE",
 	"COMPRESS_PRIVATE_ALG",
-#ifdef HAVE_LABELED_IPSEC
 	"ECN_TUNNEL",
-#endif
     };
 
-static const char *const ipsec_var_attr_name[] = {
-	"SA_LIFE_DURATION (variable length)",
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	"COMPRESS_PRIVATE_ALG (variable length)",
-#ifdef HAVE_LABELED_IPSEC
-	"NULL", /*ECN TUNNEL*/
-#endif
-    };
-
-#ifdef HAVE_LABELED_IPSEC
 static const char *const ipsec_private_attr_name[] = {
 	"SECCTX" /*32001*/
 };
 
-enum_names ipsec_private_attr_names_tv = {
-  SECCTX + ISAKMP_ATTR_AF_TV, SECCTX + ISAKMP_ATTR_AF_TV, ipsec_private_attr_name, NULL};
 
 enum_names ipsec_private_attr_names = {
-  SECCTX, SECCTX, ipsec_private_attr_name, &ipsec_private_attr_names_tv};
-#endif
-
-static enum_names ipsec_attr_desc_tv = {
-    SA_LIFE_TYPE + ISAKMP_ATTR_AF_TV,
-#ifdef HAVE_LABELED_IPSEC
-    ECN_TUNNEL + ISAKMP_ATTR_AF_TV,
-#else
-    COMPRESS_PRIVATE_ALG + ISAKMP_ATTR_AF_TV,
-#endif
-    ipsec_attr_name,
-#ifdef HAVE_LABELED_IPSEC
-    &ipsec_private_attr_names};
-#else
-    NULL };
-#endif
+    SECCTX, SECCTX, ipsec_private_attr_name, NULL};
 
 enum_names ipsec_attr_names = {
-#ifdef HAVE_LABELED_IPSEC
     SA_LIFE_TYPE,
-#else
-    SA_LIFE_DURATION,
-#endif
-#ifdef HAVE_LABELED_IPSEC
     ECN_TUNNEL,
-#else
-    COMPRESS_PRIVATE_ALG,
-#endif
-#ifdef HAVE_LABELED_IPSEC
     ipsec_attr_name,
-#else
-     ipsec_var_attr_name,
-#endif
-      &ipsec_attr_desc_tv };
+    &ipsec_private_attr_names };
 
 /* for each IPsec attribute, which enum_names describes its values? */
 enum_names *ipsec_attr_val_descs[] = {
@@ -588,9 +542,7 @@ enum_names *ipsec_attr_val_descs[] = {
 	NULL,			/* KEY_ROUNDS */
 	NULL,			/* COMPRESS_DICT_SIZE */
 	NULL,			/* COMPRESS_PRIVATE_ALG */
-#ifdef HAVE_LABELED_IPSEC
 	NULL,			/*ECN_TUNNEL*/
-#endif
     };
 const unsigned int ipsec_attr_val_descs_size=elemsof(ipsec_attr_val_descs);
 
@@ -785,27 +737,8 @@ static const char *const oakley_enc_name[] = {
 	"OAKLEY_AES_CBC",
     };
 
-#ifdef NO_EXTRA_IKE
 enum_names oakley_enc_names =
     { OAKLEY_DES_CBC, OAKLEY_AES_CBC, oakley_enc_name, NULL };
-#else
-static const char *const oakley_enc_name_draft_aes_cbc_02[] = {
-	"OAKLEY_MARS_CBC"	/*	65001	*/,
-	"OAKLEY_RC6_CBC"     	/*	65002	*/,
-	"OAKLEY_ID_65003"	/*	65003	*/,
-	"OAKLEY_SERPENT_CBC"	/*	65004	*/,
-	"OAKLEY_TWOFISH_CBC"	/*	65005	*/,
-};
-static const char *const oakley_enc_name_ssh[] = {
-	"OAKLEY_TWOFISH_CBC_SSH",
-};
-enum_names oakley_enc_names_ssh =
-    { 65289, 65289, oakley_enc_name_ssh, NULL };
-enum_names oakley_enc_names_draft_aes_cbc_02 =
-    { 65001, 65005, oakley_enc_name_draft_aes_cbc_02, &oakley_enc_names_ssh };
-enum_names oakley_enc_names =
-    { OAKLEY_DES_CBC, OAKLEY_AES_CBC, oakley_enc_name, &oakley_enc_names_draft_aes_cbc_02 };
-#endif
 
 /* Oakley Hash Algorithm attribute */
 
