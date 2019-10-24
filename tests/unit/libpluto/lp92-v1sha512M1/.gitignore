@@ -1,0 +1,9 @@
+OUTPUT
+*.o
+core.*
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
+v1sha512M1
+
