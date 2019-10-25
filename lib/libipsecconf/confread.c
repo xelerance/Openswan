@@ -1246,10 +1246,36 @@ static int load_conn (struct starter_config *cfg
 	conn->policy |= conn->options[KBF_PHASE2];
     }
 
+    /* keyexchange= may also set IKEv1/IKEv2 options, but it has lower
+     * precedence vs ikev2= /ikev1, so process it first
+     */
+
+    if(conn->options_set[KBF_KEYEXCHANGE]) {
+        switch(conn->options[KBF_KEYEXCHANGE]) {
+        case KE_IKE:
+            /* nothing, we do not support any other kind */
+            break;
+
+        case KE_IKEv1:
+            /* normally allowed, so do not set IKEV1_DISABLED */
+            conn->options[KBF_KEYEXCHANGE] = KE_IKE;
+	    conn->policy &= ~(POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE);
+            break;
+
+        case KE_IKEv2:
+            /* same as fo_insist */
+            conn->options[KBF_KEYEXCHANGE] = KE_IKE;
+	    conn->policy |= POLICY_IKEV1_DISABLE;
+	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+        }
+    }
+
+    /* ikev1 = yes/no */
+    KW_POLICY_NEGATIVE_FLAG(KBF_IKEv1, POLICY_IKEV1_DISABLE);
     if(conn->options_set[KBF_IKEv2]) {
 	switch(conn->options[KBF_IKEv2]) {
 	case fo_never:
-	    conn->policy &= ~POLICY_IKEV2_ALLOW;
+	    conn->policy &= ~(POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE);
 	    break;
 
 	case fo_permit:
