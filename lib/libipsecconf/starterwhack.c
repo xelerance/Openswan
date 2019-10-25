@@ -32,10 +32,8 @@
 
 #include "socketwrapper.h"
 
-#ifndef _OPENSWAN_H
-#include <openswan.h>  /** FIXME: ugly include lines **/
+#include "openswan.h"
 #include "constants.h"
-#endif
 
 #include "oswalloc.h"
 #include "oswlog.h"
