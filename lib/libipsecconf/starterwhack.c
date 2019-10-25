@@ -478,28 +478,35 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
                               unsigned int keynum,
                               enum pubkey_source key_type,
                               unsigned char *rsakey,
-                              char **p_ckaid,
+                              char *ckaid_buf, size_t ckaid_buf_len,
                               const char *lr)
 {
   unsigned char keyspace[1024 + 4];
   size_t        keylen;
   const char *err;
+  snprintf(ckaid_buf, ckaid_buf_len, "unknown");
 
   msg->whack_key = TRUE;
   msg->pubkey_alg = PUBKEY_ALG_RSA;
   if (end->id && rsakey) {
-    msg->keyid = end->id;   /* XXX? should this clone_str? */
+    msg->keyid = end->id;   /* msg->keyid will just borrow string  */
 
     switch(key_type) {
     case PUBKEY_DNS:
     case PUBKEY_DNSONDEMAND:
       starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from DNS",
                   connection_name(conn), lr, keynum);
+      if(ckaid_buf) {
+        snprintf(ckaid_buf, ckaid_buf_len, "dnskey");
+      }
       break;
 
     case PUBKEY_CERTIFICATE:
       starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from certificate",
                   connection_name(conn), lr, keynum);
+      if(ckaid_buf) {
+        snprintf(ckaid_buf, ckaid_buf_len, "certificate");
+      }
       break;
 
     case PUBKEY_NOTSET:
@@ -509,6 +516,9 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
       err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
                      &keylen);
 
+      if(ckaid_buf) {
+        calc_ckaid(ckaid_buf, ckaid_buf_len, keyspace, keylen);
+      }
       //starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, keylen);
       //log_ckaid("loading key %s", keyspace, keylen);
 
@@ -533,20 +543,33 @@ static int starter_whack_add_pubkey (struct starter_config *cfg,
 				     struct starter_end *end, const char *lr)
 {
 	struct whack_message msg;
+        char ckaid_print_buf[CKAID_PRINT_BUF_LEN];
 	int ret;
 
 	ret = 0;
 
 	init_whack_msg(&msg);
-        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                     1, end->rsakey1_type, end->rsakey1, &end->rsakey1_ckaid, lr)==0) {
+        ret = starter_whack_build_pkmsg(cfg, &msg, conn, end
+                                        , 1, end->rsakey1_type, end->rsakey1
+                                        , ckaid_print_buf, sizeof(ckaid_print_buf), lr);
+        starter_log(LOG_LEVEL_DEBUG, "   looking for key1, result=%d", ret);
+
+        if(ret==0) {
+          starter_log(LOG_LEVEL_DEBUG, "   sending pubkey 1: %s", ckaid_print_buf);
+          end->rsakey1_ckaid = clone_str(ckaid_print_buf, "pubkey 1 ckaid");
           ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }
 
 	init_whack_msg(&msg);
-        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                     2, end->rsakey2_type, end->rsakey2, &end->rsakey2_ckaid, lr)==0) {
+        ret = starter_whack_build_pkmsg(cfg, &msg, conn, end
+                                        , 2, end->rsakey2_type, end->rsakey2
+                                        , ckaid_print_buf, sizeof(ckaid_print_buf), lr);
+        starter_log(LOG_LEVEL_DEBUG, "   looking for key2, result=%d", ret);
+
+        if(ret==0) {
+          starter_log(LOG_LEVEL_DEBUG, "   sending pubkey 2: %s", ckaid_print_buf);
+          end->rsakey2_ckaid = clone_str(ckaid_print_buf, "pubkey 2 ckaid");
           ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }

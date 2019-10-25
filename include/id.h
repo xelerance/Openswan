@@ -51,6 +51,8 @@ extern void free_myFQDN(void);
 
 extern void log_ckaid(const char *fmt, const unsigned char *key, unsigned int keylen);
 
+extern void calc_ckaid(char *ckaid_print_buf, size_t ckaid_print_buf_len
+                       , const unsigned char *key, const unsigned int keylen);
 extern err_t atoid(char *src, struct id *id, bool myid_ok);
 extern void iptoid(const ip_address *ip, struct id *id);
 extern unsigned char* temporary_cyclic_buffer(void);

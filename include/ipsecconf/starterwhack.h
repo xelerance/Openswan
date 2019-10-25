@@ -39,7 +39,7 @@ extern int starter_whack_build_pkmsg(struct starter_config *cfg,
                                      unsigned int keynum,
                                      enum pubkey_source key_type,
                                      unsigned char *rsakey,
-                                     char **p_ckaid,
+                                     char *ckaid_buf, size_t ckaid_buf_len,
                                      const char *lr);
 
 /* serialize strings */
