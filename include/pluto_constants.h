@@ -669,6 +669,10 @@ struct keyword_enum_values kw_host_list;
 #define KH_ISWILDCARD(type)  ((type) == KH_ANY || (type) == KH_DEFAULTROUTE)
 #define KH_ISKNOWNADDR(type) ((type) == KH_IPADDR || (type)==KH_IFACE)
 
+extern const char *end_type_name(enum keyword_host host_type
+                                 , ip_address *host_addr
+                                 , char  *outbuf
+                                 , size_t outbuf_len);
 /* BIND enumerated types */
 
 /* How authenticated is info that might have come from DNS?
