@@ -414,6 +414,7 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 			f = fopen(file, "r");
 		}
 		if (f) {
+                    int parser_error;
 			yyin = f;
 			parser_y_init(file, f);
 			_save_errors_=1;
@@ -421,13 +422,13 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 			TAILQ_INIT(&cfg->comments);
 			_parser_cfg = cfg;
 
-	   	        if (yyparse()!=0) {
+	   	        parser_error = yyparse();
+	   	        if (parser_error != 0) {
 				if (parser_errstring[0]=='\0') {
 					snprintf(parser_errstring, ERRSTRING_LEN,
 						"Unknown error...");
 				}
 				_save_errors_=0;
-				while (yyparse()!=0);
 				err++;
 			}
 			else if (parser_errstring[0]!='\0') {
