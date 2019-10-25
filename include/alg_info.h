@@ -24,8 +24,8 @@ struct kernel_alg_info;
 
 struct esp_info {
         bool     esp_default;
-	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
-	u_int16_t auth;		/* AUTH */
+    enum ikev2_trans_type_encr  transid;  /* ESP transform (AES, 3DES, etc.) (in IKEv2 terms )*/
+    enum ikev2_trans_type_integ auth;	        /* AUTH */
     enum ikev2_trans_type_compress compress;	/* IPCOMP */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
@@ -67,7 +67,6 @@ struct alg_info {
 struct alg_info_esp {
 	ALG_INFO_COMMON;
 	struct esp_info esp[64];
-	int esp_pfsgroup;
 };
 
 struct alg_info_ike {
@@ -145,14 +144,6 @@ extern int alg_info_parse_str (struct alg_info *alg_info
                                , alg_info_adder alg_info_add
                                , const struct oakley_group_desc *(*lookup_group)(enum ikev2_trans_type_dh group));
 
-/* translations between IKEv1 and IKEv2 */
-/* this could be table driven */
-extern int v2tov1_encr(enum ikev2_trans_type_encr encr);
-extern enum ikev2_trans_type_encr v1tov2_encr(int encr);
-extern int v2tov1_encr_child(enum ikev2_trans_type_encr encr);
-extern int v2tov1_integ(enum ikev2_trans_type_integ v2integ);
-enum ikev2_trans_type_integ v1tov2_integ(int integ);
-extern int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ);
 
 
 #endif /* ALG_INFO_H */
