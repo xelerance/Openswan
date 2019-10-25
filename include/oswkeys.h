@@ -15,6 +15,7 @@
 #ifndef _OSWKEYS_H
 #define _OSWKEYS_H
 
+#include "constants.h"
 #include "secrets.h"
 
 extern err_t str2pubkey(const unsigned char *key1, enum pubkey_alg kind, osw_public_key *opk);
