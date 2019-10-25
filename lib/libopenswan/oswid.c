@@ -33,18 +33,24 @@ const struct id *resolve_myid(const struct id *id)
 }
 
 
-void log_ckaid(const char *fmt, const unsigned char *key, unsigned int keylen)
+void calc_ckaid(char *ckaid_print_buf, size_t ckaid_print_buf_len
+                , const unsigned char *key, const unsigned int keylen)
 {
     unsigned char key_ckaid[CKAID_BUFSIZE];
-    char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
 
     /* maybe #ifdef SHA2 ? */
     /* calculate the hash of the public key, using SHA-2 */
     sha256_hash_buffer(key, keylen, key_ckaid, sizeof(key_ckaid));
 
     datatot(key_ckaid, sizeof(key_ckaid), 'G',
-            ckaid_print_buf, sizeof(ckaid_print_buf));
+            ckaid_print_buf, ckaid_print_buf_len);
+}
 
+void log_ckaid(const char *fmt, const unsigned char *key, unsigned int keylen)
+{
+    char ckaid_print_buf[CKAID_PRINT_BUF_LEN];
+
+    calc_ckaid(ckaid_print_buf, sizeof(ckaid_print_buf), key, keylen);
     DBG_log(fmt, ckaid_print_buf);
 }
 
