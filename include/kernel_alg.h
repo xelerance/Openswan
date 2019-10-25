@@ -31,13 +31,8 @@ struct pluto_sadb_alg {
                                                (aka alg_type) */
   enum   ikev2_trans_type_encr   encr_id;   /* this IKEv2 algorithm number */
   enum   ikev2_trans_type_integ  integ_id;  /* ditto */
-
-  /* this is a hold-over from IKEv1 infested code */
-  uint8_t		         sadb_alg_id;
-  uint8_t		         sadb_alg_ivlen;
-  uint16_t	                 sadb_alg_minbits;
-  uint16_t	                 sadb_alg_maxbits;
 };
+
 struct sadb_msg; /* forward definition */
 
 /* Registration messages from pluto */
