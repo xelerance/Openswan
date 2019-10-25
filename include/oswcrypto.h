@@ -16,6 +16,8 @@
  * for more details.
  */
 
+#ifndef _OSW_CRYPTO_H
+#define _OSW_CRYPTO_H
 #include <mpzfuncs.h>
 #include <crypto/aes.h>
 #include <crypto/aes_cbc.h>
@@ -28,6 +30,7 @@
 
 
 
+/* XXX Qhis really HAS to go... */
 struct oswcrypto_meth {
 	void (*rsa_mod_exp_crt)(mpz_t dst, const mpz_t src, const mpz_t p,
 							const mpz_t dP, const mpz_t q, const mpz_t qP,
@@ -65,4 +68,5 @@ extern void load_oswcrypto(void);
 #ifdef HAVE_OCF
 extern void load_cryptodev(void);
 #endif
+#endif /* _OSW_CRYPTO_H */
 
