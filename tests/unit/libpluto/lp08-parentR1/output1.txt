@@ -230,9 +230,9 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| #1 complete v2 state transition with STF_FAIL
-./parentR1 STATE_UNDEFINED: (null)
-| state transition function for STATE_UNDEFINED failed: <no reason given>
+| #0 complete v2 state transition with STF_FAIL
+./parentR1 no-state: (null)
+| state transition function for no-state failed: <no reason given>
 ./parentR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
