@@ -355,7 +355,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
-	connmtu_str[sizeof("PLUTO_MTU")+5],
+	connmtu_str[sizeof("PLUTO_MTU")+5+1],
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -823,7 +823,7 @@ static bool shunt_eroute(struct connection *c
 }
 
 static bool sag_eroute(struct state *st
-		  , const const struct spd_route *sr
+		  , const struct spd_route *sr
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
 {
@@ -2379,15 +2379,16 @@ init_kernel(void)
 	/* FALL THROUGH */
 
 #if defined(NETKEY_SUPPORT)
+	break;
     case USE_NETKEY:
 	if (stat("/proc/net/pfkey", &buf) == 0) {
 	    kern_interface = USE_NETKEY;
 	    openswan_log("Using Linux XFRM/NETKEY IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &netkey_kernel_ops;
-	    break;
 	} else
 	    openswan_log("No Kernel XFRM/NETKEY interface detected");
+	break;
 	/* FALL THROUGH */
 #endif
 
@@ -2398,9 +2399,9 @@ init_kernel(void)
 	    openswan_log("Using KLIPS IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &klips_kernel_ops;
-	    break;
 	} else
 	    openswan_log("No Kernel KLIPS interface detected");
+	break;
 	/* FALL THROUGH */
 #endif
 
@@ -2411,9 +2412,9 @@ init_kernel(void)
 	    openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &mast_kernel_ops;
-	    break;
 	} else
 	    openswan_log("No Kernel MASTKLIPS interface detected");
+	break;
 	/* FALL THROUGH */
 #endif
 
