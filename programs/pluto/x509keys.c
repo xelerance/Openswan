@@ -49,14 +49,13 @@
 #include "pluto/connections.h"
 #include "hostpair.h"
 #include "pluto/state.h"
-#include "md5.h"
-#include "sha1.h"
 #include "whack.h"
 #include "fetch.h"
 #include "ocsp.h"
 #include "pkcs.h"
 #include "kernel.h"
 #include "x509more.h"
+#include "oswkeys.h"
 
 /*
  * Decode the CERT payload of Phase 1.
@@ -68,6 +67,7 @@ decode_cert(struct msg_digest *md)
 
     for (p = md->chain[ISAKMP_NEXT_CERT]; p != NULL; p = p->next)
     {
+        struct state *st = md->st;
 	struct isakmp_cert *const cert = &p->payload.cert;
 	chunk_t blob;
 	time_t valid_until;
@@ -83,7 +83,7 @@ decode_cert(struct msg_digest *md)
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
 		    )
-			add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
+			add_x509_public_key_to_list(&st->st_keylist, NULL, &cert2, valid_until, DAL_SIGNED, NULL);
 		}
 		else
 		{
@@ -119,6 +119,7 @@ void
 ikev2_decode_cert(struct msg_digest *md)
 {
     struct payload_digest *p;
+    struct state *st = md->st;
     unsigned certnum = 0;
 
     for (p = md->chain[ISAKMP_NEXT_v2CERT]; p != NULL; p = p->next)
@@ -142,7 +143,9 @@ ikev2_decode_cert(struct msg_digest *md)
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
                         );
-                    add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
+                    /* insert it to the state's cache, not the global cache */
+                    add_x509_public_key_to_list(&st->st_keylist, NULL, &cert2
+                                                , valid_until, DAL_SIGNED, NULL);
 		}
 		else
 		{
