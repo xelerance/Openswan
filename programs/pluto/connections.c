@@ -419,15 +419,17 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     err_t ugh = NULL;
     const struct af_info *afi = aftoinfo(addrtypeof(&e->host_addr));
 
-    if (afi == NULL)
-	return "unknown address family in default_end";
+    if(e->sendcert == 0) {
+	e->sendcert = cert_sendifasked;
+    }
 
+    if (afi) {
     /* default ID to IP (but only if not NO_IP -- WildCard) */
-    if (e->id.kind == ID_NONE && !isanyaddr(&e->host_addr))
-    {
+        if (e->id.kind == ID_NONE && !isanyaddr(&e->host_addr)) {
 	e->id.kind = afi->id_addr;
 	e->id.ip_addr = e->host_addr;
 	e->id.has_wildcards = FALSE;
+        }
     }
 
     /* default nexthop to other side */
@@ -441,9 +443,6 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     if (!e->has_client)
 	ugh = addrtosubnet(&e->host_addr, &e->client);
 
-    if(e->sendcert == 0) {
-	e->sendcert = cert_sendifasked;
-    }
 
     return ugh;
 }
@@ -535,8 +534,6 @@ load_end_certificate(const char *filename, struct end *dst)
 	    if(!valid_cert) {
 		whack_log(RC_FATAL, "can not load certificate file %s\n"
 			  , filename);
-		/* clear the ID, we're expecting it via %fromcert */
-		dst->id.kind = ID_NONE;
 		return;
 	    }
 	}
@@ -1169,6 +1166,13 @@ add_connection(const struct whack_message *wm)
 	    c->spd.that = t;
 	}
 
+        /* use any_id to see if this.id/that.id is valid) */
+        if(any_id(&c->spd.this.id)) {
+            openswan_log("my side id: is wildcard");
+        }
+        if(any_id(&c->spd.that.id)) {
+            openswan_log("their side id: is wildcard");
+        }
 	c->spd.next = NULL;
 	c->spd.reqid = gen_reqid();
 
@@ -2773,8 +2777,7 @@ fc_try(const struct connection *c
 		continue;
 	    }
 
-	    if (sr->that.has_client)
-	    {
+	    if (sr->that.has_client) {
 		if (sr->that.has_client_wildcard) {
 		    if (!subnetinsubnet(&peer_end->client, &sr->that.client))
 			continue;
@@ -2788,7 +2791,6 @@ fc_try(const struct connection *c
 			continue;
 		    }
 
-                    /* XXX */
 		    virtualwhy=is_virtual_net_allowed(d, &peer_end->client, &sr->that.host_addr);
 
 		    if ((is_virtual_sr(sr)) &&
@@ -3000,6 +3002,8 @@ find_client_connection(struct connection *c
 		    return c;
 
 		unrouted = c;
+	    } else {
+                DBG(DBG_CONTROLMORE, DBG_log("    not matched"))
 	    }
 	}
 
