@@ -2713,11 +2713,17 @@ fc_try(const struct connection *c
     int wildcards, pathlen;
     err_t virtualwhy = NULL;
     char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
-    const bool peer_net_is_host = subnetisaddr(&peer_end->client, &c->spd.that.host_addr) ||
-        (c->spd.that.host_type == KH_ANY && c->spd.that.has_client == FALSE);
+    char our_end_buf[ADDRTOT_BUF], peer_end_buf[ADDRTOT_BUF];
+    char this_host_buf[ADDRTOT_BUF], that_host_buf[ADDRTOT_BUF];
 
     endclienttot(our_end,  s1, sizeof(s1));
     endclienttot(peer_end, d1, sizeof(d1));
+    addrtot(&our_end->host_addr,  0, our_end_buf,  sizeof(our_end_buf));
+    addrtot(&peer_end->host_addr, 0, peer_end_buf, sizeof(peer_end_buf));
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("   fc_try outer us:%s peer:%s "
+                  , our_end_buf, peer_end_buf));
 
     for (d = hp->connections; d != NULL; d = d->IPhp_next)
     {
@@ -2756,6 +2762,8 @@ fc_try(const struct connection *c
 #ifdef DEBUG
 	    char s3[ENDCLIENTTOT_BUF],d3[ENDCLIENTTOT_BUF];
 
+            addrtot(&sr->this.host_addr,  0, this_host_buf,  sizeof(this_host_buf));
+            addrtot(&sr->that.host_addr,  0, that_host_buf,  sizeof(that_host_buf));
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
                 endclienttot(&sr->this, s3, sizeof(s3));
@@ -2804,8 +2812,13 @@ fc_try(const struct connection *c
 	    }
 	    else
 	    {
-		if (!peer_net_is_host)
+                if(c->spd.that.host_type == KH_ANY
+                   && !subnetisaddr(&peer_end->client, &peer_end->host_addr)) {
+                    DBG(DBG_CONTROLMORE
+                        , DBG_log("   no match, peer proposed net is not proposing host (%s != %s)"
+                                  , d1, peer_end_buf));
 		    continue;
+                }
 	    }
 
 	    /* We've run the gauntlet -- success:
