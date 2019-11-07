@@ -509,6 +509,7 @@ load_end_certificate(const char *filename, struct end *dst)
     time_t valid_until;
     cert_t cert;
     err_t ugh = NULL;
+    struct pubkey **key = NULL;
 
     memset(&dst->cert, 0, sizeof(dst->cert));
 
@@ -561,21 +562,22 @@ load_end_certificate(const char *filename, struct end *dst)
 	{
 	    openswan_log("  %s", ugh);
 	    free_x509cert(cert.u.x509);
+            return;
 	}
-	else
-	{
-	    DBG(DBG_CONTROL,
+        DBG(DBG_CONTROL,
 		DBG_log("certificate is valid")
 		);
-	    add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
+        if(dst->key1 == NULL) {
+            key = &dst->key1;
+        } else if(dst->key2 == NULL) {
+            key = &dst->key2;
+        }
+
+        add_x509_public_key_to_list(&pluto_pubkeys, &dst->id, cert.u.x509, valid_until, DAL_LOCAL, key);
 	    dst->cert.type = cert.type;
 	    dst->cert.u.x509 = add_x509cert(cert.u.x509);
-
-	    /* if no CA is defined, use issuer as default */
-	    if (dst->ca.ptr == NULL)
-		dst->ca = dst->cert.u.x509->issuer;
-	}
 	break;
+
     default:
 	break;
     }
@@ -2267,10 +2269,19 @@ find_host_connection2(const char *func, bool exact
  * extracts the peer's ca from the chained list of public keys
  */
 static chunk_t
-get_peer_ca(const struct id *peer_id)
+get_peer_ca(const struct state *st, const struct id *peer_id)
 {
     struct pubkey_list *p;
 
+    for (p = st->st_keylist; p != NULL; p = p->next)
+    {
+       struct pubkey *key = p->key;
+
+       if (key->alg == PUBKEY_ALG_RSA && same_id(peer_id, &key->id))
+       {
+           return key->issuer;
+       }
+    }
     for (p = pluto_pubkeys; p != NULL; p = p->next)
     {
        struct pubkey *key = p->key;
@@ -2396,7 +2407,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
-    peer_ca = get_peer_ca(peer_id);
+    peer_ca = get_peer_ca(st, peer_id);
 
     if (same_id(&c->spd.that.id, peer_id)
 	&& (peer_ca.ptr != NULL)
