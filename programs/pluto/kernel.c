@@ -355,7 +355,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
-	connmtu_str[sizeof("PLUTO_MTU")+5],
+	connmtu_str[sizeof("PLUTO_MTU")+5+1],  
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -823,7 +823,7 @@ static bool shunt_eroute(struct connection *c
 }
 
 static bool sag_eroute(struct state *st
-		  , const const struct spd_route *sr
+		  , const struct spd_route *sr
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
 {
