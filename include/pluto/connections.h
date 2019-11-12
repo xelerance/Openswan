@@ -108,13 +108,13 @@
  *   as the original policy, even though its subnets might be smaller.
  * - display format: n,m
  */
-typedef unsigned long policy_prio_t;
+typedef uint32_t policy_prio_t;
 #define BOTTOM_PRIO   ((policy_prio_t)0)	/* smaller than any real prio */
 #define set_policy_prio(c) { (c)->prio = \
 	((policy_prio_t)(c)->spd.this.client.maskbits << 16) \
 	| ((policy_prio_t)(c)->spd.that.client.maskbits << 8) \
 	| (policy_prio_t)1; }
-#define POLICY_PRIO_BUF	(3+1+3+1)
+#define POLICY_PRIO_BUF	(3+1+3+1+10) 
 extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 
 /* Note that we include this even if not X509, because we do not want the
