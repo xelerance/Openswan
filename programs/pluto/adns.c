@@ -312,7 +312,7 @@ worker(int qfd, int afd)
         struct addrinfo *result;
         struct addrinfo hints;
         int s;
-        char status[1024];
+        char status[1024+16]; // this must shut up GCC
 
 	enum helper_exit_status r = read_pipe(qfd, (unsigned char *)&q
 	    , sizeof(q), sizeof(q));
