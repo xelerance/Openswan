@@ -58,6 +58,7 @@ RC=0 "alttunnel":   ESP algorithms loaded: none
 | inserting state object #1 bucket: 4
 ./h2hI1 initiating v2 parent SA
 ./h2hI1 STATE_PARENT_I1: initiate
+| oakley_alg_makedb() returning 0x
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:

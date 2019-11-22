@@ -8,3 +8,4 @@ s/releasing whack for .* (sock=.*)/releasing whack for #X (sock=Y)/
 /newest ISAKMP SA/d
 s/(expires .*)/(expires SOMETIME)/
 s/RC=0 [A-Z][a-z][a-z] [0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9] UTC 20[0-9][0-9], [0-9]* RSA \(\S\+\) key/RC=0 DATE RSA \1 key/
+s/oakley_alg_makedb() returning 0x[0-9|a-f]*/oakley_alg_makedb() returning 0x/
