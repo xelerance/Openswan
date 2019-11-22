@@ -313,7 +313,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	}
 	transcnt++;
     }
-    gsp->parentSA = TRUE;
+    if (gsp != NULL) gsp->parentSA = TRUE;
+    DBG(DBG_CONTROL, DBG_log("oakley_alg_makedb() returning %p", gsp));
 
     return gsp;
 }
