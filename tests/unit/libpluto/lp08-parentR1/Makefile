@@ -92,7 +92,7 @@ update3:
 	[ -f OUTPUT/R1parker-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1parker-dump.txt >R1parker-dump.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap *~ *.o
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap *~ *.o ${WHACKFILE3}
 
 PCAPDEPENDENCIES = ../lp02-parentI1/OUTPUT/parentI1.pcap
 include ../Makefile.pcapupdate
