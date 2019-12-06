@@ -1,0 +1,13 @@
+# -*- makefile -*-
+
+CONNNAME=desfails
+ENDNAME=h2h
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=parent1DES
+
+
+pcapupdate:
+	@true
+
