@@ -51,6 +51,12 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
+        char missing_alg_buf[64];
+        char *ptr = missing_alg_buf;
+        int ret = -1;
+
+        alg_info_snprint_ike2(ike_info, ike_info->ike_eklen, ike_info->ike_hklen
+                                  , &ret, ptr, sizeof(missing_alg_buf));
 
         bool enc_present = ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen);
         bool integ_present=ikev2_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen);
@@ -62,12 +68,6 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
            || !prf_present
            || !group_present) {
 
-            char missing_alg_buf[64];
-            char *ptr = missing_alg_buf;
-            int ret = -1;
-
-            alg_info_snprint_ike2(ike_info, ike_info->ike_eklen, ike_info->ike_hklen
-                                  , &ret, ptr, sizeof(missing_alg_buf));
             DBG(DBG_EMITTING,
                 DBG_log("not including %s in policy, as algorithm missing"
                         "(enc:%u,integ:%u,prf:%u,group:%u)"
@@ -75,6 +75,10 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
                         , enc_present, integ_present, prf_present, group_present));
             continue;
         }
+
+        DBG(DBG_EMITTING,
+            DBG_log("found algorithm: %s"
+                    , missing_alg_buf));
 
         db2_prop_add(dc, PROTO_ISAKMP, 0);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  ike_info->ike_ealg);
