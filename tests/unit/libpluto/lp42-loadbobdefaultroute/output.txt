@@ -17,6 +17,7 @@ processing whack msg time: X size: Y
 | certificate is valid
 | counting wild cards for bob@strongswan.org is 0
 | counting wild cards for (none) is 15
+./loadbob my side id: is wildcard
 | orient nat-t checking against if: eth0 (AF_INET:10.2.0.10:500)
 | orient nat-t matching on public/private keys: this=no[%any] that=yes[%defaultroute]
 |   orient nat-t matched on that having private key
@@ -34,8 +35,8 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 RC=0 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute owner: #0
 RC=0 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
-RC=0 "nat-t":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'%any'
-RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "nat-t":   keys: 1:A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE 2:none...
+RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 |   orient nat-t finished with: 1 [10.2.0.10]
 ./loadbob deleting connection
@@ -50,6 +51,7 @@ RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 1
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X
+./loadbob leak: issuer, item size: X
 ./loadbob leak: pubkey, item size: X
 ./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: issuer dn, item size: X
