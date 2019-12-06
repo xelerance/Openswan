@@ -468,3 +468,266 @@ void sa_v2_print(struct db_sa *sa)
   }
 }
 
+void
+free_sa_trans(struct db_trans *tr)
+{
+    if(tr->attrs) {
+	pfree(tr->attrs);
+	tr->attrs=NULL;
+    }
+}
+
+static void
+free_sa_v2_trans(struct db_v2_trans *tr)
+{
+    if(tr->attrs) {
+	pfree(tr->attrs);
+	tr->attrs=NULL;
+    }
+}
+
+void
+free_sa_prop(struct db_prop *dp)
+{
+    unsigned int i;
+    for(i=0; i<dp->trans_cnt; i++) {
+	free_sa_trans(&dp->trans[i]);
+    }
+    if(dp->trans) {
+	pfree(dp->trans);
+	dp->trans=NULL;
+    }
+}
+
+static void
+free_sa_v2_prop(struct db_v2_prop_conj *dp)
+{
+    unsigned int i;
+    for(i=0; i<dp->trans_cnt; i++) {
+	free_sa_v2_trans(&dp->trans[i]);
+    }
+    if(dp->trans) {
+	pfree(dp->trans);
+	dp->trans=NULL;
+    }
+}
+
+void
+free_sa_prop_conj(struct db_prop_conj *pc)
+{
+    unsigned int i;
+    for(i=0; i<pc->prop_cnt; i++) {
+	free_sa_prop(&pc->props[i]);
+    }
+    if(pc->props) {
+	pfree(pc->props);
+    }
+}
+
+static void
+free_sa_v2_prop_disj(struct db_v2_prop *pc)
+{
+    unsigned int i;
+    for(i=0; i<pc->prop_cnt; i++) {
+	free_sa_v2_prop(&pc->props[i]);
+    }
+    if(pc->props) {
+	pfree(pc->props);
+    }
+}
+
+extern void db_destroy(struct db_context *ctx);
+void
+free_sa(struct db_sa *f)
+{
+    unsigned int i;
+    if(f == NULL) return;
+
+    if(f->prop_v1_ctx) {
+        db_destroy(f->prop_v1_ctx);
+        f->prop_v1_ctx = NULL;
+    } else {
+        for(i=0; i<f->prop_conj_cnt; i++) {
+            free_sa_prop_conj(&f->prop_conjs[i]);
+        }
+    }
+    if(f->prop_conjs) {
+	pfree(f->prop_conjs);
+	f->prop_conjs=NULL;
+	f->prop_conj_cnt=0;
+    }
+
+    if(f->prop_ctx) {
+        db2_free(f->prop_ctx);
+        f->prop_ctx = NULL;
+    } else {
+        for(i=0; i<f->prop_disj_cnt; i++) {
+            free_sa_v2_prop_disj(&f->prop_disj[i]);
+        }
+        if(f->prop_disj) {
+            pfree(f->prop_disj);
+            f->prop_disj=NULL;
+            f->prop_disj_cnt=0;
+        }
+    }
+
+    if(f) {
+	pfree(f);
+    }
+}
+
+void clone_trans(struct db_trans *tr)
+{
+    tr->attrs = clone_bytes(tr->attrs
+			    , tr->attr_cnt*sizeof(tr->attrs[0])
+			    , "sa copy attrs array");
+}
+
+void clone_prop(struct db_prop *p, int extra)
+{
+    unsigned int i;
+
+    p->trans = clone_bytes(p->trans
+			  , (p->trans_cnt+extra)*sizeof(p->trans[0])
+			  , "sa copy trans array");
+    for(i=0; i<p->trans_cnt; i++) {
+	clone_trans(&p->trans[i]);
+    }
+}
+
+void clone_propconj(struct db_prop_conj *pc, int extra)
+{
+    unsigned int i;
+
+    pc->props = clone_bytes(pc->props
+			   , (pc->prop_cnt+extra)*sizeof(pc->props[0])
+			   , "sa copy prop array");
+    for(i=0; i<pc->prop_cnt; i++) {
+	clone_prop(&pc->props[i], 0);
+    }
+}
+
+struct db_sa *sa_copy_sa(struct db_sa *sa, int extra)
+{
+    unsigned int i;
+    struct db_sa *nsa;
+
+    nsa = clone_thing(*sa, "sa copy prop_conj");
+    nsa->parentSA= sa->parentSA;
+
+    nsa->prop_conjs =
+	clone_bytes(nsa->prop_conjs
+		    , (nsa->prop_conj_cnt+extra)*sizeof(nsa->prop_conjs[0])
+		    , "sa copy prop conj array");
+
+    for(i=0; i<nsa->prop_conj_cnt; i++) {
+	clone_propconj(&nsa->prop_conjs[i], 0);
+    }
+
+    return nsa;
+}
+
+/*
+ * clone the sa, but keep only the first proposal
+ */
+struct db_sa *sa_copy_sa_first(struct db_sa *sa)
+{
+    struct db_sa *nsa;
+    struct db_prop_conj *pc;
+    struct db_prop *p;
+
+    nsa = clone_thing(*sa, "sa copy prop_conj");
+    if(nsa->prop_conj_cnt == 0) {
+      return nsa;
+    }
+    nsa->prop_conj_cnt = 1;
+    nsa->prop_conjs = clone_bytes(nsa->prop_conjs
+				  , sizeof(nsa->prop_conjs[0])
+				  , "sa copy 1 prop conj array");
+
+    pc = &nsa->prop_conjs[0];
+    if(pc->prop_cnt == 0) {
+      return nsa;
+    }
+    pc->prop_cnt = 1;
+    pc->props = clone_bytes(pc->props
+			    , sizeof(pc->props[0])
+			    , "sa copy 1 prop array");
+
+    p = &pc->props[0];
+    if(p->trans_cnt == 0) {
+      return nsa;
+    }
+    p->trans_cnt = 1;
+    p->trans = clone_bytes(p->trans
+			   , sizeof(p->trans[0])
+			   , "sa copy 1 trans array");
+
+    clone_trans(&p->trans[0]);
+    return nsa;
+}
+
+/*
+ * this routine takes two proposals and conjoins them (or)
+ *
+ *
+ */
+struct db_sa *
+sa_merge_proposals(struct db_sa *a, struct db_sa *b)
+{
+    struct db_sa *n;
+    unsigned int i,j,k;
+
+    if(a == NULL || a->prop_conj_cnt == 0) {
+	return sa_copy_sa(b, 0);
+    }
+    if(b == NULL || b->prop_conj_cnt == 0) {
+	return sa_copy_sa(a, 0);
+    }
+
+    n = clone_thing(*a, "conjoin sa");
+
+    passert(a->prop_conj_cnt == b->prop_conj_cnt);
+    passert(a->prop_conj_cnt == 1);
+
+    n->prop_conjs =
+	clone_bytes(n->prop_conjs
+		    , n->prop_conj_cnt*sizeof(n->prop_conjs[0])
+		    , "sa copy prop conj array");
+
+    for(i=0; i<n->prop_conj_cnt; i++) {
+	struct db_prop_conj *pca= &n->prop_conjs[i];
+	struct db_prop_conj *pcb= &b->prop_conjs[i];
+
+	passert(pca->prop_cnt == pcb->prop_cnt);
+	passert(pca->prop_cnt == 1);
+
+	pca->props = clone_bytes(pca->props
+				, pca->prop_cnt*sizeof(pca->props[0])
+				, "sa copy prop array");
+
+	for(j=0; j<pca->prop_cnt; j++) {
+	    struct db_prop *pa = &pca->props[j];
+	    struct db_prop *pb = &pcb->props[j];
+	    struct db_trans *t;
+	    int t_cnt = (pa->trans_cnt+pb->trans_cnt);
+
+	    t = alloc_bytes(t_cnt*sizeof(pa->trans[0])
+			    , "sa copy trans array");
+
+	    memcpy(t, pa->trans, (pa->trans_cnt)*sizeof(pa->trans[0]));
+	    memcpy(t+(pa->trans_cnt)
+		   , pb->trans
+		   , (pb->trans_cnt)*sizeof(pa->trans[0]));
+
+	    pa->trans = t;
+	    pa->trans_cnt = t_cnt;
+	    for(k=0; k<pa->trans_cnt; k++) {
+		clone_trans(&pa->trans[k]);
+	    }
+	}
+    }
+
+    n->parentSA = a->parentSA;
+    return n;
+}
