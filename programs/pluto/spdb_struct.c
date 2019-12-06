@@ -313,8 +313,8 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	}
 	transcnt++;
     }
+    /* will be NULl if algorithm is not found, such as 1DES */
     if (gsp != NULL) gsp->parentSA = TRUE;
-    DBG(DBG_CONTROL, DBG_log("oakley_alg_makedb() returning %p", gsp));
 
     return gsp;
 }
