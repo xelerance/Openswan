@@ -35,12 +35,13 @@ OUTPUT:
 	mkdir -p OUTPUT
 
 update:
-	cp ../OUTPUTS/default.ipsec.conf.raw default.ipsec.conf.out
-	cp ../OUTPUTS/moon-base.conf.raw     moon-base.conf.out
-	cp ../OUTPUTS/dooku.conf.raw         dooku.conf.out
-	cp ../OUTPUTS/cassidy.conf.raw       cassidy.conf.out
-	cp ../OUTPUTS/h2h.conf.raw           h2h.conf.out
-	cp ../OUTPUTS/certpercent.conf.raw           certpercent.conf.out
+	cp OUTPUT/default.ipsec.conf.out default.ipsec.conf.out
+	cp OUTPUT/moon-base.conf.out     moon-base.conf.out
+	cp OUTPUT/dooku.conf.out         dooku.conf.out
+	cp OUTPUT/cassidy.conf.out       cassidy.conf.out
+	cp OUTPUT/h2h.conf.out           h2h.conf.out
+	cp OUTPUT/certpercent.conf.out   certpercent.conf.out
+	cp OUTPUT/n2n-transport.conf.out n2n-transport.conf.out
 
 # Local Variables:
 # compile-command: "(cd ../../../programs/readwriteconf && make clean && make programs) && make check"
