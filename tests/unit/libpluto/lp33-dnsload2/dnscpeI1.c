@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     }
 
     tool_init_log();
-    load_oswcrypto();
+    init_crypto();
     init_adns();
     init_fake_vendorid();
     init_fake_secrets();
