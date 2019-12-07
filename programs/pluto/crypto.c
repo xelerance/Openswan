@@ -87,7 +87,7 @@ static struct ike_integ_desc crypto_hasher_md5 =
 {
     common: {name: "oakley_md5",
 	     officname: "md5",
-	     algo_type: IKEv2_TRANS_TYPE_INTEG,
+	     algo_type: IKEv2_TRANS_TYPE_PRF,
 	     algo_id:   OAKLEY_MD5,
 	     algo_v2id: IKEv2_PRF_HMAC_MD5,
 	     algo_next: NULL, },
@@ -121,7 +121,7 @@ static struct ike_integ_desc crypto_hasher_sha1 =
 {
     common: {name: "oakley_sha",
 	     officname: "sha1",
-	     algo_type: IKEv2_TRANS_TYPE_INTEG,
+	     algo_type: IKEv2_TRANS_TYPE_PRF,
 	     algo_id:   OAKLEY_SHA,
 	     algo_v2id: IKEv2_PRF_HMAC_SHA1,
 	     algo_next: NULL, },
