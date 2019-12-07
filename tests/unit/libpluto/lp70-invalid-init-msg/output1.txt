@@ -5,13 +5,17 @@
 ./h2hR1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./h2hR1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./h2hR1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./h2hR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./h2hR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR1 loading secrets from "../samples/jj.secrets"
 ./h2hR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | init_fake_secrets() corrupting svm #0, 'initiator-V2_init' recv=0x22
 | init_fake_secrets() corrupting svm #1, 'initiator-failure' recv=0x22
 | init_fake_secrets() corrupting svm #3, 'responder-V2_init' recv=0x22
+./h2hR1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -181,6 +185,12 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | pass 1: considering PARENT SAs to delete
 ./h2hR1 leak: notification packet, item size: X
 ./h2hR1 leak: msg_digest, item size: X
+./h2hR1 leak: 2 * id list, item size: X
+./h2hR1 leak: rfc3110 format of public key [created], item size: X
+./h2hR1 leak: pubkey, item size: X
+./h2hR1 leak: secret, item size: X
+./h2hR1 leak: 4 * hasher name, item size: X
+./h2hR1 leak: 10 * group description, item size: X
 ./h2hR1 leak: policies path, item size: X
 ./h2hR1 leak: ocspcerts path, item size: X
 ./h2hR1 leak: aacerts path, item size: X
@@ -193,11 +203,5 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 ./h2hR1 leak: default conf conffile, item size: X
 ./h2hR1 leak: default conf ipsecd_dir, item size: X
 ./h2hR1 leak: default conf ipsec_conf_dir, item size: X
-./h2hR1 leak: 2 * id list, item size: X
-./h2hR1 leak: rfc3110 format of public key [created], item size: X
-./h2hR1 leak: pubkey, item size: X
-./h2hR1 leak: secret, item size: X
-./h2hR1 leak: 4 * hasher name, item size: X
-./h2hR1 leak: 10 * group description, item size: X
 ./h2hR1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

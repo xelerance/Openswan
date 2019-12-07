@@ -1,2 +1,0 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 376, bad cksum 0 (->44ef)!)
-    192.168.1.1.500 > 132.213.238.7.500: isakmp 2.0 msgid 00000002: child_sa  child_sa[I]: [encrypted v2e]
