@@ -77,10 +77,14 @@ include Makefile.testcase
 SEDSCRIPTS = ${TESTUTILS}/leak-detective.sed ${TESTUTILS}/whack-processing.sed ${TESTUTILS}/sanity.sed ${TESTUTILS}/certsize.sed
 FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/sanity.sed -f ${TESTUTILS}/certsize.sed
 
-check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c ${SEDSCRIPTS}
+programs: ${TESTNAME}
+
+${TESTNAME}: ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+
+check:	${WHACKFILE} OUTPUT ${SEDSCRIPTS} ${TESTNAME}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
