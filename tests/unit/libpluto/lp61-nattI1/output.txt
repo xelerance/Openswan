@@ -4,9 +4,9 @@
 ./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
-./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha1: FAILED (ret=-17)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ./nattI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
-./nattI1 ike_alg_register_prf(): Activating prf-hmac-md5: FAILED (ret=-17)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./nattI1 loading secrets from "../samples/parker.secrets"
 ./nattI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -54,11 +54,17 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 4
 ./nattI1 initiating v2 parent SA
 ./nattI1 STATE_PARENT_I1: initiate
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
