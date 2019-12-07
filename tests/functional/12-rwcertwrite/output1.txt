@@ -3,7 +3,11 @@ end of file ../../unit/libpluto/samples/rwcert.conf
 Loading default conn
 Loading conn home
 conn: "home" sending RSA keys for left
+   looking for key1, result=2
+   looking for key2, result=2
 conn: "home" sending RSA keys for right
+   looking for key1, result=2
+   looking for key2, result=2
 emitting conn home with end-family: 2 and tunnel-family: 2
 writing record 1 to whack file
 opening file: ../../unit/libpluto/samples/rwcert.conf

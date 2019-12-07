@@ -18,6 +18,7 @@ conn concentrator
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4
@@ -38,6 +39,7 @@ conn cpe
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4

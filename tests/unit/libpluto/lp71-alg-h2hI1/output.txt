@@ -1,6 +1,12 @@
 ./h2hI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./h2hI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./h2hI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./h2hI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./h2hI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./h2hI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./h2hI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./h2hI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./h2hI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hI1 loading secrets from "../samples/parker.secrets"
 ./h2hI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -14,8 +20,8 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | Added new connection alttunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | from whack: got --esp=aes128-sha1;modp1536
-| esp string values: AES(12)_128-SHA1(2)_000; pfsgroup=MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3DES_CBC(5)_000-MD5(1)_000-MODP2048(14); flags=-strict
+| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./h2hI1 use keyid: 1:<> / 2:<>
 | counting wild cards for 192.168.1.1 is 0
 ./h2hI1 use keyid: 1:<> / 2:<>
@@ -40,10 +46,10 @@ RC=0 "alttunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "alttunnel":     myip=unset; hisip=unset;
 RC=0 "alttunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "alttunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
-RC=0 "alttunnel":   IKE algorithms wanted: 3DES_CBC(5)_000-MD5(1)_000-MODP2048(14); flags=-strict
-RC=0 "alttunnel":   IKE algorithms found:  3DES_CBC(5)_192-MD5(1)_128-MODP2048(14)
-RC=0 "alttunnel":   ESP algorithms wanted: AES(12)_128-SHA1(2)_000; pfsgroup=MODP1536(5); flags=-strict
-| auth algid=2 not available
+RC=0 "alttunnel":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+RC=0 "alttunnel":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+RC=0 "alttunnel":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
+| esp algid=12 not available
 RC=0 "alttunnel":   ESP algorithms loaded: none
 | find_phase1_state: no SA found for conn 'alttunnel'
 | creating state object #1 at Z
@@ -58,6 +64,7 @@ RC=0 "alttunnel":   ESP algorithms loaded: none
 | inserting state object #1 bucket: 4
 ./h2hI1 initiating v2 parent SA
 ./h2hI1 STATE_PARENT_I1: initiate
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -81,11 +88,11 @@ RC=0 "alttunnel":   ESP algorithms loaded: none
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
+|    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
+|    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
@@ -158,7 +165,7 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 ac  22 00 00 2c
 |   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   03 00 00 08  02 00 00 01  03 00 00 08  03 00 00 01
 |   00 00 00 08  04 00 00 0e  28 00 01 08  00 0e 00 00
 |   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
 |   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
@@ -202,27 +209,15 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI1 leak: saved first packet, item size: X
 ./h2hI1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./h2hI1 leak: sa in main_outI1, item size: X
-./h2hI1 leak: db_v2_trans, item size: X
-./h2hI1 leak: db_v2_prop_conj, item size: X
-./h2hI1 leak: db_v2_prop, item size: X
 ./h2hI1 leak: initiator nonce, item size: X
 ./h2hI1 leak: long term secret, item size: X
 ./h2hI1 leak: saved gi value, item size: X
 ./h2hI1 leak: msg_digest, item size: X
 ./h2hI1 leak: ikev2_outI1 KE, item size: X
-./h2hI1 leak: db_v2_trans, item size: X
-./h2hI1 leak: db_v2_prop_conj, item size: X
-./h2hI1 leak: db_v2_prop, item size: X
-./h2hI1 leak: sa copy attrs array, item size: X
-./h2hI1 leak: sa copy trans array, item size: X
-./h2hI1 leak: sa copy prop array, item size: X
-./h2hI1 leak: sa copy prop conj array, item size: X
-./h2hI1 leak: sa copy prop_conj, item size: X
-./h2hI1 leak: sa copy attrs array, item size: X
-./h2hI1 leak: sa copy 1 trans array, item size: X
-./h2hI1 leak: sa copy 1 prop array, item size: X
-./h2hI1 leak: sa copy 1 prop conj array, item size: X
-./h2hI1 leak: sa copy prop_conj, item size: X
+./h2hI1 leak: db_context->trans (expand), item size: X
+./h2hI1 leak: db_context->attrs, item size: X
+./h2hI1 leak: 2 * db_context->conj, item size: X
+./h2hI1 leak: v2 policy database, item size: X
 ./h2hI1 leak: struct state in new_state(), item size: X
 ./h2hI1 leak: policies path, item size: X
 ./h2hI1 leak: ocspcerts path, item size: X
@@ -240,5 +235,6 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI1 leak: rfc3110 format of public key [created], item size: X
 ./h2hI1 leak: pubkey, item size: X
 ./h2hI1 leak: secret, item size: X
-./h2hI1 leak: 2 * hasher name, item size: X
+./h2hI1 leak: 4 * hasher name, item size: X
+./h2hI1 leak: 10 * group description, item size: X
 ./h2hI1 leak detective found Z leaks, total size X

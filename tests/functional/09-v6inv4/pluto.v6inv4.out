@@ -16,8 +16,8 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'rootCA.pem' (CERT bytes)
@@ -58,11 +58,9 @@ loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D5
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
 000  
-000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
-000  
 000 "net-net": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@sun.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net":     myip=unset; hisip=unset; mycert=moonCert.pem;
-000 "net-net":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'%any'
+000 "net-net":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 000 "net-net":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
 000 "net-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;

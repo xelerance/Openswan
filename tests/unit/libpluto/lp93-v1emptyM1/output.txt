@@ -5,15 +5,12 @@
 ./v1emptyM1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./v1emptyM1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./v1emptyM1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./v1emptyM1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1emptyM1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1emptyM1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1emptyM1 adjusting ipsec.d to ../samples/carol
 ./v1emptyM1 loading secrets from "../samples/carol.secrets"
-./v1emptyM1   loaded private key file '../samples/carol/private/carolKey.pem' (1679 bytes)
+./v1emptyM1   loaded private key file '../samples/carol/private/carolKey.pem' (CERT bytes)
 ./v1emptyM1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
-./v1emptyM1 Setting NAT-Traversal port-4500 floating to on
-./v1emptyM1    port floating activation criteria nat_t=1/port_float=1
-./v1emptyM1    NAT-Traversal support  [enabled]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -22,42 +19,40 @@ processing whack msg time: X size: Y
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 ./v1emptyM1   loading certificate from carolCert.pem
-./v1emptyM1   loaded host cert file '../samples/carol/certs/carolCert.pem' (1415 bytes)
+./v1emptyM1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
 | certificate is valid
-| counting wild cards for C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com is 0
+| counting wild cards for C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org is 0
 ./v1emptyM1   loading certificate from moonCert.pem
-./v1emptyM1   loaded host cert file '../samples/carol/certs/moonCert.pem' (1411 bytes)
+./v1emptyM1   loaded host cert file '../samples/carol/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient homeV1empty reference sr#1 this: addr:192.168.0.100 that: addr:192.168.0.1
 | orient homeV1empty checking against if: eth0 (AF_INET:0.0.0.0:500)
 |     orient matched on IP
 |   orient homeV1empty finished with: 1 [0.0.0.0]
 | find_host_pair: looking for me=192.168.0.100:500 %address him=192.168.0.1:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.0.100:500 %address 192.168.0.1:500 -> hp:none
-| find_ID_host_pair: looking for me=C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com him=@moon.strongswan.org (exact)
+| find_ID_host_pair: looking for me=C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org him=@moon.strongswan.org (exact)
 |   concluded with <none>
 ./v1emptyM1 adding connection: "homeV1empty"
-| 192.168.0.100[C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16
+| 192.168.0.100[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 |   orient homeV1empty finished with: 1 [0.0.0.0]
-RC=0 "homeV1empty": 192.168.0.100[C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16; unrouted; eroute owner: #0
+RC=0 "homeV1empty": 192.168.0.100[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16; unrouted; eroute owner: #0
 RC=0 "homeV1empty":     myip=unset; hisip=unset; mycert=carolCert.pem; hiscert=moonCert.pem;
 RC=0 "homeV1empty":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
 RC=0 "homeV1empty":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
 RC=0 "homeV1empty":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "homeV1empty":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
-RC=0 "homeV1empty":   IKEv2 algorithms wanted: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
-RC=0 "homeV1empty":   IKEv2 algorithms found:  aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
+RC=0 "homeV1empty":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
+RC=0 "homeV1empty":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 RC=0 "homeV1empty":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | esp algid=3 not available
 RC=0 "homeV1empty":   ESP algorithms loaded: none
 | find_phase1_state: no SA found for conn 'homeV1empty'
 | creating state object #1 at Z
-| orient homeV1empty reference sr#1 this: addr:192.168.0.100 that: addr:192.168.0.1
 | orient homeV1empty checking against if: eth0 (AF_INET:0.0.0.0:500)
 |     orient matched on IP
 |   orient homeV1empty finished with: 1 [0.0.0.0]
@@ -65,7 +60,6 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 | not including aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096( in policy, as algorithm missing(enc:1,integ:0,prf:0,group:1)
 ./v1emptyM1 initiating Main Mode
 | **emit ISAKMP Message:
@@ -85,7 +79,6 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
 ./v1emptyM1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
@@ -93,10 +86,17 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
+./v1emptyM1 leak: struct state in new_state(), item size: X
 ./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
 ./v1emptyM1 leak: issuer dn, item size: X
 ./v1emptyM1 leak: keep id name, item size: X
 ./v1emptyM1 leak: pubkey entry, item size: X
+./v1emptyM1 leak: pubkey, item size: X
+./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
+./v1emptyM1 leak: issuer dn, item size: X
+./v1emptyM1 leak: keep id name, item size: X
+./v1emptyM1 leak: pubkey entry, item size: X
+./v1emptyM1 leak: issuer, item size: X
 ./v1emptyM1 leak: pubkey, item size: X
 ./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
 ./v1emptyM1 leak: issuer dn, item size: X
@@ -104,6 +104,12 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 ./v1emptyM1 leak: pubkey entry, item size: X
 ./v1emptyM1 leak: pubkey, item size: X
 ./v1emptyM1 leak: certificate filename, item size: X
+./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
+./v1emptyM1 leak: issuer dn, item size: X
+./v1emptyM1 leak: keep id name, item size: X
+./v1emptyM1 leak: pubkey entry, item size: X
+./v1emptyM1 leak: issuer, item size: X
+./v1emptyM1 leak: pubkey, item size: X
 ./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
 ./v1emptyM1 leak: issuer dn, item size: X
 ./v1emptyM1 leak: keep id name, item size: X
@@ -123,18 +129,10 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 ./v1emptyM1 leak: cacert path, item size: X
 ./v1emptyM1 leak: acert path, item size: X
 ./v1emptyM1 leak: override ipsec.d, item size: X
-./v1emptyM1 leak: 4 * hasher name, item size: X
-./v1emptyM1 leak: 10 * group description, item size: X
-./v1emptyM1 leak: policies path, item size: X
-./v1emptyM1 leak: ocspcerts path, item size: X
-./v1emptyM1 leak: aacerts path, item size: X
-./v1emptyM1 leak: certs path, item size: X
-./v1emptyM1 leak: private path, item size: X
-./v1emptyM1 leak: crls path, item size: X
-./v1emptyM1 leak: cacert path, item size: X
-./v1emptyM1 leak: acert path, item size: X
 ./v1emptyM1 leak: default conf var_dir, item size: X
 ./v1emptyM1 leak: default conf conffile, item size: X
 ./v1emptyM1 leak: default conf ipsecd_dir, item size: X
 ./v1emptyM1 leak: default conf ipsec_conf_dir, item size: X
+./v1emptyM1 leak: 4 * hasher name, item size: X
+./v1emptyM1 leak: 10 * group description, item size: X
 ./v1emptyM1 leak detective found Z leaks, total size X
