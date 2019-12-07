@@ -16,7 +16,7 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on

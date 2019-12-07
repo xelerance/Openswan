@@ -5,8 +5,8 @@
 ./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./add2sa-del1sa loading secrets from "../samples/parker.secrets"
 ./add2sa-del1sa loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | creating state object #1 at Z

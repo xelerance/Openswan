@@ -26,6 +26,7 @@ conn nat-t
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4

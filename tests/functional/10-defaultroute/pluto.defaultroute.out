@@ -16,13 +16,14 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'strongswanCert.pem' (CERT bytes)
   loading certificate from bobCert.pem 
   loaded host cert file 'bob/certs/bobCert.pem' (CERT bytes)
+my side id: is wildcard
 adding connection: "nat-t"
 loading secrets from "bob.secrets"
   loaded private key file 'bob/private/bobKey.pem' (CERT bytes)
@@ -58,13 +59,11 @@ loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
 000  
-000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
-000  
 000 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute owner: #0
 000 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
-000 "nat-t":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'%any'
+000 "nat-t":   keys: 1:A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE 2:none...
 000 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
-000 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: ; kind=CK_PERMANENT
+000 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: ; kind=CK_GROUP
 000 "nat-t":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  

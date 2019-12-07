@@ -16,8 +16,8 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
@@ -25,6 +25,8 @@ Using 'no_kernel' interface code on
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/moonCert.pem' (1493 bytes)
   loading certificate from sunCert.pem
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/sunCert.pem' (1493 bytes)
+|   aftercheck : 1576002800 > 1566830565
+  X.509 certificate expired at Aug 26 14:42:45 UTC 2019 (it is now Dec 10 18:33:20 UTC 2019)
 adding connection: "net-net-works"
   loading certificate from moonCert.pem
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/moonCert.pem' (1493 bytes)
@@ -33,7 +35,6 @@ adding connection: "net-net-works"
 adding connection: "net-net-fails"
 Makefile:41: recipe for target 'step2b' failed
 000 using kernel interface: noklips
-000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
 000 debug none
 000
@@ -63,18 +64,14 @@ Makefile:41: recipe for target 'step2b' failed
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
 000
-000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0}
-000
-000 "net-net-fails": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2===fec2::/16; unrouted; eroute owner: #0
+000 "net-net-fails": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@missing.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-fails":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=missingCert.pem;
-000 "net-net-fails":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
-000 "net-net-fails":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+000 "net-net-fails":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 000 "net-net-fails":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-fails":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000 "net-net-works": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@sun.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-works":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=sunCert.pem;
-000 "net-net-works":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
-000 "net-net-works":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+000 "net-net-works":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 000 "net-net-works":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-works":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000
