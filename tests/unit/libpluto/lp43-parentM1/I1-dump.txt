@@ -1,18 +1,12 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 208, bad cksum 0 (->4597)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 160, bad cksum 0 (->45c7)!)
     192.168.1.1.500 > 132.213.238.7.500: isakmp 1.0 msgid 00000000: phase 1 I ident:
     (sa: doi=ipsec situation=identity
-        (p: #0 protoid=isakmp transform=12
+        (p: #0 protoid=isakmp transform=6
             (t: #0 id=ike )
             (t: #1 id=ike )
             (t: #2 id=ike )
             (t: #3 id=ike )
             (t: #4 id=ike )
-            (t: #5 id=ike )
-            (t: #6 id=ike )
-            (t: #7 id=ike )
-            (t: #8 id=ike )
-            (t: #9 id=ike )
-            (t: #10 id=ike )
-            (t: #11 id=ike )))
+            (t: #5 id=ike )))
     (vid: len=12)
     (vid: len=16)

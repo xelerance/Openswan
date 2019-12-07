@@ -9,9 +9,15 @@ Loading conn parker1--jj2--nopfs
 # conn parker1--jj2--nopfs processing alsos
 	while loading conn 'parker1--jj2--nopfs' also including 'parker1--jj2'
 conn: "parker1--jj0" sending RSA keys for left
+   looking for key1, result=0
+   sending pubkey 1: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 writing record 1 to whack file
+   looking for key2, result=2
 conn: "parker1--jj0" sending RSA keys for right
+   looking for key1, result=0
+   sending pubkey 1: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 writing record 2 to whack file
+   looking for key2, result=2
 emitting conn parker1--jj0 with end-family: 2 and tunnel-family: 10
 failed to load conn: parker1--jj0
 #setting rootdir=../../unit/libpluto/samples/parker

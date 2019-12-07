@@ -15,8 +15,8 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
 adding connection: "host-host"
@@ -53,8 +53,6 @@ loading named conns: host-host
 000 algorithm IKE dh group: id=22, name=OAKLEY_GROUP_DH22, bits=1024
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
-000  
-000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
 000  
 000 "host-host": fec0::1[@moon.strongswan.org]...fec0::2[@sun.strongswan.org]; unrouted; eroute owner: #0
 000 "host-host":     myip=unset; hisip=unset;

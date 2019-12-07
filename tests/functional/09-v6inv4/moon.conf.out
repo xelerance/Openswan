@@ -27,6 +27,7 @@ conn net-net
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
