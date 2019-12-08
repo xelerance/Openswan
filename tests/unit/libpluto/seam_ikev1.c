@@ -1,4 +1,5 @@
 #ifndef __seam_ikev1_c__
+#ifndef OMIT_IKEv1
 #define __seam_ikev1_c__
 
 #include "seam_ikev1_aggr.c"
@@ -43,4 +44,5 @@ void process_packet_tail(struct msg_digest **mdp) {}
 void init_demux(void) {}
 #endif
 
+#endif /* OMIT_IKEv1 */
 #endif
