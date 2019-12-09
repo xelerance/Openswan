@@ -7,10 +7,8 @@
 #include "seam_pending.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
-#include "seam_keys.c"
 #include "seam_dnskey.c"
 #include "seam_rsasig.c"
-#include "seam_keys.c"
 
 #include "seam_host_parker.c"
 

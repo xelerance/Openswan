@@ -18,7 +18,6 @@
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
 #include "seam_kernel.c"
-#include "seam_keys.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_ikev1_aggr.c"
 #include "seam_dpd.c"

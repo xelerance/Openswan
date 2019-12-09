@@ -32,7 +32,6 @@
 #include "seam_demux.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
-#include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_dnskey.c"
 #include "seam_natt.c"

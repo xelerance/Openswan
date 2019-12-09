@@ -6,7 +6,6 @@
 #include "seam_x509_list.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
-#include "seam_keys.c"
 #include "seam_kernel.c"
 
 #define TESTNAME "certreplyselfR2"
