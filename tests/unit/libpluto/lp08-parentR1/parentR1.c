@@ -3,7 +3,6 @@
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_x509.c"
-#include "seam_keys.c"
 #include "seam_rsasig.c"
 #include "../seam_host_jamesjohnson.c"
 
