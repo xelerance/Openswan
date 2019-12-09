@@ -3,7 +3,6 @@
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_rsasig.c"
-#include "seam_keys.c"
 #include "seam_rsa_check.c"
 #include "seam_x509.c"
 #include "seam_gi_sha1.c"

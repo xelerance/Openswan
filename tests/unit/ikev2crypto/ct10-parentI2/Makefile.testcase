@@ -9,7 +9,6 @@ ENDNAME=parker
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 
 pcapupdate:
 	cp ../../libpluto/lp08-parentR1/OUTPUT/parentR1.pcap parentR1.pcap

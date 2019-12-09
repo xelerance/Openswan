@@ -39,8 +39,6 @@
 #include "seam_x509_list.c"
 #include "seam_ke.c"
 
-#include "seam_keys.c"
-
 #include "seam_host_parker.c"
 #define TESTNAME "IDhostpair"
 

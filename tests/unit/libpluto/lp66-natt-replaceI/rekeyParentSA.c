@@ -6,7 +6,6 @@
 #include "../../programs/pluto/replace.h"
 #include "seam_x509.c"
 #include "seam_rsasig.c"
-#include "seam_keys.c"
 #include "seam_gi_sha1.c"
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
