@@ -21,6 +21,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
