@@ -1041,6 +1041,7 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
+| Rekeying #3 from existing state #2, will inherit tunnel encapsulation (1)
 | empty esp_info, returning defaults
 | ***parse IKEv2 Proposal Substructure Payload:
 |    length: 40
