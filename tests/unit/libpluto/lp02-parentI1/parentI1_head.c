@@ -9,6 +9,7 @@
 #include "unit_test_includes.h"
 
 #include "whackmsgtestlib.c"
+#include <pluto/nat_traversal.h>
 #include "seam_debug.c"
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
@@ -24,6 +25,7 @@
 #endif
 #include "seam_exitlog.c"
 #include "seam_natt.c"
+
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
