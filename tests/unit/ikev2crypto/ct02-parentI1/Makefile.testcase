@@ -6,6 +6,10 @@ CONNNAME=parker1--jj2
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
 ENDNAME=parker
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+
 pcapupdate:
 	@echo true
 

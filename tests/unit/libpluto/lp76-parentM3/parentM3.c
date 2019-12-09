@@ -13,7 +13,6 @@
 #include "seam_ikev1_phase2.c"
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
-#include "seam_keys.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_unpend.c"

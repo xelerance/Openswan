@@ -5,7 +5,6 @@ UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 
 TESTNAME=dnscpeI1
 ENDNAME=dnsdelayclient
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/dnskey.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/adns.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/pending.o

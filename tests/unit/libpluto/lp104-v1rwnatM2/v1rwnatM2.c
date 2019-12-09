@@ -20,7 +20,6 @@
 #include "seam_unpend.c"
 #include "seam_command.c"
 #include "seam_rsa_check.c"
-#include "seam_keys.c"
 #include "seam_rsasig.c"
 #include "seam_rsa_check.c"
 
