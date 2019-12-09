@@ -847,6 +847,7 @@ netlink_raw_eroute(const ip_address *this_host
 	memset(tmpl, 0, sizeof(tmpl));
 	for (i = 0; proto_info[i].proto; i++)
 	{
+            passert(i<4);
 	    tmpl[i].reqid = proto_info[i].reqid;
 	    tmpl[i].id.proto = proto_info[i].proto;
 	    tmpl[i].optional =
