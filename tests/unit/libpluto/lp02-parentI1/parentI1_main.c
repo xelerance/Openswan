@@ -33,6 +33,9 @@ int main(int argc, char *argv[])
     init_local_interface();
     enable_debugging();
 
+    init_nat_traversal(TRUE, /* keep alive interval */0
+                       , /* force keep alive */FALSE, /* port forwarding enabled */TRUE);
+
     infile = argv[0];
     conn_name = argv[1];
 
