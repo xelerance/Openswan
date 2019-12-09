@@ -2,11 +2,13 @@
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
 EXTRAOBJS+=${LIBPLUTO}
 
 CONNNAME=bobnet-ikev1
 ENDNAME=alice
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
+UNITTESTARGS=${UNITTEST1ARGS}
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=v1rwnatM1

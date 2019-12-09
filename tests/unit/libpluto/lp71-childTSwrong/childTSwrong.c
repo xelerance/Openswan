@@ -7,7 +7,6 @@
 #include "seam_x509.c"
 #include "seam_crypt.c"
 #include "seam_rsasig.c"
-#include "seam_keys.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_natt.c"

@@ -12,7 +12,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ac.o

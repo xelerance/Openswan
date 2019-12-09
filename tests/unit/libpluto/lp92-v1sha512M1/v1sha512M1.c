@@ -16,7 +16,6 @@
 #include "seam_ikev1_crypto.c"
 #include "seam_rsa_check.c"
 #include "seam_rsasig.c"
-#include "seam_keys.c"
 
 #include "seam_host_carol.c"
 

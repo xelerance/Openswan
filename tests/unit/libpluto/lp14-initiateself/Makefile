@@ -48,7 +48,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
