@@ -1,13 +1,14 @@
 # -*- makefile -*-
 
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+ENDNAME=parker
 CONNNAME=parker1--jj2
 UNITTEST1ARGS=${WHACKFILE} parker1--jj2 OUTPUT/parentR2.pcap parentI1.pcap parentI2.pcap
 # purposely use the same conn file as client, it should swap and work.
-ENDNAME=parker
 
 TESTNAME=parentR2
 
-
 pcapupdate:
-	@true
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
+	cp ../lp10-parentI2/OUTPUT/parentI2.pcap parentI2.pcap
+
