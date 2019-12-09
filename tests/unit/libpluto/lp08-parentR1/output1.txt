@@ -5,10 +5,14 @@
 ./parentR1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./parentR1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./parentR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./parentR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentR1 loading secrets from "../samples/jj.secrets"
 ./parentR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./parentR1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./parentR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./parentR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./parentR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -19,9 +23,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./parentR1 use keyid: 1:<> / 2:<>
+./parentR1 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
-./parentR1 use keyid: 1:<> / 2:<>
+./parentR1 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
@@ -38,12 +42,14 @@ processing whack msg time: X size: Y
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
+RC=0 "parker1--jj2":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "parker1--jj2":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
-|   =========== input from pcap file parentI1badKE.pcap ========
-| *received 772 bytes from 192.168.1.1:500 on eth0 (port=500)
-|   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 04  22 00 01 fc
+|   =========== input from pcap file parentI1.pcap ========
+| *received 892 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -75,30 +81,42 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
 |   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
 |   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 00 c8  00 0e 00 00
-|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-|   2b 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
+<<<<<<< HEAD
 | I am the IKE SA Responder
 | I am this exchange's Responder
 | ICOOKIE:  00 01 02 03  04 05 06 07
+=======
+| I am IKE SA Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+>>>>>>> 788d52de3... correct error in output file when splitting up test case
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
-| ICOOKIE:  00 01 02 03  04 05 06 07
+| ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
@@ -124,17 +142,34 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
-| ICOOKIE:  00 01 02 03  04 05 06 07
+| ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| received a notify..
 | processor 'responder-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inI1outR1: calculated ke+nonce, sending R1
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
+| processing v2N_NAT_DETECTION_SOURCE_IP
+| received nat-t hash  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| calculated nat-t  h  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
+| processing v2N_NAT_DETECTION_DESTINATION_IP
+| received nat-t hash  cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2
+| calculated nat-t  h  cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | **emit ISAKMP Message:
 |    initiator cookie:
-|   00 01 02 03  04 05 06 07
+|   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
@@ -143,7 +178,30 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
-| no IKE algorithms for this connection
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 1
@@ -154,60 +212,13 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    length: 12
 |    transform type: 1
 |    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| selected proposal 1 encr=aes_cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 2
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 14
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| emitting length of IKEv2 Security Association Payload: 48
-./parentR1 KE has 192 byte DH public value; 256 required
-./parentR1 sending notification ISAKMP_v2_SA_INIT/v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
+./parentR1 af+type of IKEv2 Attribute Substructure Payload has an unknown value: 32782
+| #1 complete v2 state transition with STF_FAIL+15
+./parentR1 STATE_PARENT_R1: BAD_PROPOSAL_SYNTAX
+./parentR1 sending notification ISAKMP_v2_SA_INIT/v2N_UNUSED_15 to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
-|   00 01 02 03  04 05 06 07
+|   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
@@ -220,69 +231,41 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    Notify Message Type: v2N_INVALID_KE_PAYLOAD
-| emitting 2 raw bytes of Notify data into IKEv2 Notify Payload
-| Notify data  00 0e
-| emitting length of IKEv2 Notify Payload: 10
-| emitting 2 zero bytes of message padding into ISAKMP Message
-| emitting length of ISAKMP Message: 40
-sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
-|   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   29 20 22 20  00 00 00 00  00 00 00 28  00 00 00 0a
-|   01 00 00 11  00 0e 00 00
+|    Notify Message Type: v2N_UNUSED_15
+| emitting length of IKEv2 Notify Payload: 8
+| emitting length of ISAKMP Message: 36
+sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
+|   01 00 00 0f
+| state transition function for STATE_PARENT_R1 failed: BAD_PROPOSAL_SYNTAX
 ./parentR1 deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
 | removing state object #1
-| ICOOKIE:  00 01 02 03  04 05 06 07
+| ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| #0 complete v2 state transition with STF_FAIL
-./parentR1 no-state: (null)
-| state transition function for no-state failed: <no reason given>
+| freeing state object #1
 ./parentR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./parentR1 leak: notification packet, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_prop, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: 12 * sa copy attrs array, item size: X
-./parentR1 leak: sa copy trans array, item size: X
-./parentR1 leak: sa copy prop array, item size: X
-./parentR1 leak: sa copy prop conj array, item size: X
-./parentR1 leak: sa copy prop_conj, item size: X
-./parentR1 leak: saved first received packet, item size: X
+./parentR1 leak: alg_info_ike, item size: X
 ./parentR1 leak: ikev2_inI1outR1 KE, item size: X
-./parentR1 leak: struct state in new_state(), item size: X
 ./parentR1 leak: msg_digest, item size: X
+./parentR1 leak: keep id name, item size: X
+./parentR1 leak: pubkey entry, item size: X
+./parentR1 leak: rfc3110 format of public key, item size: X
+./parentR1 leak: pubkey, item size: X
+./parentR1 leak: keep id name, item size: X
+./parentR1 leak: pubkey entry, item size: X
+./parentR1 leak: rfc3110 format of public key, item size: X
+./parentR1 leak: pubkey, item size: X
+./parentR1 leak: 2 * id list, item size: X
+./parentR1 leak: rfc3110 format of public key [created], item size: X
+./parentR1 leak: pubkey, item size: X
+./parentR1 leak: secret, item size: X
+./parentR1 leak: 4 * hasher name, item size: X
+./parentR1 leak: 10 * group description, item size: X
 ./parentR1 leak: policies path, item size: X
 ./parentR1 leak: ocspcerts path, item size: X
 ./parentR1 leak: aacerts path, item size: X
@@ -295,11 +278,5 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 ./parentR1 leak: default conf conffile, item size: X
 ./parentR1 leak: default conf ipsecd_dir, item size: X
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
-./parentR1 leak: 2 * id list, item size: X
-./parentR1 leak: rfc3110 format of public key [created], item size: X
-./parentR1 leak: pubkey, item size: X
-./parentR1 leak: secret, item size: X
-./parentR1 leak: 4 * hasher name, item size: X
-./parentR1 leak: 10 * group description, item size: X
 ./parentR1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
