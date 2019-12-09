@@ -2199,6 +2199,23 @@ static stf_status ikev2child_inCR1_tail(struct msg_digest *md, struct state *st)
         return e;
     }
 
+    /* if rekeying an existing connection, inherit tunnel/transport mode */
+    {
+        struct state *est;
+        est = state_with_serialno(c->newest_ipsec_sa);
+        if (est && est->st_esp.attrs.encapsulation != ENCAPSULATION_MODE_UNSPECIFIED) {
+            /* in that case, we will use the same mode */
+            st->st_esp.attrs.encapsulation = est->st_esp.attrs.encapsulation;
+            DBG(DBG_CONTROLMORE,
+                DBG_log("Rekeying #%lu from existing state #%lu, "
+                        "will inherit %s encapsulation (%d)",
+                        st->st_serialno, est->st_serialno,
+                        st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL ? "tunnel" :
+                        st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT ? "transport" : "?",
+                        st->st_esp.attrs.encapsulation));
+        }
+    }
+
     {
         v2_notification_t rn;
         struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
