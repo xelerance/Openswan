@@ -31,13 +31,15 @@ TESTNUMBER=lo06-verifybadsigs
 TESTNAME=verifybadsigs
 UNITTESTARGS=
 
+programs: ${TESTNAME}
+.PHONY: programs
+
 check: ${TESTNAME}
 	@mkdir -p OUTPUT
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
-.PHONY: ${TESTNAME}
 ${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
 	@${CC} -Wno-pointer-sign -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS} ${EXTRALIBS}
