@@ -11,7 +11,7 @@ processing whack msg time: X size: Y
 RC=0 "net-net": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@sun.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 RC=0 "net-net":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "net-net":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-RC=0 "net-net":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "net-net":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "net-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: eth0; kind=CK_PERMANENT
 ./orientmoon deleting connection
 ./orientmoon leak: rfc3110 format of public key [created], item size: X

@@ -13,9 +13,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-./IDhostpair use keyid: 1:<> / 2:<>
+./IDhostpair use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @openswan.testing.xelerance.com is 0
-./IDhostpair use keyid: 1:<> / 2:<>
+./IDhostpair use keyid: 1:6A25 871D 6F8C 9865 6C82 C13E F57C 99B4 C61A D173 / 2:<>
 | counting wild cards for @dnsh2h2 is 0
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -43,9 +43,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with mytunnel
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:mytunnel
 | Added new connection mytunnel2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-./IDhostpair use keyid: 1:<> / 2:<>
+./IDhostpair use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @openswan.testing.xelerance.com is 0
-./IDhostpair use keyid: 1:<> / 2:<>
+./IDhostpair use keyid: 1:A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3 / 2:<>
 | counting wild cards for @oswclient2 is 0
 | orient mytunnel2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -78,6 +78,14 @@ RC=2      mytunnel
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: connection name, item size: X
 ./IDhostpair leak: struct connection, item size: X
+./IDhostpair leak: keep id name, item size: X
+./IDhostpair leak: pubkey entry, item size: X
+./IDhostpair leak: rfc3110 format of public key, item size: X
+./IDhostpair leak: pubkey, item size: X
+./IDhostpair leak: keep id name, item size: X
+./IDhostpair leak: pubkey entry, item size: X
+./IDhostpair leak: rfc3110 format of public key, item size: X
+./IDhostpair leak: pubkey, item size: X
 ./IDhostpair leak: 2 * keep id name, item size: X
 ./IDhostpair leak: ID host_pair, item size: X
 ./IDhostpair leak: host_pair, item size: X
@@ -86,6 +94,13 @@ RC=2      mytunnel
 ./IDhostpair leak: keep id name, item size: X
 ./IDhostpair leak: connection name, item size: X
 ./IDhostpair leak: struct connection, item size: X
+./IDhostpair leak: keep id name, item size: X
+./IDhostpair leak: pubkey entry, item size: X
+./IDhostpair leak: rfc3110 format of public key, item size: X
+./IDhostpair leak: pubkey, item size: X
+./IDhostpair leak: keep id name, item size: X
+./IDhostpair leak: rfc3110 format of public key, item size: X
+./IDhostpair leak: pubkey, item size: X
 ./IDhostpair leak: policies path, item size: X
 ./IDhostpair leak: ocspcerts path, item size: X
 ./IDhostpair leak: aacerts path, item size: X
