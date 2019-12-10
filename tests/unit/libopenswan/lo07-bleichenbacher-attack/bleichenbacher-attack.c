@@ -59,14 +59,14 @@ int attack(uint8_t low_exponent, size_t modulus_bit_len)
     /* choose any 128-byte (1024-bit) modulus */
     prng_bytes(&not_very_random, modulusBytes, modulus_byte_len);
     printf("modulusBytes[%lu]:\n", modulus_byte_len);
-    hexdump(modulusBytes, 0, modulus_byte_len);
+    hexdump(stdout, modulusBytes, 0, modulus_byte_len);
 
     /* low-exponent ... let's say 3 */
     uint8_t pubExpBytes[] = {
         low_exponent
     };
     printf("pubExpBytes[%lu]:\n", sizeof(pubExpBytes));
-    hexdump(pubExpBytes, 0, sizeof(pubExpBytes));
+    hexdump(stdout, pubExpBytes, 0, sizeof(pubExpBytes));
 
     /* prepare the public key */
     struct pubkey pk;
