@@ -19,24 +19,25 @@ processing whack msg time: X size: Y
 | counting wild cards for (none) is 15
 ./loadbob my side id: is wildcard
 | orient nat-t checking against if: eth0 (AF_INET:10.2.0.10:500)
-| orient nat-t matching on public/private keys: this=no[%any] that=yes[%defaultroute]
-|   orient nat-t matched on that having private key
+|   trusted_ca_by_name called with a=C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA b=(empty)
+| orient nat-t matching on public/private keys: this=yes[%any] that=yes[%defaultroute]
+|   orient nat-t matched on this having private key
 | pick_if looking for port: 500, family: 0
 |   considering eth0 10.2.0.10 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 10.2.0.10
 |   orient nat-t finished with: 1 [10.2.0.10]
-| find_host_pair: looking for me=<invalid>:500 %any him=<invalid>:500 exact-match
+| find_host_pair: looking for me=<invalid>:500 %defaultroute him=<invalid>:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %any <invalid>:500 -> hp:none
-| find_ID_host_pair: looking for me=bob@strongswan.org him=<any> (exact)
+| connect_to_host_pair: <invalid>:500 %defaultroute <invalid>:500 -> hp:none
+| find_ID_host_pair: looking for me=<any> him=bob@strongswan.org (exact)
 |   concluded with <none>
 ./loadbob adding connection: "nat-t"
-| %any[bob@strongswan.org]...%any===10.1.0.0/16
+| 10.1.0.0/16===%any...%any[bob@strongswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-RC=0 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute owner: #0
-RC=0 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
-RC=0 "nat-t":   keys: 1:A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE 2:none...
-RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "nat-t": 10.1.0.0/16===%any...%any[bob@strongswan.org]; unrouted; eroute owner: #0
+RC=0 "nat-t":     myip=unset; hisip=unset; hiscert=bobCert.pem;
+RC=0 "nat-t":        ....1:A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE 2:none
+RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 |   orient nat-t finished with: 1 [10.2.0.10]
 ./loadbob deleting connection
