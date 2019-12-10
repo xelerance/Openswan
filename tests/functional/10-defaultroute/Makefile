@@ -30,8 +30,10 @@ FILTERS=sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.se
 
 check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}
+	-rm -f OUTPUT/base.pid core
 	${READWRITE} --debug --config ${CONFFILE} | tee ${OUTPUTS}/bob.conf.raw | diff - bob.conf.out
 	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2c step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | ${FILTERS} | diff - pluto.${TESTNAME}.out;
+	@if [ -f core ]; then echo CORE DUMP; exit 1; fi
 
 update:
 	cp ${OUTPUTS}/bob.conf.raw     bob.conf.out
@@ -58,7 +60,6 @@ step4:
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
 	@mkdir -p bob/cacerts bob/aacerts bob/ocspcerts bob/crls
-	-rm -f OUTPUT/base.pid
 
 clean:
 	-rm -f OUTPUT/base.pid
