@@ -206,14 +206,14 @@ void verify_sig_key_hack(struct hack *hack, const char *keyfile,
     prng_bytes(&not_very_random, thingtosign+der_digestinfo_len, 16);
     signed_len = 16+der_digestinfo_len;
     printf("signed_len: %d\n", (int)signed_len);
-    hexdump(thingtosign, 0, signed_len);
+    hexdump(stdout, thingtosign, 0, signed_len);
     fflush(stdout);
 
     sign_hash_hack(hack, pks1, thingtosign, signed_len,
 		   signature_buf, keysize);
 
     printf("signature_buf: %d\n", (int)keysize);
-    hexdump(signature_buf, 0, sizeof(signature_buf));
+    hexdump(stdout, signature_buf, 0, sizeof(signature_buf));
     fflush(stdout);
 
     /* now verify the signature using the public key part of this secret */
