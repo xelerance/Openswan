@@ -5,18 +5,16 @@
 ./certreplydaveR1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./certreplydaveR1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./certreplydaveR1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./certreplydaveR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./certreplydaveR1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
-./certreplydaveR1 adjusting ipsec.d to ../samples/gatewaycert
-./certreplydaveR1 loading secrets from "../samples/gatewaycert.secrets"
-./certreplydaveR1   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
-./certreplydaveR1 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
+./certreplydaveR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./certreplydaveR1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./certreplydaveR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./certreplydaveR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./certreplydaveR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./certreplydaveR1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./certreplydaveR1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./certreplydaveR1 adjusting ipsec.d to ../samples/gatewaycert
+./certreplydaveR1 loading secrets from "../samples/gatewaycert.secrets"
+./certreplydaveR1   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (CERT bytes)
+./certreplydaveR1 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -24,11 +22,11 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| from whack: got --esp=aes128-sha1;modp2048
-| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14); flags=-strict
+| from whack: got --esp=3des-md5;modp1024
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
 ./certreplydaveR1   loading certificate from moonCert.pem
-./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1411 bytes)
+./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.testing.openswan.org is 0
 | counting wild cards for (none) is 15
@@ -36,7 +34,6 @@ processing whack msg time: X size: Y
 | based upon ID_wildcard policy, the connection is a template.
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient rw-any reference sr#1 this: addr:132.213.238.7 that: %any
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -52,20 +49,19 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection rw-carol with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| from whack: got --esp=aes128-sha1;modp2048
-| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14); flags=-strict
+| from whack: got --esp=3des-md5;modp1024
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
 ./certreplydaveR1   loading certificate from moonCert.pem
-./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1411 bytes)
+./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.testing.openswan.org is 0
 ./certreplydaveR1   loading certificate from carolCert.pem
-./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/carolCert.pem' (1415 bytes)
+./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/carolCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @carol.testing.openswan.org is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient rw-carol reference sr#1 this: addr:132.213.238.7 that: addr:93.184.216.34
 | orient rw-carol checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-carol checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -83,17 +79,16 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection rw-dave with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| from whack: got --esp=aes128-sha1;modp2048
-| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14); flags=-strict
+| from whack: got --esp=3des-md5;modp1024
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
 ./certreplydaveR1   loading certificate from moonCert.pem
-./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1411 bytes)
+./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.testing.openswan.org is 0
-| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
+| counting wild cards for C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient rw-dave reference sr#1 this: addr:132.213.238.7 that: addr:192.168.0.200
 | orient rw-dave checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-dave checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -103,38 +98,44 @@ processing whack msg time: X size: Y
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.0.200:500 -> hp:none
-| find_ID_host_pair: looking for me=@moon.testing.openswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org (exact)
+| find_ID_host_pair: looking for me=@moon.testing.openswan.org him=C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org (exact)
 |                   comparing to me=@moon.testing.openswan.org him=@carol.testing.openswan.org (rw-carol)
 |                   comparing to me=@moon.testing.openswan.org him=(none) (rw-any)
 |   concluded with <none>
 ./certreplydaveR1 adding connection: "rw-dave"
-| 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.168.0.200[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
+| 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.168.0.200[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "rw-any":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-RC=0 "rw-any":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
+RC=0 "rw-any":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+RC=0 "rw-any":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1024(2)
+RC=0 "rw-any":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+RC=0 "rw-any":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | Changed path to directory '../samples/gatewaycert/cacerts'
-./certreplydaveR1   loaded CA cert file 'rootCA.pem' (1525 bytes)
+./certreplydaveR1   loaded CA cert file 'rootCA.pem' (CERT bytes)
 RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...93.184.216.34[@carol.testing.openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=carolCert.pem;
 RC=0 "rw-carol":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-carol":        ....1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none
-RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-RC=0 "rw-carol":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-RC=0 "rw-carol":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
-RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.168.0.200[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]; unrouted; eroute owner: #0
+RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-carol":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+RC=0 "rw-carol":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1024(2)
+RC=0 "rw-carol":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+RC=0 "rw-carol":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
+RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.168.0.200[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-dave":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-RC=0 "rw-dave":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
-RC=0 "rw-dave":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
+RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-dave":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+RC=0 "rw-dave":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1024(2)
+RC=0 "rw-dave":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
+RC=0 "rw-dave":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 RC=2 IP hostpairs:
 RC=2   IPpair: 132.213.238.7:500 - 192.168.0.200:500
 RC=2      rw-dave
@@ -143,7 +144,7 @@ RC=2      rw-carol
 RC=2   IPpair: 132.213.238.7:500 - 0.0.0.0:500
 RC=2      rw-any
 RC=2 ID hostpairs:
-RC=2   IDpair: @moon.testing.openswan.org/C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
+RC=2   IDpair: @moon.testing.openswan.org/C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org
 RC=2      rw-dave
 RC=2   IDpair: @moon.testing.openswan.org/@carol.testing.openswan.org
 RC=2      rw-carol
@@ -151,36 +152,66 @@ RC=2   IDpair: @moon.testing.openswan.org/              (none)
 RC=2      rw-any
 0: input from ../lp24-certreplydaveR2/carolI1.pcap
 |   =========== input from pcap file ../lp24-certreplydaveR2/carolI1.pcap ========
-| *received 432 bytes from 93.184.216.34:500 on eth0 (port=500)
+| *received 892 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 01 b0  22 00 00 30
-|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  02 00 00 02  03 00 00 08
-|   03 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
-|   00 0e 00 00  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
-|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
-|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
-|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
-|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
-|   e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
-|   9f c7 c9 48  43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3
-|   06 43 f0 0a  e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e
-|   f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17
-|   af 6c b8 31  08 d7 19 5a  7b c4 54 c2  13 47 98 c2
-|   cc d2 16 29  75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2
-|   f3 f2 49 2c  f6 06 73 c1  96 1e ce 58  81 01 1c cb
-|   16 dc f9 fc  c7 93 08 75  58 16 57 71  69 96 66 b7
-|   a9 81 7f f7  37 4d 7c 41  38 62 a6 39  00 81 ca 3d
-|   1d fc f7 b5  08 38 d4 34  70 22 6c 21  d2 5b 20 a1
-|   d2 ba 2a d1  89 f3 20 79  ce ac 1e c2  ec 7d ae 76
-|   94 40 39 a0  29 00 00 14  20 98 9d 37  a8 14 a6 4d
-|   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
-|   27 ec f2 2b  d5 28 36 92  28 23 8a 58  36 a2 4f d8
-|   ee 6c cd bb  2b 00 00 1c  00 00 40 05  cd bc 1b 74
-|   02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
+|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
+|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  27 ec f2 2b
+|   d5 28 36 92  28 23 8a 58  36 a2 4f d8  ee 6c cd bb
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -190,11 +221,11 @@ RC=2      rw-any
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW/-
@@ -208,7 +239,6 @@ RC=2      rw-any
 | find_host_connection2 returns rw-carol (ike=none/none)
 ./certreplydaveR1 tentatively considering connection: rw-carol
 | creating state object #1 at Z
-| orient rw-carol reference sr#1 this: addr:132.213.238.7 that: addr:93.184.216.34
 | orient rw-carol checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-carol checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -217,7 +247,6 @@ RC=2      rw-any
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | inserting state object #1 bucket: 5
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 | will not send/process a dcookie
 | received a notify..
 | processor 'responder-V2_init' returned STF_SUSPEND (2)
@@ -250,6 +279,7 @@ RC=2      rw-any
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2)
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 1
@@ -266,12 +296,12 @@ RC=2      rw-any
 | collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 2
+|    transform type: 3
 |    transform ID: 2
-| collect encr: 12<=1 integ: 0<=0 prf: 2<=1 dh: 0<=0
+| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 3
+|    transform type: 2
 |    transform ID: 2
 | collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:

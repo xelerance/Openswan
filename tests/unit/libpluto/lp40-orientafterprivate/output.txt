@@ -7,8 +7,8 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./orienttest use keyid: 1:<> / 2:<>
-./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+./orienttest use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 ./orienttest adding connection: "parker1--jj2"
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -18,18 +18,22 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./orienttest use keyid: 1:<> / 2:<>
-./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
+./orienttest use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 |      FAILs -- himid mismatch
 ./orienttest adding connection: "ikev2:parker--jj"
 processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "parker1--jj2":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: ; kind=CK_PERMANENT
 processing ikev2:parker--jj
 RC=0 "ikev2:parker--jj": fd68:c9f9:4157:2:0:1::/96===%any[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "ikev2:parker--jj":     myip=unset; hisip=unset;
+RC=0 "ikev2:parker--jj":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
+RC=0 "ikev2:parker--jj":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
 RC=0 "ikev2:parker--jj":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: ; kind=CK_PERMANENT
 RC=2 IP hostpairs:
@@ -44,9 +48,13 @@ RC=2      parker1--jj2
 listening now
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
+./orienttest forgetting secrets
+./orienttest no secrets filename matched "/etc/ipsec.secrets"
 | orient ikev2:parker--jj checking against if: eth0 (AF_INET:192.168.1.1:500)
 | orient ikev2:parker--jj checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient ikev2:parker--jj checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient ikev2:parker--jj matching on public/private keys: this=no[%defaultroute] that=no[%address]
 |   orient ikev2:parker--jj matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 2
@@ -88,12 +96,16 @@ RC=2      ikev2:parker--jj
 re-processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
+RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 re-processing ikev2:parker--jj
 RC=0 "ikev2:parker--jj": fd68:c9f9:4157:2:0:1::/96===%any[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "ikev2:parker--jj":     myip=unset; hisip=unset;
+RC=0 "ikev2:parker--jj":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
+RC=0 "ikev2:parker--jj":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
 RC=0 "ikev2:parker--jj":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 |   orient ikev2:parker--jj finished with: 1 [192.168.1.1]
@@ -115,10 +127,6 @@ RC=2 IP hostpairs:
 RC=2 ID hostpairs:
 ./orienttest leak: myid string, item size: X
 ./orienttest leak: my FQDN, item size: X
-./orienttest leak: 2 * id list, item size: X
-./orienttest leak: rfc3110 format of public key [created], item size: X
-./orienttest leak: pubkey, item size: X
-./orienttest leak: secret, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X
@@ -128,6 +136,20 @@ RC=2 ID hostpairs:
 ./orienttest leak: cacert path, item size: X
 ./orienttest leak: acert path, item size: X
 ./orienttest leak: override ipsec.d, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X

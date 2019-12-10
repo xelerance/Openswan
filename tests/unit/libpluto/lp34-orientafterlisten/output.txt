@@ -7,12 +7,14 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./orienttest use keyid: 1:<> / 2:<>
-./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+./orienttest use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 ./orienttest adding connection: "parker1--jj2"
 processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "parker1--jj2":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: ; kind=CK_PERMANENT
 RC=2 IP hostpairs:
@@ -21,6 +23,7 @@ RC=2   IDpair: @jamesjohnson.emmjay.credil.org/@parker01.emmjay.credil.org
 RC=2      parker1--jj2
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
+./orienttest no secrets filename matched "/etc/ipsec.secrets"
 RC=2 IP hostpairs:
 RC=2   IPpair: 192.168.1.1:500 - 132.213.238.7:500
 RC=2      parker1--jj2
@@ -30,6 +33,8 @@ RC=2      parker1--jj2
 re-processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
+RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 RC=2 IP hostpairs:
@@ -41,6 +46,14 @@ RC=2      parker1--jj2
 ./orienttest deleting connection
 ./orienttest leak: myid string, item size: X
 ./orienttest leak: my FQDN, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X
