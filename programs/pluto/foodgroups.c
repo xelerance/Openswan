@@ -435,7 +435,9 @@ unroute_group(struct connection *c)
 void
 delete_group(const struct connection *c)
 {
-    struct fg_groups *g;
+    struct fg_groups *g = NULL;
+
+    if(groups == NULL) return;
 
     /* find and remove from groups */
     {
