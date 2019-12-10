@@ -26,11 +26,9 @@ Could not change to directory 'moon/aacerts': No such file or directory
 Could not change to directory 'moon/ocspcerts': No such file or directory
 Could not change to directory 'moon/crls': 2 No such file or directory
   loading certificate from moonCert.pem
-  loaded host cert file 'moon/certs/moonCert.pem' (1411 bytes)
-  loading certificate from sunCert.pem
-  loaded host cert file 'moon/certs/sunCert.pem' (1493 bytes)
-|   aftercheck : 1576003642 > 1566830565
-  X.509 certificate expired at Aug 26 14:42:45 UTC 2019 (it is now Dec 10 18:47:22 UTC 2019)
+  loaded host cert file 'moon/certs/moonCert.pem' (1468 bytes)
+  loading certificate from daveCert.pem
+  loaded host cert file 'moon/certs/daveCert.pem' (1468 bytes)
 adding connection: "net-net"
 no secrets filename matched "moon.secrets"
 Makefile:56: recipe for target 'step5' failed
