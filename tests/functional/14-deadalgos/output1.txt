@@ -1,0 +1,10 @@
+debugging mode enabled
+end of file ../../unit/libpluto/samples/rwcert.conf
+Loading default conn
+Loading conn home
+conn: "home" sending RSA keys for left
+conn: "home" sending RSA keys for right
+emitting conn home with end-family: 2 and tunnel-family: 2
+writing record 1 to whack file
+opening file: ../../unit/libpluto/samples/rwcert.conf
+processing conn: home 
