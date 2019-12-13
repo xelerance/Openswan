@@ -26,7 +26,6 @@ conn net-net
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -50,7 +49,6 @@ conn host-host
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -73,7 +71,6 @@ conn rw
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
