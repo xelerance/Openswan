@@ -24,7 +24,6 @@ conn berri
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
@@ -46,7 +45,6 @@ conn peel
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
@@ -71,7 +69,6 @@ conn berrinet
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
@@ -97,7 +94,6 @@ conn peelnet
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
@@ -126,7 +122,6 @@ conn green
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=no
 	authby=rsasig
 	phase2=esp
 	ikev2=insist

@@ -58,7 +58,6 @@ conn cassidy--marajade
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -84,7 +83,6 @@ conn cassidy--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -111,7 +109,6 @@ conn istari--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -137,7 +134,6 @@ conn catfish--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -164,7 +160,6 @@ conn franklin--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -191,7 +186,6 @@ conn aragorn--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -217,7 +211,6 @@ conn saruman--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -243,7 +236,6 @@ conn galadriel--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -269,7 +261,6 @@ conn grouper--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -295,7 +286,6 @@ conn jarvis--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -321,7 +311,6 @@ conn tuna--marajade-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -349,7 +338,6 @@ conn cassidy--correlhorn
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -378,7 +366,6 @@ conn istari--correlhorn-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -407,7 +394,6 @@ conn franklin--correlhorn-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -436,7 +422,6 @@ conn aragorn--correlhorn-extrude
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -457,7 +442,6 @@ conn cassidy--tygerteam-home88
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -477,7 +461,6 @@ conn cassidy-left
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -498,7 +481,6 @@ conn dooku--cassidy-net
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -515,7 +497,6 @@ conn dooku-base
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -533,7 +514,6 @@ conn cassidy-base
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -555,7 +535,6 @@ conn knothole--cassidy
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -575,7 +554,6 @@ conn marajade-extrude
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4
@@ -595,7 +573,6 @@ conn marajade-extrude-new
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4
@@ -617,7 +594,6 @@ conn correlhorn-extrude
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	tunneladdrfamily=ipv4
@@ -640,7 +616,6 @@ conn packetdefault
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	failureshunt=passthrough
@@ -654,13 +629,6 @@ conn clear
 	rightsubnet=0.0.0.0/0
 	auto=route
 	type=passthrough
-	compress=no
-	pfs=yes
-	rekey=yes
-	overlapip=no
-	ikev1=yes
-	authby=never
-	ikev2=never
 # end conn clear
 
 # begin conn clear-or-private
@@ -674,14 +642,6 @@ conn clear-or-private
 	ikelifetime=3600
 	auto=route
 	type=passthrough
-	compress=no
-	pfs=yes
-	rekey=no  #duplicate?
-	overlapip=no
-	ikev1=yes
-	authby=rsasig
-	phase2=esp
-	failureshunt=passthrough
 # end conn clear-or-private
 
 # begin conn private-or-clear
@@ -699,7 +659,6 @@ conn private-or-clear
 	pfs=yes
 	rekey=no  #duplicate?
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	failureshunt=passthrough
@@ -721,7 +680,6 @@ conn private
 	pfs=yes
 	rekey=yes
 	overlapip=no
-	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	failureshunt=drop
@@ -735,12 +693,6 @@ conn block
 	rightsubnet=0.0.0.0/0
 	auto=route
 	type=reject
-	compress=no
-	pfs=yes
-	rekey=yes
-	overlapip=no
-	ikev1=yes
-	authby=never
 # end conn block
 
 # end of config
