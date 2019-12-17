@@ -230,6 +230,7 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid)
 			return LELEM(NAT_TRAVERSAL_IETF_02_03);
 		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 			DBG(DBG_NATT, DBG_log("VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE assumed as VID_NATT_RFC"));
+			return LELEM(NAT_TRAVERSAL_RFC);
 		case VID_NATT_RFC:
 			return LELEM(NAT_TRAVERSAL_RFC);
 	}
