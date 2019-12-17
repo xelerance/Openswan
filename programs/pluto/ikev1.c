@@ -798,6 +798,8 @@ informational(struct msg_digest *md)
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
 		return STF_IGNORE;
            }
+	   loglog(RC_LOG_SERIOUS, "received and ignored informational message with ISAKMP_N_CISCO_LOAD_BALANCE for unestablished state.");
+	   return STF_IGNORE;
 
         default:
 #ifdef DEBUG
