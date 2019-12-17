@@ -1085,7 +1085,7 @@ parse_isakmp_sa_body(
                               }
                               ta.xauth = val;
                               val = OAKLEY_PRESHARED_KEY;
-                              /* No break; */
+                              goto psk;
 #endif
 
 
@@ -1148,7 +1148,7 @@ parse_isakmp_sa_body(
                               }
                               ta.xauth = val;
                               val = OAKLEY_RSA_SIG;
-                              /* No break; */
+                              goto rsasig;
 #endif
 
                         case OAKLEY_RSA_SIG:
@@ -2379,6 +2379,7 @@ parse_ipsec_sa_body(
 
                               case ESP_DES:          /* NOT safe */
                                   loglog(RC_LOG_SERIOUS, "1DES was proposed, it is insecure");
+				  continue;
                               default:
                                   loglog(RC_LOG_SERIOUS, "kernel algorithm does not like: %s", ugh);
                                   loglog(RC_LOG_SERIOUS, "unsupported ESP Transform %s from %s"
