@@ -645,8 +645,6 @@ informational(struct msg_digest *md)
     {
         pb_stream *const n_pbs = &n_pld->pbs;
         struct isakmp_notification *const n = &n_pld->payload.notification;
-        int disp_len;
-        char disp_buf[200];
 	struct state *st = md->st;            /* may be NULL */
 
         /* Switch on Notification Type (enum) */
@@ -798,6 +796,8 @@ informational(struct msg_digest *md)
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
 		return STF_IGNORE;
            }
+	   loglog(RC_LOG_SERIOUS, "received and ignored informational message with ISAKMP_N_CISCO_LOAD_BALANCE for unestablished state.");
+	   return STF_IGNORE;
 
         default:
 #ifdef DEBUG
@@ -807,12 +807,18 @@ informational(struct msg_digest *md)
 		return STF_FATAL;
 	    }
 #endif
+#if 0
+	    {
+	    int disp_len;
+	    char disp_buf[200];
             if (pbs_left(n_pbs) >= sizeof(disp_buf)-1)
                 disp_len = sizeof(disp_buf)-1;
             else
                 disp_len = pbs_left(n_pbs);
             memcpy(disp_buf, n_pbs->cur, disp_len);
             disp_buf[disp_len] = '\0';
+	    }
+#endif
             break;
         }
     }
