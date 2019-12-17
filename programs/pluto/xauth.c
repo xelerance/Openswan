@@ -2259,6 +2259,10 @@ xauth_inI0(struct msg_digest *md)
 	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
 			 , enum_name(&attr_msg_type_names
 				     , p->payload.attribute.isama_type));
+	    /* Alright, Let's continue pretend all is well, all present and correct. But in explicitly maner. */
+	    gotset = TRUE;
+	    break;
+
 	case ISAKMP_CFG_SET:
 	    gotset = TRUE;
 	    break;
