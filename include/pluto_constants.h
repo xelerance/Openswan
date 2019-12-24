@@ -381,6 +381,7 @@ enum phase1_role {
  */
 
 enum connection_kind {
+    CK_UNSET = 0,       /* no connection policy set yet */
     CK_GROUP,		/* policy group: instantiates to template */
     CK_TEMPLATE,	/* abstract connection, with wildcard */
     CK_PERMANENT,	/* normal connection */
