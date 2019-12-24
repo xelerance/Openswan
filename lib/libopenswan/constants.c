@@ -108,6 +108,7 @@ const char *const debug_bit_names[] = {
 /* kind of struct connection */
 
 static const char *const connection_kind_name[] = {
+    "CK_UNSET",         /* uninitialized kind */
     "CK_GROUP",		/* policy group: instantiates to template */
     "CK_TEMPLATE",	/* abstract connection, with wildcard */
     "CK_PERMANENT",	/* normal connection */
@@ -116,7 +117,7 @@ static const char *const connection_kind_name[] = {
 };
 
 enum_names connection_kind_names =
-    { CK_GROUP, CK_GOING_AWAY, connection_kind_name, NULL };
+    { CK_UNSET, CK_GOING_AWAY, connection_kind_name, NULL };
 
 /* Payload types (RFC 2408 "ISAKMP" section 3.1) */
 
