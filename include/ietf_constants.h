@@ -860,6 +860,15 @@ typedef u_int16_t ipsec_auth_t;
 #define OAKLEY_CAST_CBC         6
 #define OAKLEY_AES_CBC          7
 #define OAKLEY_CAMELLIA_CBC	8
+#define OAKLEY_AES_CTR          13
+#define OAKLEY_AES_CCM_8        14
+#define OAKLEY_AES_CCM_12       15
+#define OAKLEY_AES_CCM_16       16
+
+#define OAKLEY_AES_GCM_8        18
+#define OAKLEY_AES_GCM_12       19
+#define OAKLEY_AES_GCM_16       20
+
 #define OAKLEY_SERPENT_CBC              65004
 #define OAKLEY_TWOFISH_CBC              65005
 #define OAKLEY_TWOFISH_CBC_SSH          65289
