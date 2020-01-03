@@ -1,7 +1,7 @@
 # -*- makefile -*-
 CONNNAME=home
 ENDNAME=davecert-ca
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} h2hR1.pcap OUTPUT/h2hI2.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/h2hI2.pcap h2hR1.pcap
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=h2hI2

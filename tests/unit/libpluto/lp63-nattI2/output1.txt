@@ -9,6 +9,12 @@
 ./nattI2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./nattI2 loading secrets from "../samples/parker.secrets"
 ./nattI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./nattI2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./nattI2 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./nattI2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./nattI2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./nattI2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./nattI2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -36,7 +42,6 @@ processing whack msg time: X size: Y
 ./nattI2 adding connection: "parker1--jj2"
 | fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   =========== input from pcap file nattR1.pcap ========
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
@@ -57,6 +62,18 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 4
 ./nattI2 initiating v2 parent SA
 ./nattI2 STATE_PARENT_I1: initiate
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
@@ -114,5 +131,8 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./nattI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./nattI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
+0: output to OUTPUT/nattI2.pcap
+0: input from nattR1.pcap
+|   =========== input from pcap file nattR1.pcap ========
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 did not find an interface with port=55044

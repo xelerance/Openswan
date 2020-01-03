@@ -1,8 +1,10 @@
+#define SEAM_CRYPTO
 #include "parentI2_head.c"
-#include "seam_gi_sha1.c"
-#include "seam_gi_sha1_group14.c"
-#include "seam_finish.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_ikev2_sendI1.c"
+#include "seam_finish.c"
+#include "seam_kernel.c"
+#include "seam_pending.c"
 #include "seam_natt.c"
 #include "seam_rsasig.c"
 #include "seam_x509.c"
@@ -27,7 +29,7 @@ static void init_loaded(void)
 {   /* nothing */ }
 
 #include "seam_parentI2.c"
-#include "parentI2_main.c"
+#include "../lp10-parentI2/parentI2_main.c"
 
  /*
  * Local Variables:

@@ -1,28 +1,28 @@
-./v1rwnatM2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
-./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./v1rwnatM2 adjusting ipsec.d to ../samples/alice
-./v1rwnatM2 loading secrets from "../samples/alice.secrets"
-./v1rwnatM2 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
-./v1rwnatM2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1rwnatM2 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1rwnatM2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1rwnatM2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatM2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatM2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1rwnatQI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1rwnatQI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./v1rwnatQI1 adjusting ipsec.d to ../samples/alice
+./v1rwnatQI1 loading secrets from "../samples/alice.secrets"
+./v1rwnatQI1 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
+./v1rwnatQI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatQI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatQI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatQI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatQI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatQI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./v1rwnatM2 loaded key: 55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
+./v1rwnatQI1 loaded key: 55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./v1rwnatM2 loaded key: D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
+./v1rwnatQI1 loaded key: D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
@@ -32,9 +32,9 @@ processing whack msg time: X size: Y
 | from whack: got --esp=3des-md5;modp1536
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
-./v1rwnatM2 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
+./v1rwnatQI1 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
-./v1rwnatM2 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
+./v1rwnatQI1 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
 | counting wild cards for @sun is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
@@ -54,7 +54,7 @@ processing whack msg time: X size: Y
 | connect_to_host_pair: <invalid>:500 %address 192.168.0.2:500 -> hp:none
 | find_ID_host_pair: looking for me=@alice him=@sun (exact)
 |   concluded with <none>
-./v1rwnatM2 adding connection: "bobnet-ikev1"
+./v1rwnatQI1 adding connection: "bobnet-ikev1"
 | %any[@alice]...192.168.0.2[@sun]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 |   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
@@ -86,7 +86,8 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | state hash entry 4
 | inserting state object #1 bucket: 4
 | found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5)
-./v1rwnatM2 initiating Main Mode
+| Queuing pending Quick Mode with 192.168.0.2 "bobnet-ikev1"
+./v1rwnatQI1 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -187,7 +188,6 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
-0: output to OUTPUT/v1rwnatM2.pcap
 0: input from v1rwnatN1.pcap
 |   =========== input from pcap file v1rwnatN1.pcap ========
 skipping: eth0:4500 float outside: 55045 <=> d: 55044
@@ -225,9 +225,9 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
 |    length: 20
-./v1rwnatM2 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
-./v1rwnatM2 received Vendor ID payload [Dead Peer Detection]
-./v1rwnatM2 received Vendor ID payload [RFC 3947] method set to=115
+./v1rwnatQI1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
+./v1rwnatQI1 received Vendor ID payload [Dead Peer Detection]
+./v1rwnatQI1 received Vendor ID payload [RFC 3947] method set to=115
 | ****parse IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | ****parse ISAKMP Proposal Payload:
@@ -263,7 +263,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 5
 | Oakley Transform 0 accepted
-./v1rwnatM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
+./v1rwnatQI1 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
 | main inR1_outI2: calculated ke+nonce, sending I2
 | **emit ISAKMP Message:
@@ -313,7 +313,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | state hash entry 30
 | inserting state object #1 bucket: 30
 | complete state transition with STF_OK
-./v1rwnatM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
+./v1rwnatQI1 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 192.168.0.2:500 (from port 500)
 sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
 |   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
@@ -334,13 +334,99 @@ sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 19
 |   53 05 b3 c4  14 00 00 14  07 05 57 15  6a 97 cf e1
 |   1b 58 0b ab  ba 0e 8b 99  00 00 00 14  71 3d 62 44
 |   14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
-./v1rwnatM2 STATE_MAIN_I2: sent MI2, expecting MR2
+./v1rwnatQI1 STATE_MAIN_I2: sent MI2, expecting MR2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
-1: output closed
-./v1rwnatM2 deleting connection
+1: input from v1rwnatN2.pcap
+|   =========== input from pcap file v1rwnatN2.pcap ========
+skipping: eth0:4500 float outside: 55045 <=> d: 55044
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 284 bytes from 192.168.0.2:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
+|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
+|   53 05 b3 c4  14 00 00 14  e2 fa 87 0a  9c d4 48 7f
+|   9c a3 5a aa  ba 13 3e b2  00 00 00 14  07 05 57 15
+|   6a 97 cf e1  1b 58 0b ab  ba 0e 8b 99
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I2
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   c4 6d c5 7a  f8 f3 5d 2e
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  00 00 00 00
+| DH public value received:
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| complete state transition with STF_SUSPEND
+2: output to OUTPUT/v1rwnatQI1.pcap
+2: input from v1rwnatN3.pcap
+|   =========== input from pcap file v1rwnatN3.pcap ========
+picking: eth0:4500 float outside: 55045 <=> d: 55045
+| *received 324 bytes from 192.168.0.2:4500 on eth0 (port=4500)
+|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
+|   05 10 02 01  00 00 00 00  00 00 01 44  21 07 85 ee
+|   13 67 e8 fb  ea 0f d4 7e  24 f3 da 1f  39 64 79 30
+|   e0 cf 2e 4f  82 45 83 1d  df 5c 13 0f  ba b7 52 ca
+|   54 b9 24 69  6e 36 60 a7  0a 71 de 2b  1c c6 67 99
+|   ed 72 b9 11  e2 e2 90 b9  28 9c 9e ed  ff 8d 38 31
+|   06 a3 1f d5  af b6 74 49  de 76 c0 86  4a 0c a2 57
+|   7a b4 08 64  2d 65 f5 e5  50 0a 20 b9  db ff c0 65
+|   8b 0f 2c 8c  d1 ad a3 86  bf a4 92 06  8f 72 03 97
+|   da 50 b7 36  60 3c 13 1f  f7 95 31 8f  da cc 5c 28
+|   12 77 78 8d  fd e9 d1 c9  42 5e 65 0c  96 f4 ef bd
+|   32 e5 76 75  e5 4b cc e8  16 b1 e7 f3  e1 74 3b a1
+|   5c 75 d1 35  6d ad ce 73  f6 10 3e 88  a3 23 28 12
+|   b1 91 4f 9e  28 89 5e 78  9d 1f 10 41  b6 7c 6b c9
+|   4a 6f e2 c7  e3 68 bb f8  f9 fe c3 cc  23 12 1c ef
+|   33 79 12 d8  b0 e1 ba 50  e9 85 93 f7  b8 25 d7 b6
+|   95 3f 26 a0  31 bb 66 b0  05 58 63 4c  34 8d 65 55
+|   d3 75 01 89  34 0d 83 f6  7b a6 97 15  0d da e5 c3
+|   8d 1c f9 13  88 eb f7 0d  ec 61 a0 6f  8f 38 5c a6
+|   c4 83 85 d4  2a ff ab e6  90 71 15 32  5f 35 3c 8a
+|   08 96 45 a2
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I2
+./v1rwnatQI1 discarding packet received during asynchronous work (DNS or crypto) in STATE_MAIN_I2
+3: output closed
+./v1rwnatQI1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./v1rwnatM2 deleting state #1 (STATE_MAIN_I2)
+./v1rwnatQI1 deleting state #1 (STATE_MAIN_I2)
+| disconnecting state #1 from md
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
@@ -350,57 +436,62 @@ sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 19
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
-./v1rwnatM2 leak: reply packet, item size: X
-./v1rwnatM2 leak: raw packet, item size: X
-./v1rwnatM2 leak: initiator nonce, item size: X
-./v1rwnatM2 leak: long term secret, item size: X
-./v1rwnatM2 leak: saved gi value, item size: X
-./v1rwnatM2 leak: outI2 KE, item size: X
-./v1rwnatM2 leak: msg_digest, item size: X
-./v1rwnatM2 leak: 67 * VendorID MD5, item size: X
-./v1rwnatM2 leak: 3 * vid->data, item size: X
-./v1rwnatM2 leak: 15 * VendorID MD5, item size: X
-./v1rwnatM2 leak: self-vendor ID, item size: X
-./v1rwnatM2 leak: init_pluto_vendorid, item size: X
-./v1rwnatM2 leak: 4 * fswan VID, item size: X
-./v1rwnatM2 leak: vid->data, item size: X
-./v1rwnatM2 leak: 23 * VendorID MD5, item size: X
-./v1rwnatM2 leak: vid->data, item size: X
-./v1rwnatM2 leak: sa in main_outI1, item size: X
-./v1rwnatM2 leak: struct state in new_state(), item size: X
-./v1rwnatM2 leak: keep id name, item size: X
-./v1rwnatM2 leak: pubkey entry, item size: X
-./v1rwnatM2 leak: rfc3110 format of public key, item size: X
-./v1rwnatM2 leak: pubkey, item size: X
-./v1rwnatM2 leak: keep id name, item size: X
-./v1rwnatM2 leak: pubkey entry, item size: X
-./v1rwnatM2 leak: rfc3110 format of public key, item size: X
-./v1rwnatM2 leak: pubkey, item size: X
-./v1rwnatM2 leak: 2 * id list, item size: X
-./v1rwnatM2 leak: rfc3110 format of public key [created], item size: X
-./v1rwnatM2 leak: pubkey, item size: X
-./v1rwnatM2 leak: secret, item size: X
-./v1rwnatM2 leak: policies path, item size: X
-./v1rwnatM2 leak: ocspcerts path, item size: X
-./v1rwnatM2 leak: aacerts path, item size: X
-./v1rwnatM2 leak: certs path, item size: X
-./v1rwnatM2 leak: private path, item size: X
-./v1rwnatM2 leak: crls path, item size: X
-./v1rwnatM2 leak: cacert path, item size: X
-./v1rwnatM2 leak: acert path, item size: X
-./v1rwnatM2 leak: override ipsec.d, item size: X
-./v1rwnatM2 leak: 4 * hasher name, item size: X
-./v1rwnatM2 leak: 10 * group description, item size: X
-./v1rwnatM2 leak: policies path, item size: X
-./v1rwnatM2 leak: ocspcerts path, item size: X
-./v1rwnatM2 leak: aacerts path, item size: X
-./v1rwnatM2 leak: certs path, item size: X
-./v1rwnatM2 leak: private path, item size: X
-./v1rwnatM2 leak: crls path, item size: X
-./v1rwnatM2 leak: cacert path, item size: X
-./v1rwnatM2 leak: acert path, item size: X
-./v1rwnatM2 leak: default conf var_dir, item size: X
-./v1rwnatM2 leak: default conf conffile, item size: X
-./v1rwnatM2 leak: default conf ipsecd_dir, item size: X
-./v1rwnatM2 leak: default conf ipsec_conf_dir, item size: X
-./v1rwnatM2 leak detective found Z leaks, total size X
+./v1rwnatQI1 leak: msg_digest, item size: X
+./v1rwnatQI1 leak: raw packet, item size: X
+./v1rwnatQI1 leak: aggr outR1 DH, item size: X
+./v1rwnatQI1 leak: nonce, item size: X
+./v1rwnatQI1 leak: Gr, item size: X
+./v1rwnatQI1 leak: message buffer in comm_handle(), item size: X
+./v1rwnatQI1 leak: reply packet, item size: X
+./v1rwnatQI1 leak: initiator nonce, item size: X
+./v1rwnatQI1 leak: long term secret, item size: X
+./v1rwnatQI1 leak: saved gi value, item size: X
+./v1rwnatQI1 leak: outI2 KE, item size: X
+./v1rwnatQI1 leak: msg_digest, item size: X
+./v1rwnatQI1 leak: 67 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: 3 * vid->data, item size: X
+./v1rwnatQI1 leak: 15 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: self-vendor ID, item size: X
+./v1rwnatQI1 leak: init_pluto_vendorid, item size: X
+./v1rwnatQI1 leak: 4 * fswan VID, item size: X
+./v1rwnatQI1 leak: vid->data, item size: X
+./v1rwnatQI1 leak: 23 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: vid->data, item size: X
+./v1rwnatQI1 leak: sa in main_outI1, item size: X
+./v1rwnatQI1 leak: struct state in new_state(), item size: X
+./v1rwnatQI1 leak: keep id name, item size: X
+./v1rwnatQI1 leak: pubkey entry, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: keep id name, item size: X
+./v1rwnatQI1 leak: pubkey entry, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: 2 * id list, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key [created], item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: secret, item size: X
+./v1rwnatQI1 leak: policies path, item size: X
+./v1rwnatQI1 leak: ocspcerts path, item size: X
+./v1rwnatQI1 leak: aacerts path, item size: X
+./v1rwnatQI1 leak: certs path, item size: X
+./v1rwnatQI1 leak: private path, item size: X
+./v1rwnatQI1 leak: crls path, item size: X
+./v1rwnatQI1 leak: cacert path, item size: X
+./v1rwnatQI1 leak: acert path, item size: X
+./v1rwnatQI1 leak: override ipsec.d, item size: X
+./v1rwnatQI1 leak: 4 * hasher name, item size: X
+./v1rwnatQI1 leak: 10 * group description, item size: X
+./v1rwnatQI1 leak: policies path, item size: X
+./v1rwnatQI1 leak: ocspcerts path, item size: X
+./v1rwnatQI1 leak: aacerts path, item size: X
+./v1rwnatQI1 leak: certs path, item size: X
+./v1rwnatQI1 leak: private path, item size: X
+./v1rwnatQI1 leak: crls path, item size: X
+./v1rwnatQI1 leak: cacert path, item size: X
+./v1rwnatQI1 leak: acert path, item size: X
+./v1rwnatQI1 leak: default conf var_dir, item size: X
+./v1rwnatQI1 leak: default conf conffile, item size: X
+./v1rwnatQI1 leak: default conf ipsecd_dir, item size: X
+./v1rwnatQI1 leak: default conf ipsec_conf_dir, item size: X
+./v1rwnatQI1 leak detective found Z leaks, total size X

@@ -1,6 +1,10 @@
 #define INCLUDE_IKEV1_PROCESSING
 #define INCLUDE_QUICK_MODE
+#define OMIT_SEAM_INITIATE
 #define OMIT_MAIN_MODE
+#define OMIT_IKEv1
+#define OMIT_ADD_PENDING
+#define OMIT_PENDING_USE
 #define NAPT_ENABLED 1
 #define NAT_TRAVERSAL
 #define SEAM_CRYPTO
@@ -17,6 +21,8 @@
 #include "seam_nonce.c"
 #include "seam_rsa_check.c"
 #include "seam_sendI1.c"
+#include "seam_finish.c"
+#include "seam_ikev1_aggr.c"
 
 #define TESTNAME "v1rwnatQI1"
 
