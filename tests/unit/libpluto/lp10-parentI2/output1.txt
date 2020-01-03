@@ -9,6 +9,12 @@
 ./parentI2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentI2 loading secrets from "../samples/parker.secrets"
 ./parentI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./parentI2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./parentI2 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./parentI2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./parentI2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentI2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentI2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -36,7 +42,6 @@ processing whack msg time: X size: Y
 ./parentI2 adding connection: "parker1--jj2"
 | fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   =========== input from pcap file parentR1.pcap ========
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
@@ -57,6 +62,18 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 4
 ./parentI2 initiating v2 parent SA
 ./parentI2 STATE_PARENT_I1: initiate
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
@@ -114,6 +131,9 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./parentI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./parentI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
+0: output to OUTPUT/parentI2.pcap
+0: input from parentR1.pcap
+|   =========== input from pcap file parentR1.pcap ========
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
@@ -142,16 +162,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
-| **parse ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
-|    length: 432
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator
@@ -177,97 +187,22 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
-| ***parse IKEv2 Security Association Payload:
-|    critical bit: none
-|    length: 48
-| processing payload: ISAKMP_NEXT_v2SA (len=48)
-| ***parse IKEv2 Key Exchange Payload:
-|    critical bit: none
-|    length: 264
-|    transform type: 14
-| processing payload: ISAKMP_NEXT_v2KE (len=264)
-| ***parse IKEv2 Nonce Payload:
-|    critical bit: none
-|    length: 20
-| processing payload: ISAKMP_NEXT_v2Ni (len=20)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Vendor ID Payload:
-|    critical bit: none
-|    length: 16
-| processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   84 d5 ee 07  01 f4
-| processing v2N_NAT_DETECTION_SOURCE_IP
-| received nat-t hash  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
-| calculated nat-t  h  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
 | nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   c0 a8 01 01  01 f4
-| processing v2N_NAT_DETECTION_DESTINATION_IP
-| received nat-t hash  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
-| calculated nat-t  h  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 12
-| collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 5
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
 | selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | ikev2 parent SA details
-| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
-| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
-| WARNING: ikev2_parent_inR1outI2_tail:254: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: ikev2_parent_inR1outI2_tail:254: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
+| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b822e053c7e128712992e053c7e12871299 aes128:0x3f44bf47cafd8150591deb088199fcbf
+| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad802e053c7e128712992e053c7e12871299 aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -294,7 +229,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | my identity  70 61 72 6b  65 72 30 31  2e 65 6d 6d  6a 61 79 2e
 |   63 72 65 64  69 6c 2e 6f  72 67
 | idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
+|   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
 | idhash calc I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | emitting length of IKEv2 Identification Payload: 34
@@ -392,8 +327,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting length of IKEv2 Encryption Payload: 436
 | emitting length of ISAKMP Message: 464
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 20
 | data before encryption:
 |   27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
 |   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
@@ -475,7 +408,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
 | out calculated auth:
-|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
 | #2 complete v2 state transition with STF_OK
 ./parentI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -510,7 +443,8 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
 |   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
-|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
+1: output closed
 ./parentI2 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./parentI2 deleting state #2 (STATE_CHILD_C0_KEYING)
@@ -547,8 +481,6 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | emitting length of IKEv2 Encryption Payload: 52
 | emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
@@ -558,13 +490,13 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | out calculated auth:
-|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+|   2e b7 20 0f  71 09 f3 cf  a6 75 27 73  2c 23 e2 2b
 sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+|   2e b7 20 0f  71 09 f3 cf  a6 75 27 73  2c 23 e2 2b
 | pass 1: considering PARENT SAs to delete
 ./parentI2 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
