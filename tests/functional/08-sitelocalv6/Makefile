@@ -27,6 +27,7 @@ OUTPUTS=OUTPUT
 
 check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}
+	-rm -f ${OUTPUTS}/base.pid
 	${READWRITE} --debug --config moon.conf | tee ${OUTPUTS}/moon.conf.raw | diff - moon.conf.out
 	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.${TESTNAME}.out;
 

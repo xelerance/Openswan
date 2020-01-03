@@ -122,7 +122,7 @@ RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=carol
 RC=0 "rw-carol":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-carol":        ....1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none
 RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-carol":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
 RC=0 "rw-carol":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1024(2)
 RC=0 "rw-carol":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
@@ -131,7 +131,7 @@ RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.16
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-dave":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-dave":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
 RC=0 "rw-dave":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1024(2)
 RC=0 "rw-dave":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
