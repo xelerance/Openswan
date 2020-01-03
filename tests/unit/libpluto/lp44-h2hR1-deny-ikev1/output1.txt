@@ -5,10 +5,14 @@
 ./h2hR1-deny-ikev1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./h2hR1-deny-ikev1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./h2hR1-deny-ikev1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./h2hR1-deny-ikev1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR1-deny-ikev1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./h2hR1-deny-ikev1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR1-deny-ikev1 loading secrets from "../samples/jj.secrets"
 ./h2hR1-deny-ikev1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./h2hR1-deny-ikev1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hR1-deny-ikev1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hR1-deny-ikev1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hR1-deny-ikev1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -19,9 +23,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel-no-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./h2hR1-deny-ikev1 use keyid: 1:<> / 2:<>
+./h2hR1-deny-ikev1 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
-./h2hR1-deny-ikev1 use keyid: 1:<> / 2:<>
+./h2hR1-deny-ikev1 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient mytunnel-no-ikev1 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient mytunnel-no-ikev1 checking against if: eth0 (AF_INET:132.213.238.7:500)
@@ -38,6 +42,8 @@ processing whack msg time: X size: Y
 |   orient mytunnel-no-ikev1 finished with: 1 [132.213.238.7]
 RC=0 "mytunnel-no-ikev1": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel-no-ikev1":     myip=unset; hisip=unset;
+RC=0 "mytunnel-no-ikev1":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
+RC=0 "mytunnel-no-ikev1":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
 RC=0 "mytunnel-no-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel-no-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentM1.pcap ========
@@ -91,20 +97,19 @@ RC=0 "mytunnel-no-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
 | searching for connection with policy = /!IKEv1
 | find_host_connection2 returns empty (ike=mytunnel-no-ikev1/none)
-./h2hR1-deny-ikev1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
-| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=%any:500 policy=/!IKEv1
+| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=%any:500 policy=RSASIG/!IKEv1
 | find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
-| searching for connection with policy = /!IKEv1
+| searching for connection with policy = RSASIG/!IKEv1
 | find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
-| searching for connection with policy = /!IKEv1
+| searching for connection with policy = RSASIG/!IKEv1
 | find_host_connection2 returns empty (ike=none/none)
-./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:500 but no connection has been authorized
+./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:500 but no connection has been authorized with policy=RSASIG
 | complete state transition with STF_FAIL
 RC=205 STATE_MAIN_R0: INVALID_MAJOR_VERSION
 ./h2hR1-deny-ikev1 sending notification INVALID_MAJOR_VERSION to 192.168.1.1:500
@@ -141,6 +146,18 @@ sending 40 bytes for notification packet through eth0:500 [132.213.238.7:500] to
 ./h2hR1-deny-ikev1 leak: 23 * VendorID MD5, item size: X
 ./h2hR1-deny-ikev1 leak: vid->data, item size: X
 ./h2hR1-deny-ikev1 leak: msg_digest, item size: X
+./h2hR1-deny-ikev1 leak: pubkey entry, item size: X
+./h2hR1-deny-ikev1 leak: rfc3110 format of public key, item size: X
+./h2hR1-deny-ikev1 leak: pubkey, item size: X
+./h2hR1-deny-ikev1 leak: pubkey entry, item size: X
+./h2hR1-deny-ikev1 leak: rfc3110 format of public key, item size: X
+./h2hR1-deny-ikev1 leak: pubkey, item size: X
+./h2hR1-deny-ikev1 leak: 2 * id list, item size: X
+./h2hR1-deny-ikev1 leak: rfc3110 format of public key [created], item size: X
+./h2hR1-deny-ikev1 leak: pubkey, item size: X
+./h2hR1-deny-ikev1 leak: secret, item size: X
+./h2hR1-deny-ikev1 leak: 4 * hasher name, item size: X
+./h2hR1-deny-ikev1 leak: 10 * group description, item size: X
 ./h2hR1-deny-ikev1 leak: policies path, item size: X
 ./h2hR1-deny-ikev1 leak: ocspcerts path, item size: X
 ./h2hR1-deny-ikev1 leak: aacerts path, item size: X
@@ -153,11 +170,5 @@ sending 40 bytes for notification packet through eth0:500 [132.213.238.7:500] to
 ./h2hR1-deny-ikev1 leak: default conf conffile, item size: X
 ./h2hR1-deny-ikev1 leak: default conf ipsecd_dir, item size: X
 ./h2hR1-deny-ikev1 leak: default conf ipsec_conf_dir, item size: X
-./h2hR1-deny-ikev1 leak: 2 * id list, item size: X
-./h2hR1-deny-ikev1 leak: rfc3110 format of public key [created], item size: X
-./h2hR1-deny-ikev1 leak: pubkey, item size: X
-./h2hR1-deny-ikev1 leak: secret, item size: X
-./h2hR1-deny-ikev1 leak: 4 * hasher name, item size: X
-./h2hR1-deny-ikev1 leak: 10 * group description, item size: X
 ./h2hR1-deny-ikev1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
