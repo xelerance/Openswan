@@ -1,0 +1,328 @@
+./v1certN1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./v1certN1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./v1certN1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./v1certN1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./v1certN1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./v1certN1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./v1certN1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./v1certN1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1certN1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./v1certN1 adjusting ipsec.d to ../samples/moon
+./v1certN1 loading secrets from "../samples/moon.secrets"
+./v1certN1   loaded private key file '../samples/moon/private/moonKey.pem' (CERT bytes)
+./v1certN1 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
+./v1certN1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1certN1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./v1certN1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1certN1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
+| Added new connection rw with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| from whack: got --esp=3des-md5;modp1536
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+./v1certN1   loading certificate from moonCert.pem
+./v1certN1   loaded host cert file '../samples/moon/certs/moonCert.pem' (CERT bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+| L3 - version:
+|   v3
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha256WithRSAEncryption'
+| L2 - issuer:
+|   'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Sep 03 04:15:59 UTC 2019'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Dec 11 04:15:59 UTC 2021'
+| L2 - subject:
+|   'C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L2 - optional extensions:
+| L3 - extensions:
+| L4 - extension:
+| L5 - extnID:
+|   'basicConstraints'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - basicConstraints:
+| L7 - CA:
+|   FALSE
+| L4 - extension:
+| L5 - extnID:
+|   'nsCertType'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L4 - extension:
+| L5 - extnID:
+|   'nsComment'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'authorityKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - authorityKeyIdentifier:
+| L7 - keyIdentifier:
+| L8 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'keyUsage'
+| L5 - critical:
+|   TRUE
+| L5 - extnValue:
+| L4 - extension:
+| L5 - extnID:
+|   'extendedKeyUsage'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - extendedKeyUsage:
+| L7 - keyPurposeID:
+|   'clientAuth'
+| L7 - keyPurposeID:
+|   'emailProtection'
+| L4 - extension:
+| L5 - extnID:
+|   'subjectAltName'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - generalNames:
+| L7 - generalName:
+| L8 - rfc822Name:
+|   'moon@openswan.org'
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha256WithRSAEncryption'
+| L1 - signatureValue:
+| certificate is valid
+| counting wild cards for @moon.strongswan.org is 0
+| counting wild cards for (none) is 15
+./v1certN1 their side id: is wildcard
+| based upon ID_wildcard policy, the connection is a template.
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
+| orient rw checking against if: eth0 (AF_INET:0.0.0.0:500)
+|     orient matched on IP
+|   orient rw finished with: 1 [0.0.0.0]
+| find_host_pair: looking for me=192.168.0.1:500 %any him=0.0.0.0:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 192.168.0.1:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=@moon.strongswan.org him=<any> (exact)
+|   concluded with <none>
+./v1certN1 adding connection: "rw"
+| 10.1.0.0/16===192.168.0.1[@moon.strongswan.org]...%any
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+|   orient rw finished with: 1 [0.0.0.0]
+RC=0 "rw": 10.1.0.0/16===192.168.0.1[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
+RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw":   CAs: '%any'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+RC=0 "rw":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
+RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+RC=0 "rw":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
+RC=0 "rw":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
+|   =========== input from pcap file v1certM1.pcap ========
+| *received 216 bytes from 93.184.216.34:55044 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
+|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
+|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
+|   0b e8 a8 46  95 79 dd cc
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+./v1certN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
+./v1certN1 received Vendor ID payload [Dead Peer Detection]
+./v1certN1 received Vendor ID payload [RFC 3947] method set to=115
+./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
+./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but already using method 115
+./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02] meth=107, but already using method 115
+./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+| find_host_connection2 called from main_inI1_outR1, me=192.168.0.1:500 him=93.184.216.34:55044 policy=/!IKEv1
+| find_host_pair: looking for me=192.168.0.1:500 %address him=93.184.216.34:55044 any-match
+| find_host_pair: comparing to me=192.168.0.1:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with rw
+| found_host_pair_conn (find_host_connection2): 192.168.0.1:500 %address/93.184.216.34:55044 -> hp:rw
+| searching for connection with policy = /!IKEv1
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (rw)
+| find_host_connection2 returns rw (ike=none/none)
+| creating state object #1 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #1 bucket: 5
+./v1certN1 responding to Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
+| attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 05
+|   80 02 00 01  80 04 00 05
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [RFC 3947]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 136
+| complete state transition with STF_OK
+./v1certN1 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
+| sending reply packet to 93.184.216.34:55044 (from port 500)
+sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184.216.34:55044 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
+./v1certN1 STATE_MAIN_R1: sent MR1, expecting MI2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+./v1certN1 deleting state #1 (STATE_MAIN_R1)
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| freeing state object #1
+./v1certN1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+./v1certN1 leak: 67 * VendorID MD5, item size: X
+./v1certN1 leak: 3 * vid->data, item size: X
+./v1certN1 leak: 15 * VendorID MD5, item size: X
+./v1certN1 leak: self-vendor ID, item size: X
+./v1certN1 leak: init_pluto_vendorid, item size: X
+./v1certN1 leak: 4 * fswan VID, item size: X
+./v1certN1 leak: vid->data, item size: X
+./v1certN1 leak: 23 * VendorID MD5, item size: X
+./v1certN1 leak: vid->data, item size: X
+./v1certN1 leak: msg_digest, item size: X
+./v1certN1 leak: rfc3110 format of public key [created], item size: X
+./v1certN1 leak: issuer dn, item size: X
+./v1certN1 leak: keep id name, item size: X
+./v1certN1 leak: pubkey entry, item size: X
+./v1certN1 leak: pubkey, item size: X
+./v1certN1 leak: rfc3110 format of public key [created], item size: X
+./v1certN1 leak: issuer dn, item size: X
+./v1certN1 leak: keep id name, item size: X
+./v1certN1 leak: pubkey entry, item size: X
+./v1certN1 leak: issuer, item size: X
+./v1certN1 leak: pubkey, item size: X
+./v1certN1 leak: rfc3110 format of public key [created], item size: X
+./v1certN1 leak: issuer dn, item size: X
+./v1certN1 leak: keep id name, item size: X
+./v1certN1 leak: pubkey entry, item size: X
+./v1certN1 leak: pubkey, item size: X
+./v1certN1 leak: certificate filename, item size: X
+./v1certN1 leak: 2 * id list, item size: X
+./v1certN1 leak: rfc3110 format of public key [created], item size: X
+./v1certN1 leak: pubkey, item size: X
+./v1certN1 leak: secret, item size: X
+./v1certN1 leak: policies path, item size: X
+./v1certN1 leak: ocspcerts path, item size: X
+./v1certN1 leak: aacerts path, item size: X
+./v1certN1 leak: certs path, item size: X
+./v1certN1 leak: private path, item size: X
+./v1certN1 leak: crls path, item size: X
+./v1certN1 leak: cacert path, item size: X
+./v1certN1 leak: acert path, item size: X
+./v1certN1 leak: override ipsec.d, item size: X
+./v1certN1 leak: 4 * hasher name, item size: X
+./v1certN1 leak: 10 * group description, item size: X
+./v1certN1 leak: policies path, item size: X
+./v1certN1 leak: ocspcerts path, item size: X
+./v1certN1 leak: aacerts path, item size: X
+./v1certN1 leak: certs path, item size: X
+./v1certN1 leak: private path, item size: X
+./v1certN1 leak: crls path, item size: X
+./v1certN1 leak: cacert path, item size: X
+./v1certN1 leak: acert path, item size: X
+./v1certN1 leak: default conf var_dir, item size: X
+./v1certN1 leak: default conf conffile, item size: X
+./v1certN1 leak: default conf ipsecd_dir, item size: X
+./v1certN1 leak: default conf ipsec_conf_dir, item size: X
+./v1certN1 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
