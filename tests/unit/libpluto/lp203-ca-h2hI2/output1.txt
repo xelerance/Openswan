@@ -11,6 +11,12 @@
 ./h2hI2 loading secrets from "../samples/parker.secrets"
 ./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 ./h2hI2   loaded CA cert file 'rootCA.pem' (CERT bytes)
+./h2hI2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hI2 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hI2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hI2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./h2hI2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./h2hI2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -42,7 +48,6 @@ processing whack msg time: X size: Y
 ./h2hI2 adding connection: "home"
 | %any[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]...132.213.238.7[C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@ xelerance.com]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   =========== input from pcap file h2hR1.pcap ========
 |   orient home finished with: 1 [192.168.1.1]
 RC=0 "home": %any[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]...132.213.238.7[C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@ xelerance.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
@@ -68,6 +73,18 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | inserting state object #1 bucket: 4
 ./h2hI2 initiating v2 parent SA
 ./h2hI2 STATE_PARENT_I1: initiate
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
@@ -125,6 +142,9 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
+0: output to OUTPUT/h2hI2.pcap
+0: input from h2hR1.pcap
+|   =========== input from pcap file h2hR1.pcap ========
 | *received 457 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
@@ -155,16 +175,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
 |   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
 |   6c 75 74 6f  75 6e 69 74  30
-| **parse ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
-|    length: 457
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator
@@ -190,105 +200,24 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
-| ***parse IKEv2 Security Association Payload:
-|    critical bit: none
-|    length: 48
-| processing payload: ISAKMP_NEXT_v2SA (len=48)
-| ***parse IKEv2 Key Exchange Payload:
-|    critical bit: none
-|    length: 264
-|    transform type: 14
-| processing payload: ISAKMP_NEXT_v2KE (len=264)
-| ***parse IKEv2 Nonce Payload:
-|    critical bit: none
-|    length: 20
-| processing payload: ISAKMP_NEXT_v2Ni (len=20)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Certificate Request Payload:
-|    critical bit: none
-|    length: 25
-|    ikev2 cert encoding: CERT_X509_SIGNATURE
-| processing payload: ISAKMP_NEXT_v2CERTREQ (len=25)
-| ***parse IKEv2 Vendor ID Payload:
-|    critical bit: none
-|    length: 16
-| processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   84 d5 ee 07  01 f4
-| processing v2N_NAT_DETECTION_SOURCE_IP
-| received nat-t hash  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
-| calculated nat-t  h  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
 | nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   c0 a8 01 01  01 f4
-| processing v2N_NAT_DETECTION_DESTINATION_IP
-| received nat-t hash  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
-| calculated nat-t  h  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | has a v2CERTREQ payload going to decode it
-| CR  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
-|   3a ed cd aa
 | requested CA keyID  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
 |   3a ed cd aa
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
 | proposal 1   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
 | proposal 1 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
 | proposal 1 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
 | proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
 | processor 'initiator-V2_init' returned STF_FAIL+14 (22)
 | #1 complete v2 state transition with STF_FAIL+14
-./h2hI2 STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
-| state transition function for STATE_PARENT_I1 failed: NO_PROPOSAL_CHOSEN
-./h2hI2 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./h2hI2 deleting state #1 (STATE_PARENT_I1)
 | considering request to delete IKE parent state
