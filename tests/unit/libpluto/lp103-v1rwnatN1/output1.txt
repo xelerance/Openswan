@@ -91,12 +91,20 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | searching for connection with policy = /!IKEv1
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (bobnet-ikev1)
 | find_host_connection2 returns bobnet-ikev1 (ike=none/none)
+| local endpoint has virt (vnet/vhost) set without wildcards - needs instantiation
+| alg_info_addref() alg_info->ref_cnt=2
+| alg_info_addref() alg_info->ref_cnt=2
+| find_host_pair: looking for me=192.168.0.2:500 %any him=192.168.0.1:500 exact-match
+| find_host_pair: comparing to me=192.168.0.2:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with bobnet-ikev1
+| connect_to_host_pair: 192.168.0.2:500 %any 192.168.0.1:500 -> hp:bobnet-ikev1
+| instantiated "bobnet-ikev1" for 192.168.0.1
 | creating state object #1 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
 | state hash entry 30
 | inserting state object #1 bucket: 30
-./v1rwnatN1 responding to Main Mode
+./v1rwnatN1 responding to Main Mode from unknown peer 192.168.0.1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -126,7 +134,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 53 57 4d  6e 63 76 75  5d 4a 7b 66
+| Vendor ID  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -148,7 +156,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 192.16
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 53 57 4d  6e 63 76 75  5d 4a 7b 66
+|   0d 00 00 10  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -160,6 +168,11 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 192.16
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
 | state hash entry 30
+./v1rwnatN1 deleting connection "bobnet-ikev1" [whackfd=4294967295] instance with peer 192.168.0.1 {isakmp=#0/ipsec=#0}
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
 | freeing state object #1
 ./v1rwnatN1 deleting connection
 | pass 0: considering CHILD SAs to delete
