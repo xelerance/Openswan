@@ -5,8 +5,8 @@
 ./h2hI2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./h2hI2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./h2hI2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./h2hI2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hI2 loading secrets from "../samples/parker.secrets"
 ./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -19,9 +19,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./h2hI2 use keyid: 1:<> / 2:<>
+./h2hI2 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
-./h2hI2 use keyid: 1:<> / 2:<>
+./h2hI2 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -40,6 +40,8 @@ processing whack msg time: X size: Y
 |   orient mytunnel finished with: 1 [192.168.1.1]
 RC=0 "mytunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
+RC=0 "mytunnel":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
+RC=0 "mytunnel":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'mytunnel'
@@ -55,63 +57,59 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | inserting state object #1 bucket: 4
 ./h2hI2 initiating v2 parent SA
 ./h2hI2 STATE_PARENT_I1: initiate
-sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   45 a7 3f fb  25 20 77 b3  45 0a e4 91  a6 af 49 64
-|   99 d7 99 08  e8 86 1f d1  29 c7 68 64  ab 29 c3 fb
-|   ad 47 9a d0  6b 35 08 ed  d0 9c 59 fb  e8 b8 1e d8
-|   0b a6 83 90  ca 4a 73 f6  5c c1 9f ad  32 57 70 e3
-|   65 27 9a 8f  69 2d 52 ec  e1 42 bc db  80 8b 10 6a
-|   02 71 fe 15  29 1e fa 8a  e6 21 89 84  d0 dd 72 19
-|   09 1c 26 01  c4 3e bb c1  b6 cd ca fc  d6 f7 aa 0d
-|   86 62 21 e4  1e 86 8a 74  5b 06 d5 2c  19 27 55 ca
-|   bb 5e 1d 20  e0 e3 24 79  9b d9 65 a7  50 57 48 b1
-|   5a d0 71 a2  60 ef 14 75  69 dd 14 1a  09 88 6d c3
-|   b2 7d f5 18  bd c1 33 1d  b0 7d b6 dc  2b 1e a1 98
-|   06 bb aa c4  a4 69 b3 c4  f0 4e 08 f3  ee 73 85 41
-|   4f 5a dd d3  55 e1 ec a2  e1 97 fb 2f  f2 b0 6f bc
-|   fc 5f 6b c2  3a 32 e6 46  e1 df 42 70  03 1c 0e a9
-|   1d cb e0 75  ca dd 45 ad  d7 17 f9 02  ef e0 f9 78
-|   d1 1e 82 8f  c2 b7 aa 25  19 6f 2f 08  4d 2b df dc
-|   29 00 00 14  80 01 02 03  04 05 06 07  08 09 0a 0b
-|   0c 0d 0e 0f  29 00 00 1c  00 00 40 04  ea 59 1e 1b
-|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
-|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
-|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  45 a7 3f fb  25 20 77 b3
+|   45 0a e4 91  a6 af 49 64  99 d7 99 08  e8 86 1f d1
+|   29 c7 68 64  ab 29 c3 fb  ad 47 9a d0  6b 35 08 ed
+|   d0 9c 59 fb  e8 b8 1e d8  0b a6 83 90  ca 4a 73 f6
+|   5c c1 9f ad  32 57 70 e3  65 27 9a 8f  69 2d 52 ec
+|   e1 42 bc db  80 8b 10 6a  02 71 fe 15  29 1e fa 8a
+|   e6 21 89 84  d0 dd 72 19  09 1c 26 01  c4 3e bb c1
+|   b6 cd ca fc  d6 f7 aa 0d  86 62 21 e4  1e 86 8a 74
+|   5b 06 d5 2c  19 27 55 ca  bb 5e 1d 20  e0 e3 24 79
+|   9b d9 65 a7  50 57 48 b1  5a d0 71 a2  60 ef 14 75
+|   69 dd 14 1a  09 88 6d c3  b2 7d f5 18  bd c1 33 1d
+|   b0 7d b6 dc  2b 1e a1 98  06 bb aa c4  a4 69 b3 c4
+|   f0 4e 08 f3  ee 73 85 41  4f 5a dd d3  55 e1 ec a2
+|   e1 97 fb 2f  f2 b0 6f bc  fc 5f 6b c2  3a 32 e6 46
+|   e1 df 42 70  03 1c 0e a9  1d cb e0 75  ca dd 45 ad
+|   d7 17 f9 02  ef e0 f9 78  d1 1e 82 8f  c2 b7 aa 25
+|   19 6f 2f 08  4d 2b df dc  29 00 00 14  80 01 02 03
+|   04 05 06 07  08 09 0a 0b  0c 0d 0e 0f  29 00 00 1c
+|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
+|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
+|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 | #1 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -242,527 +240,63 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | ******parse IKEv2 Attribute Substructure Payload:
 |    af+type: KEY_LENGTH
 |    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 3
 |    transform ID: 2
+| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 2
 |    transform ID: 2
+| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| selected proposal 1 encr=aes_cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
-| processor 'initiator-V2_init' returned STF_SUSPEND (2)
-| #1 complete v2 state transition with STF_SUSPEND
-| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
-| ikev2 parent SA details
-| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
-| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
-| duplicating state object #1
-| creating state object #2 at Z
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
-| state hash entry 28
-| inserting state object #2 bucket: 28
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_AUTH
-|    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 01
-| ***emit IKEv2 Encryption Payload:
-|    critical bit: none
-| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-|    next-payload: ISAKMP_NEXT_v2IDi [@-20=0x23]
-| *****emit IKEv2 Identification Payload:
-|    critical bit: none
-|    id_type: ID_IPV4_ADDR
-| emitting 4 raw bytes of my identity into IKEv2 Identification Payload
-| my identity  c0 a8 01 01
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| idhash calc I2  01 00 00 00  c0 a8 01 01
-| emitting length of IKEv2 Identification Payload: 12
-| IKEv2 thinking whether to send my certificate:
-|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
-|  so do not send cert.
-| I did not send a certificate because I do not have one.
-|  payload after AUTH will be ISAKMP_NEXT_v2SA
-|    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
-| *****emit IKEv2 Authentication Payload:
-|    critical bit: none
-|    auth method: v2_AUTH_RSA
-| emitting 192 zero bytes of fake rsa sig into IKEv2 Authentication Payload
-| emitting length of IKEv2 Authentication Payload: 200
-| empty esp_info, returning defaults
-|    next-payload: ISAKMP_NEXT_v2SA [@12=0x21]
-| *****emit IKEv2 Security Association Payload:
-|    critical bit: none
-| ******emit IKEv2 Proposal Substructure Payload:
-|    prop #: 1
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 3
-| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  12 34 56 78
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ********emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 5
-|    transform ID: 0
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ******emit IKEv2 Proposal Substructure Payload:
-|    prop #: 2
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 3
-| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  12 34 56 78
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ********emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 5
-|    transform ID: 0
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ******emit IKEv2 Proposal Substructure Payload:
-|    prop #: 3
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 3
-| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  12 34 56 78
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 5
-|    transform ID: 0
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 36
-| ******emit IKEv2 Proposal Substructure Payload:
-|    prop #: 4
-|    proto ID: 3
-|    spi size: 4
-|    # transforms: 3
-| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
-| our spi  12 34 56 78
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *******emit IKEv2 Transform Substructure Payload:
-|    transform type: 5
-|    transform ID: 0
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 36
-| emitting length of IKEv2 Security Association Payload: 156
-|    next-payload: ISAKMP_NEXT_v2TSi [@212=0x2c]
-| *****emit IKEv2 Traffic Selector Payload:
-|    critical bit: none
-|    number of TS: 1
-| ******emit IKEv2 Traffic Selector:
-|    TS type: IKEv2_TS_IPV4_ADDR_RANGE
-|    IP Protocol ID: 0
-|    start port: 0
-|    end port: 65535
-| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  c0 a8 01 01
-| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  c0 a8 01 01
-| emitting length of IKEv2 Traffic Selector: 16
-| emitting length of IKEv2 Traffic Selector Payload: 24
-|    next-payload: ISAKMP_NEXT_v2TSr [@368=0x2d]
-| *****emit IKEv2 Traffic Selector Payload:
-|    critical bit: none
-|    number of TS: 1
-| ******emit IKEv2 Traffic Selector:
-|    TS type: IKEv2_TS_IPV4_ADDR_RANGE
-|    IP Protocol ID: 0
-|    start port: 0
-|    end port: 65535
-| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  84 d5 ee 07
-| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  84 d5 ee 07
-| emitting length of IKEv2 Traffic Selector: 16
-| emitting length of IKEv2 Traffic Selector Payload: 24
-| emitting 16 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 464
-| emitting length of ISAKMP Message: 492
-| encrypting as INITIATOR, parent SA #1
-| data before encryption:
-|   27 00 00 0c  01 00 00 00  c0 a8 01 01  21 00 00 c8
-|   01 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  2c 00 00 9c  02 00 00 28  01 03 04 03
-|   12 34 56 78  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
-|   02 00 00 28  02 03 04 03  12 34 56 78  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   00 00 00 08  05 00 00 00  02 00 00 24  03 03 04 03
-|   12 34 56 78  03 00 00 08  01 00 00 03  03 00 00 08
-|   03 00 00 02  00 00 00 08  05 00 00 00  00 00 00 24
-|   04 03 04 03  12 34 56 78  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  00 00 00 08  05 00 00 00
-|   2d 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
-|   c0 a8 01 01  c0 a8 01 01  00 00 00 18  01 00 00 00
-|   07 00 00 10  00 00 ff ff  84 d5 ee 07  84 d5 ee 07
-|   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-| data after encryption:
-|   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
-|   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
-|   0b 74 51 11  34 52 17 f8  f6 f9 7c c5  f2 b9 8c cf
-|   53 28 5a ec  77 fa 30 6d  40 47 1d 09  3b 36 43 6c
-|   f5 ee 7c ec  8c 01 b4 97  8c 49 53 97  dc 0c f3 cd
-|   bd d4 f9 43  40 9a a8 4c  c7 97 a9 6e  5f 6f 8a a4
-|   89 61 ac 9c  d8 cc 53 53  2b ef 0d 34  ed e5 74 49
-|   42 6c 97 e6  f4 83 ea 61  58 17 b0 1c  8f 42 b0 7a
-|   b3 96 fe cf  34 b1 b6 d8  c8 a5 b2 b7  b9 75 a4 f3
-|   a2 35 8e 95  8c 79 70 d5  0f bd ce 54  28 58 1c 42
-|   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
-|   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
-|   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   ad 12 14 52  d4 62 1d e3  49 dd 49 29  97 e8 db d3
-|   3c b7 66 ff  10 0f 8f 65  8f 87 21 78  dd 7a 44 4f
-|   4a ee ac ff  6a 4f 77 29  c2 80 5a 31  66 34 4f d4
-|   a9 b7 b3 72  a6 1a e6 2e  83 77 54 ac  76 fd bc 3e
-|   e9 e9 f5 9c  81 00 33 05  28 54 16 f6  0d 92 15 73
-|   37 5b c8 b0  6a 54 f1 8a  0a 2f e7 cf  76 05 f9 c5
-|   82 f0 8f b8  5c 59 bd 69  5b ad b7 83  82 18 e7 ac
-|   af 99 86 2a  b5 ee f8 24  52 72 2b 3c  1f d6 7b 3d
-|   35 eb 21 f8  a7 83 fb b5  5f 70 96 ce  1d a2 57 02
-|   37 7a ce 1b  0c 50 38 33  c1 44 e8 30  0b 45 07 fc
-|   d0 2f 57 be  7b 96 85 3a  8a 2f 3b 98  78 87 ff 65
-|   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
-|   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
-|   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
-|   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
-|   0b 74 51 11  34 52 17 f8  f6 f9 7c c5  f2 b9 8c cf
-|   53 28 5a ec  77 fa 30 6d  40 47 1d 09  3b 36 43 6c
-|   f5 ee 7c ec  8c 01 b4 97  8c 49 53 97  dc 0c f3 cd
-|   bd d4 f9 43  40 9a a8 4c  c7 97 a9 6e  5f 6f 8a a4
-|   89 61 ac 9c  d8 cc 53 53  2b ef 0d 34  ed e5 74 49
-|   42 6c 97 e6  f4 83 ea 61  58 17 b0 1c  8f 42 b0 7a
-|   b3 96 fe cf  34 b1 b6 d8  c8 a5 b2 b7  b9 75 a4 f3
-|   a2 35 8e 95  8c 79 70 d5  0f bd ce 54  28 58 1c 42
-|   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
-|   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
-|   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   ad 12 14 52  d4 62 1d e3  49 dd 49 29  97 e8 db d3
-|   3c b7 66 ff  10 0f 8f 65  8f 87 21 78  dd 7a 44 4f
-|   4a ee ac ff  6a 4f 77 29  c2 80 5a 31  66 34 4f d4
-|   a9 b7 b3 72  a6 1a e6 2e  83 77 54 ac  76 fd bc 3e
-|   e9 e9 f5 9c  81 00 33 05  28 54 16 f6  0d 92 15 73
-|   37 5b c8 b0  6a 54 f1 8a  0a 2f e7 cf  76 05 f9 c5
-|   82 f0 8f b8  5c 59 bd 69  5b ad b7 83  82 18 e7 ac
-|   af 99 86 2a  b5 ee f8 24  52 72 2b 3c  1f d6 7b 3d
-|   35 eb 21 f8  a7 83 fb b5  5f 70 96 ce  1d a2 57 02
-|   37 7a ce 1b  0c 50 38 33  c1 44 e8 30  0b 45 07 fc
-|   d0 2f 57 be  7b 96 85 3a  8a 2f 3b 98  78 87 ff 65
-|   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
-|   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
-|   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
-| out calculated auth:
-|   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
-| #2 complete v2 state transition with STF_OK
-./h2hI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
-| v2_state_transition: st is #2; pst is #1; transition_st is #1
-./h2hI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/4294967295)
-| sending reply packet to 132.213.238.7:500 (from port 500)
-sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #2)
-|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
-|   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
-|   0b 74 51 11  34 52 17 f8  f6 f9 7c c5  f2 b9 8c cf
-|   53 28 5a ec  77 fa 30 6d  40 47 1d 09  3b 36 43 6c
-|   f5 ee 7c ec  8c 01 b4 97  8c 49 53 97  dc 0c f3 cd
-|   bd d4 f9 43  40 9a a8 4c  c7 97 a9 6e  5f 6f 8a a4
-|   89 61 ac 9c  d8 cc 53 53  2b ef 0d 34  ed e5 74 49
-|   42 6c 97 e6  f4 83 ea 61  58 17 b0 1c  8f 42 b0 7a
-|   b3 96 fe cf  34 b1 b6 d8  c8 a5 b2 b7  b9 75 a4 f3
-|   a2 35 8e 95  8c 79 70 d5  0f bd ce 54  28 58 1c 42
-|   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
-|   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
-|   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   ad 12 14 52  d4 62 1d e3  49 dd 49 29  97 e8 db d3
-|   3c b7 66 ff  10 0f 8f 65  8f 87 21 78  dd 7a 44 4f
-|   4a ee ac ff  6a 4f 77 29  c2 80 5a 31  66 34 4f d4
-|   a9 b7 b3 72  a6 1a e6 2e  83 77 54 ac  76 fd bc 3e
-|   e9 e9 f5 9c  81 00 33 05  28 54 16 f6  0d 92 15 73
-|   37 5b c8 b0  6a 54 f1 8a  0a 2f e7 cf  76 05 f9 c5
-|   82 f0 8f b8  5c 59 bd 69  5b ad b7 83  82 18 e7 ac
-|   af 99 86 2a  b5 ee f8 24  52 72 2b 3c  1f d6 7b 3d
-|   35 eb 21 f8  a7 83 fb b5  5f 70 96 ce  1d a2 57 02
-|   37 7a ce 1b  0c 50 38 33  c1 44 e8 30  0b 45 07 fc
-|   d0 2f 57 be  7b 96 85 3a  8a 2f 3b 98  78 87 ff 65
-|   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
-|   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
-|   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
-|   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
+| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 1   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 1 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
+| proposal 1 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| processor 'initiator-V2_init' returned STF_FAIL+14 (22)
+| #1 complete v2 state transition with STF_FAIL+14
+./h2hI2 STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
+| state transition function for STATE_PARENT_I1 failed: NO_PROPOSAL_CHOSEN
 ./h2hI2 deleting connection
 | pass 0: considering CHILD SAs to delete
-./h2hI2 deleting state #2 (STATE_CHILD_C0_KEYING)
-| received request to delete child state
-| removing state object #2
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
-| state hash entry 28
-./h2hI2 deleting state #1 (STATE_PARENT_I2)
+./h2hI2 deleting state #1 (STATE_PARENT_I1)
 | considering request to delete IKE parent state
-| sending IKE SA delete request
-| preparing to delete #1, we are the original INITIATOR of parent #1
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 02
-| ***emit IKEv2 Encryption Payload:
-|    critical bit: none
-| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| *****emit IKEv2 Delete Payload:
-|    critical bit: none
-|    protocol ID: 1
-|    SPI size: 0
-|    number of SPIs: 0
-| emitting length of IKEv2 Delete Payload: 8
-| emitting 8 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
-| encrypting as INITIATOR, parent SA #1
-| data before encryption:
-|   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
-| data after encryption:
-|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-| out calculated auth:
-|   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
-sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
-|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
-| pass 1: considering PARENT SAs to delete
-./h2hI2 deleting state #1 (STATE_IKESA_DEL)
-| considering request to delete IKE parent state
-| now deleting the IKE (or parent) state
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-./h2hI2 leak: request packet for informational exchange, item size: X
-./h2hI2 leak: reply packet, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_prop, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: 4 * sa copy attrs array, item size: X
-./h2hI2 leak: sa copy trans array, item size: X
-./h2hI2 leak: sa copy prop array, item size: X
-./h2hI2 leak: sa copy prop conj array, item size: X
-./h2hI2 leak: sa copy prop_conj, item size: X
-./h2hI2 leak: saved first received packet, item size: X
-./h2hI2 leak: st_nr in duplicate_state, item size: X
-./h2hI2 leak: st_ni in duplicate_state, item size: X
-./h2hI2 leak: st_skey_pr in duplicate_state, item size: X
-./h2hI2 leak: st_skey_pi in duplicate_state, item size: X
-./h2hI2 leak: st_skey_er in duplicate_state, item size: X
-./h2hI2 leak: st_skey_ei in duplicate_state, item size: X
-./h2hI2 leak: st_skey_ar in duplicate_state, item size: X
-./h2hI2 leak: st_skey_ai in duplicate_state, item size: X
-./h2hI2 leak: st_skey_d in duplicate_state, item size: X
-./h2hI2 leak: st_skeyseed in duplicate_state, item size: X
-./h2hI2 leak: st_enc_key in duplicate_state, item size: X
-./h2hI2 leak: struct state in new_state(), item size: X
-./h2hI2 leak: calculated skey_prshared secret, item size: X
-./h2hI2 leak: calculated skey_pishared secret, item size: X
-./h2hI2 leak: calculated skey_ershared secret, item size: X
-./h2hI2 leak: calculated skey_eishared secret, item size: X
-./h2hI2 leak: calculated skey_arshared secret, item size: X
-./h2hI2 leak: calculated skey_aishared secret, item size: X
-./h2hI2 leak: calculated skey_dshared secret, item size: X
-./h2hI2 leak: calculated sharedshared secret, item size: X
-./h2hI2 leak: ikev2_inR1outI2 KE, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_prop, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
+| pass 1: considering PARENT SAs to delete
 ./h2hI2 leak: nonce, item size: X
 ./h2hI2 leak: Gr, item size: X
 ./h2hI2 leak: saved first packet, item size: X
+./h2hI2 leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./h2hI2 leak: sa in main_outI1, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_prop, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
 ./h2hI2 leak: initiator nonce, item size: X
 ./h2hI2 leak: long term secret, item size: X
 ./h2hI2 leak: saved gi value, item size: X
 ./h2hI2 leak: msg_digest, item size: X
 ./h2hI2 leak: ikev2_outI1 KE, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_prop, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: db_attrs, item size: X
-./h2hI2 leak: db_v2_trans, item size: X
-./h2hI2 leak: db_v2_prop_conj, item size: X
-./h2hI2 leak: 12 * sa copy attrs array, item size: X
-./h2hI2 leak: sa copy trans array, item size: X
-./h2hI2 leak: sa copy prop array, item size: X
-./h2hI2 leak: sa copy prop conj array, item size: X
-./h2hI2 leak: sa copy prop_conj, item size: X
+./h2hI2 leak: db_context->trans (expand), item size: X
+./h2hI2 leak: db_context->conj (expand), item size: X
+./h2hI2 leak: alg_info_ike, item size: X
+./h2hI2 leak: db_context->attrs, item size: X
+./h2hI2 leak: db_context->conj, item size: X
+./h2hI2 leak: v2 policy database, item size: X
 ./h2hI2 leak: struct state in new_state(), item size: X
+./h2hI2 leak: pubkey entry, item size: X
+./h2hI2 leak: rfc3110 format of public key, item size: X
+./h2hI2 leak: pubkey, item size: X
+./h2hI2 leak: pubkey entry, item size: X
+./h2hI2 leak: rfc3110 format of public key, item size: X
+./h2hI2 leak: pubkey, item size: X
 ./h2hI2 leak: 2 * id list, item size: X
 ./h2hI2 leak: rfc3110 format of public key [created], item size: X
 ./h2hI2 leak: pubkey, item size: X
