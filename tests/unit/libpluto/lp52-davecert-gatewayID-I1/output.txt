@@ -5,8 +5,8 @@
 ./davecertI1-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./davecertI1-id ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./davecertI1-id ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./davecertI1-id ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./davecertI1-id ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./davecertI1-id ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./davecertI1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecertI1-id loading secrets from "../samples/davecert.secrets"
 ./davecertI1-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (CERT bytes)
@@ -41,7 +41,7 @@ processing whack msg time: X size: Y
 |   orient home finished with: 1 [0.0.0.0]
 RC=0 "home": %any[dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
-RC=0 "home":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'...'%any'
+RC=0 "home":   keys: 1:71EF 2412 7A30 AD54 C288 FC00 B917 3DAB 8E76 4790 2:none...
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'home'
@@ -59,6 +59,18 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | inserting state object #1 bucket: 4
 ./davecertI1-id initiating v2 parent SA
 ./davecertI1-id STATE_PARENT_I1: initiate
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -80,24 +92,20 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 2
 |    proto ID: 1
@@ -106,24 +114,20 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 3
 |    proto ID: 1
@@ -131,19 +135,19 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 14
+|    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
@@ -153,19 +157,19 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 14
+|    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
@@ -176,24 +180,20 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 5
+|    transform ID: 15
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 6
 |    proto ID: 1
@@ -202,165 +202,21 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 7
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 5
+|    transform ID: 15
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 8
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 9
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 10
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 11
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 12
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| emitting length of IKEv2 Security Association Payload: 508
+| emitting length of IKEv2 Security Association Payload: 244
 |    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
 | ***emit IKEv2 Key Exchange Payload:
 |    critical bit: none
@@ -383,7 +239,7 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 | emitting length of IKEv2 Key Exchange Payload: 264
-|    next-payload: ISAKMP_NEXT_v2Ni [@536=0x28]
+|    next-payload: ISAKMP_NEXT_v2Ni [@272=0x28]
 | ***emit IKEv2 Nonce Payload:
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
@@ -392,7 +248,7 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
 |   5d b8 d8 23  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@536=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
 |    Protocol ID: PROTO_RESERVED
@@ -405,7 +261,7 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
 |   84 d5 ee 07  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@556=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
 |    Protocol ID: PROTO_RESERVED
@@ -415,69 +271,53 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | Notify data  cd 75 36 6e  bb c6 07 29  89 9f 33 c9  b7 8c 95 e9
 |   4e ac a8 b1
 | emitting length of IKEv2 Notify Payload: 28
-|    next-payload: ISAKMP_NEXT_v2V [@848=0x2b]
+|    next-payload: ISAKMP_NEXT_v2V [@584=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 892
-sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:500] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 628
+sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:500] to 132.213.238.7:500 (using #1)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
-|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
-|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
-|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
-|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
-|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
-|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
-|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
-|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
-|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
-|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  27 32 94 6b
-|   70 cf ee 15  b8 92 a5 e9  51 d9 2d 19  dc a3 b6 67
-|   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
-|   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
-|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
+|   18 4f a0 1e  5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53
+|   5d 17 6a be  1b c5 70 ab  34 47 bc 09  14 7c aa 91
+|   9c 8f 81 dc  1e f9 87 cd  6a ec fa f3  a5 9e 37 bc
+|   ac 3d fd e1  32 8e e8 b3  fe d3 8b f4  7b 50 34 13
+|   33 7a 93 ea  e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2
+|   55 ce 45 22  9f c7 c9 48  43 a3 e2 64  b5 5d 43 38
+|   c8 fe f1 d3  06 43 f0 0a  e8 6d 61 8c  60 78 d9 98
+|   d3 1b 3b 5e  f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62
+|   b2 3e 0b 17  af 6c b8 31  08 d7 19 5a  7b c4 54 c2
+|   13 47 98 c2  cc d2 16 29  75 6c 03 fb  1e 9c 9d 21
+|   0c a1 e6 c2  f3 f2 49 2c  f6 06 73 c1  96 1e ce 58
+|   81 01 1c cb  16 dc f9 fc  c7 93 08 75  58 16 57 71
+|   69 96 66 b7  a9 81 7f f7  37 4d 7c 41  38 62 a6 39
+|   00 81 ca 3d  1d fc f7 b5  08 38 d4 34  70 22 6c 21
+|   d2 5b 20 a1  d2 ba 2a d1  89 f3 20 79  ce ac 1e c2
+|   ec 7d ae 76  94 40 39 a0  29 00 00 14  20 98 9d 37
+|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  29 00 00 1c
+|   00 00 40 04  27 32 94 6b  70 cf ee 15  b8 92 a5 e9
+|   51 d9 2d 19  dc a3 b6 67  2b 00 00 1c  00 00 40 05
+|   cd 75 36 6e  bb c6 07 29  89 9f 33 c9  b7 8c 95 e9
+|   4e ac a8 b1  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 | #1 complete v2 state transition with STF_OK
 ./davecertI1-id transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -494,78 +334,17 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: saved first packet, item size: X
 ./davecertI1-id leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./davecertI1-id leak: sa in main_outI1, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_prop, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
 ./davecertI1-id leak: initiator nonce, item size: X
 ./davecertI1-id leak: long term secret, item size: X
 ./davecertI1-id leak: saved gi value, item size: X
 ./davecertI1-id leak: msg_digest, item size: X
 ./davecertI1-id leak: ikev2_outI1 KE, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_prop, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: db_attrs, item size: X
-./davecertI1-id leak: db_v2_trans, item size: X
-./davecertI1-id leak: db_v2_prop_conj, item size: X
-./davecertI1-id leak: 12 * sa copy attrs array, item size: X
-./davecertI1-id leak: sa copy trans array, item size: X
-./davecertI1-id leak: sa copy prop array, item size: X
-./davecertI1-id leak: sa copy prop conj array, item size: X
-./davecertI1-id leak: sa copy prop_conj, item size: X
+./davecertI1-id leak: db_context->trans (expand), item size: X
+./davecertI1-id leak: db_context->conj (expand), item size: X
+./davecertI1-id leak: alg_info_ike, item size: X
+./davecertI1-id leak: db_context->attrs, item size: X
+./davecertI1-id leak: db_context->conj, item size: X
+./davecertI1-id leak: v2 policy database, item size: X
 ./davecertI1-id leak: struct state in new_state(), item size: X
 ./davecertI1-id leak: rfc3110 format of public key [created], item size: X
 ./davecertI1-id leak: issuer dn, item size: X
