@@ -5,8 +5,8 @@
 ./s2sI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./s2sI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./s2sI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./s2sI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./s2sI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./s2sI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./s2sI1 loading secrets from "../samples/parker.secrets"
 ./s2sI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -19,9 +19,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnelnets with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./s2sI1 use keyid: 1:<> / 2:<>
+./s2sI1 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
-./s2sI1 use keyid: 1:<> / 2:<>
+./s2sI1 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient mytunnelnets checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -39,6 +39,8 @@ processing whack msg time: X size: Y
 |   orient mytunnelnets finished with: 1 [192.168.1.1]
 RC=0 "mytunnelnets": 10.1.1.0/24===192.168.1.1...132.213.238.7===10.2.2.0/24; unrouted; eroute owner: #0
 RC=0 "mytunnelnets":     myip=unset; hisip=unset;
+RC=0 "mytunnelnets":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
+RC=0 "mytunnelnets":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
 RC=0 "mytunnelnets":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 24,24; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'mytunnelnets'
@@ -54,6 +56,18 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | inserting state object #1 bucket: 4
 ./s2sI1 initiating v2 parent SA
 ./s2sI1 STATE_PARENT_I1: initiate
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -75,24 +89,20 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 2
 |    proto ID: 1
@@ -101,24 +111,20 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 3
 |    proto ID: 1
@@ -126,19 +132,19 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 14
+|    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
@@ -148,19 +154,19 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 14
+|    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
@@ -171,24 +177,20 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 5
+|    transform ID: 15
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 6
 |    proto ID: 1
@@ -197,165 +199,21 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 7
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
-|    transform ID: 5
+|    transform ID: 15
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 8
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 9
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 10
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 11
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    prop #: 12
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| emitting length of IKEv2 Security Association Payload: 508
+| emitting length of IKEv2 Security Association Payload: 244
 |    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
 | ***emit IKEv2 Key Exchange Payload:
 |    critical bit: none
@@ -378,7 +236,7 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 |   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
 |   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
 | emitting length of IKEv2 Key Exchange Payload: 264
-|    next-payload: ISAKMP_NEXT_v2Ni [@536=0x28]
+|    next-payload: ISAKMP_NEXT_v2Ni [@272=0x28]
 | ***emit IKEv2 Nonce Payload:
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
@@ -387,7 +245,7 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   c0 a8 01 01  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@536=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
 |    Protocol ID: PROTO_RESERVED
@@ -400,7 +258,7 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   84 d5 ee 07  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@556=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
 |    Protocol ID: PROTO_RESERVED
@@ -410,69 +268,53 @@ RC=0 "mytunnelnets":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | Notify data  cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
 |   f9 7d c4 c2
 | emitting length of IKEv2 Notify Payload: 28
-|    next-payload: ISAKMP_NEXT_v2V [@848=0x2b]
+|    next-payload: ISAKMP_NEXT_v2V [@584=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 892
-sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 628
+sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
-|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
-|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
-|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
-|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
-|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
-|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
-|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
-|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
-|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
-|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
-|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
-|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
-|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
-|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
-|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
-|   29 00 00 14  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c
-|   0d e6 bc 04  29 00 00 1c  00 00 40 04  ea 59 1e 1b
-|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
-|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
-|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  bf da ea a0  86 55 9f df
+|   bf bb 5e 42  b9 a6 18 18  ab ca 13 b4  cf 6a 92 77
+|   44 6c 57 46  1c 07 a0 86  44 e0 9c 5f  98 41 7c 4a
+|   3b ab 6c 35  56 5a 63 cc  0b 2e 40 97  16 18 bf c0
+|   83 55 57 cc  94 04 cd 6b  a2 f2 b9 a6  3b 9b 0d fd
+|   73 7f 91 04  06 28 86 f9  cb 0b 8a 65  14 a0 f5 b2
+|   ed 6b 23 1f  7d df 90 28  b8 0f 28 95  fb 00 22 c9
+|   e3 8f b9 df  b8 7c 66 bc  75 1b c8 61  ba b5 93 17
+|   d6 df 87 26  d3 4d 2d 0a  a4 80 e4 51  fd 38 fa 42
+|   ca b5 f5 2d  90 80 be a4  9c 08 17 b6  ab a9 49 4c
+|   f7 45 53 50  cb 49 f8 b4  44 50 86 91  37 f7 5c b0
+|   4a ce 96 1f  fc 2a a5 16  e9 45 e4 f2  e5 f0 c9 81
+|   c1 66 68 55  ed c9 3b 62  27 a9 34 0e  01 a8 54 63
+|   7f 99 2f ea  6d 3a 21 4c  32 72 bf bb  85 df 2b 8e
+|   cc a0 40 3e  96 16 fa 03  96 7f cd d7  d0 11 d0 17
+|   89 96 cd 01  25 d3 3d dd  d2 5e 2c bd  2e 3a e4 97
+|   b6 33 a3 5c  41 01 ed 8e  29 00 00 14  3c d5 15 14
+|   50 ab 73 9a  c8 ac 54 1c  0d e6 bc 04  29 00 00 1c
+|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
+|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
+|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 | #1 complete v2 state transition with STF_OK
 ./s2sI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -489,79 +331,24 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./s2sI1 leak: saved first packet, item size: X
 ./s2sI1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./s2sI1 leak: sa in main_outI1, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_prop, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
 ./s2sI1 leak: initiator nonce, item size: X
 ./s2sI1 leak: long term secret, item size: X
 ./s2sI1 leak: saved gi value, item size: X
 ./s2sI1 leak: msg_digest, item size: X
 ./s2sI1 leak: ikev2_outI1 KE, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_prop, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: db_attrs, item size: X
-./s2sI1 leak: db_v2_trans, item size: X
-./s2sI1 leak: db_v2_prop_conj, item size: X
-./s2sI1 leak: 12 * sa copy attrs array, item size: X
-./s2sI1 leak: sa copy trans array, item size: X
-./s2sI1 leak: sa copy prop array, item size: X
-./s2sI1 leak: sa copy prop conj array, item size: X
-./s2sI1 leak: sa copy prop_conj, item size: X
+./s2sI1 leak: db_context->trans (expand), item size: X
+./s2sI1 leak: db_context->conj (expand), item size: X
+./s2sI1 leak: alg_info_ike, item size: X
+./s2sI1 leak: db_context->attrs, item size: X
+./s2sI1 leak: db_context->conj, item size: X
+./s2sI1 leak: v2 policy database, item size: X
 ./s2sI1 leak: struct state in new_state(), item size: X
+./s2sI1 leak: pubkey entry, item size: X
+./s2sI1 leak: rfc3110 format of public key, item size: X
+./s2sI1 leak: pubkey, item size: X
+./s2sI1 leak: pubkey entry, item size: X
+./s2sI1 leak: rfc3110 format of public key, item size: X
+./s2sI1 leak: pubkey, item size: X
 ./s2sI1 leak: policies path, item size: X
 ./s2sI1 leak: ocspcerts path, item size: X
 ./s2sI1 leak: aacerts path, item size: X

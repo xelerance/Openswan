@@ -481,109 +481,42 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | considering state entry: 1
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILD_C0_KEYING
-| considering state entry: 3
-|   reject:state unneeded and state available
-| considering state entry: 4
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_R1
-| considering state entry: 5
-| considering state entry: 6
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILD_C1_REKEY
-| considering state entry: 7
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_R2
-| considering state entry: 8
-| considering state entry: 9
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_I2
-| considering state entry: 10
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_R1
-| considering state entry: 11
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_I3
-| considering state entry: 12
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_R2
-| considering state entry: 13
-|   reject: in state: STATE_PARENT_I1, needs STATE_IKESA_DEL
-| considering state entry: 14
-|   reject: in state: STATE_PARENT_I1, needs STATE_PARENT_I3
-| considering state entry: 15
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILD_C1_KEYED
-| considering state entry: 16
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILDSA_DEL
-| considering state entry: 17
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILD_C1_KEYED
-| considering state entry: 18
-|   reject: in state: STATE_PARENT_I1, needs STATE_CHILD_C0_KEYING
-| did not find valid state; giving up
+| now proceed with state specific processing using state #2 initiator-auth-process
+| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
+| decrypting as INITIATOR, using RESPONDER keys
+| WARNING: ikev2_decrypt_msg:336: hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 20
+| WARNING: ikev2_decrypt_msg:336: hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 20
+./rekey-no-reply-I1 R2 failed to match authenticator
+| processor 'initiator-auth-process' returned STF_FAIL+24 (32)
+| #2 complete v2 state transition with STF_FAIL+24
+./rekey-no-reply-I1 STATE_CHILD_C0_KEYING: AUTHENTICATION_FAILED
+| state transition function for STATE_CHILD_C0_KEYING failed: AUTHENTICATION_FAILED
 
 
 
 now pretend (1) that the keylife timer is up, and rekey the connection
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I1 (sent v2I1, expected v2R1); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=-1; msgid=0; idle; import:admin initiate
-no state #2 found
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); none in -1s; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=-1; msgid=0; idle; import:admin initiate
 Newly created state is #0
 
 
 
 now pretend (2) that the keylife timer is up, and rekey the connection
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I1 (sent v2I1, expected v2R1); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=-1; msgid=0; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); none in -1s; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=-1; msgid=0; idle; import:admin initiate
 no state #0 found
 Newly created state is #0
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I1 (sent v2I1, expected v2R1); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=-1; msgid=0; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); none in -1s; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=-1; msgid=0; idle; import:admin initiate
 ./rekey-no-reply-I1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekey-no-reply-I1 deleting state #1 (STATE_PARENT_I1)
-| considering request to delete IKE parent state
-| removing state object #1
+./rekey-no-reply-I1 deleting state #2 (STATE_CHILD_C0_KEYING)
+| received request to delete child state
+| removing state object #2
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-./rekey-no-reply-I1 deleting state #2 (STATE_CHILD_C1_KEYED)
-| received request to delete child state
-| sending Child SA delete request
-| preparing to delete #2, we are the original INITIATOR of parent #1
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 04
-| ***emit IKEv2 Encryption Payload:
-|    critical bit: none
-| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| *****emit IKEv2 Delete Payload:
-|    critical bit: none
-|    protocol ID: 3
-|    SPI size: 4
-|    number of SPIs: 1
-| emitting 4 raw bytes of local spis into IKEv2 Delete Payload
-| local spis  12 34 56 78
-| emitting length of IKEv2 Delete Payload: 12
-| emitting 4 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
-| encrypting as INITIATOR, parent SA #1
-| data before encryption:
-|   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
-| data after encryption:
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| out calculated auth:
-|   d8 28 80 26  76 d3 5c b5  ac de 1a 26
-sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
-|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-|   d8 28 80 26  76 d3 5c b5  ac de 1a 26
-| pass 1: considering PARENT SAs to delete
-./rekey-no-reply-I1 deleting state #1 (STATE_PARENT_I3)
+./rekey-no-reply-I1 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
 | preparing to delete #1, we are the original INITIATOR of parent #1
@@ -595,7 +528,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 05
+|    message ID:  00 00 00 02
 | ***emit IKEv2 Encryption Payload:
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
@@ -607,44 +540,69 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 | emitting length of IKEv2 Delete Payload: 8
 | emitting 8 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
+| emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 52
+| emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR, parent SA #1
+| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
+| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | out calculated auth:
-|   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
-sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
-| freeing state object #1
-./rekey-no-reply-I1 leak: reply packet for ikev2_out_C1_tail, item size: X
-./rekey-no-reply-I1 leak: db_v2_trans, item size: X
-./rekey-no-reply-I1 leak: db_v2_prop_conj, item size: X
-./rekey-no-reply-I1 leak: db_v2_prop, item size: X
-./rekey-no-reply-I1 leak: db_v2_trans, item size: X
-./rekey-no-reply-I1 leak: db_v2_prop_conj, item size: X
-./rekey-no-reply-I1 leak: db_attrs, item size: X
-./rekey-no-reply-I1 leak: db_v2_trans, item size: X
-./rekey-no-reply-I1 leak: db_v2_prop_conj, item size: X
-./rekey-no-reply-I1 leak: db_attrs, item size: X
-./rekey-no-reply-I1 leak: db_v2_trans, item size: X
-./rekey-no-reply-I1 leak: db_v2_prop_conj, item size: X
-./rekey-no-reply-I1 leak: 4 * sa copy attrs array, item size: X
-./rekey-no-reply-I1 leak: sa copy trans array, item size: X
-./rekey-no-reply-I1 leak: sa copy prop array, item size: X
-./rekey-no-reply-I1 leak: sa copy prop conj array, item size: X
-./rekey-no-reply-I1 leak: sa copy prop_conj, item size: X
+|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+| pass 1: considering PARENT SAs to delete
+./rekey-no-reply-I1 deleting state #1 (STATE_IKESA_DEL)
+| considering request to delete IKE parent state
+| now deleting the IKE (or parent) state
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+./rekey-no-reply-I1 leak: request packet for informational exchange, item size: X
+./rekey-no-reply-I1 leak: reply packet, item size: X
+./rekey-no-reply-I1 leak: alg_info_esp, item size: X
+./rekey-no-reply-I1 leak: db_context->attrs, item size: X
+./rekey-no-reply-I1 leak: db_context->trans, item size: X
+./rekey-no-reply-I1 leak: 2 * db_context->conj, item size: X
+./rekey-no-reply-I1 leak: v2 policy database, item size: X
+./rekey-no-reply-I1 leak: saved first received packet, item size: X
+./rekey-no-reply-I1 leak: st_nr in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_ni in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_pr in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_pi in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_er in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_ei in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_ar in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_ai in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skey_d in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_skeyseed in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: st_enc_key in duplicate_state, item size: X
+./rekey-no-reply-I1 leak: struct state in new_state(), item size: X
+./rekey-no-reply-I1 leak: calculated skey_prshared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_pishared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_ershared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_eishared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_arshared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_aishared secret, item size: X
+./rekey-no-reply-I1 leak: calculated skey_dshared secret, item size: X
+./rekey-no-reply-I1 leak: calculated sharedshared secret, item size: X
+./rekey-no-reply-I1 leak: ikev2_inR1outI2 KE, item size: X
+./rekey-no-reply-I1 leak: nonce, item size: X
+./rekey-no-reply-I1 leak: Gr, item size: X
+./rekey-no-reply-I1 leak: saved first packet, item size: X
+./rekey-no-reply-I1 leak: sa in main_outI1, item size: X
 ./rekey-no-reply-I1 leak: initiator nonce, item size: X
 ./rekey-no-reply-I1 leak: long term secret, item size: X
 ./rekey-no-reply-I1 leak: saved gi value, item size: X
@@ -657,6 +615,14 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./rekey-no-reply-I1 leak: db_context->conj, item size: X
 ./rekey-no-reply-I1 leak: v2 policy database, item size: X
 ./rekey-no-reply-I1 leak: struct state in new_state(), item size: X
+./rekey-no-reply-I1 leak: keep id name, item size: X
+./rekey-no-reply-I1 leak: pubkey entry, item size: X
+./rekey-no-reply-I1 leak: rfc3110 format of public key, item size: X
+./rekey-no-reply-I1 leak: pubkey, item size: X
+./rekey-no-reply-I1 leak: keep id name, item size: X
+./rekey-no-reply-I1 leak: pubkey entry, item size: X
+./rekey-no-reply-I1 leak: rfc3110 format of public key, item size: X
+./rekey-no-reply-I1 leak: pubkey, item size: X
 ./rekey-no-reply-I1 leak: policies path, item size: X
 ./rekey-no-reply-I1 leak: ocspcerts path, item size: X
 ./rekey-no-reply-I1 leak: aacerts path, item size: X

@@ -5,8 +5,8 @@
 ./v1rwnatM1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./v1rwnatM1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./v1rwnatM1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./v1rwnatM1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1rwnatM1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1rwnatM1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1rwnatM1 adjusting ipsec.d to ../samples/alice
 ./v1rwnatM1 loading secrets from "../samples/alice.secrets"
 ./v1rwnatM1 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
@@ -35,11 +35,10 @@ processing whack msg time: X size: Y
 | counting wild cards for @sun is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient bobnet-ikev1 reference sr#1 this: addr:192.168.0.2 that: %defaultroute
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:4500)
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient bobnet-ikev1 matching on public/private keys: this=no[%address] that=yes[%defaultroute]
 |   orient bobnet-ikev1 matched on that having private key
 | pick_if looking for port: 500, family: 2
@@ -60,20 +59,19 @@ RC=0 "bobnet-ikev1": %any[@alice]...192.168.0.2[@sun]===10.2.0.0/16; unrouted; e
 RC=0 "bobnet-ikev1":     myip=unset; hisip=unset;
 RC=0 "bobnet-ikev1":   keys: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none...
 RC=0 "bobnet-ikev1":        ....1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none
-RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
-RC=0 "bobnet-ikev1":   IKEv2 algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
-RC=0 "bobnet-ikev1":   IKEv2 algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
+RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
 RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | esp algid=3 not available
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: none
 | find_phase1_state: no SA found for conn 'bobnet-ikev1'
 | creating state object #1 at Z
-| orient bobnet-ikev1 reference sr#1 this: %defaultroute that: addr:192.168.0.2
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:4500)
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient bobnet-ikev1 matching on public/private keys: this=yes[%defaultroute] that=no[%address]
 |   orient bobnet-ikev1 matched on this having private key
 | pick_if looking for port: 500, family: 2
@@ -85,7 +83,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: none
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5)
 ./v1rwnatM1 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -171,7 +169,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: none
 | V_ID  44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
 | emitting length of ISAKMP Vendor ID Payload: 20
 | emitting length of ISAKMP Message: 216
-sending 216 bytes for main_outI1 through eth0:500 [192.168.0.1:55044] to 192.168.0.2:500 (using #1)
+sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
@@ -186,14 +184,12 @@ sending 216 bytes for main_outI1 through eth0:500 [192.168.0.1:55044] to 192.168
 |   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
-| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
 RC=105 STATE_MAIN_I1: initiate
 ./v1rwnatM1 deleting state #1 (STATE_MAIN_I1)
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
 ./v1rwnatM1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
@@ -201,6 +197,7 @@ RC=105 STATE_MAIN_I1: initiate
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
+./v1rwnatM1 leak: reply packet for main_outI1, item size: X
 ./v1rwnatM1 leak: 67 * VendorID MD5, item size: X
 ./v1rwnatM1 leak: 3 * vid->data, item size: X
 ./v1rwnatM1 leak: 15 * VendorID MD5, item size: X
@@ -210,6 +207,8 @@ RC=105 STATE_MAIN_I1: initiate
 ./v1rwnatM1 leak: vid->data, item size: X
 ./v1rwnatM1 leak: 23 * VendorID MD5, item size: X
 ./v1rwnatM1 leak: vid->data, item size: X
+./v1rwnatM1 leak: sa in main_outI1, item size: X
+./v1rwnatM1 leak: struct state in new_state(), item size: X
 ./v1rwnatM1 leak: keep id name, item size: X
 ./v1rwnatM1 leak: pubkey entry, item size: X
 ./v1rwnatM1 leak: rfc3110 format of public key, item size: X
@@ -231,18 +230,10 @@ RC=105 STATE_MAIN_I1: initiate
 ./v1rwnatM1 leak: cacert path, item size: X
 ./v1rwnatM1 leak: acert path, item size: X
 ./v1rwnatM1 leak: override ipsec.d, item size: X
-./v1rwnatM1 leak: 4 * hasher name, item size: X
-./v1rwnatM1 leak: 10 * group description, item size: X
-./v1rwnatM1 leak: policies path, item size: X
-./v1rwnatM1 leak: ocspcerts path, item size: X
-./v1rwnatM1 leak: aacerts path, item size: X
-./v1rwnatM1 leak: certs path, item size: X
-./v1rwnatM1 leak: private path, item size: X
-./v1rwnatM1 leak: crls path, item size: X
-./v1rwnatM1 leak: cacert path, item size: X
-./v1rwnatM1 leak: acert path, item size: X
 ./v1rwnatM1 leak: default conf var_dir, item size: X
 ./v1rwnatM1 leak: default conf conffile, item size: X
 ./v1rwnatM1 leak: default conf ipsecd_dir, item size: X
 ./v1rwnatM1 leak: default conf ipsec_conf_dir, item size: X
+./v1rwnatM1 leak: 4 * hasher name, item size: X
+./v1rwnatM1 leak: 10 * group description, item size: X
 ./v1rwnatM1 leak detective found Z leaks, total size X
