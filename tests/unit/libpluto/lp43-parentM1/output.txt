@@ -19,9 +19,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-./parentM1 use keyid: 1:<> / 2:<>
+./parentM1 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
-./parentM1 use keyid: 1:<> / 2:<>
+./parentM1 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -39,6 +39,8 @@ processing whack msg time: X size: Y
 |   orient t4901 finished with: 1 [192.168.1.1]
 RC=0 "t4901": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "t4901":     myip=unset; hisip=unset;
+RC=0 "t4901":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
+RC=0 "t4901":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 't4901'
@@ -102,172 +104,166 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    transform number: 0
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 1
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 2
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 5
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 3
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 5
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 4
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 15
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 5
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32779??
+|    af+type: OAKLEY_LIFE_TYPE
 |    length/value: 1
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32779
+|     [1 is OAKLEY_LIFE_SECONDS]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32780??
+|    af+type: OAKLEY_LIFE_DURATION
 |    length/value: 3600
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32780
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32771??
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
 |    length/value: 3
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32771
+|     [3 is OAKLEY_RSA_SIG]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32769??
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32769
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32770??
+|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32770
+|     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: 32772??
+|    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 15
-./parentM1 af+type of ISAKMP Oakley attribute has an unknown value: 32772
-| emitting length of ISAKMP Transform Payload (ISAKMP): 8
-| emitting length of ISAKMP Proposal Payload: 56
-| emitting length of ISAKMP Security Association Payload: 68
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 200
+| emitting length of ISAKMP Security Association Payload: 212
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
@@ -277,14 +273,23 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 132
-sending 132 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 276
+sending 276 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 00 84  0d 00 00 44
-|   00 00 00 01  00 00 00 01  00 00 00 38  00 01 00 06
-|   03 00 00 08  00 01 00 00  03 00 00 08  01 01 00 00
-|   03 00 00 08  02 01 00 00  03 00 00 08  03 01 00 00
-|   03 00 00 08  04 01 00 00  00 00 00 08  05 01 00 00
+|   01 10 02 00  00 00 00 00  00 00 01 14  0d 00 00 d4
+|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
+|   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
+|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
+|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00
@@ -310,6 +315,12 @@ RC=105 STATE_MAIN_I1: initiate
 ./parentM1 leak: sa in main_outI1, item size: X
 ./parentM1 leak: alg_info_ike, item size: X
 ./parentM1 leak: struct state in new_state(), item size: X
+./parentM1 leak: pubkey entry, item size: X
+./parentM1 leak: rfc3110 format of public key, item size: X
+./parentM1 leak: pubkey, item size: X
+./parentM1 leak: pubkey entry, item size: X
+./parentM1 leak: rfc3110 format of public key, item size: X
+./parentM1 leak: pubkey, item size: X
 ./parentM1 leak: policies path, item size: X
 ./parentM1 leak: ocspcerts path, item size: X
 ./parentM1 leak: aacerts path, item size: X

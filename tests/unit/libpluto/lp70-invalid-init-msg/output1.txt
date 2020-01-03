@@ -26,9 +26,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./h2hR1 use keyid: 1:<> / 2:<>
+./h2hR1 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
-./h2hR1 use keyid: 1:<> / 2:<>
+./h2hR1 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient mytunnel checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient mytunnel checking against if: eth0 (AF_INET:132.213.238.7:500)
@@ -45,6 +45,8 @@ processing whack msg time: X size: Y
 |   orient mytunnel finished with: 1 [132.213.238.7]
 RC=0 "mytunnel": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
+RC=0 "mytunnel":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
+RC=0 "mytunnel":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file h2hI1.pcap ========
@@ -185,6 +187,12 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | pass 1: considering PARENT SAs to delete
 ./h2hR1 leak: notification packet, item size: X
 ./h2hR1 leak: msg_digest, item size: X
+./h2hR1 leak: pubkey entry, item size: X
+./h2hR1 leak: rfc3110 format of public key, item size: X
+./h2hR1 leak: pubkey, item size: X
+./h2hR1 leak: pubkey entry, item size: X
+./h2hR1 leak: rfc3110 format of public key, item size: X
+./h2hR1 leak: pubkey, item size: X
 ./h2hR1 leak: 2 * id list, item size: X
 ./h2hR1 leak: rfc3110 format of public key [created], item size: X
 ./h2hR1 leak: pubkey, item size: X

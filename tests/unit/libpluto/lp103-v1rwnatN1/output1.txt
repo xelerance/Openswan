@@ -5,8 +5,8 @@
 ./v1rwnatN1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./v1rwnatN1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./v1rwnatN1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./v1rwnatN1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1rwnatN1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1rwnatN1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1rwnatN1 adjusting ipsec.d to ../samples/sun
 ./v1rwnatN1 loading secrets from "../samples/sun.secrets"
 ./v1rwnatN1 loaded private key for keyid: PPK_RSA:AQOssdnqo/D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
@@ -14,8 +14,6 @@
 ./v1rwnatN1 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./v1rwnatN1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./v1rwnatN1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatN1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatN1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -38,7 +36,6 @@ processing whack msg time: X size: Y
 | counting wild cards for @sun is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient bobnet-ikev1 reference sr#1 this: addr:192.168.0.2 that: %any
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:4500)
 | orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:500)
 |     orient matched on IP
@@ -56,8 +53,10 @@ RC=0 "bobnet-ikev1": 10.2.0.0/16===192.168.0.2[@sun]...%virtual[@alice]===?; unr
 RC=0 "bobnet-ikev1":     myip=unset; hisip=unset;
 RC=0 "bobnet-ikev1":   keys: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none...
 RC=0 "bobnet-ikev1":        ....1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none
-RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
 RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   =========== input from pcap file v1rwnatM1.pcap ========
@@ -77,7 +76,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-./v1rwnatN1 received Vendor ID payload [Openswan (this version) 2.6-regression ]
+./v1rwnatN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./v1rwnatN1 received Vendor ID payload [Dead Peer Detection]
 ./v1rwnatN1 received Vendor ID payload [RFC 3947] method set to=115
 ./v1rwnatN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
@@ -92,21 +91,12 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | searching for connection with policy = /!IKEv1
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (bobnet-ikev1)
 | find_host_connection2 returns bobnet-ikev1 (ike=none/none)
-| local endpoint has virt (vnet/vhost) set without wildcards - needs instantiation
-| alg_info_addref() alg_info->ref_cnt=2
-| alg_info_addref() alg_info->ref_cnt=2
-| find_host_pair: looking for me=192.168.0.2:500 %any him=192.168.0.1:500 exact-match
-| find_host_pair: comparing to me=192.168.0.2:500 %any him=0.0.0.0:500
-| find_host_pair: concluded with bobnet-ikev1
-| connect_to_host_pair: 192.168.0.2:500 %any 192.168.0.1:500 -> hp:bobnet-ikev1
-| instantiated "bobnet-ikev1" for 192.168.0.1
 | creating state object #1 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
 | state hash entry 30
 | inserting state object #1 bucket: 30
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
-./v1rwnatN1 responding to Main Mode from unknown peer 192.168.0.1
+./v1rwnatN1 responding to Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -136,7 +126,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 53 57 4d  6e 63 76 75  5d 4a 7b 66
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -144,7 +134,6 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
 | out_vendorid(): sending [RFC 3947]
-|    next-payload: ISAKMP_NEXT_VID [@96=0x d]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
@@ -159,11 +148,10 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 192.16
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 53 57 4d  6e 63 76 75  5d 4a 7b 66
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
-| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
 ./v1rwnatN1 STATE_MAIN_R1: sent MR1, expecting MI2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
@@ -172,11 +160,6 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 192.16
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
 | state hash entry 30
-./v1rwnatN1 deleting connection "bobnet-ikev1" [whackfd=4294967295] instance with peer 192.168.0.1 {isakmp=#0/ipsec=#0}
-| pass 0: considering CHILD SAs to delete
-| pass 1: considering PARENT SAs to delete
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
 | freeing state object #1
 ./v1rwnatN1 deleting connection
 | pass 0: considering CHILD SAs to delete

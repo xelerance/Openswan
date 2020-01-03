@@ -11,6 +11,9 @@
 ./v1emptyM1 loading secrets from "../samples/carol.secrets"
 ./v1emptyM1   loaded private key file '../samples/carol/private/carolKey.pem' (CERT bytes)
 ./v1emptyM1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
+./v1emptyM1 Setting NAT-Traversal port-4500 floating to on
+./v1emptyM1    port floating activation criteria nat_t=1/port_float=1
+./v1emptyM1    NAT-Traversal support  [enabled]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -44,7 +47,7 @@ RC=0 "homeV1empty": 192.168.0.100[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.or
 RC=0 "homeV1empty":     myip=unset; hisip=unset; mycert=carolCert.pem; hiscert=moonCert.pem;
 RC=0 "homeV1empty":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
 RC=0 "homeV1empty":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
-RC=0 "homeV1empty":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "homeV1empty":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "homeV1empty":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
 RC=0 "homeV1empty":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 RC=0 "homeV1empty":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
