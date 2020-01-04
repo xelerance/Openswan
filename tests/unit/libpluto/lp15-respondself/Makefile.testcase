@@ -5,4 +5,4 @@ ENDNAME=rw
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/respondselfR1.pcap
 
 pcapupdate:
-	@true
+	cp ../lp14-initiateself/OUTPUT/initiateselfI1.pcap parentI1.pcap
