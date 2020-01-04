@@ -197,7 +197,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -224,7 +224,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
 |    length: 20
-./v1rwnatM3 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
+./v1rwnatM3 received Vendor ID payload [Openswan (this version) 2.6.52dev1-219-g9e19927ec-dirty ]
 ./v1rwnatM3 received Vendor ID payload [Dead Peer Detection]
 ./v1rwnatM3 received Vendor ID payload [RFC 3947] method set to=115
 | ****parse IPsec DOI SIT:
