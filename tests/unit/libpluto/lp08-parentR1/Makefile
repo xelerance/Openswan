@@ -27,9 +27,15 @@ SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 include Makefile.testcase
 
-TESTNAME=parentR1
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
+
+ifeq (${UNITTEST1ARGS},)
+UNITTEST1ARGS=${UNITTESTARGS}
+endif
+ifeq (${WHACKFILE},)
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+endif
 
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
