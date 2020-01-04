@@ -1,0 +1,20 @@
+parentXY-test
+================
+
+    lp02-parentI1   ----I1-->
+                                 lp08-parentR1
+                    <--R1----
+    lp10-parentI2   ----I1-->
+                                 lp12-parentR2
+                    <--R2----
+    lp13-parentI3
+
+These test cases do IKEv2 with RSA keys, using whatever the built-in, default policy is.
+Almost all subsequent tests are built upon these tests.
+
+Status: working.
+
+lp11-parentI2dup
+----------------
+This test determines what happens if the R1 message is duplicated for some
+reason.
