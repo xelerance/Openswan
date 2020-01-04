@@ -1,10 +1,11 @@
 # -*- makefile -*-
 CONNNAME=gateway--any
-PCAPOUTPUT=parentI2.pcap
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/${PCAPOUTPUT}
+PCAPOUTPUT=initiateselfI2.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${PCAPOUTPUT} parentR1.pcap
 ENDNAME=rw
 
 TESTNAME=initiateselfI2
 
 pcapupdate:
-	@true
+	cp ../lp15-respondself/OUTPUT/respondselfR1.pcap parentR1.pcap
+

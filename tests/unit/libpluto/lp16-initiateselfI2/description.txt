@@ -1,0 +1,12 @@
+This test case is an IKEv2 initiator.
+In this test case, the policy is to permit an initiator from %any to propose
+a tunnel to that end point (the /32).
+
+This test case receives the R1 from the responder, and sends the I2.
+
+
+
+
+
+
+
