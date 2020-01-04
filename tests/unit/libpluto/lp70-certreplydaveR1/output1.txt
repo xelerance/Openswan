@@ -11,6 +11,8 @@
 ./certreplydaveR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./certreplydaveR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./certreplydaveR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./certreplydaveR1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./certreplydaveR1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./certreplydaveR1 adjusting ipsec.d to ../samples/gatewaycert
 ./certreplydaveR1 loading secrets from "../samples/gatewaycert.secrets"
 ./certreplydaveR1   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (CERT bytes)
