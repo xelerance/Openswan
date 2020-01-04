@@ -25,7 +25,7 @@ include ../../libpluto/lp13-objectlist.make
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples/
 OUTPUTS=OUTPUT
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/sanity.sed -f ${TESTUTILS}/certsize.sed
 
 EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 
