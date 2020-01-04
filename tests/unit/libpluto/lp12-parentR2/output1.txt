@@ -13,6 +13,8 @@
 ./parentR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./parentR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./parentR2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentR2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -743,8 +745,18 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is RESPONDER
-| our  keymat
-| peer keymat
+| prf+[1]:  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+| prf+[2]:  a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+|   da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+| prf+[3]:  78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
+| our  keymat  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+|   a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+| peer keymat  da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+|   78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
 | emitting 6 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05
 | emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
@@ -872,6 +884,7 @@ sending 448 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | releasing whack for #X (sock=Y)
 | freeing state object #1
 ./parentR2 leak: reply packet, item size: X
+./parentR2 leak: skeyseed_t1, item size: X
 ./parentR2 leak: responder keys, item size: X
 ./parentR2 leak: initiator keys, item size: X
 ./parentR2 leak: alg_info_esp, item size: X
