@@ -2,8 +2,10 @@ parentXY-test
 ================
 
     lp02-parentI1   ----I1-->
-                                 lp08-parentR1
+                              lp08-parentR1
+                              lp06-parentR1notchosen
                     <--R1----
+    lp11-parentI2dup
     lp10-parentI2   ----I1-->
                                  lp12-parentR2
                     <--R2----
@@ -18,3 +20,24 @@ lp11-parentI2dup
 ----------------
 This test determines what happens if the R1 message is duplicated for some
 reason.
+
+lp06-parentR1nochosen
+---------------------
+This test determines what happens when the responder has no matching policy.
+
+initiateself
+============
+
+A key part of Opportunistic Encryption and other uses is that the policy
+allow a remote entity to create a policy for itself only.  That is, IPv4 /32,
+or IPv6/128.
+
+
+    lp14-initiateself   ----I1-->
+                                 lp15-respondself
+                        <--R1----
+    lp16-initiateselfI2 ----I1-->
+                                 lp12-parentR2
+                    <--R2----
+    lp13-parentI3
+
