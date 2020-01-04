@@ -4,3 +4,8 @@ the initiator should not respond in any interesting way to a duplicate R1
 message.  Such a message was either duplicated on the way back by the
 network, or is the result of the responder having received two I1 messages
 (perhaps one was a retransmission), and having replied twice.
+
+XXX - this test could now be implemented as lp12-parentR2, with the
+    input packet doubled.
+
+
