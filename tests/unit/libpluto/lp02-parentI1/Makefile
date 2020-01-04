@@ -37,6 +37,9 @@ export EF_DISABLE_BANNER
 ifeq (${UNITTEST1ARGS},)
 UNITTEST1ARGS=${UNITTESTARGS}
 endif
+ifeq (${WHACKFILE},)
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+endif
 
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
