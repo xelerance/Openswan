@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     (void)regression;
 
     if(argc != 3+PCAP_INPUT_COUNT) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", progname);
+	fprintf(stderr, "Usage: [%u!=%u, count=%u] %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", argc, 3+PCAP_INPUT_COUNT, PCAP_INPUT_COUNT, progname);
 	exit(10);
     }
 
@@ -94,8 +94,9 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_local_interface();
     init_fake_secrets();
-    init_seam_kernelalgs();
     enable_debugging();
+    init_demux();
+    init_seam_kernelalgs();
 
     infile = argv[0];
     conn_name = argv[1];
