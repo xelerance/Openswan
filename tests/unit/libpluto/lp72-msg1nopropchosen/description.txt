@@ -2,6 +2,9 @@ This test case is an IKEv2 responder.
 
 This test case is identical to lp12-parentR2, but in this case the
 responder did not chose any I1 proposal, and said so.
+
+(The NOPROPOSAL CHOSEN is forced by
+
 But the initiator WENT ON ANYWAY, and tried, and the responder should
 have dropped all state from this initiator, rather than try to decrypt it.
 
