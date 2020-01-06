@@ -77,15 +77,15 @@ ikev2_check_key_seam(struct state *st
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
 		      , enum phase1_role role
-			    , unsigned char *idhash
-			    , const struct pubkey_list *keys_from_dns
-			    , const struct gw_info *gateways_from_dns
-			    , pb_stream *sig_pbs)
+                      , struct IDhost_pair *hp
+                      , unsigned char *idhash
+                      , const struct pubkey_list *keys_from_dns
+                      , const struct gw_info *gateways_from_dns
+                      , pb_stream *sig_pbs)
 {
   static int fakecheck = 1;
   struct pubkey_list *p, **pp;
   struct connection *c = st->st_connection;
-  int pathlen;
 
   pp = &pluto_pubkeys;
 
@@ -107,38 +107,17 @@ ikev2_verify_rsa_sha1(struct state *st
 
   for (p = pluto_pubkeys; p != NULL; p = *pp)
     {
-      char keyname[IDTOA_BUF];
-      struct pubkey *key = p->key;
       pp = &p->next;
 
-      idtoa(&key->id, keyname, IDTOA_BUF);
-      DBG_log("checking alg=%d == %d, keyid=%s same_id=%u\n"
-              , key->alg, PUBKEY_ALG_RSA
-              , keyname
-              , same_id(&st->ikev2.st_peer_id, &key->id));
-      if (key->alg == PUBKEY_ALG_RSA
-          && same_id(&st->ikev2.st_peer_id, &key->id)
-          && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca_by_name(key->issuer, c->spd.that.ca, &pathlen)))
-        {
-          time_t tnow;
+      if(ikev2_check_key_seam(st, p, pp) == STF_OK) return STF_OK;
+    }
 
-          DBG(DBG_CONTROL,
-              char buf[IDTOA_BUF];
-              dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
-              DBG_log("key issuer CA is '%s'", buf));
+  pp = &st->st_keylist;
+  for (p = st->st_keylist; p != NULL; p = *pp)
+    {
+      pp = &p->next;
 
-          /* check if found public key has expired */
-          time(&tnow);
-          if (key->until_time != UNDEFINED_TIME && key->until_time < tnow)
-            {
-              loglog(RC_LOG_SERIOUS,
-                     "cached RSA public key has expired and has been deleted");
-              *pp = free_public_keyentry(p);
-              continue; /* continue with next public key */
-            }
-
-          return STF_OK;
-        }
+      if(ikev2_check_key_seam(st, p, pp) == STF_OK) return STF_OK;
     }
 
   list_public_keys(TRUE, FALSE);

@@ -252,6 +252,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             {
                 stf_status authstat = ikev2_verify_rsa_sha1(st
                                                             , RESPONDER
+                                                        , hp
                                                             , idhash_in
                                                             , NULL /* keys from DNS */
                                                             , NULL /* gateways from DNS */
@@ -267,6 +268,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             {
                 stf_status authstat = ikev2_verify_psk_auth(st
                                                             , RESPONDER
+                                                        , hp
                                                             , idhash_in
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
