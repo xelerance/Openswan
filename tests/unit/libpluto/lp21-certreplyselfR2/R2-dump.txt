@@ -1,3 +1,0 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 1464, bad cksum 0 (->cc7d)!)
-    132.213.238.7.500 > 93.184.216.34.500: isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[R]:
-    (v2e: len=1404)
