@@ -8,7 +8,7 @@ parentXY-test
     lp11-parentI2dup
     lp10-parentI2   ----I1-->
                                  lp12-parentR2
-                                 lp72-msg1noproopchosen
+                                 lp06-msg1noproopchosen
                     <--R2----
     lp13-parentI3
 
@@ -43,7 +43,7 @@ or IPv6/128.
                                  lp15-respondself
                         <--R1----
     lp16-initiateselfI2 ----I1-->
-                                 lp12-parentR2
-                    <--R2----
+                                 lp17-childselfpolicy
+                        <--R2----
     lp13-parentI3
 
