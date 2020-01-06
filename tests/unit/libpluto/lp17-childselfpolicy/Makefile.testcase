@@ -1,11 +1,15 @@
 # -*- makefile -*-
 TESTNAME=respondselfR2
 CONNNAME=gateway--any
-UNITTEST1PCAP=OUTPUT/parentR2_allzero.pcap
-UNITTEST2PCAP=OUTPUT/parentR2.pcap
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2_allzero.pcap
-UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST2PCAP} parentI1.pcap parentI2.pcap
+UNITTEST1PCAP=OUTPUT/parentR2.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2.pcap
 ENDNAME=rw
 
+PCAPDEPENDENCIES = ../lp14-initiateself/OUTPUT/initiateselfI1.pcap
+PCAPDEPENDENCIES+= ../lp16-initiateselfI2/OUTPUT/initiateselfI2.pcap
+include ../Makefile.pcapupdate
+
 pcapupdate:
-	@true
+	cp ../lp14-initiateself/OUTPUT/initiateselfI1.pcap   parentI1.pcap
+	cp ../lp16-initiateselfI2/OUTPUT/initiateselfI2.pcap parentI2.pcap
+
