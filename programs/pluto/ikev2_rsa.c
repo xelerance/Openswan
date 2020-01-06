@@ -57,6 +57,7 @@
 #include "vendor.h"
 #include "dpd.h"
 #include "keys.h"
+#include "hostpair.h"
 
 #include "oswcrypto.h"
 
@@ -103,6 +104,7 @@ void ikev2_calculate_sighash(struct state *st
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
 		      , enum phase1_role role
+                      , struct IDhost_pair *hp
 			    , unsigned char *idhash
 			    , const struct pubkey_list *keys_from_dns
 			    , const struct gw_info *gateways_from_dns
@@ -123,7 +125,11 @@ ikev2_verify_rsa_sha1(struct state *st
         DBG_dump_pbs(sig_pbs);
         );
 
+    if(hp != NULL) {
+        d=hp->connections;
+    } else {
         d = st->st_connection;
+    }
 
     while(d != NULL) {
         checkresult = check_signature_gen(d, st, calc_hash, hash_len
@@ -143,7 +149,12 @@ ikev2_verify_rsa_sha1(struct state *st
             return STF_OK;
         }
 
+        if(hp || role == RESPONDER) {
+            d = d->IDhp_next;
+        } else {
+            /* just finish, as we are likely initiator */
             d = NULL;
+        }
     }
 
     loglog(RC_AUTHFAILED, "no policy with given IDs authenticates this connection");
