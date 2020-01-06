@@ -108,24 +108,43 @@ ikev2_verify_rsa_sha1(struct state *st
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
     enum phase1_role invertrole;
+    struct connection *d;
+    stf_status checkresult;
 
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
 
     ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
 
     DBG(DBG_CRYPT,
-        DBG_dump("v2rsa calculated octets", calc_hash, hash_len);
+        DBG_dump("v2rsa calculated octets (sans ASN.1)", calc_hash, hash_len);
         DBG_dump_pbs(sig_pbs);
         );
 
-    return RSA_check_signature_gen(st, calc_hash, hash_len
+        d = st->st_connection;
+
+    while(d != NULL) {
+        checkresult = check_signature_gen(d, st, calc_hash, hash_len
 				   , sig_pbs
 #ifdef USE_KEYRR
 				   , keys_from_dns
 #endif
 				   , gateways_from_dns
 				   , try_RSA_signature_v2);
+        if(checkresult == STF_OK) {
+            if(d != st->st_connection) {
+                loglog(RC_LOG, "Good signature from key attached to \"%s\" (started with: \"%s\"): switched"
+                       , d->name
+                       , st->st_connection->name);
+                st->st_connection = d;
+            }
+            return STF_OK;
+        }
 
+            d = NULL;
+    }
+
+    loglog(RC_AUTHFAILED, "no policy with given IDs authenticates this connection");
+    return STF_FAIL;
 }
 
 /*
