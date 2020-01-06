@@ -187,13 +187,9 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | ikev2 parent SA details
-| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
-| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
-| WARNING: ikev2_parent_inR1outI2_tail:254: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: ikev2_parent_inR1outI2_tail:254: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
+| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b822e053c7e128712992e053c7e12871299 aes128:0x3f44bf47cafd8150591deb088199fcbf
+| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad802e053c7e128712992e053c7e12871299 aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -219,9 +215,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting 26 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  70 61 72 6b  65 72 30 31  2e 65 6d 6d  6a 61 79 2e
 |   63 72 65 64  69 6c 2e 6f  72 67
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
-|   a5 a5 75 2e
-| idhash calc I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+|   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
+| parent SA I2 idhash calc
+|   02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | emitting length of IKEv2 Identification Payload: 34
 | IKEv2 thinking whether to send my certificate:
@@ -318,8 +316,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting length of IKEv2 Encryption Payload: 436
 | emitting length of ISAKMP Message: 464
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 20
 | data before encryption:
 |   27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
 |   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
@@ -401,7 +397,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
 | out calculated auth:
-|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-I1 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -436,7 +432,7 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
 |   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
-|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
 1: output to /dev/null
 1: input from ../lp13-parentI3/parentR2.pcap
 |   =========== input from pcap file ../lp13-parentI3/parentR2.pcap ========
@@ -486,8 +482,6 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | now proceed with state specific processing using state #2 initiator-auth-process
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
-| WARNING: ikev2_decrypt_msg:336: hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 20
-| WARNING: ikev2_decrypt_msg:336: hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 20
 ./rekeyikev2-I1 R2 failed to match authenticator
 | processor 'initiator-auth-process' returned STF_FAIL+24 (32)
 | #2 complete v2 state transition with STF_FAIL+24
@@ -534,8 +528,6 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); 
 | emitting length of IKEv2 Encryption Payload: 52
 | emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
@@ -545,13 +537,13 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); 
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | out calculated auth:
-|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+|   2e b7 20 0f  71 09 f3 cf  a6 75 27 73  2c 23 e2 2b
 sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+|   2e b7 20 0f  71 09 f3 cf  a6 75 27 73  2c 23 e2 2b
 | pass 1: considering PARENT SAs to delete
 ./rekeyikev2-I1 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
