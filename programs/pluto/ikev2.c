@@ -1527,6 +1527,11 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	    DBG_log("state transition function for %s failed: %s"
 		    , from_state_name
 		    , (md->note) ? enum_name(&ipsec_notification_names, md->note) : "<no reason given>" ));
+
+        /* kill this state if it has not yet authenticated */
+        if(st!=NULL && IS_PARENT_SA(st) && IS_PARENT_SA_HALFOPEN(st->st_state)) {
+            delete_state(st);
+        }
     }
 }
 
