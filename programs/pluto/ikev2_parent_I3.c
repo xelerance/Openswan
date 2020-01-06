@@ -111,6 +111,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     case v2_AUTH_RSA: {
         stf_status authstat = ikev2_verify_rsa_sha1(pst
                                                     , INITIATOR
+                                                    , NULL
                                                     , idhash_in
                                                     , NULL /* keys from DNS */
                                                     , NULL /* gateways from DNS */
@@ -126,6 +127,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     case v2_AUTH_SHARED: {
         stf_status authstat = ikev2_verify_psk_auth(pst
                                                     , INITIATOR
+                                                    , NULL
                                                     , idhash_in
                                                     , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
         if(authstat != STF_OK) {
