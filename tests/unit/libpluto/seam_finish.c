@@ -41,6 +41,7 @@ void finish_dh_secretiv(struct state *st,
     CLONEIT(skey_er);
     CLONEIT(skey_pi);
     CLONEIT(skey_pr);
+    CLONEIT(enc_key);
 
 #if 0
     memcpy(st->st_new_iv, SS(new_iv.ptr), SS(new_iv.len));
