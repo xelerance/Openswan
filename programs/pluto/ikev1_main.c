@@ -1024,6 +1024,10 @@ main_inR1_outI2_tail(struct pluto_crypto_req_cont *pcrc
     /**************** build output packet HDR;KE;Ni ****************/
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
+    /* Reinsert the state, using the responder cookie we just received */
+    unhash_state(st);
+    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+    insert_state(st);	/* needs cookies, connection, and msgid (0) */
     /* HDR out.
      * We can't leave this to comm_handle() because the isa_np
      * depends on the type of Auth (eventually).
@@ -1071,11 +1075,6 @@ main_inR1_outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* finish message */
     close_message(&md->rbody);
-
-    /* Reinsert the state, using the responder cookie we just received */
-    unhash_state(st);
-    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
-    insert_state(st);	/* needs cookies, connection, and msgid (0) */
 
     return STF_OK;
 }
