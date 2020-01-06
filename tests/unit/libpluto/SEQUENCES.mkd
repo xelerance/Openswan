@@ -45,5 +45,15 @@ or IPv6/128.
     lp16-initiateselfI2 ----I1-->
                                  lp17-childselfpolicy
                         <--R2----
-    lp13-parentI3
 
+certificateself
+===============
+
+This series of tests uses a certificate with a policy for /32.  This requires
+that the general policy (a template) be instantiated into a specific policy.
+
+
+    lp18-certificateselfI1 ----I1-->
+                                      lp19-certreplyselfR1
+                           <---R1---
+    lp20-certificateselfI2 ----I2-->
