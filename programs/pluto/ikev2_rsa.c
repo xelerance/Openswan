@@ -80,8 +80,11 @@ void ikev2_calculate_sighash(struct state *st
 	}
 
 	DBG(DBG_CRYPT
-	    , DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
+	    , DBG_log("calculate sighash");
+              DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	      DBG_dump_chunk(nonce_name, *nonce);
+              DBG_log("pidhash len: %u",
+                      (unsigned int)st->st_oakley.prf_hasher->hash_digest_len);
 	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
 
 	SHA1Init(&ctx_sha1);
