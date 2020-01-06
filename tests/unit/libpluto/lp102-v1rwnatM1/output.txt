@@ -136,7 +136,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: none
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
