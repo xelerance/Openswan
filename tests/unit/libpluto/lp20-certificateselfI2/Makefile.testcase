@@ -2,11 +2,11 @@
 
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 CONNNAME=home
-PCAPOUTPUT=parentI2.pcap
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/parentI2.pcap
+TESTNAME=certificateselfI2
+PCAPOUTPUT=${TESTNAME}.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${PCAPOUTPUT} parentR1.pcap
 ENDNAME=rwcert
 
-TESTNAME=certificateselfI2
 SANITYARGS=-f leakfix.sed
 
 PCAPDEPENDENCIES = ../lp19-certreplyselfR1/OUTPUT/certreplyselfR1.pcap
