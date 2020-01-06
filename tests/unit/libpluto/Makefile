@@ -45,6 +45,7 @@ UNITTESTS_R1+=lp08-parentR1
 UNITTESTS_I2+=lp10-parentI2
 UNITTESTS_I2+=lp11-parentI2dup
 UNITTESTS_R2+=lp12-parentR2
+UNITTESTS_R2+=lp06-msg1nopropchosen
 UNITTESTS_I3+=lp13-parentI3
 
 UNITTESTS_I1+=lp14-initiateself
@@ -163,7 +164,6 @@ UNITTESTS_R4+=lp67-natt-replaceR
 
 # these three do not work yet, #6602
 UNITTESTS_I4+=lp71-childTSwrong
-UNITTESTS_I4+=lp72-msg1nopropchosen
 
 # these three do not work yet, #6602
 #algo UNITTESTS_I4+=lp71-childTSwrong
