@@ -1,19 +1,18 @@
 # -*- makefile -*-
 TESTNAME=certreplyselfR2
 CONNNAME=rw-any
-UNITTEST1PCAP=OUTPUT/parentR2.pcap
-#UNITTEST2PCAP=OUTPUT/parentR2_wrongchildpolicy.pcap
+UNITTEST1PCAP=OUTPUT/${TESTNAME}.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2.pcap
-#UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST2PCAP} parentI1.pcap parentI2_wrongchildpolicy.pcap
 ENDNAME=gatewaycert
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 
-PCAPDEPENDENCIES = ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap ../lp20-certificateselfI2/OUTPUT/parentI2.pcap
+PCAPDEPENDENCIES = ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap
+PCAPDEPENDENCIES+= ../lp20-certificateselfI2/OUTPUT/parentI2.pcap
 include ../Makefile.pcapupdate
 
 pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap parentI1.pcap
-	cp ../lp20-certificateselfI2/OUTPUT/parentI2.pcap          parentI2.pcap
+	cp ../lp20-certificateselfI2/OUTPUT/certificateselfI2.pcap parentI2.pcap
 
 # Local Variables:
 # gdb-command: ""
