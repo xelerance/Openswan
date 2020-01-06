@@ -6,11 +6,7 @@ This test case receives a second (I2) packet from the initiator, which is
 where the CHILD SA policy is processed.  An associated lp14-initiatorany
 test case sets up the PARENT SA policy.
 
-The UNIT1/R2-dump test with packet from parentI2_allzero.pcap proposes a TSi
-of 0.0.0.0-0.0.0.0, that is the uninitialized TSi, which is wrong, and
-should be rejected.
-
-The UNIT2/R2-any test with packet from parentI2.pcap proposes a TSi which
+The R2-any test with packet from parentI2.pcap proposes a TSi which
 is example.com (93.184.216.34/32) to a policy of %any.
 
 
