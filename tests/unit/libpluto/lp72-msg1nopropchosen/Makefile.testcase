@@ -1,13 +1,19 @@
 # -*- makefile -*-
 
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-CONNNAME=parker1--jj2
-UNITTEST1ARGS=${WHACKFILE} parker1--jj2 OUTPUT/parentR2.pcap parentI1.pcap parentI2.pcap
-# purposely use the same conn file as client, it should swap and work.
+# use a broken end connection that selects a different cipher to
+# force NOPROPOSALCHOSEN.
+CONNNAME=parker1--jj2--wrong
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/parentR2.pcap parentI1.pcap parentI2.pcap
+
 ENDNAME=parker
 
 TESTNAME=parentR2
 
+PCAPDEPENDENCIES = ../lp02-parentI1/OUTPUT/parentI1.pcap
+PCAPDEPENDENCIES+= ../lp10-parentI2/OUTPUT/parentI2.pcap
+include ../Makefile.pcapupdate
 
-pcapupdate:
-	@true
+pcapupdate: ${PCAPDEPENDENCIES}
+	@for pcap in ${PCAPDEPENDENCIES}; do cp $$pcap $$(basename $$pcap); done
+
