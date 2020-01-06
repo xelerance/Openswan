@@ -475,7 +475,7 @@ RSA_check_signature(struct state *st
 		    , const struct gw_info *gateways_from_dns
 )
 {
-    return RSA_check_signature_gen(st, hash_val, hash_len
+    return check_signature_gen(st->st_connection, st, hash_val, hash_len
 				   , sig_pbs
 #ifdef USE_KEYRR
 				   , keys_from_dns

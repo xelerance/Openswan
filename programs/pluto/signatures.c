@@ -164,8 +164,38 @@ take_a_crack(struct tac_state *s
     }
 }
 
+/*
+ * return STF_IGNORE if the key was not tried (keep trying more keys)
+ * otherwise STF_OK or STF_FAIL+notification.
+ *
+ */
+static stf_status
+check_specific_key(struct tac_state *s
+                   , struct pubkey *key)
+{
+    time_t tnow;
+
+    DBG(DBG_CONTROL,
+        char buf[IDTOA_BUF];
+        dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
+        DBG_log("key issuer CA is '%s'", buf));
+
+    /* check if found public key has expired */
+    time(&tnow);
+    if (key->until_time != UNDEFINED_TIME && key->until_time < tnow) {
+        loglog(RC_LOG_SERIOUS,
+               "cached RSA public key has expired and has been deleted");
+        return STF_IGNORE;
+    }
+
+    if (take_a_crack(s, key, "preloaded key"))
+        return STF_OK;
+
+    return STF_FAIL;
+}
 stf_status
-RSA_check_signature_gen(struct state *st
+check_signature_gen(struct connection *c
+                    , struct state *st
 			, const u_char hash_val[MAX_DIGEST_LEN]
 			, size_t hash_len
 			, const pb_stream *sig_pbs
@@ -179,9 +209,9 @@ RSA_check_signature_gen(struct state *st
 						     , struct pubkey *kr
 						     , struct state *st))
 {
-    const struct connection *c = st->st_connection;
     struct tac_state s;
     err_t dns_ugh = NULL;
+    const struct spd_route *sr;
 
     s.st = st;
     s.hash_val = hash_val;
@@ -208,50 +238,34 @@ RSA_check_signature_gen(struct state *st
 	}
     }
 
-    /* try all appropriate Public keys */
-    {
-	struct pubkey_list *p, **pp;
-	int pathlen;
+    /* now try keys attached to c */
+    for (sr = &c->spd; sr != NULL; sr = sr->next) {
+        if(sr->that.key1 != NULL
+           && sr->that.key1->alg == PUBKEY_ALG_RSA) {
+            if(check_specific_key(&s, sr->that.key1) == STF_OK) {
+                return STF_OK;
+            }
+        }
 
-	pp = &pluto_pubkeys;
-
-	{
-
-	  DBG(DBG_CONTROL,
-	      char buf[IDTOA_BUF];
-	      dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
-	      DBG_log("required CA is '%s'", buf));
+        if(sr->that.key2 != NULL
+           && sr->that.key2->alg == PUBKEY_ALG_RSA) {
+            if(check_specific_key(&s, sr->that.key2) == STF_OK) {
+                return STF_OK;
+            }
+        }
 	}
 
-	for (p = pluto_pubkeys; p != NULL; p = *pp)
+    /* now try keys attached to the state (which arrived inband, and
+     * were validated in some fashion
+     */
 	{
-	    struct pubkey *key = p->key;
-
-            if (key->alg == PUBKEY_ALG_RSA
-                && same_id(&st->ikev2.st_peer_id, &key->id)
-                && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca_by_name(key->issuer, c->spd.that.ca, &pathlen)))
-	    {
-		time_t tnow;
-
-		DBG(DBG_CONTROL,
-		    char buf[IDTOA_BUF];
-		    dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
-		    DBG_log("key issuer CA is '%s'", buf));
-
-		/* check if found public key has expired */
-		time(&tnow);
-		if (key->until_time != UNDEFINED_TIME && key->until_time < tnow)
-		{
-		    loglog(RC_LOG_SERIOUS,
-			"cached RSA public key has expired and has been deleted");
-		    *pp = free_public_keyentry(p);
-		    continue; /* continue with next public key */
-		}
-
-		if (take_a_crack(&s, key, "preloaded key"))
+        struct pubkey_list *nxt = st->st_keylist;
+        while(nxt != NULL) {
+            //if(same_id(&gw->gw_id, &c->spd.that.id)
+            if(check_specific_key(&s, nxt->key) == STF_OK) {
 		return STF_OK;
 	    }
-	    pp = &p->next;
+            nxt = nxt->next;
 	}
    }
 

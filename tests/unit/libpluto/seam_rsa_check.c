@@ -1,7 +1,8 @@
 #ifndef __seam_rsa_check_c__
 #define __seam_rsa_check_c__
 stf_status
-RSA_check_signature_gen(struct state *st
+check_signature_gen(struct connection *d
+                    , struct state *st
 			, const u_char hash_val[MAX_DIGEST_LEN]
 			, size_t hash_len
 			, const pb_stream *sig_pbs
