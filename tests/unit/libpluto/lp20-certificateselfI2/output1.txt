@@ -234,9 +234,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   06 03 55 04  0a 0c 09 58  65 6c 65 72  61 6e 63 65
 |   31 1b 30 19  06 03 55 04  03 0c 12 63  61 72 6f 6c
 |   40 6f 70 65  6e 73 77 61  6e 2e 6f 72  67
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
-| idhash calc I2  09 00 00 00  30 4b 31 0b  30 09 06 03  55 04 06 13
+| parent SA I2 idhash calc
+|   09 00 00 00  30 4b 31 0b  30 09 06 03  55 04 06 13
 |   02 43 41 31  0b 30 09 06  03 55 04 08  0c 02 4f 4e
 |   31 12 30 10  06 03 55 04  0a 0c 09 58  65 6c 65 72
 |   61 6e 63 65  31 1b 30 19  06 03 55 04  03 0c 12 63
