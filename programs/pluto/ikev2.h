@@ -270,13 +270,12 @@ extern bool doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role r
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
 extern stf_status ikev2_send_certreq( struct state *st
-				      , struct msg_digest *md UNUSED
-				      , enum phase1_role role UNUSED
-				      , unsigned int np, pb_stream *outpbs);
+				      , struct msg_digest *md
+				      , enum phase1_role role
+				      , pb_stream *outpbs);
 extern stf_status ikev2_send_cert( struct state *st
 				   , struct msg_digest *md
 				   , enum phase1_role role
-				   , unsigned int np
 				   , pb_stream *outpbs);
 extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 				    u_int8_t protoid, chunk_t *spi,
