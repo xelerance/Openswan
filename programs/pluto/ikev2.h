@@ -225,6 +225,15 @@ extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, struct traffic_selector *array
 				, unsigned int array_max);
 
+extern stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
+                                          , unsigned int tsi_n
+                                          , struct traffic_selector tsr[16]
+                                          , unsigned int tsr_n
+                                          , enum phase1_role role
+                                          , struct state *pst
+                                          , struct connection *c
+                                          , struct connection **b_result
+                                          , struct spd_route  **bsr_result);
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
                                          , struct state *childst
 					 , pb_stream *outpbs);

@@ -778,64 +778,30 @@ int ikev2_evaluate_connection_fit(struct connection *d
     return bestfit;
 }
 
-stf_status ikev2_child_sa_respond(struct msg_digest *md
-                                  , struct state *st1
-                                  , pb_stream *outpbs)
+stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
+                                   , unsigned int tsi_n
+                                   , struct traffic_selector tsr[16]
+                                   , unsigned int tsr_n
+                                   , enum phase1_role role
+                                   , struct state *pst
+                                   , struct connection *c
+                                   , struct connection **best_c
+                                   , struct spd_route  **best_sr)
 {
-    struct state      *pst = md->pst;
-    struct connection *c   = NULL;
-    /* struct connection *cb; */
-    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-    stf_status ret;
-    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-    struct traffic_selector tsi[16], tsr[16];
-    unsigned int tsi_n, tsr_n;
-
-    if(pst == NULL) pst = md->st;
-    c = pst->st_connection;
-
-    if (c->kind == CK_INSTANCE) {
-        /* We have made it here with a template instance, but in case this
-         * connection is coming from another roadwarior, the evaluation
-         * should happen on the template instead.  We look up the matching
-         * template... */
-	struct connection *d;
-        for (d = connections; d != NULL; d = d->ac_next) {
-            if (!streq(c->name, d->name))
-                continue;
-            if (d->kind == CK_INSTANCE)
-                continue;
-
-            /* we prefer the non instance connection */
-            DBG(DBG_CONTROLMORE,
-                DBG_log("switching from %s to %s of conn '%s' to evaluate fitness",
-                        enum_name(&connection_kind_names, c->kind),
-                        enum_name(&connection_kind_names, d->kind),
-                        c->name));
-            c = d;
-            break;
-        }
-    }
-
-    /*
-     * now look at provided TSx, and see if these fit the connection
-     * that we have, and narrow them if necessary.
-     */
-    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+    int bestfit_n, newfit, bestfit_p;
+    struct connection *b = c;
+    struct spd_route *sra, *bsr;
 
     /*
      * now walk through all connections and see if this connection
      * was in fact the best.
      *
      * similar to find_client_connection/fc_try.
+     *
+     * preserve {} for comparison purposes until code verified by unit test cases
      */
     {
-	struct connection *b = c;
 	struct connection *d;
-	int bestfit_n, newfit, bestfit_p;
-	struct spd_route *sra, *bsr;
 	struct IDhost_pair *hp = NULL;
 	int best_tsi_i ,  best_tsr_i;
 
@@ -844,13 +810,14 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
-        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_child_ts_evaluate, evaluating base fit for %s against tsi=%u,tsr=%u traffic selectors"
+                                     , c->name, tsi_n, tsr_n));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,RESPONDER,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,role,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,RESPONDER,tsi,tsr,
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,role,tsi,tsr,
                                                                   tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                 if (bfit_p > bestfit_p) {
                     DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
@@ -864,6 +831,19 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             else
                 DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
                                              , c->name));
+        }
+
+        /*
+         * if we found something (anything in this policy) that fit,
+         * then we should conclude with it (we are done).
+         * only if we did not find matching traffic selectors should we go
+         * on and check other policies between the same hosts/IDs for
+         * other policies that work.
+         */
+        if(bestfit_n > 0) {
+            if(best_c)   *best_c = b;
+            if(best_sr)  *best_sr = bsr;
+            return STF_OK;
         }
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
@@ -887,22 +867,18 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
             for (d = hp->connections; d != NULL; d = d->IDhp_next) {
                 struct spd_route *sr;
-                int wildcards, pathlen;  /* XXX */
 
                 /* if already best fit, do not try again */
                 if(d == c) continue;
 
+                /* groups are abstract concepts, and can not match */
                 if (d->policy & POLICY_GROUP)
                     continue;
 
-                if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-                      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-                      && trusted_ca_by_name(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-                    continue;
 
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
+                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,role
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         int bfit_p;
@@ -915,7 +891,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                         bsr = sr;
 
                         /* now look at port fit, it might be even better! */
-                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
+                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
                                                                           tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                         if (bfit_p > bestfit_p) {
                             DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
@@ -930,6 +906,49 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                 }
             }
         }
+    }
+
+    if(bestfit_n > 0 && b != NULL) {
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
+
+        if(best_c)  *best_c = b;
+        if(best_sr) *best_sr = bsr;
+        return STF_OK;
+    } else {
+        return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
+}
+
+
+stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                  , struct state *st1
+                                  , pb_stream *outpbs)
+{
+    struct state      *pst = md->pst;
+    struct connection *c   = NULL;
+    /* struct connection *cb; */
+    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    stf_status ret;
+    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+    struct traffic_selector tsi[16], tsr[16];
+    unsigned int tsi_n, tsr_n;
+    struct connection *b;
+
+    if(pst == NULL) pst = md->st;
+    b = c = pst->st_connection;
+
+    /*
+     * now look at provided TSx, and see if these fit the connection
+     * that we have, and narrow them if necessary.
+     */
+    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+
+    {
+	struct spd_route *bsr = NULL;
+
+        ret = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n, RESPONDER, pst, c, &b, &bsr);
 
         DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*
