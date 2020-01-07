@@ -649,6 +649,13 @@ int ikev2_evaluate_connection_fit(struct connection *d
 	    strcpy(ei3, "<self>");
         } else {
             strcpy(ei3, "<noclient>");
+            /* here, fill in new end with actual client info from the state */
+            if(ei->host_type == KH_ANY) {
+                fei = *ei;
+                ei  = &fei;
+                strcpy(ei3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fei.client);
+            }
         }
 
         if(er->has_client) {
@@ -657,6 +664,13 @@ int ikev2_evaluate_connection_fit(struct connection *d
             strcpy(er3, "<self>");
         } else {
             strcpy(er3, "<noclient>");
+            /* here, fill in new end with actual client info from the state */
+            if(er->host_type == KH_ANY) {
+                fer = *er;
+                er  = &fer;
+                strcpy(er3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fer.client);
+            }
         }
 	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
 		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
@@ -682,9 +696,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
 		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
 
-		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
+		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsi_ni, lbi, hbi
-			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
+			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport);
+		DBG_log("    tsr[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsr_ni, lbr, hbr
 			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
 	    }
