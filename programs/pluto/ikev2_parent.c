@@ -323,6 +323,12 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         pst = state_with_serialno(st->st_clonedfrom);
     }
 
+    if(pst->st_oakley.integ_hasher == NULL
+       || pst->st_oakley.encrypter == NULL) {
+        DBG(DBG_CONTROL
+            , DBG_log("can not decyrpt message as no ciphers/hashers selected"));
+        return STF_FATAL;
+    }
     if(init == INITIATOR) {
         DBG(DBG_CONTROLMORE, DBG_log("decrypting as INITIATOR, using RESPONDER keys"));
         cipherkey = &pst->st_skey_er;
