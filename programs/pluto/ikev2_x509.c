@@ -60,6 +60,7 @@
 #include "keys.h"
 #include "ipsec_doi.h"
 
+/* Send v2CERT and v2 CERT */
 /* figure out if we should request a cert for the peer */
 bool
 doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
@@ -87,7 +88,6 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
         return TRUE;
 
     /* report why we are not sending a certreq */
-
     DBG(DBG_CONTROL
         ,DBG_log("I did not send a certificate request (CERTREQ) because"));
     if(!(c->policy & POLICY_RSASIG)) {
@@ -132,7 +132,7 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
 stf_status
 ikev2_send_cert( struct state *st, struct msg_digest *md
 		, enum phase1_role role
-		, unsigned int np, pb_stream *outpbs)
+		, pb_stream *outpbs)
 {
     stf_status stf;
     struct ikev2_cert cert;
@@ -156,17 +156,6 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
             openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
             cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
         }
-        cert.isac_np = ISAKMP_NEXT_v2CERTREQ;
-    }
-    else {
-	cert.isac_np = np;
-	/*
-	 * If we have a remote id configured in the conn,
-	 * we can send it here to signal we insist on it.
-	 * if (st->st_connection->spd.that.id)
-	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
-	 */
-
     }
 
     /*   send own (Initiator CERT) */
@@ -194,7 +183,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     if(send_certreq) {
 	DBG(DBG_CONTROL
 	    , DBG_log("going to send a certreq"));
-	stf = ikev2_send_certreq(st, md, role, np, outpbs);
+	stf = ikev2_send_certreq(st, md, role, outpbs);
 	if (stf != STF_OK) {
             DBG(DBG_CONTROL
                 , DBG_log("sending CERTREQ failed with %s",
@@ -208,7 +197,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
 		    , enum phase1_role role UNUSED
-		    , unsigned int np, pb_stream *outpbs)
+		    , pb_stream *outpbs)
 {
     struct end *that = &st->st_connection->spd.that;
     chunk_t *that_ca = &that->ca;
@@ -230,7 +219,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
             pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
             if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
                                          that->cert.u.x509->authKeyID,
-                                         outpbs, np))
+                                         outpbs, ISAKMP_NEXT_NONE))
                 return STF_INTERNAL_ERROR;
 
             return STF_OK;
@@ -256,7 +245,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
             pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
             if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
                                          cacert->subjectKeyID,
-                                         outpbs, np))
+                                         outpbs, ISAKMP_NEXT_NONE))
                 return STF_INTERNAL_ERROR;
 
             return STF_OK;
@@ -288,7 +277,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
     pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
     success = ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
                                          allCAs,
-                                         outpbs, np);
+                                         outpbs, ISAKMP_NEXT_NONE);
 
     if (allCAs.ptr) {
         free(allCAs.ptr);
