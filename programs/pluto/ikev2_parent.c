@@ -443,7 +443,6 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 static stf_status ikev2_send_auth(struct connection *c
                                   , struct state *st
                                   , enum phase1_role role
-                                  , unsigned int np
                                   , unsigned char *idhash_out
                                   , pb_stream *outpbs)
 {
@@ -462,7 +461,7 @@ static stf_status ikev2_send_auth(struct connection *c
         a.isaa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
     }
 
-    a.isaa_np = np;
+    a.isaa_np = ISAKMP_NEXT_NONE;
 
     if(c->policy & POLICY_RSASIG) {
         a.isaa_type = v2_AUTH_RSA;

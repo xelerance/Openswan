@@ -381,7 +381,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     if(doi_send_ikev2_cert_thinking(st)) {
         stf_status certstat = ikev2_send_cert( st, md
                                                , INITIATOR
-                                               , ISAKMP_NEXT_v2AUTH
                                                , &e_pbs_cipher);
         if(certstat != STF_OK)
             return certstat;
@@ -395,12 +394,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
         lset_t policy;
         struct connection *c0= first_pending(pst, &policy,&st->st_whack_sock);
-        unsigned int np = (c0 ? ISAKMP_NEXT_v2SA : ISAKMP_NEXT_NONE);
         DBG(DBG_CONTROL,DBG_log(" payload after AUTH will be %s", (c0) ? "ISAKMP_NEXT_v2SA" : "ISAKMP_NEXT_NONE/NOTIFY"));
 
         stf_status authstat = ikev2_send_auth(c, st
                                               , INITIATOR
-                                              , np
                                               , idhash, &e_pbs_cipher);
         if(authstat != STF_OK) return authstat;
 

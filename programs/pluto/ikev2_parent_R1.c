@@ -374,7 +374,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     if (send_certreq) {
         stf_status stf;
 
-	stf = ikev2_send_certreq(st, md, RESPONDER, ISAKMP_NEXT_NONE, &md->rbody);
+	stf = ikev2_send_certreq(st, md, RESPONDER, &md->rbody);
 	if (stf != STF_OK) {
             DBG(DBG_CONTROL
                 , DBG_log("sending CERTREQ failed with %s",
