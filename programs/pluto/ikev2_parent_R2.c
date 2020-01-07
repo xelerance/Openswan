@@ -216,8 +216,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, st->st_skey_pi);
 
         /* calculate hash of IDi for AUTH below */
-        DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pi", st->st_skey_pi));
-        DBG(DBG_CRYPT, DBG_dump("idhash verify I2", idstart, idlen));
+        DBG(DBG_CRYPT, DBG_dump_chunk("parent SA IDi pi verify", st->st_skey_pi));
+        DBG(DBG_CRYPT, DBG_dump("parent SA I2 idhash verify", idstart, idlen));
         hmac_update(&id_ctx, idstart, idlen);
         idhash_in = alloca(st->st_oakley.prf_hasher->hash_digest_len);
         hmac_final(idhash_in, &id_ctx);
