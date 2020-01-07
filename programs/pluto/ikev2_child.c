@@ -710,6 +710,15 @@ int ikev2_evaluate_connection_fit(struct connection *d
 	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
 	     *       for now we really support/limit ourselves to a single CIDR
 	     */
+#if 0
+            /* enable this when debugging to keep compiler from optimizing these out */
+            __asm__ __volatile__("" :: "m" (tsi));
+            __asm__ __volatile__("" :: "m" (ei));
+            __asm__ __volatile__("" :: "m" (tsr));
+            __asm__ __volatile__("" :: "m" (er));
+            __asm__ __volatile__("" :: "m" (tsi_ni));
+            __asm__ __volatile__("" :: "m" (tsr_ni));
+#endif
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
 	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
