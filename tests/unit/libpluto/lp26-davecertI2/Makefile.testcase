@@ -1,12 +1,13 @@
 # -*- makefile -*-
 CONNNAME=home
-PCAPOUTPUT=parentI2.pcap
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1dave.pcap      OUTPUT/${PCAPOUTPUT}
+PCAPOUTPUT=${TESTNAME}.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${PCAPOUTPUT} certreplydaveR1.pcap
 ENDNAME=davecert
 
 TESTNAME=davecertI2
 
 pcapupdate:
+	cp ../lp70-certreplydaveR1/OUTPUT/certreplydaveR1.pcap certreplydaveR1.pcap
 	@true
 
 

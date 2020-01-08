@@ -5,8 +5,6 @@ otherwise identical to lp14.
 In this test case, the policy is to permit an initiator from %any to propose
 a tunnel to that end point (the /32).
 
-This series of tests also uses ike= with 3des and md5, modp1024 to override
-defaults.  (WHY?)
 
 
 
