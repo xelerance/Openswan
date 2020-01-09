@@ -1,4 +1,4 @@
-include ../lp15-respondself/Makefile
+include ../lp08-parentR1/Makefile
 
 # Local Variables:
 # compile: "make clean && make check"

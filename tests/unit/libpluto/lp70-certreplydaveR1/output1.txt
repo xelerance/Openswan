@@ -1725,6 +1725,7 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 |   77 8a b2 63  18 cb 8b cd  42 59 36 30  97 0c b5 61
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+2: output to OUTPUT/certreplydaveR1.pcap
 |   =========== input from pcap file davecertI1.pcap ========
 | *received 628 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
@@ -2195,7 +2196,3 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: default conf ipsec_conf_dir, item size: X
 ./certreplydaveR1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from carolI1.pcap
-1: input from carolI2.pcap
-2: output to OUTPUT/certreplydaveR1.pcap
-2: input from davecertI1.pcap
