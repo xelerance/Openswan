@@ -3,15 +3,13 @@
 TESTNAME=wrongcacert
 CONNNAME=rw-any
 ENDNAME=gatewaycert
-UNITTEST1PCAP=OUTPUT/parentR2.pcap
-UNITTEST2PCAP=
+UNITTEST1PCAP=OUTPUT/${TESTNAME}.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2.pcap
-UNITTEST2ARGS=
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 
 pcapupdate:
 	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap parentI1.pcap
-	cp ../lp20-certificateselfI2/OUTPUT/parentI2.pcap          parentI2.pcap
+	cp ../lp20-certificateselfI2/OUTPUT/certificateselfI2.pcap parentI2.pcap
 
 # Local Variables:
 # gdb-command: "gud-gdb wrongcacert"
