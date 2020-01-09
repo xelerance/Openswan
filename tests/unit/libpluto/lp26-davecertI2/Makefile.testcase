@@ -6,6 +6,8 @@ ENDNAME=davecert
 
 TESTNAME=davecertI2
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+
 pcapupdate:
 	cp ../lp70-certreplydaveR1/OUTPUT/certreplydaveR1.pcap certreplydaveR1.pcap
 	@true
