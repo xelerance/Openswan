@@ -5,6 +5,7 @@
 #include "seam_host_sun.c"
 #include "seam_x509.c"
 #include "seam_gi_sha1.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
