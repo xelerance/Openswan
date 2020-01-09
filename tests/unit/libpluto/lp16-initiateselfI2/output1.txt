@@ -143,7 +143,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./initiateselfI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: output to OUTPUT/initiateselfI2.pcap
-0: input from parentR1.pcap
 |   =========== input from pcap file parentR1.pcap ========
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -238,9 +237,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |    id_type: ID_FQDN
 | emitting 11 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  65 78 61 6d  70 6c 65 2e  63 6f 6d
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
-| idhash calc I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| parent SA I2 idhash calc
+|   02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | emitting length of IKEv2 Identification Payload: 19
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK

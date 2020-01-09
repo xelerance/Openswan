@@ -52,7 +52,7 @@ programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 
 check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output1.txt
 	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
 ${TESTNAME}.E:
@@ -68,7 +68,7 @@ ${WHACKFILE}: ${WHACKREFFILE}
 endif
 
 update: OUTPUT
-	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output1.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT
