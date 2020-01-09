@@ -47,7 +47,6 @@ processing whack msg time: X size: Y
 ./h2hI2 adding connection: "alttunnel"
 | 192.168.1.1...132.213.238.7
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   =========== input from pcap file h2hR1.pcap ========
 |   orient alttunnel finished with: 1 [192.168.1.1]
 RC=0 "alttunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "alttunnel":     myip=unset; hisip=unset;
@@ -106,7 +105,6 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: output to OUTPUT/h2hI2.pcap
-0: input from h2hR1.pcap
 |   =========== input from pcap file h2hR1.pcap ========
 | *received 428 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -136,16 +134,6 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  81 b5 74 15  c4 1e 64 b8
 |   4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
-| **parse ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
-|    length: 428
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator
@@ -171,83 +159,15 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
-| ***parse IKEv2 Security Association Payload:
-|    critical bit: none
-|    length: 44
-| processing payload: ISAKMP_NEXT_v2SA (len=44)
-| ***parse IKEv2 Key Exchange Payload:
-|    critical bit: none
-|    length: 264
-|    transform type: 14
-| processing payload: ISAKMP_NEXT_v2KE (len=264)
-| ***parse IKEv2 Nonce Payload:
-|    critical bit: none
-|    length: 20
-| processing payload: ISAKMP_NEXT_v2Ni (len=20)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Notify Payload:
-|    critical bit: none
-|    length: 28
-|    Protocol ID: PROTO_RESERVED
-|    SPI size: 0
-|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
-| processing payload: ISAKMP_NEXT_v2N (len=28)
-| ***parse IKEv2 Vendor ID Payload:
-|    critical bit: none
-|    length: 16
-| processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   84 d5 ee 07  01 f4
-| processing v2N_NAT_DETECTION_SOURCE_IP
-| received nat-t hash  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
-| calculated nat-t  h  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
 | nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
 | nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   c0 a8 01 01  01 f4
-| processing v2N_NAT_DETECTION_DESTINATION_IP
-| received nat-t hash  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
-| calculated nat-t  h  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
 | selected proposal 1 encr=3des[-1] integ=hmac_md5_96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
@@ -279,8 +199,10 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    id_type: ID_IPV4_ADDR
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  c0 a8 01 01
-| idhash calc pi  d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
-| idhash calc I2  01 00 00 00  c0 a8 01 01
+| parent SA IDi idhash pi calc
+|   d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
+| parent SA I2 idhash calc
+|   01 00 00 00  c0 a8 01 01
 | emitting length of IKEv2 Identification Payload: 12
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -447,6 +369,7 @@ sending 356 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   1b 94 3d f6  32 70 da bd  b3 c0 de 1f  fc 4c d9 e5
 |   39 e2 19 88  28 3e 6c 1e  7f 75 31 78  ce b9 e5 f3
 |   96 e0 a1 7c
+1: output closed
 ./h2hI2 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./h2hI2 deleting state #2 (STATE_CHILD_C0_KEYING)
