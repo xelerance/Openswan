@@ -132,7 +132,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./parentI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: output to OUTPUT/parentI2.pcap
-0: input from parentR1.pcap
 |   =========== input from pcap file parentR1.pcap ========
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -228,9 +227,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting 26 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  70 61 72 6b  65 72 30 31  2e 65 6d 6d  6a 61 79 2e
 |   63 72 65 64  69 6c 2e 6f  72 67
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
-| idhash calc I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
+| parent SA I2 idhash calc
+|   02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | emitting length of IKEv2 Identification Payload: 34
 | IKEv2 thinking whether to send my certificate:
