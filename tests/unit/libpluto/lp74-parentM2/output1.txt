@@ -42,7 +42,6 @@ processing whack msg time: X size: Y
 ./parentM2 adding connection: "t4901"
 | 192.168.1.1...132.213.238.7
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-|   =========== input from pcap file parentN1.pcap ========
 |   orient t4901 finished with: 1 [192.168.1.1]
 RC=0 "t4901": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "t4901":     myip=unset; hisip=unset;
@@ -345,7 +344,6 @@ sending 376 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.2
 |   0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/parentM2.pcap
-0: input from parentN1.pcap
 |   =========== input from pcap file parentN1.pcap ========
 1: output closed
 ./parentM2 deleting connection
