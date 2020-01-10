@@ -173,7 +173,7 @@ static void _natd_hash(const struct ike_prf_desc *hasher, unsigned char *hash
 	hasher->hash_update(&ctx, (const u_char *)&port, sizeof(u_int16_t));
 	hasher->hash_final(hash, &ctx);
 	DBG(DBG_NATT,
-		DBG_log("_natd_hash: hasher=%p(%d)", hasher, (int)hasher->hash_digest_len);
+		DBG_log("_natd_hash: digest_len:%d", (int)hasher->hash_digest_len);
 		DBG_dump("_natd_hash: icookie=", icookie, COOKIE_SIZE);
 		DBG_dump("_natd_hash: rcookie=", rcookie, COOKIE_SIZE);
 		switch (addrtypeof(ip)) {
