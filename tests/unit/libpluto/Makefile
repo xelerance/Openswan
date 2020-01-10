@@ -60,14 +60,13 @@ UNITTESTS_R2+=lp21-certreplyselfR2
 UNITTESTS_R2+=lp22-certreplymanyR2
 
 
-
 UNITTESTS_I1+=lp23-davecertI1
-
 UNITTESTS_R1+=lp70-certreplydaveR1
 UNITTESTS_I2+=lp26-davecertI2
 UNITTESTS_R2+=lp24-certreplydaveR2
 
-# disabled due to issue #6602
+# issue #6602
+# works, but does not do the right thing.
 UNITTESTS_R2+=lp25-wrongcacert
 
 UNITTESTS_I1+=lp27-dnsloadI1
@@ -99,6 +98,11 @@ UNITTESTS_I1+=lp90-h2h-sareplace-I1
 UNITTESTS_R1+=lp91-h2h-sareplace-R1
 
 UNITTESTS_v1I1+=lp43-parentM1
+UNITTESTS_v1R1+=lp73-parentN1
+UNITTESTS_v1I2+=lp74-parentM2
+UNITTESTS_v1R2+=lp75-parentN2
+UNITTESTS_v1I3+=lp76-parentM3
+
 UNITTESTS_v1I1+=lp81-ikev1derived
 UNITTESTS_v1I1+=lp82-v1certM1
 UNITTESTS_v1I1+=lp92-v1sha512M1
@@ -204,3 +208,6 @@ programs clean check pcapupdate:
 
 testlist:
 	@echo ${UNITTESTS}
+
+testcount:
+	@echo ${UNITTESTS} | wc -w
