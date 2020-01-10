@@ -432,23 +432,27 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Key Exchange Payload:
-| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
-| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-| emitting length of ISAKMP Key Exchange Payload: 196
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+| emitting length of ISAKMP Key Exchange Payload: 260
 | ***emit ISAKMP Nonce Payload:
 | emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
-| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| Ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
 | ***emit ISAKMP NAT-D Payload:
@@ -461,27 +465,31 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | NAT-D  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
 |   25 31 bf 62
 | emitting length of ISAKMP NAT-D Payload: 24
-| emitting length of ISAKMP Message: 292
+| emitting length of ISAKMP Message: 356
 | complete state transition with STF_OK
 ./parentM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 132.213.238.7:500 (from port 500)
-sending 292 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+sending 356 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   04 10 02 00  00 00 00 00  00 00 01 24  0a 00 00 c4
-|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  14 00 00 18  1d 77 eb e3  db b6 db 7c
+|   04 10 02 00  00 00 00 00  00 00 01 64  0a 00 01 04
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  14 00 00 18  1d 77 eb e3  db b6 db 7c
 |   4b b5 ef 4b  57 c6 f1 b8  ec 7e 9b fe  00 00 00 18
 |   81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
 |   25 31 bf 62
