@@ -18,43 +18,62 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./parentM2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+./parentM2 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./parentM2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
+./parentM2 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-./parentM2 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
-| counting wild cards for 192.168.1.1 is 0
-./parentM2 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
+./parentM2 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+| counting wild cards for @berri.testing.xelerance.com is 0
+./parentM2 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
-|     orient matched on IP
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+| orient t4901 matching on public/private keys: this=no[%address] that=yes[%any]
+|   orient t4901 matched on that having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient t4901 finished with: 1 [192.168.1.1]
-| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
-| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7 (exact)
+| connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=@berri.testing.xelerance.com him=132.213.238.7 (exact)
 |   concluded with <none>
 ./parentM2 adding connection: "t4901"
-| 192.168.1.1...132.213.238.7
+| 2620:120:9000:81::/64===%any[@berri.testing.xelerance.com]...132.213.238.7===2620:120:9000:82::/64
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 |   orient t4901 finished with: 1 [192.168.1.1]
-RC=0 "t4901": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
-RC=0 "t4901":     myip=unset; hisip=unset;
-RC=0 "t4901":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
-RC=0 "t4901":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
+RC=0 "t4901": 2620:120:9000:81::/64===%any[@berri.testing.xelerance.com]...132.213.238.7===2620:120:9000:82::/64; unrouted; eroute owner: #0
+RC=0 "t4901":     myip=2620:120:9000:81::1; hisip=2620:120:9000:82::1;
+RC=0 "t4901":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
+RC=0 "t4901":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 't4901'
 | creating state object #1 at Z
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
-|     orient matched on IP
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+| orient t4901 matching on public/private keys: this=yes[%any] that=no[%address]
+|   orient t4901 matched on this having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient t4901 finished with: 1 [192.168.1.1]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
@@ -346,15 +365,16 @@ RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/parentM2.pcap
 |   =========== input from pcap file parentN1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 500
-| *received 116 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 136 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   01 10 02 00  00 00 00 00  00 00 00 74  0d 00 00 34
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
 |   0d 00 00 10  4f 53 57 66  50 52 58 42  48 50 62 65
-|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -375,8 +395,12 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
 |    length: 20
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 20
 ./parentM2 received Vendor ID payload [Openswan (this version) 2.6.52dev1-262-g9039525c2-dirty ]
 ./parentM2 received Vendor ID payload [Dead Peer Detection]
+./parentM2 received Vendor ID payload [RFC 3947] method set to=115
 | ****parse IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | ****parse ISAKMP Proposal Payload:
@@ -412,6 +436,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
 | Oakley Transform 0 accepted
+./parentM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
 | main inR1_outI2: calculated ke+nonce, sending I2
 | removing state object #1
@@ -527,6 +552,7 @@ sending 356 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 13
 ./parentM2 leak: pubkey entry, item size: X
 ./parentM2 leak: rfc3110 format of public key, item size: X
 ./parentM2 leak: pubkey, item size: X
+./parentM2 leak: keep id name, item size: X
 ./parentM2 leak: pubkey entry, item size: X
 ./parentM2 leak: rfc3110 format of public key, item size: X
 ./parentM2 leak: pubkey, item size: X
