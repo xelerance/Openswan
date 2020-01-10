@@ -345,16 +345,165 @@ sending 376 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.2
 RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/parentM2.pcap
 |   =========== input from pcap file parentN1.pcap ========
-1: output closed
-./parentM2 deleting connection
-| pass 0: considering CHILD SAs to delete
-./parentM2 deleting state #1 (STATE_MAIN_I1)
+picking: eth0:500  outside: 55044 <=> d: 500
+| *received 116 bytes from 132.213.238.7:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   01 10 02 00  00 00 00 00  00 00 00 74  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   0d 00 00 10  4f 53 57 66  50 52 58 42  48 50 62 65
+|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v1 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I1
+| got payload 0x2(ISAKMP_NEXT_SA) needed: 0x2 opt: 0x2080
+| ***parse ISAKMP Security Association Payload:
+|    length: 52
+|    DOI: ISAKMP_DOI_IPSEC
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 16
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 20
+./parentM2 received Vendor ID payload [Openswan (this version) 2.6.52dev1-262-g9039525c2-dirty ]
+./parentM2 received Vendor ID payload [Dead Peer Detection]
+| ****parse IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****parse ISAKMP Proposal Payload:
+|    length: 40
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****parse ISAKMP Transform Payload (ISAKMP):
+|    length: 32
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|    [1 is OAKLEY_DES_CBC]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+|    invalid oakley attr: 3600
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|    [3 is OAKLEY_RSA_SIG]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|    [2 is OAKLEY_SHA1]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+| Oakley Transform 0 accepted
+| complete state transition with STF_SUSPEND
+| main inR1_outI2: calculated ke+nonce, sending I2
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #1 bucket: 28
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| emitting length of ISAKMP Key Exchange Payload: 196
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| emitting length of ISAKMP Nonce Payload: 20
+| sending NAT-D payloads
+| ***emit ISAKMP NAT-D Payload:
+| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe
+| emitting length of ISAKMP NAT-D Payload: 24
+| ***emit ISAKMP NAT-D Payload:
+| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
+|   25 31 bf 62
+| emitting length of ISAKMP NAT-D Payload: 24
+| emitting length of ISAKMP Message: 292
+| complete state transition with STF_OK
+./parentM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
+| sending reply packet to 132.213.238.7:500 (from port 500)
+sending 292 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   04 10 02 00  00 00 00 00  00 00 01 24  0a 00 00 c4
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
+|   53 05 b3 c4  14 00 00 18  1d 77 eb e3  db b6 db 7c
+|   4b b5 ef 4b  57 c6 f1 b8  ec 7e 9b fe  00 00 00 18
+|   81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
+|   25 31 bf 62
+./parentM2 STATE_MAIN_I2: sent MI2, expecting MR2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+1: output closed
+./parentM2 deleting connection
+| pass 0: considering CHILD SAs to delete
+./parentM2 deleting state #1 (STATE_MAIN_I2)
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
 | pass 1: considering PARENT SAs to delete
-./parentM2 leak: reply packet for main_outI1, item size: X
+./parentM2 leak: reply packet, item size: X
+./parentM2 leak: raw packet, item size: X
+./parentM2 leak: initiator nonce, item size: X
+./parentM2 leak: long term secret, item size: X
+./parentM2 leak: saved gi value, item size: X
+./parentM2 leak: outI2 KE, item size: X
+./parentM2 leak: msg_digest, item size: X
 ./parentM2 leak: 67 * VendorID MD5, item size: X
 ./parentM2 leak: 3 * vid->data, item size: X
 ./parentM2 leak: 15 * VendorID MD5, item size: X
