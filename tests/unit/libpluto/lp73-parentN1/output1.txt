@@ -18,40 +18,43 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./parentN1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+./parentN1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./parentN1 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
+./parentN1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-./parentN1 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
-| counting wild cards for 192.168.1.1 is 0
-./parentN1 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
+./parentN1 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+| counting wild cards for @berri.testing.xelerance.com is 0
+./parentN1 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient t4901 finished with: 1 [132.213.238.7]
-| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
-| find_ID_host_pair: looking for me=132.213.238.7 him=192.168.1.1 (exact)
+| connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=132.213.238.7 him=@berri.testing.xelerance.com (exact)
 |   concluded with <none>
 ./parentN1 adding connection: "t4901"
-| 132.213.238.7...192.168.1.1
+| 2620:120:9000:82::/64===132.213.238.7...%any[@berri.testing.xelerance.com]===2620:120:9000:81::/64
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 |   orient t4901 finished with: 1 [132.213.238.7]
-RC=0 "t4901": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
-RC=0 "t4901":     myip=unset; hisip=unset;
-RC=0 "t4901":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
-RC=0 "t4901":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
+RC=0 "t4901": 2620:120:9000:82::/64===132.213.238.7...%any[@berri.testing.xelerance.com]===2620:120:9000:81::/64; unrouted; eroute owner: #0
+RC=0 "t4901":     myip=2620:120:9000:82::1; hisip=2620:120:9000:81::1;
+RC=0 "t4901":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "t4901":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentM1.pcap ========
-| *received 276 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 296 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 14  0d 00 00 d4
+|   01 10 02 00  00 00 00 00  00 00 01 28  0d 00 00 d4
 |   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
 |   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
@@ -66,14 +69,16 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
-|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 ./parentN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./parentN1 received Vendor ID payload [Dead Peer Detection]
+./parentN1 received Vendor ID payload [RFC 3947] method set to=115
 | find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=/!IKEv1
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with t4901
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:t4901
 | searching for connection with policy = /!IKEv1
@@ -121,19 +126,25 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 116
+| out_vendorid(): sending [RFC 3947]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 136
 | complete state transition with STF_OK
 ./parentN1 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
 | sending reply packet to 192.168.1.1:500 (from port 500)
-sending 116 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   01 10 02 00  00 00 00 00  00 00 00 74  0d 00 00 34
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
 |   0d 00 00 10  4f 53 57 66  50 52 58 42  48 50 62 65
-|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
 ./parentN1 STATE_MAIN_R1: sent MR1, expecting MI2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
@@ -159,6 +170,7 @@ sending 116 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 ./parentN1 leak: pubkey entry, item size: X
 ./parentN1 leak: rfc3110 format of public key, item size: X
 ./parentN1 leak: pubkey, item size: X
+./parentN1 leak: keep id name, item size: X
 ./parentN1 leak: pubkey entry, item size: X
 ./parentN1 leak: rfc3110 format of public key, item size: X
 ./parentN1 leak: pubkey, item size: X
