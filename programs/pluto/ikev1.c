@@ -151,9 +151,7 @@
 #ifdef XAUTH
 #include "xauth.h"
 #endif
-#ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
-#endif
 #include "vendor.h"
 #include "dpd.h"
 #include "udpfromto.h"
@@ -277,11 +275,7 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_MAIN_R1, STATE_MAIN_R2
     , SMF_PSK_AUTH | SMF_DS_AUTH | SMF_REPLY
-#ifdef NAT_TRAVERSAL
     , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(NONE)
-#else
-    , P(KE) | P(NONCE), P(VID) | P(CR), PT(NONE)
-#endif
     , EVENT_RETRANSMIT, main_inI2_outR2 },
 
     { STATE_MAIN_R1, STATE_UNDEFINED
@@ -306,11 +300,7 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_MAIN_I2, STATE_MAIN_I3
     , SMF_PSK_AUTH | SMF_DS_AUTH | SMF_INITIATOR | SMF_OUTPUT_ENCRYPTED | SMF_REPLY
-#ifdef NAT_TRAVERSAL
     , P(KE) | P(NONCE), P(VID) | P(CR) | P(NATD_RFC), PT(ID)
-#else
-    , P(KE) | P(NONCE), P(VID) | P(CR), PT(ID)
-#endif
     , EVENT_RETRANSMIT, main_inR2_outI3 },
 
     { STATE_MAIN_I2, STATE_UNDEFINED
@@ -478,11 +468,7 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_QUICK_R0, STATE_QUICK_R1
     , SMF_ALL_AUTH | SMF_ENCRYPTED | SMF_REPLY
-#ifdef NAT_TRAVERSAL
     , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID) | P(NATOA_RFC), PT(NONE)
-#else
-    , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID), PT(NONE)
-#endif
     , EVENT_RETRANSMIT, quick_inI1_outR1 },
 
     /* STATE_QUICK_I1:
@@ -493,11 +479,7 @@ static const struct state_microcode state_microcode_table[] = {
      */
     { STATE_QUICK_I1, STATE_QUICK_I2
     , SMF_ALL_AUTH | SMF_INITIATOR | SMF_ENCRYPTED | SMF_REPLY
-#ifdef NAT_TRAVERSAL
     , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID) | P(NATOA_RFC), PT(HASH)
-#else
-    , P(HASH) | P(SA) | P(NONCE), /* P(SA) | */ P(KE) | P(ID), PT(HASH)
-#endif
     , EVENT_SA_REPLACE, quick_inR1_outI2 },
 
     /* STATE_QUICK_R1: HDR*, HASH(3) --> done
@@ -1571,7 +1553,6 @@ void process_packet_tail(struct msg_digest **mdp)
 		return;
 	    }
 
-#ifdef NAT_TRAVERSAL
             /*
              * only do this in main mode. In aggressive mode, there
              * is no negotiation of NAT-T method. Get it right.
@@ -1594,7 +1575,6 @@ void process_packet_tail(struct msg_digest **mdp)
                    break;
                }
             }
-#endif
 
 	    if (sd == NULL)
 	    {
@@ -1606,7 +1586,6 @@ void process_packet_tail(struct msg_digest **mdp)
 			? &isakmp_identification_desc : &isakmp_ipsec_identification_desc;
 		    break;
 
-#ifdef NAT_TRAVERSAL
 		case ISAKMP_NEXT_NATD_DRAFTS:
 		    np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
 		    sd = payload_desc(np);
@@ -1616,7 +1595,6 @@ void process_packet_tail(struct msg_digest **mdp)
 		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
 		    sd = payload_desc(np);
 		    break;
-#endif
 		default:
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"
 			" unexpected payload type (%s) at the outermost level"
@@ -1885,7 +1863,6 @@ void process_packet_tail(struct msg_digest **mdp)
     /* this does not seem to be right */
 
     /* VERIFY that we only accept NAT-D/NAT-OE when they sent us the VID */
-#ifdef NAT_TRAVERSAL
     if((md->chain[ISAKMP_NEXT_NATD_RFC]!=NULL
         || md->chain[ISAKMP_NEXT_NATOA_RFC]!=NULL)
        && !(st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES)) {
@@ -1896,7 +1873,6 @@ void process_packet_tail(struct msg_digest **mdp)
 	loglog(RC_LOG_SERIOUS, "message ignored because it contains a NAT payload, when we did not receive the appropriate VendorID");
 	return;
     }
-#endif
 #endif
 
     /* possibly fill in hdr */
@@ -2058,14 +2034,12 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* free previous transmit packet */
 	    freeanychunk(st->st_tpacket);
 
-#ifdef NAT_TRAVERSAL
 	/* in aggressive mode, there will be no reply packet in transition
 	 * from STATE_AGGR_R1 to STATE_AGGR_R2 */
 	if(nat_traversal_enabled) {
 	    /* adjust our destination port if necessary */
 	    nat_traversal_change_port_lookup(md, st);
 	}
-#endif
 
 	    /* if requested, send the new reply packet */
 	    if (smc->flags & SMF_REPLY)
