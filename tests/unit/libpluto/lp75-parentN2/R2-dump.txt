@@ -1,6 +1,6 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 320, bad cksum 0 (->d0f5)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 384, bad cksum 0 (->d0b5)!)
     132.213.238.7.500 > 93.184.216.34.55044: isakmp 1.0 msgid 00000000: phase 1 ? ident:
-    (ke: key len=192)
+    (ke: key len=256)
     (nonce: n len=16)
     (pay20)
     (pay20)

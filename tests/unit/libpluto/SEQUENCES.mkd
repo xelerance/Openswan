@@ -57,3 +57,35 @@ that the general policy (a template) be instantiated into a specific policy.
                                       lp19-certreplyselfR1
                            <---R1---
     lp20-certificateselfI2 ----I2-->
+                                      lp21-certreplyselfR2
+                                      lp22-certreplymanyR2
+                           <---R2---
+
+
+davecert
+========
+
+This series builds upon the certificateself sequence above, but it adds a
+second initiator to the process in order to test that states and policy
+are correctly split up.
+
+    lp23-davecertI1       ----I1-->
+                                      lp70-certreplydaveR1
+                           <---R1---
+    lp26-davecertI2       ----I2-->
+                                      lp24-certreplydaveR2
+
+
+ikev1
+=====
+
+The series tests IKEv1 mechanism.  The first of these was created to verify
+that IKEv1 proposals are reject properly when IKEv2 mode, but the rest
+were added to validate IKEv1 functionality.
+
+    lp43-parentM1        ---M1-->
+                                      lp73-parentN1
+                         <--N1---
+    lp74-parentM2        ---M2--->
+                                      lp75-parentN2
+
