@@ -1,4 +1,5 @@
 #define OMIT_MAIN_MODE 1
+#define NAT_TRAVERSAL
 
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_gi_sha1.c"
@@ -24,6 +25,7 @@
 static void init_local_interface(void)
 {
     init_parker_interface(TRUE);
+    nat_traversal_enabled = TRUE;
 }
 
 static void init_fake_secrets(void)
