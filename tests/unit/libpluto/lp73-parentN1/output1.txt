@@ -13,6 +13,8 @@
 ./parentN1 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./parentN1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./parentN1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentN1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentN1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -47,55 +49,100 @@ RC=0 "t4901":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:n
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentM1.pcap ========
-| *received 216 bytes from 93.184.216.34:55044 on eth0 (port=500)
+| *received 276 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
-|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
-|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   01 10 02 00  00 00 00 00  00 00 01 14  0d 00 00 d4
+|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
+|   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
+|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
+|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
-|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
-|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
-|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
-|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
-|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
-|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
-|   0b e8 a8 46  95 79 dd cc
+|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 ./parentN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./parentN1 received Vendor ID payload [Dead Peer Detection]
-./parentN1 received Vendor ID payload [RFC 3947] method set to=115
-./parentN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
-./parentN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but already using method 115
-./parentN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02] meth=107, but already using method 115
-./parentN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
-| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=93.184.216.34:55044 policy=/!IKEv1
-| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:55044 any-match
+| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=/!IKEv1
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
-| find_host_pair: concluded with <none>
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:55044 -> hp:none
+| find_host_pair: concluded with t4901
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:t4901
 | searching for connection with policy = /!IKEv1
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
-| find_host_pair: concluded with <none>
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
-| searching for connection with policy = /!IKEv1
-| find_host_connection2 returns empty (ike=none/none)
-| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=%any:55044 policy=RSASIG/!IKEv1
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:55044 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
-| find_host_pair: concluded with <none>
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:55044 -> hp:none
-| searching for connection with policy = RSASIG/!IKEv1
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
-| find_host_pair: concluded with <none>
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
-| searching for connection with policy = RSASIG/!IKEv1
-| find_host_connection2 returns empty (ike=none/none)
-./parentN1 initial Main Mode message received on 132.213.238.7:500 but no connection has been authorized with policy=RSASIG
-| complete state transition with STF_IGNORE
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (t4901)
+| find_host_connection2 returns t4901 (ike=none/none)
+| creating state object #1 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #1 bucket: 28
+./parentN1 responding to Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
+| attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
+|   80 02 00 02  80 04 00 0e
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 53 57 66  50 52 58 42  48 50 62 65
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 116
+| complete state transition with STF_OK
+./parentN1 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
+| sending reply packet to 192.168.1.1:500 (from port 500)
+sending 116 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   01 10 02 00  00 00 00 00  00 00 00 74  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   0d 00 00 10  4f 53 57 66  50 52 58 42  48 50 62 65
+|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00
+./parentN1 STATE_MAIN_R1: sent MR1, expecting MI2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+./parentN1 deleting state #1 (STATE_MAIN_R1)
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| freeing state object #1
 ./parentN1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
