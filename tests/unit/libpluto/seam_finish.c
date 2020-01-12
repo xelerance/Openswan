@@ -43,10 +43,8 @@ void finish_dh_secretiv(struct state *st,
     CLONEIT(skey_pr);
     CLONEIT(enc_key);
 
-#if 0
     memcpy(st->st_new_iv, SS(new_iv.ptr), SS(new_iv.len));
     st->st_new_iv_len = SS(new_iv.len);
-#endif
 
     ikev2_validate_key_lengths(st);
 
