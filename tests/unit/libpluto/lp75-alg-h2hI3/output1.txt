@@ -294,8 +294,10 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    id_type: ID_IPV4_ADDR
 | emitting 4 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  c0 a8 01 01
-| idhash calc pi  d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
-| idhash calc I2  01 00 00 00  c0 a8 01 01
+| parent SA IDi idhash pi calc
+|   d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
+| parent SA I2 idhash calc
+|   01 00 00 00  c0 a8 01 01
 | emitting length of IKEv2 Identification Payload: 12
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -640,7 +642,8 @@ sending 356 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | ipv4 ts  84 d5 ee 07
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=alttunnel:<noclient>:0/0 R=<noclient>:0/0  to their:
-|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535, tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
+|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535
+|     tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=0 maskbits2=32 fitbits=8224 <> -1
 |  prefix fitness found a better match c alttunnel
