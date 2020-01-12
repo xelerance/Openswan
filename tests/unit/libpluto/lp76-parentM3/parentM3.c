@@ -2,17 +2,18 @@
 #define OMIT_MAIN_MODE
 #define NAPT_ENABLED 1
 #define NAT_TRAVERSAL
+#define NO_SEAM_NATT
 #define SEAM_CRYPTO
-#include "../lp10-parentI2/parentI2_head.c"
+#include "../lp13-parentI3/parentI3_head.c"
+#include "seam_rsasig.c"
+#include "seam_x509.c"
+#include "seam_gi_sha256_group14.c"
+#include "seam_finish.c"
 #include "seam_kernel.c"
 #include "seam_pending.c"
 #include "nat_traversal.h"
-#include "seam_rsasig.c"
-#include "seam_x509.c"
 #include "seam_dpd.c"
 #include "seam_ikev1_phase2.c"
-#include "seam_gi_sha1.c"
-#include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_unpend.c"
@@ -76,7 +77,7 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 #endif
 
 
-#include "../lp10-parentI2/parentI2_main.c"
+#include "../lp13-parentI3/parentI3_main.c"
 
  /*
  * Local Variables:
