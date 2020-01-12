@@ -290,9 +290,9 @@ crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc
 
 #if 0
     DBG(DBG_CRYPT
-	, DBG_log("encrypting buf=%p size=%d keyptr: %p keysize: %d, iv: %p enc: %d"
-		  , buf, size, st->st_enc_key.ptr
-		  , st->st_enc_key.len, st->st_new_iv, enc));
+	, DBG_log("encrypting buf=%p size=%u keyptr: %p keysize: %u, iv: %p enc: %u"
+		  , buf, (unsigned int)size, st->st_enc_key.ptr
+		  , (unsigned int)st->st_enc_key.len, st->st_new_iv, (unsigned int)enc));
 #endif
 
     e->do_crypt(buf, size, st->st_enc_key.ptr
