@@ -29,7 +29,7 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed -f ${TESTUTILS}/sanity.sed
 
 include Makefile.testcase
 

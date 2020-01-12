@@ -106,7 +106,7 @@ RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREF
 |   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -622,12 +622,19 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| freeing state object #1
 ./h2hR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./h2hR1 leak: notification packet, item size: X
+./h2hR1 leak: db_context->trans (expand), item size: X
+./h2hR1 leak: db_context->conj (expand), item size: X
 ./h2hR1 leak: alg_info_ike, item size: X
+./h2hR1 leak: db_context->attrs, item size: X
+./h2hR1 leak: db_context->conj, item size: X
+./h2hR1 leak: v2 policy database, item size: X
+./h2hR1 leak: saved first received packet, item size: X
 ./h2hR1 leak: ikev2_inI1outR1 KE, item size: X
+./h2hR1 leak: struct state in new_state(), item size: X
 ./h2hR1 leak: msg_digest, item size: X
 ./h2hR1 leak: rfc3110 format of public key [created], item size: X
 ./h2hR1 leak: issuer dn, item size: X
