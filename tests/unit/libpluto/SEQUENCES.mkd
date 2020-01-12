@@ -91,5 +91,16 @@ were added to validate IKEv1 functionality.
                          <--N2---
     lp76-parentM3
 
+host-to-host
+============
+This test case deals with policy which is /32 to /32, and is derived from
+implicit configuration of some things.
+
+    lp36-h2hI1           ---I1-->
+                                      lp37-h2hR1
+                         <--R1---
+    lp38-h2hI2           ---I2-->
+                                      lp39-h2hR2
+
 
 
