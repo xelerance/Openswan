@@ -52,7 +52,6 @@ RC=0 "parker1--jj2--wrong":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin:
 RC=0 "parker1--jj2--wrong":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 RC=0 "parker1--jj2--wrong":   IKE algorithms wanted: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 RC=0 "parker1--jj2--wrong":   IKE algorithms found:  3des(3)_192-hmac_sha1_96(2)_160-prfsha1(2)-MODP1536(5)
-0: input from parentI1.pcap
 |   =========== input from pcap file parentI1.pcap ========
 | *received 628 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -384,7 +383,6 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 1: output to OUTPUT/parentR2.pcap
-1: input from parentI2.pcap
 |   =========== input from pcap file parentI2.pcap ========
 | *received 464 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf

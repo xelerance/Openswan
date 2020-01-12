@@ -78,7 +78,6 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-./v1rwnatN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./v1rwnatN1 received Vendor ID payload [Dead Peer Detection]
 ./v1rwnatN1 received Vendor ID payload [RFC 3947] method set to=115
 ./v1rwnatN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
