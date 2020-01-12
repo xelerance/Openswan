@@ -124,7 +124,6 @@ int main(int argc, char *argv[])
         }
 
         /* setup to process the n'th packet */
-        fprintf(stderr, "%u: input from %s\n", i, pcapin[i]);
         recv_pcap_setup(pcapin[i]);
 
         /* process first I1 packet */
