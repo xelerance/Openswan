@@ -138,7 +138,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -188,7 +188,6 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/v1rwnatM2.pcap
-0: input from v1rwnatN1.pcap
 |   =========== input from pcap file v1rwnatN1.pcap ========
 skipping: eth0:4500 float outside: 55045 <=> d: 55044
 picking: eth0:500  outside: 55044 <=> d: 55044
@@ -225,7 +224,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
 |    length: 20
-./v1rwnatM2 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./v1rwnatM2 received Vendor ID payload [Dead Peer Detection]
 ./v1rwnatM2 received Vendor ID payload [RFC 3947] method set to=115
 | ****parse IPsec DOI SIT:
@@ -266,6 +264,14 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 ./v1rwnatM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
 | main inR1_outI2: calculated ke+nonce, sending I2
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| inserting state object #1 bucket: 30
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -304,14 +310,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | NAT-D  71 3d 62 44  14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
 | emitting length of ISAKMP NAT-D Payload: 20
 | emitting length of ISAKMP Message: 284
-| removing state object #1
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
-| state hash entry 30
-| inserting state object #1 bucket: 30
 | complete state transition with STF_OK
 ./v1rwnatM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 192.168.0.2:500 (from port 500)
