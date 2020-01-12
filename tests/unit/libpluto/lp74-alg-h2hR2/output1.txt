@@ -13,6 +13,8 @@
 ./h2hR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./h2hR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
 ./h2hR2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./h2hR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./h2hR2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -55,7 +57,6 @@ RC=0 "alttunnel":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP
 RC=0 "alttunnel":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
 RC=0 "alttunnel":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
 RC=0 "alttunnel":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
-0: input from ../lp72-alg-h2hR1/h2hI1.pcap
 |   =========== input from pcap file ../lp72-alg-h2hR1/h2hI1.pcap ========
 | *received 428 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -324,7 +325,6 @@ sending 428 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/h2hR2.pcap
-1: input from h2hI2.pcap
 |   =========== input from pcap file h2hI2.pcap ========
 | *received 476 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -504,8 +504,10 @@ sending 428 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=192.168.1.1 (wildcard)
 |                   comparing to me=132.213.238.7 him=192.168.1.1 (alttunnel)
 |   concluded with alttunnel
-| idhash verify pi  d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
-| idhash verify I2  01 00 00 00  c0 a8 01 01
+| parent SA IDi pi verify
+|   d8 53 01 ed  30 8e 94 de  83 d2 32 45  9b 66 1c 96
+| parent SA I2 idhash verify
+|   01 00 00 00  c0 a8 01 01
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=132.213.238.7 same_id=0
 | checking alg=1 == 1, keyid=192.168.1.1 same_id=1
@@ -567,9 +569,10 @@ sending 428 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  84 d5 ee 07
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  84 d5 ee 07
-| ikev2_evaluate_connection_fit, evaluating base fit for alttunnel
+| ikev2_child_ts_evaluate, evaluating base fit for alttunnel against tsi=1,tsr=1 traffic selectors
 |   ikev2_evaluate_connection_fit evaluating our I=alttunnel:<noclient>:0/0 R=<noclient>:0/0  to their:
-|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535, tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
+|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535
+|     tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=0 maskbits2=32 fitbits=8224 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c alttunnel
@@ -581,10 +584,6 @@ sending 428 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c alttunnel, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=132.213.238.7 him=192.168.1.1 (wildcard)
-|                   comparing to me=132.213.238.7 him=192.168.1.1 (alttunnel)
-|   concluded with alttunnel
-|   checking hostpair 132.213.238.7/32 -> 192.168.1.1/32 is found
 | ikev2_evaluate_connection_fit, concluded with alttunnel
 | duplicating state object #1
 | creating state object #2 at Z
