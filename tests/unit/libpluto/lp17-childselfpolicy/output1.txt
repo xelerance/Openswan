@@ -51,7 +51,6 @@ RC=0 "gateway--any":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 RC=0 "gateway--any":        ....1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E 2:none
 RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-0: input from parentI1.pcap
 |   =========== input from pcap file parentI1.pcap ========
 | *received 628 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -366,7 +365,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/respondselfR2.pcap
-1: input from parentI2.pcap
 |   =========== input from pcap file parentI2.pcap ========
 | *received 400 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -524,9 +522,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=@example.com (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
-| idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi pi verify
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
-| idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| parent SA I2 idhash verify
+|   02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@example.com same_id=1
 | key issuer CA is '%any'
@@ -591,9 +591,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
-| ikev2_evaluate_connection_fit, evaluating base fit for gateway--any
+| ikev2_child_ts_evaluate, evaluating base fit for gateway--any against tsi=1,tsr=1 traffic selectors
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535
+|     tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c gateway--any
@@ -605,10 +606,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c gateway--any, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com (wildcard)
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
-|   concluded with gateway--any
-|   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with gateway--any
 | duplicating state object #1
 | creating state object #2 at Z
