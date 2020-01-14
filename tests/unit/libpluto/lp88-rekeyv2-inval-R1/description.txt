@@ -3,7 +3,10 @@ This test case is an IKEv2 responder.
 This is based upon lp37-h2hR1.
 
 The initiator has created a child SA from scratch, and then decides to rekey
-it.
+it.  The provided Ni is corrupt, and so this test case responses with an
+invalid syntax.
+
+
 
 
 
