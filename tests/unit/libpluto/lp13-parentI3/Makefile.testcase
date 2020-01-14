@@ -6,5 +6,6 @@ UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null ../lp10-parentI2/parentR1.pc
 ENDNAME=parker
 
 pcapupdate:
-	@true
+	cp ../lp12-parentR2/OUTPUT/parentR2.pcap parentR2.pcap
+
 
