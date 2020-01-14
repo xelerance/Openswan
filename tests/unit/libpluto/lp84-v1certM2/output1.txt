@@ -118,7 +118,7 @@ RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -168,7 +168,6 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/v1certM2.pcap
-0: input from v1certN1.pcap
 |   =========== input from pcap file v1certN1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 55044
 | *received 136 bytes from 192.168.0.1:500 on eth0 (port=500)
@@ -177,7 +176,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 53 57 44  7b 7b 5c 42  58 46 53 4c
+|   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -204,7 +203,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
 |    length: 20
-./v1certM2 received Vendor ID payload [Openswan (this version) 2.6.52dev1-219-g9e19927ec-dirty ]
 ./v1certM2 received Vendor ID payload [Dead Peer Detection]
 ./v1certM2 received Vendor ID payload [RFC 3947] method set to=115
 | ****parse IPsec DOI SIT:
@@ -245,6 +243,14 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 ./v1certM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
 | main inR1_outI2: calculated ke+nonce, sending I2
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #1 bucket: 5
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -283,14 +289,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | NAT-D  c0 bd db 7f  0c fc b2 1a  80 8d 0b 49  36 64 ad ce
 | emitting length of ISAKMP NAT-D Payload: 20
 | emitting length of ISAKMP Message: 284
-| removing state object #1
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
-| inserting state object #1 bucket: 5
 | complete state transition with STF_OK
 ./v1certM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 192.168.0.1:500 (from port 500)
