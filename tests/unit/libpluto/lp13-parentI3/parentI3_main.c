@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
     init_seam_kernelalgs();
     init_fake_secrets();
     enable_debugging();
+    init_demux();
+    init_seam_kernelalgs();
 
     infile = argv[0];
     conn_name = argv[1];

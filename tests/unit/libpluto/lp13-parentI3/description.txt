@@ -1,0 +1,2 @@
+This test case completes the initiator process by processing the R2 message
+from the responder.  No output is expected.
