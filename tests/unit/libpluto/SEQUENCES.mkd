@@ -94,13 +94,41 @@ were added to validate IKEv1 functionality.
 host-to-host
 ============
 This test case deals with policy which is /32 to /32, and is derived from
-implicit configuration of some things.
+implicit configuration of some things.  It does some rekeys in each
+direction, and then also some deletes initiated from each direction.
 
     lp36-h2hI1           ---I1-->
                                       lp37-h2hR1
                          <--R1---
     lp38-h2hI2           ---I2-->
                                       lp39-h2hR2
+                         <--I3---
+                                      lp80-h2h-rekey-ikev2-R2-msgid0
+                         <--I4---
+                         ---I4-->     lp81-h2h-rekey-ikev2-I3-msgid0
+
+                                      lp82-h2h-deleteSA-R2
+                         <--D1---
+
+                         ---D2-->     lp83-h2h-deleteSA-I3
+
+INVALID_SYNTAX rekey tests
+==========================
+This sequence adds to the base parentXY.
+It sends a corrupted Ni in the rekey, and then processes the resulting
+invalid syntax.
+
+    lp87-rekeyv2-inval-I1  ---CI1->
+                                      lp88-rekeyv2-inval-R1
+                           <--CR1--
+    lp89-rekeyv2-inval-inCR1
 
 
+SA-replace I1
+=============
+After keying with lp36/37/38/39, then there is a rekey of the parent SA.
+
+    lp90-h2h-sareplace-I1  ---I1_2-->
+                                      lp91-h2h-sareplace-R1
+                           <--R1_2---
 
