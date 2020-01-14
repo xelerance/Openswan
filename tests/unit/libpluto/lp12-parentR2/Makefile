@@ -23,10 +23,10 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 include ../../libpluto/lp13-objectlist.make
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-SAMPLEDIR=../samples
+SAMPLEDIR=../samples/
 EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 OUTPUTS=OUTPUT
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed -f ${TESTUTILS}/sanity.sed
 
 include Makefile.testcase
 
