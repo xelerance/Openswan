@@ -11,5 +11,5 @@ PCAPDEPENDENCIES = ../lp87-rekeyv2-inval-I1/OUTPUT/rekeyikev2.pcap
 include ../Makefile.pcapupdate
 
 pcapupdate: ${PCAPDEPENDENCIES}
-	cp ../lp87-rekeyv2-inval-I1/OUTPUT/rekeyikev2.pcap rekeyCI1.pcap
+	cp ../lp87-rekeyv2-inval-I1/OUTPUT/rekeyikev2-I1.pcap rekeyCI1.pcap
 
