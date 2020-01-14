@@ -29,9 +29,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-| from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+| from whack: got --esp=3des-md5;modp2048
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1rwnatM2 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
 ./v1rwnatM2 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
@@ -64,9 +64,9 @@ RC=0 "bobnet-ikev1":   keys: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
 RC=0 "bobnet-ikev1":        ....1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none
 RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
-RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
-RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
-RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'bobnet-ikev1'
 | creating state object #1 at Z
@@ -85,7 +85,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
 ./v1rwnatM2 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -131,8 +131,8 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |     [1 is OAKLEY_MD5]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -176,7 +176,7 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
@@ -192,19 +192,19 @@ RC=105 STATE_MAIN_I1: initiate
 skipping: eth0:4500 float outside: 55045 <=> d: 55044
 picking: eth0:500  outside: 55044 <=> d: 55044
 | *received 136 bytes from 192.168.0.2:500 on eth0 (port=500)
-|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
+|   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
-| state hash entry 30
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
 | v1 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
@@ -259,7 +259,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    [1 is OAKLEY_DES_CBC]
 | ******parse ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
+|    length/value: 14
 | Oakley Transform 0 accepted
 ./v1rwnatM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
@@ -269,69 +269,77 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
-| state hash entry 30
-| inserting state object #1 bucket: 30
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #1 bucket: 5
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
-|   c4 6d c5 7a  f8 f3 5d 2e
+|   64 0a 06 43  5c 7c 4b 31
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Key Exchange Payload:
-| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
-| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-| emitting length of ISAKMP Key Exchange Payload: 196
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+| emitting length of ISAKMP Key Exchange Payload: 260
 | ***emit ISAKMP Nonce Payload:
 | emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
-| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| Ni  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c  0d e6 bc 04
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
 | ***emit ISAKMP NAT-D Payload:
 | emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  07 05 57 15  6a 97 cf e1  1b 58 0b ab  ba 0e 8b 99
+| NAT-D  aa 5b 8b c1  f9 fc 61 6b  ed 1c a4 29  49 15 00 ca
 | emitting length of ISAKMP NAT-D Payload: 20
 | ***emit ISAKMP NAT-D Payload:
 | emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  71 3d 62 44  14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
+| NAT-D  4c 76 63 df  1a 9c 88 55  cf f6 17 37  05 9d 50 50
 | emitting length of ISAKMP NAT-D Payload: 20
-| emitting length of ISAKMP Message: 284
+| emitting length of ISAKMP Message: 348
 | complete state transition with STF_OK
 ./v1rwnatM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 192.168.0.2:500 (from port 500)
-sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
-|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
-|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
-|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  14 00 00 14  07 05 57 15  6a 97 cf e1
-|   1b 58 0b ab  ba 0e 8b 99  00 00 00 14  71 3d 62 44
-|   14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
+sending 348 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   04 10 02 00  00 00 00 00  00 00 01 5c  0a 00 01 04
+|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+|   14 00 00 14  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c
+|   0d e6 bc 04  14 00 00 14  aa 5b 8b c1  f9 fc 61 6b
+|   ed 1c a4 29  49 15 00 ca  00 00 00 14  4c 76 63 df
+|   1a 9c 88 55  cf f6 17 37  05 9d 50 50
 ./v1rwnatM2 STATE_MAIN_I2: sent MI2, expecting MR2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
@@ -341,8 +349,8 @@ sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 19
 ./v1rwnatM2 deleting state #1 (STATE_MAIN_I2)
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
-| state hash entry 30
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
 | pass 1: considering PARENT SAs to delete
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
