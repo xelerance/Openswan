@@ -10,7 +10,7 @@
 #include "seam_whack.c"
 #include "seam_initiate.c"
 #include "seam_dnskey.c"
-#include "seam_gi_sha1.c"
+#include "seam_gi_md5.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_finish.c"
 #include "seam_ikev1_phase2.c"
