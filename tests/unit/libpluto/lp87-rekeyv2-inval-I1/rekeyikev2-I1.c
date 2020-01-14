@@ -20,7 +20,7 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
-#define TESTNAME "rekeyikev2"
+#define TESTNAME "rekeyikev2-I1"
 #define AFTER_CONN rekeyit
 
 #include "../lp87-rekeyv2-inval-I1/rekeyit.c"
