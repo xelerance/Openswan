@@ -5,8 +5,8 @@
 ./parentN3 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./parentN3 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./parentN3 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./parentN3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentN3 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./parentN3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentN3 loading secrets from "../samples/jj.secrets"
 ./parentN3 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 ./parentN3 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
@@ -28,16 +28,10 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-| from whack: got --esp=aes-sha1;modp1536
-| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./parentN3 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @berri.testing.xelerance.com is 0
 ./parentN3 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for 132.213.238.7 is 0
-| alg_info_addref() alg_info->ref_cnt=1
-| alg_info_addref() alg_info->ref_cnt=1
-| orient t4901 reference sr#1 this: addr:132.213.238.7 that: %any
 | orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -55,11 +49,8 @@ RC=0 "t4901": 2620:120:9000:82::/64===132.213.238.7...%any[@berri.testing.xelera
 RC=0 "t4901":     myip=2620:120:9000:82::1; hisip=2620:120:9000:81::1;
 RC=0 "t4901":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
 RC=0 "t4901":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
-RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
-RC=0 "t4901":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
-RC=0 "t4901":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
-0: input from parentM1.pcap
 |   =========== input from pcap file parentM1.pcap ========
 | *received 216 bytes from 93.184.216.34:55044 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -77,7 +68,6 @@ RC=0 "t4901":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-./parentN3 received Vendor ID payload [Openswan (this version) 2.6-regression ]
 ./parentN3 received Vendor ID payload [Dead Peer Detection]
 ./parentN3 received Vendor ID payload [RFC 3947] method set to=115
 ./parentN3 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
@@ -97,7 +87,6 @@ RC=0 "t4901":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | inserting state object #1 bucket: 5
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 ./parentN3 responding to Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -128,7 +117,7 @@ RC=0 "t4901":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -136,7 +125,6 @@ RC=0 "t4901":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
 | out_vendorid(): sending [RFC 3947]
-|    next-payload: ISAKMP_NEXT_VID [@96=0x d]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
@@ -151,15 +139,13 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 93.1
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
-| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
 ./parentN3 STATE_MAIN_R1: sent MR1, expecting MI2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
-1: input from parentM2.pcap
 |   =========== input from pcap file parentM2.pcap ========
 | *received 292 bytes from 93.184.216.34:55044 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -212,8 +198,8 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 93.1
 |   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
 |   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
 |   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| ../seam_x509.c: ikev1_decode_cr() not implemented
 ./parentN3 NAT-Traversal: Result using draft-ietf-ipsec-nat-t-ike (MacOS X): peer is NATed
-| inserting event EVENT_NAT_T_KEEPALIVE, timeout in 0 second
 | complete state transition with STF_SUSPEND
 | main inI2_outR2: calculated ke+nonce, sending R2
 | **emit ISAKMP Message:
@@ -226,26 +212,29 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 93.1
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Key Exchange Payload:
-| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
-| keyex value  cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
-|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
-|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
-|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
-|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
-|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
-|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
-|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
-|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
-|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
-|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
-|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
-| emitting length of ISAKMP Key Exchange Payload: 196
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+| emitting length of ISAKMP Key Exchange Payload: 260
 | ***emit ISAKMP Nonce Payload:
 | emitting 16 raw bytes of Nr into ISAKMP Nonce Payload
-| Nr  47 e9 f9 25  8c a2 38 58  f6 75 b1 66  b0 2c c2 92
+| Nr  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
-|    next-payload: ISAKMP_NEXT_NAT-D [@224=0x14]
 | ***emit ISAKMP NAT-D Payload:
 | emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
 | NAT-D  c4 00 10 99  12 11 34 5e  78 ab 84 55  96 7a 2b 38
