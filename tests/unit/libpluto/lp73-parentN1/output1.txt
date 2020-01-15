@@ -73,7 +73,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-./parentN1 ignoring unknown Vendor ID payload [4f45706c75746f756e697430]
 ./parentN1 received Vendor ID payload [Dead Peer Detection]
 ./parentN1 received Vendor ID payload [RFC 3947] method set to=115
 | find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=/!IKEv1
