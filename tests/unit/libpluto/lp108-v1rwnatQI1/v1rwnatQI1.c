@@ -23,6 +23,7 @@
 #include "seam_sendI1.c"
 #include "seam_finish.c"
 #include "seam_ikev1_aggr.c"
+#include "seam_gi_md5.c"
 
 #define TESTNAME "v1rwnatQI1"
 

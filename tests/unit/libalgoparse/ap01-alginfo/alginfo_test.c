@@ -23,6 +23,7 @@
 #include "plutoalg.h"
 #include "alg_info.h"
 #include "oswlog.h"
+#include "pluto/ike_alg.h"
 
 struct artab;
 static void check(struct artab *r, char *buf, size_t n, err_t oops, int *status);
