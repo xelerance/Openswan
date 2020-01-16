@@ -45,5 +45,6 @@ static __inline__ struct db_prop *db_prop_get(struct db_context *ctx) {
 int db_ops_show_status(void);
 
 extern void db_print(struct db_context *ctx);
+extern void sa_print(struct db_sa *f);
 
 #endif /* _DB_OPS_H */
