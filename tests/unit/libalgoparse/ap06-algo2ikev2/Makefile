@@ -15,12 +15,13 @@ OPENSWANSRCDIR?=$(shell cd ../../../..; pwd)
 srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto/lp01-spdbtest
 include $(OPENSWANSRCDIR)/Makefile.inc
 
-EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE}
+EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I.. -I../../libpluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS} ${LIBALGOPARSE} ${LIBPLUTO}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}    ${LIBGMP} ${CRYPTOLIBS}
