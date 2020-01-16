@@ -1,0 +1,44 @@
+ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+| EI starts with: aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP3072(15)
+| IKEv2 outsa starts 
+| proposals: cnt=1
+|  disj: cnt=6 [next=7]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 2:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 3:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 4:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 5:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+| 6:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+./algo2ikev2 leak detective found no leaks
