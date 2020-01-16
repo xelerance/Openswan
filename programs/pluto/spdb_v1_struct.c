@@ -200,6 +200,10 @@ ikev1_alg_makedb(lset_t policy, struct alg_info_ike *ei, bool oneproposal UNUSED
                  , enum phase1_role role)
 {
     struct db_sa *sadb;
+    char info_buf[1024];
+
+    alg_info_snprint_ike(info_buf, sizeof(info_buf), ei);
+    DBG_log("EI starts with: %s", info_buf);
 
     sadb = alginfo2parent_db2(ei);
     sadb->parentSA = TRUE;
@@ -221,6 +225,8 @@ struct db_sa *
 kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei, enum phase1_role role)
 {
 	struct db_sa *sadb;
+
+    DBG_log("kernel_alg_makedb");
 
     sadb = alginfo2child_db2(ei);
 	sadb->parentSA = FALSE;

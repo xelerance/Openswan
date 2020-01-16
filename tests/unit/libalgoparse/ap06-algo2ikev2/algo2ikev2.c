@@ -1,4 +1,5 @@
 #define DEBUG
+#define USE_KEYRR
 #include <stdlib.h>
 #include "openswan.h"
 #include "openswan/passert.h"
@@ -12,8 +13,12 @@
 #include "pluto/keys.h"
 #include "hexdump.c"
 #include "alg_info.h"
+#include "pluto/db_ops.h"
 #include "pluto/db2_ops.h"
 #include "pluto/crypto.h"
+#include "seam_kernel.c"
+#include "seam_keys.c"
+#include "seam_ipcomp.c"
 
 const char *progname;
 
@@ -45,6 +50,10 @@ int main(int argc, char *argv[])
 
     DBG_log("IKEv2 outsa starts ");
     sa_v2_print(sadb);
+
+    passert(extrapolate_v1_from_v2(sadb, LEMPTY, INITIATOR) == TRUE);
+    DBG_log("IKEv1 outsa is now ");
+    sa_print(sadb);
 
     report_leaks();
     tool_close_log();
