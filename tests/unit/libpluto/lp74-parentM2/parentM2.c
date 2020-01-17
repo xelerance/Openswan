@@ -10,7 +10,6 @@
 #include "seam_rsasig.c"
 #include "seam_x509.c"
 #include "seam_dpd.c"
-#include "seam_gi_sha1.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
