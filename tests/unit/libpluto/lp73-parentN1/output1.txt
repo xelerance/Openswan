@@ -52,22 +52,20 @@ RC=0 "t4901":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:n
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentM1.pcap ========
-| *received 296 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 264 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 28  0d 00 00 d4
-|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   01 10 02 00  00 00 00 00  00 00 01 08  0d 00 00 b4
+|   00 00 00 01  00 00 00 01  00 00 00 a8  00 01 00 05
 |   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
-|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
 |   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
 |   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
-|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   00 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
-|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
@@ -112,7 +110,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    transform ID: KEY_IKE
 | emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
 | attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
-|   80 02 00 02  80 04 00 0e
+|   80 02 00 04  80 04 00 0e
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -139,7 +137,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
 |   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45

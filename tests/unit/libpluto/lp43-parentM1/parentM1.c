@@ -26,6 +26,7 @@ static void init_local_interface(void)
 {
     init_parker_interface(TRUE);
     nat_traversal_enabled = TRUE;
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_EMITTING;
 }
 
 static void init_fake_secrets(void)

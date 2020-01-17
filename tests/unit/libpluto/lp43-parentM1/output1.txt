@@ -95,30 +95,66 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
-| counted combo 1: dh:14 encr:12 integ:2
-| counted combo 2: dh:14 encr:12 integ:12
-| counted combo 3: dh:5 encr:12 integ:12
-| counted combo 4: dh:5 encr:12 integ:2
-| counted combo 5: dh:5 encr:12 integ:12
-| counted combo 6: dh:15 encr:12 integ:12
-| counted combo 7: dh:15 encr:12 integ:2
-| new combo 0: dh:14 encr:12 integ:2
-| new combo 1: dh:14 encr:12 integ:12
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=6 [next=7]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 2:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 3:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 4:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 5:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+| 6:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
 | new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 4: dh:15 encr:12 integ:12
-| new combo 5: dh:15 encr:12 integ:2
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | out_sa pcn: 0 has 1 valid proposals
-| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 6
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 5
 | ****emit ISAKMP Proposal Payload:
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    number of transforms: 6
+|    number of transforms: 5
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 0
 |    transform ID: KEY_IKE
@@ -139,8 +175,8 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
@@ -166,8 +202,8 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 4
-|     [4 is OAKLEY_SHA2_256]
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
@@ -254,35 +290,8 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 15
 |     [15 is OAKLEY_GROUP_MODP3072]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 5
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 7
-|     [7 is OAKLEY_AES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 15
-|     [15 is OAKLEY_GROUP_MODP3072]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| emitting length of ISAKMP Proposal Payload: 200
-| emitting length of ISAKMP Security Association Payload: 212
+| emitting length of ISAKMP Proposal Payload: 168
+| emitting length of ISAKMP Security Association Payload: 180
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
@@ -296,23 +305,21 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 296
-sending 296 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 264
+sending 264 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 28  0d 00 00 d4
-|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   01 10 02 00  00 00 00 00  00 00 01 08  0d 00 00 b4
+|   00 00 00 01  00 00 00 01  00 00 00 a8  00 01 00 05
 |   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
-|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
 |   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
 |   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
-|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   00 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
-|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
