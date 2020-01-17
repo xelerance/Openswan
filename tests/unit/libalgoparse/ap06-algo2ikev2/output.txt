@@ -8,6 +8,18 @@ ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 | EI starts with: aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | IKEv2 outsa starts 
 | proposals: cnt=1
 |  disj: cnt=6 [next=7]
@@ -41,65 +53,31 @@ ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
-| 0 disj_cnt: 0/1
-| 0 disj_cnt: 0/1 conj: 0/6
-| 0 disj_cnt: 0/1 conj: 0/6 trans: 0/4
-| 0 disj_cnt: 0/1 conj: 0/6 trans: 0/4 type: 1
-| 0 A: 0,0,0, noticing type[1, trans-type-encr]=>12 (vs: -1)
-| 0 disj_cnt: 0/1 conj: 0/6 trans: 1/4 type: 2
-| 0 disj_cnt: 0/1 conj: 0/6 trans: 2/4 type: 3
-| 0 A: 0,0,2, noticing type[3, trans-type-integ]=>12 (vs: -1)
-| 0 disj_cnt: 0/1 conj: 0/6 trans: 3/4 type: 4
-| 0 A: 0,0,3, noticing type[4, trans-type-dh]=>14 (vs: -1)
-| 0 disj_cnt: 0/1 conj: 1/6 trans: 0/4
-| 0 disj_cnt: 0/1 conj: 1/6 trans: 0/4 type: 1
-| 0 A: 0,1,0, noticing type[1, trans-type-encr]=>12 (vs: 12)
-| 0 disj_cnt: 0/1 conj: 1/6 trans: 1/4 type: 2
-| 0 disj_cnt: 0/1 conj: 1/6 trans: 2/4 type: 3
-| 0 A: 0,1,2, noticing type[3, trans-type-integ]=>2 (vs: 12)
-| 1 disj_cnt: 0/1 conj: 1/6 trans: 3/4 type: 4
-| 1 A: 0,1,3, noticing type[4, trans-type-dh]=>14 (vs: 14)
-| 1 disj_cnt: 0/1 conj: 2/6 trans: 0/4
-| 1 disj_cnt: 0/1 conj: 2/6 trans: 0/4 type: 1
-| 1 A: 0,2,0, noticing type[1, trans-type-encr]=>12 (vs: 12)
-| 1 disj_cnt: 0/1 conj: 2/6 trans: 1/4 type: 2
-| 1 disj_cnt: 0/1 conj: 2/6 trans: 2/4 type: 3
-| 1 A: 0,2,2, noticing type[3, trans-type-integ]=>12 (vs: 2)
-| 2 disj_cnt: 0/1 conj: 2/6 trans: 3/4 type: 4
-| 2 A: 0,2,3, noticing type[4, trans-type-dh]=>5 (vs: 14)
-| 3 disj_cnt: 0/1 conj: 3/6 trans: 0/4
-| 3 disj_cnt: 0/1 conj: 3/6 trans: 0/4 type: 1
-| 3 A: 0,3,0, noticing type[1, trans-type-encr]=>12 (vs: 12)
-| 3 disj_cnt: 0/1 conj: 3/6 trans: 1/4 type: 2
-| 3 disj_cnt: 0/1 conj: 3/6 trans: 2/4 type: 3
-| 3 A: 0,3,2, noticing type[3, trans-type-integ]=>2 (vs: 12)
-| 4 disj_cnt: 0/1 conj: 3/6 trans: 3/4 type: 4
-| 4 A: 0,3,3, noticing type[4, trans-type-dh]=>5 (vs: 5)
-| 4 disj_cnt: 0/1 conj: 4/6 trans: 0/4
-| 4 disj_cnt: 0/1 conj: 4/6 trans: 0/4 type: 1
-| 4 A: 0,4,0, noticing type[1, trans-type-encr]=>12 (vs: 12)
-| 4 disj_cnt: 0/1 conj: 4/6 trans: 1/4 type: 2
-| 4 disj_cnt: 0/1 conj: 4/6 trans: 2/4 type: 3
-| 4 A: 0,4,2, noticing type[3, trans-type-integ]=>12 (vs: 2)
-| 5 disj_cnt: 0/1 conj: 4/6 trans: 3/4 type: 4
-| 5 A: 0,4,3, noticing type[4, trans-type-dh]=>15 (vs: 5)
-| 6 disj_cnt: 0/1 conj: 5/6 trans: 0/4
-| 6 disj_cnt: 0/1 conj: 5/6 trans: 0/4 type: 1
-| 6 A: 0,5,0, noticing type[1, trans-type-encr]=>12 (vs: 12)
-| 6 disj_cnt: 0/1 conj: 5/6 trans: 1/4 type: 2
-| 6 disj_cnt: 0/1 conj: 5/6 trans: 2/4 type: 3
-| 6 A: 0,5,2, noticing type[3, trans-type-integ]=>2 (vs: 12)
-| 7 disj_cnt: 0/1 conj: 5/6 trans: 3/4 type: 4
-| 7 A: 0,5,3, noticing type[4, trans-type-dh]=>15 (vs: 15)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 4: dh:15 encr:12 integ:12
 | IKEv1 outsa is now 
 | sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
-|     protoid: 1 (PROTO_ISAKMP) cnt: 6 
-|       transform: 12 cnt: 2 
-|         type: 5((null)) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
-|         type: 3((null)) val: 14(OAKLEY_GROUP_MODP2048) 
+|     protoid: 1 (PROTO_ISAKMP) cnt: 5 
 |       transform: 12 cnt: 2 
 |         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
+|         type: 3((null)) val: 14(OAKLEY_GROUP_MODP2048) 
+|       transform: 12 cnt: 2 
+|         type: 5((null)) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
 |         type: 3((null)) val: 14(OAKLEY_GROUP_MODP2048) 
 |       transform: 12 cnt: 2 
 |         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
@@ -109,8 +87,5 @@ ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 |         type: 3((null)) val: 5(OAKLEY_GROUP_MODP1536) 
 |       transform: 12 cnt: 2 
 |         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
-|         type: 3((null)) val: 15(OAKLEY_GROUP_MODP3072) 
-|       transform: 12 cnt: 2 
-|         type: 5((null)) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
 |         type: 3((null)) val: 15(OAKLEY_GROUP_MODP3072) 
 ./algo2ikev2 leak detective found no leaks
