@@ -9,9 +9,7 @@ CONNNAME=home
 ENDNAME=carol
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-
 TESTNAME=v1certM1
-
 
 pcapupdate:
 	@true
