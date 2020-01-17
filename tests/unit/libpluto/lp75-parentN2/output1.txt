@@ -52,22 +52,20 @@ RC=0 "t4901":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:n
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file parentM1.pcap ========
-| *received 296 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 264 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 28  0d 00 00 d4
-|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   01 10 02 00  00 00 00 00  00 00 01 08  0d 00 00 b4
+|   00 00 00 01  00 00 00 01  00 00 00 a8  00 01 00 05
 |   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
-|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
 |   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
 |   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
-|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   00 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
-|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
@@ -112,7 +110,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    transform ID: KEY_IKE
 | emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
 | attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
-|   80 02 00 02  80 04 00 0e
+|   80 02 00 04  80 04 00 0e
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -139,7 +137,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
 |   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
@@ -149,9 +147,9 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 | phase 1 is done, looking for phase 2 to unpend
 1: output to OUTPUT/parentN2.pcap
 |   =========== input from pcap file parentM2.pcap ========
-| *received 356 bytes from 93.184.216.34:55044 on eth0 (port=500)
+| *received 380 bytes from 93.184.216.34:55044 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   04 10 02 00  00 00 00 00  00 00 01 64  0a 00 01 04
+|   04 10 02 00  00 00 00 00  00 00 01 7c  0a 00 01 04
 |   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
 |   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
 |   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
@@ -169,10 +167,11 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  14 00 00 18  1d 77 eb e3  db b6 db 7c
-|   4b b5 ef 4b  57 c6 f1 b8  ec 7e 9b fe  00 00 00 18
-|   81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
-|   25 31 bf 62
+|   d3 20 e9 e3  14 00 00 24  28 5b ba 34  6d b3 29 b3
+|   68 bf da dd  c6 f1 04 2c  72 16 05 08  e9 79 31 e7
+|   54 1e 21 f9  d0 83 a3 43  00 00 00 24  3b f6 72 b3
+|   06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb  09 4f 6e c8
+|   0d fc aa db  34 ab 41 fa  6c 16 27 66
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -187,10 +186,10 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 |    length: 20
 | got payload 0x100000(ISAKMP_NEXT_NAT-D) needed: 0x0 opt: 0x102080
 | ***parse ISAKMP NAT-D Payload:
-|    length: 24
+|    length: 36
 | got payload 0x100000(ISAKMP_NEXT_NAT-D) needed: 0x0 opt: 0x102080
 | ***parse ISAKMP NAT-D Payload:
-|    length: 24
+|    length: 36
 | DH public value received:
 |   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
 |   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
@@ -246,16 +245,16 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
 | ***emit ISAKMP NAT-D Payload:
-| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  62 3d 7c 7c  c1 6e 84 8c  b9 2d f9 8c  2a ef 29 87
-|   de 2f 1a 0c
-| emitting length of ISAKMP NAT-D Payload: 24
+| emitting 32 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  b0 8c f3 1e  b7 00 88 96  f3 2a 91 ff  40 fa dc 67
+|   2d 63 84 a5  80 c1 00 5d  e4 6a 0f 9d  70 ad 74 90
+| emitting length of ISAKMP NAT-D Payload: 36
 | ***emit ISAKMP NAT-D Payload:
-| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
-| emitting length of ISAKMP NAT-D Payload: 24
-| emitting length of ISAKMP Message: 356
+| emitting 32 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| emitting length of ISAKMP NAT-D Payload: 36
+| emitting length of ISAKMP Message: 380
 | main inI2_outR2: starting async DH calculation (group=14)
 | started dh_secretiv, returned: stf=STF_SUSPEND
 | complete state transition with STF_OK
@@ -263,9 +262,9 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 | state #1 NAT-T: new mapping 93.184.216.34:55044
 ./parentN2 new NAT mapping for #1, was 192.168.1.1:500, now 93.184.216.34:55044
 | sending reply packet to 93.184.216.34:55044 (from port 500)
-sending 356 bytes for STATE_MAIN_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.34:55044 (using #1)
+sending 380 bytes for STATE_MAIN_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.34:55044 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   04 10 02 00  00 00 00 00  00 00 01 64  0a 00 01 04
+|   04 10 02 00  00 00 00 00  00 00 01 7c  0a 00 01 04
 |   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
 |   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
 |   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
@@ -283,13 +282,15 @@ sending 356 bytes for STATE_MAIN_R1 through eth0:500 [132.213.238.7:500] to 93.1
 |   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
 |   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
 |   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  14 00 00 18  62 3d 7c 7c  c1 6e 84 8c
-|   b9 2d f9 8c  2a ef 29 87  de 2f 1a 0c  00 00 00 18
-|   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe
+|   d3 20 e9 e3  14 00 00 24  b0 8c f3 1e  b7 00 88 96
+|   f3 2a 91 ff  40 fa dc 67  2d 63 84 a5  80 c1 00 5d
+|   e4 6a 0f 9d  70 ad 74 90  00 00 00 24  28 5b ba 34
+|   6d b3 29 b3  68 bf da dd  c6 f1 04 2c  72 16 05 08
+|   e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
 ./parentN2 STATE_MAIN_R2: sent MR2, expecting MI3
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
+| main inI2_outR2: calculated DH finished
 | freeing state object #1
 ./parentN2 leak: main_inI2_outR2_tail, item size: X
 ./parentN2 leak: inI2_outR2 KE, item size: X

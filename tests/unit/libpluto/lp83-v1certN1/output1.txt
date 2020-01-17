@@ -164,7 +164,7 @@ RC=0 "rw":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MOD
 RC=0 "rw":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   =========== input from pcap file v1certM1.pcap ========
-| *received 216 bytes from 93.184.216.34:55044 on eth0 (port=500)
+| *received 216 bytes from 192.168.0.100:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
@@ -186,25 +186,25 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 ./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but already using method 115
 ./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02] meth=107, but already using method 115
 ./v1certN1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
-| find_host_connection2 called from main_inI1_outR1, me=192.168.0.1:500 him=93.184.216.34:55044 policy=/!IKEv1
-| find_host_pair: looking for me=192.168.0.1:500 %address him=93.184.216.34:55044 any-match
+| find_host_connection2 called from main_inI1_outR1, me=192.168.0.1:500 him=192.168.0.100:500 policy=/!IKEv1
+| find_host_pair: looking for me=192.168.0.1:500 %address him=192.168.0.100:500 any-match
 | find_host_pair: comparing to me=192.168.0.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with rw
-| found_host_pair_conn (find_host_connection2): 192.168.0.1:500 %address/93.184.216.34:55044 -> hp:rw
+| found_host_pair_conn (find_host_connection2): 192.168.0.1:500 %address/192.168.0.100:500 -> hp:rw
 | searching for connection with policy = /!IKEv1
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (rw)
 | find_host_connection2 returns rw (ike=none/none)
 | creating state object #1 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
-| inserting state object #1 bucket: 5
+| RCOOKIE:  d4 c3 f7 a7  13 5d a6 55
+| state hash entry 12
+| inserting state object #1 bucket: 12
 ./v1certN1 responding to Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
-|   64 0a 06 43  5c 7c 4b 31
+|   d4 c3 f7 a7  13 5d a6 55
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
@@ -244,9 +244,9 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Message: 136
 | complete state transition with STF_OK
 ./v1certN1 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
-| sending reply packet to 93.184.216.34:55044 (from port 500)
-sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184.216.34:55044 (using #1)
-|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+| sending reply packet to 192.168.0.100:500 (from port 500)
+sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 192.168.0.100:500 (using #1)
+|   80 01 02 03  04 05 06 07  d4 c3 f7 a7  13 5d a6 55
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
@@ -261,8 +261,8 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184
 ./v1certN1 deleting state #1 (STATE_MAIN_R1)
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
+| RCOOKIE:  d4 c3 f7 a7  13 5d a6 55
+| state hash entry 12
 | freeing state object #1
 ./v1certN1 deleting connection
 | pass 0: considering CHILD SAs to delete
