@@ -292,23 +292,27 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Key Exchange Payload:
-| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
-| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-| emitting length of ISAKMP Key Exchange Payload: 196
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+| emitting length of ISAKMP Key Exchange Payload: 260
 | ***emit ISAKMP Nonce Payload:
 | emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
-| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| Ni  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c  0d e6 bc 04
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
 | ***emit ISAKMP NAT-D Payload:
@@ -319,27 +323,31 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
 | NAT-D  4c 76 63 df  1a 9c 88 55  cf f6 17 37  05 9d 50 50
 | emitting length of ISAKMP NAT-D Payload: 20
-| emitting length of ISAKMP Message: 284
+| emitting length of ISAKMP Message: 348
 | complete state transition with STF_OK
 ./v1rwnatM3 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 | sending reply packet to 192.168.0.2:500 (from port 500)
-sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
+sending 348 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.2:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
-|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
-|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
-|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
-|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
-|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
-|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
-|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
-|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
-|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
-|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
-|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
-|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
-|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  14 00 00 14  aa 5b 8b c1  f9 fc 61 6b
+|   04 10 02 00  00 00 00 00  00 00 01 5c  0a 00 01 04
+|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+|   14 00 00 14  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c
+|   0d e6 bc 04  14 00 00 14  aa 5b 8b c1  f9 fc 61 6b
 |   ed 1c a4 29  49 15 00 ca  00 00 00 14  4c 76 63 df
 |   1a 9c 88 55  cf f6 17 37  05 9d 50 50
 ./v1rwnatM3 STATE_MAIN_I2: sent MI2, expecting MR2
@@ -406,10 +414,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
 | complete state transition with STF_SUSPEND
 | main inR2_outI3: calculated DH, sending I3
-| WARNING: finish_dh_secretiv:49: encryptor '3des' expects keylen 24/192, SA #1 INITIATOR keylen is 16
-| WARNING: finish_dh_secretiv:49: encryptor '3des' expects keylen 24/192, SA #1 RESPONDER keylen is 16
-| WARNING: finish_dh_secretiv:49: hasher 'md5' expects keylen 16/16, SA #1 INITIATOR keylen is 20
-| WARNING: finish_dh_secretiv:49: hasher 'md5' expects keylen 16/16, SA #1 RESPONDER keylen is 20
 | thinking about whether to send my certificate:
 |   I have RSA key: OAKLEY_RSA_SIG cert.type: CERT_NONE
 |   sendcert: CERT_SENDIFASKED and I did not get a certificate request
@@ -437,77 +441,77 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | signing hash with RSA Key *AQOHGEUnh
 | ***emit ISAKMP Signature Payload:
 | emitting 274 raw bytes of SIG_I into ISAKMP Signature Payload
-| SIG_I  53 5b 07 54  49 4a b6 9a  e5 e4 9a d4  3f 6b af fd
-|   ec c3 4d ac  ca ae 74 34  3c c7 79 26  e6 b3 5d ab
-|   7c b7 bd 5a  f2 c0 cf f4  0c 77 87 d9  c2 69 5e c1
-|   88 96 0f b3  d7 75 0a 85  23 e3 7d e8  9e d1 eb 7d
-|   c4 84 39 42  3b 91 f2 6a  85 d8 02 84  d7 8c d1 20
-|   f8 59 04 88  51 2e 2e 4f  44 45 a9 09  ad 07 f1 ff
-|   88 be 71 ba  2b 15 de 6d  b6 f8 7b 3a  48 64 33 ed
-|   77 72 af b9  7b de d5 db  87 13 47 e8  5b a0 d4 c8
-|   bf ac af 75  c9 b6 5a c0  2b 80 8c f8  bf 8d 0c 60
-|   c7 7f 93 dc  cf c8 a6 5b  d7 00 59 3b  e6 ba 6a 61
-|   c1 f9 dc fa  48 a3 49 b2  0e 71 6b 23  2d b1 28 55
-|   b2 e6 95 96  50 f3 01 9e  65 49 da 22  b3 4e a9 45
-|   fe d8 a6 49  f2 f6 70 5e  f6 10 8d 28  98 07 64 81
-|   49 7d 62 20  16 18 e0 4c  22 40 49 98  51 7f 3b ec
-|   98 9e 8b 31  ad 88 2c 14  ff 6b 19 cf  2a 9d 99 3a
-|   5d bb d6 af  ea 63 a4 7b  2b 72 9b f9  ca b8 5b 59
-|   71 a8 41 7e  6e 5f 09 72  41 a4 55 fa  58 c7 3a bc
-|   1f 2c
+| SIG_I  25 89 f7 5b  65 32 4b 6a  19 ad fc cc  1c dc fd 8b
+|   9d b5 70 c8  26 17 00 9e  99 b9 2f 2a  2f 1e 25 00
+|   97 66 53 0d  19 f8 d8 c4  0e c7 d6 74  82 93 b4 24
+|   14 91 1d 2c  26 9b 3a 68  0d 51 ba ba  95 7a 7f 28
+|   78 58 c3 cf  2d f3 9b 1d  99 de 4d ca  e5 ff c8 b6
+|   18 1c 0d 4f  ab 69 61 25  b0 c7 3f 03  49 61 b2 00
+|   6d 1c 0c ca  7e f2 51 0b  c3 91 14 65  45 05 58 7f
+|   0c b6 ea 42  30 26 73 c8  96 73 2e 03  70 fa 9b 98
+|   1b 7e ff 8d  5f 01 08 5e  60 e0 29 8d  84 38 a5 50
+|   69 ad 29 74  37 d1 ba 74  bb 91 ae 3a  e5 ad 04 24
+|   e7 3a da e4  1b a8 6a c8  d9 af db 69  87 c5 95 c8
+|   f7 a6 6d 5b  ab 20 b2 74  54 7d 2a ba  9e f0 64 6c
+|   07 86 e2 cc  9d d0 67 24  9d 80 1f 73  a9 3d 62 fe
+|   10 e8 d2 41  d7 fd 9e 70  f9 1d 24 18  5d 79 57 b5
+|   13 64 a6 a4  75 7a 7f 33  6e 0e b5 9a  8e 4c e7 3c
+|   83 c3 6a 55  76 7f e2 61  f0 2d 60 f7  11 19 fd 76
+|   20 71 a7 4c  45 46 61 a9  e7 b7 68 ac  7e 75 9b be
+|   9d 7f
 | emitting length of ISAKMP Signature Payload: 278
 | encrypting:
 |   09 00 00 0d  02 00 00 00  61 6c 69 63  65 00 00 01
-|   16 53 5b 07  54 49 4a b6  9a e5 e4 9a  d4 3f 6b af
-|   fd ec c3 4d  ac ca ae 74  34 3c c7 79  26 e6 b3 5d
-|   ab 7c b7 bd  5a f2 c0 cf  f4 0c 77 87  d9 c2 69 5e
-|   c1 88 96 0f  b3 d7 75 0a  85 23 e3 7d  e8 9e d1 eb
-|   7d c4 84 39  42 3b 91 f2  6a 85 d8 02  84 d7 8c d1
-|   20 f8 59 04  88 51 2e 2e  4f 44 45 a9  09 ad 07 f1
-|   ff 88 be 71  ba 2b 15 de  6d b6 f8 7b  3a 48 64 33
-|   ed 77 72 af  b9 7b de d5  db 87 13 47  e8 5b a0 d4
-|   c8 bf ac af  75 c9 b6 5a  c0 2b 80 8c  f8 bf 8d 0c
-|   60 c7 7f 93  dc cf c8 a6  5b d7 00 59  3b e6 ba 6a
-|   61 c1 f9 dc  fa 48 a3 49  b2 0e 71 6b  23 2d b1 28
-|   55 b2 e6 95  96 50 f3 01  9e 65 49 da  22 b3 4e a9
-|   45 fe d8 a6  49 f2 f6 70  5e f6 10 8d  28 98 07 64
-|   81 49 7d 62  20 16 18 e0  4c 22 40 49  98 51 7f 3b
-|   ec 98 9e 8b  31 ad 88 2c  14 ff 6b 19  cf 2a 9d 99
-|   3a 5d bb d6  af ea 63 a4  7b 2b 72 9b  f9 ca b8 5b
-|   59 71 a8 41  7e 6e 5f 09  72 41 a4 55  fa 58 c7 3a
-|   bc 1f 2c
+|   16 25 89 f7  5b 65 32 4b  6a 19 ad fc  cc 1c dc fd
+|   8b 9d b5 70  c8 26 17 00  9e 99 b9 2f  2a 2f 1e 25
+|   00 97 66 53  0d 19 f8 d8  c4 0e c7 d6  74 82 93 b4
+|   24 14 91 1d  2c 26 9b 3a  68 0d 51 ba  ba 95 7a 7f
+|   28 78 58 c3  cf 2d f3 9b  1d 99 de 4d  ca e5 ff c8
+|   b6 18 1c 0d  4f ab 69 61  25 b0 c7 3f  03 49 61 b2
+|   00 6d 1c 0c  ca 7e f2 51  0b c3 91 14  65 45 05 58
+|   7f 0c b6 ea  42 30 26 73  c8 96 73 2e  03 70 fa 9b
+|   98 1b 7e ff  8d 5f 01 08  5e 60 e0 29  8d 84 38 a5
+|   50 69 ad 29  74 37 d1 ba  74 bb 91 ae  3a e5 ad 04
+|   24 e7 3a da  e4 1b a8 6a  c8 d9 af db  69 87 c5 95
+|   c8 f7 a6 6d  5b ab 20 b2  74 54 7d 2a  ba 9e f0 64
+|   6c 07 86 e2  cc 9d d0 67  24 9d 80 1f  73 a9 3d 62
+|   fe 10 e8 d2  41 d7 fd 9e  70 f9 1d 24  18 5d 79 57
+|   b5 13 64 a6  a4 75 7a 7f  33 6e 0e b5  9a 8e 4c e7
+|   3c 83 c3 6a  55 76 7f e2  61 f0 2d 60  f7 11 19 fd
+|   76 20 71 a7  4c 45 46 61  a9 e7 b7 68  ac 7e 75 9b
+|   be 9d 7f
 | IV:
 |   bc d5 89 68  0c 42 2e cd  14 72 ae a3  97 42 67 41
 | unpadded size is: 291
 | emitting 5 zero bytes of encryption padding into ISAKMP Message
 | encrypting 296 using OAKLEY_3DES_CBC
-| next IV:  c5 74 ac 51  58 f0 af c6
+| next IV:  44 12 39 bc  97 53 1f d0
 | emitting length of ISAKMP Message: 324
 | complete state transition with STF_OK
 ./v1rwnatM3 transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
 | sending reply packet to 192.168.0.2:4500 (from port 4500)
 sending 324 bytes for STATE_MAIN_I2 through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   05 10 02 01  00 00 00 00  00 00 01 44  54 f4 f0 46
-|   28 4d 46 1c  a7 79 7f 48  82 26 cb f6  de be c5 17
-|   bf 4d 96 07  de 97 cd 10  66 1f 3b 07  3d b4 a9 0d
-|   6e f4 03 4b  3e 38 e8 5b  df ad 52 18  43 d7 8d 40
-|   7e c7 00 12  89 e5 93 7f  3b 75 70 07  49 2e 13 14
-|   1e c9 a6 a4  68 09 15 1e  d2 18 77 a3  e8 5e b3 a7
-|   85 28 7c 46  6f f6 44 98  ab 1f 67 af  4f e4 38 ef
-|   b7 3e fe a2  da 28 de eb  bb c6 71 b1  97 d5 ea cf
-|   08 1e bf 4f  db 29 2c 9f  11 d6 64 26  53 e0 74 4d
-|   d1 14 ea e7  db 58 73 a4  c9 b2 be 29  f8 34 0f 95
-|   60 d1 36 e5  68 f5 0b 59  27 95 d0 39  b8 06 cf 91
-|   0a 20 d0 52  1a f3 5c 41  ef fb b3 21  73 ed 5d e6
-|   61 2a 18 f5  58 aa b5 04  af e8 b0 a6  99 a8 a0 03
-|   98 f1 0e de  a8 79 a2 c9  5e d2 b9 7e  80 b0 46 9a
-|   64 89 38 2e  47 6d 4a b9  9e 51 5f 97  b2 5e ba 58
-|   aa 58 fe bb  2f ed b4 6a  64 a9 cd c7  77 38 de f0
-|   75 a7 67 99  53 ce cb 8a  0c 8d 03 dc  88 8f 0f cc
-|   51 84 65 0f  07 21 25 20  40 0b 11 b5  ef 0b 02 1b
-|   95 f5 fe d6  15 2a 02 9b  80 6c b9 50  c5 74 ac 51
-|   58 f0 af c6
+|   05 10 02 01  00 00 00 00  00 00 01 44  8e 4e ae 70
+|   f5 15 0a ec  9a c7 0c c3  bb db 97 fc  f0 fd ed c2
+|   b6 b1 21 97  0e 3e c6 48  9d 58 97 cf  e7 c8 e9 c5
+|   aa 95 9e 5c  1f b6 47 32  91 e9 27 c4  45 2e 7e 6e
+|   99 13 68 c9  ae 20 9d b8  84 7c a1 1c  82 2a b2 8e
+|   27 b9 6a c9  28 08 07 84  ec c5 3d a0  ad d9 dc 3e
+|   a1 d0 01 4b  08 e3 6c e4  20 d3 40 8a  ac a4 95 e0
+|   88 a2 63 7c  97 3b 00 17  db ec a2 2a  32 09 90 ad
+|   55 f8 e4 30  ed 86 6a 79  93 ef d6 d6  03 e4 7e 25
+|   f7 bb ee 28  ed 39 96 ed  ee c9 ba 88  54 aa bd 8a
+|   22 e6 d3 61  fc c0 58 07  28 66 e5 62  f9 0f e0 11
+|   f7 ea 70 fa  de e8 a1 41  ca df 25 30  80 25 2f 6e
+|   3f e6 1c 3e  d5 12 7b 41  9e 21 f8 35  a0 31 e9 06
+|   43 a7 b7 31  18 dc 95 34  55 ce 44 22  79 09 64 cd
+|   1a a2 44 45  77 6c e9 92  13 5f 93 fa  ce 8c 3f 4e
+|   64 d5 7f 1c  46 0e a7 22  93 a6 67 db  02 8d d2 35
+|   74 b1 7d 40  90 7b 68 eb  e5 d9 dd 1f  e6 37 1c fb
+|   5f 2f 35 ca  65 53 47 b4  f0 b3 f8 55  03 99 81 ac
+|   4b 4a 53 8b  db 1e 6b 03  41 e0 d8 32  44 12 39 bc
+|   97 53 1f d0
 ./v1rwnatM3 STATE_MAIN_I3: sent MI3, expecting MR3
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
