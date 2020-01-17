@@ -7,9 +7,9 @@
 ./v1rwnatN2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ./v1rwnatN2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./v1rwnatN2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./v1rwnatN2 adjusting ipsec.d to ../samples/moon
-./v1rwnatN2 loading secrets from "../samples/moon.secrets"
-./v1rwnatN2   loaded private key file '../samples/moon/private/moonKey.pem' (CERT bytes)
+./v1rwnatN2 adjusting ipsec.d to ../../libpluto/samples/moon
+./v1rwnatN2 loading secrets from "../../libpluto/samples/moon.secrets"
+./v1rwnatN2   loaded private key file '../../libpluto/samples/moon/private/moonKey.pem' (CERT bytes)
 ./v1rwnatN2 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 ./v1rwnatN2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./v1rwnatN2 registed kernel encr algorithm 3des [3, 192<=key<=192]
