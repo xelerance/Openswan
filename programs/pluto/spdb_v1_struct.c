@@ -226,10 +226,8 @@ kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei, enum phase1_rol
 {
 	struct db_sa *sadb;
 
-    DBG_log("kernel_alg_makedb");
-
     sadb = alginfo2child_db2(ei);
-	sadb->parentSA = FALSE;
+    sadb->parentSA = FALSE;
 
     if(!extrapolate_v1_from_v2(sadb, policy, role)) {
         openswan_log("failed to create v1 IPsec policy from v2 settings");
@@ -257,12 +255,13 @@ struct db_trans_flat {
 bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role role)
 {
     unsigned int prop_disj;
-    int tot_combos, cur_combo;
+    int tot_combos = 0, cur_combo = 0;
     //int propnum = 0;
-    int i;
+    int i, pass;
     int transform_values[IKEv2_TRANS_TYPE_COUNT];
+    int old_transform_values[IKEv2_TRANS_TYPE_COUNT];
     struct db_trans_flat *dtf;
-    struct db_trans_flat *cur_dtf;
+    struct db_trans_flat *cur_dtf = NULL;
 
     /* if already did it, then just return */
     if(sadb->prop_conjs != NULL) return TRUE;
@@ -277,215 +276,231 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
     }
 
-    /* first count number of combinations expressed in IKEv2, so we can
-     * allocate a table big for all the combinations */
     tot_combos = 0;
-    prop_disj  = 0;
+
+    for(pass = 0; pass < 2; pass++) {
+        /* first count number of combinations expressed in IKEv2, so we can
+         * allocate a table big for all the combinations, then collect
+         * the unique combinations
+         */
+        prop_disj  = 0;
+        cur_combo  = 0;
 #if EXTRAPOLATE_DEBUG
-    /* enable this when debugging problems with tot_combos */
-    DBG_log("%u disj_cnt: %d/%d", tot_combos, prop_disj, sadb->prop_disj_cnt);
+        /* enable this when debugging problems with cur_combo */
+        DBG_log("%u disj_cnt: %d/%d", cur_combo, prop_disj, sadb->prop_disj_cnt);
 #endif
-    for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
-        unsigned int prop_conj;
-        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
+        for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
+            unsigned int prop_conj;
+            struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
 #if EXTRAPOLATE_DEBUG
-        /* enable this when debugging problems with tot_combos */
-        DBG_log("%u disj_cnt: %d/%d conj: 0/%d", tot_combos, prop_disj, sadb->prop_disj_cnt, pd->prop_cnt);
+            /* enable this when debugging problems with cur_combo */
+            DBG_log("%u: %u disj_cnt: %d/%d conj: 0/%d"
+                    , pass
+                    , cur_combo, prop_disj, sadb->prop_disj_cnt, pd->prop_cnt);
 #endif
 
-        /* reset the transform values */
-        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-            transform_values[i] = -1;
-        }
+            /* reset the transform values */
+            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+                old_transform_values[i] = transform_values[i];
+                transform_values[i] = -1;
+            }
 
-        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
-            unsigned int trans_i;
-            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+            for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
+                unsigned int trans_i;
+                struct db_v2_prop_conj *pc = &pd->props[prop_conj];
 #if EXTRAPOLATE_DEBUG
-            /* enable this when debugging problems with tot_combos */
-            DBG_log("%u disj_cnt: %d/%d conj: %d/%d trans: 0/%d"
-                    , tot_combos, prop_disj, sadb->prop_disj_cnt
-                    , prop_conj, pd->prop_cnt
-                    , pc->trans_cnt);
-#endif
-            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
-                //unsigned int attr_i;
-                struct db_v2_trans *tr = &pc->trans[trans_i];
-#if EXTRAPOLATE_DEBUG
-                /* enable this when debugging problems with tot_combos */
-                DBG_log("%u disj_cnt: %d/%d conj: %d/%d trans: %d/%d type: %d"
-                        , tot_combos, prop_disj, sadb->prop_disj_cnt
+                /* enable this when debugging problems with cur_combo */
+                DBG_log("%u: %u disj_cnt: %d/%d conj: %d/%d trans: 0/%d"
+                        , pass
+                        , cur_combo, prop_disj, sadb->prop_disj_cnt
                         , prop_conj, pd->prop_cnt
-                        , trans_i, pc->trans_cnt, tr->transform_type);
+                        , pc->trans_cnt);
+#endif
+                for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
+                    //unsigned int attr_i;
+                    struct db_v2_trans *tr = &pc->trans[trans_i];
+#if EXTRAPOLATE_DEBUG
+                    /* enable this when debugging problems with cur_combo */
+                    DBG_log("%u: %u disj_cnt: %d/%d conj: %d/%d trans: %d/%d type: %d"
+                            , pass
+                            , cur_combo, prop_disj, sadb->prop_disj_cnt
+                            , prop_conj, pd->prop_cnt
+                            , trans_i, pc->trans_cnt, tr->transform_type);
 #endif
 
-                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
-                /* IKEv1 does not negotiate PRF, so ignore options like that */
-                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
+                    /* if this is an invalid transform type */
+                    if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
+
+                    /* IKEv1 does not negotiate PRF, so ignore options like that */
+                    if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
 
 #if EXTRAPOLATE_DEBUG
-                /* enable this when debugging problems with tot_combos */
-                DBG_log("%u A: %u,%u,%u, noticing type[%u]=>%d (vs: %d)"
-                        , tot_combos
-                        , prop_disj, prop_conj, trans_i
-                        , tr->transform_type, tr->value
-                        , transform_values[tr->transform_type]);
+                    /* enable this when debugging problems with cur_combo */
+                    DBG_log("%u: %u A: %u,%u,%u, noticing type[%u, %s]=>%d (vs: %d)"
+                            ,pass
+                            , cur_combo
+                            , prop_disj, prop_conj, trans_i
+                            , tr->transform_type
+                            , enum_name(&trans_type_names, tr->transform_type)
+                            , tr->value
+                            , transform_values[tr->transform_type]);
 #endif
 
-                if(transform_values[tr->transform_type]==-1) {
-                    transform_values[tr->transform_type] = tr->value;
-                }
-                if(transform_values[tr->transform_type] != tr->value) {
-                    transform_values[tr->transform_type] = tr->value;
+                    if(transform_values[tr->transform_type]==-1) {
+                        transform_values[tr->transform_type] = tr->value;
+                    }
+                    if(transform_values[tr->transform_type] != tr->value) {
+                        transform_values[tr->transform_type] = tr->value;
+                    }
 
-                    /*
-                     * this may duplicate entries if they are not in order,
-                     * but that's okay, because the duplicate check below
-                     * will get rid of them.
-                     */
-                    tot_combos++;
-                    DBG(DBG_EMITTING
-                        ,DBG_log("counted combo %d: dh:%d encr:%d integ:%d"
-                                 , tot_combos
-                                 , transform_values[IKEv2_TRANS_TYPE_DH]
-                                 , transform_values[IKEv2_TRANS_TYPE_ENCR]
-                                 , transform_values[IKEv2_TRANS_TYPE_INTEG]));
+                    if(pass == 1) {
+                        switch(tr->transform_type) {
+                        case IKEv2_TRANS_TYPE_DH:
+                            cur_dtf->group_transid = tr->value;
+                            break;
+
+                        case IKEv2_TRANS_TYPE_ENCR:
+                            cur_dtf->encr_transid = tr->value;
+                            break;
+
+                        case IKEv2_TRANS_TYPE_INTEG:
+                            cur_dtf->integ_transid = tr->value;
+                            break;
+
+                        default:
+                            /* if the trans_type is of another type, then
+                             * just continue, because there is no value in
+                             * the combinations IKEv1 can not express
+                             */
+                            continue;
+                        }
+                        /* now see if we have a new combination */
+                        transform_values[tr->transform_type] = tr->value;
+                    }
+                }
+
+                /* now see if we have a new combination */
+                {
+                    bool matched = TRUE;
+                    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+                        if(old_transform_values[i] != transform_values[i]) {
+                            matched = FALSE;
+                        }
+                    }
+
+                    if((pass == 0 && cur_combo == 0)
+                       || (pass == 1 && cur_combo == 0)
+                       || !matched) {
+                        /*
+                         * this may duplicate entries if they are not in order,
+                         * but that's okay, because the duplicate check below
+                         * will get rid of them.
+                         */
+
+                        DBG(DBG_EMITTING
+                            ,DBG_log("pass: %u noticed combo %d/%d: dh:%d(%s) encr:%d(%s) integ:%d(%s)"
+                                     , pass
+                                     , cur_combo, tot_combos
+                                     , transform_values[IKEv2_TRANS_TYPE_DH]
+                                     , enum_name(&oakley_group_names, transform_values[IKEv2_TRANS_TYPE_DH])
+                                     , transform_values[IKEv2_TRANS_TYPE_ENCR]
+                                     , enum_name(&trans_type_encr_names, transform_values[IKEv2_TRANS_TYPE_ENCR])
+                                     , transform_values[IKEv2_TRANS_TYPE_INTEG]
+                                     , enum_name(&trans_type_integ_names, transform_values[IKEv2_TRANS_TYPE_INTEG])));
+
+                        switch(pass) {
+                        case 0:
+                            tot_combos++;
+                            cur_combo++;
+                            break;
+
+                        case 1:
+                            {
+                                int combo_i;
+                                struct db_trans_flat *old_dtf = cur_dtf;
+
+                                /* do a duplicate check, which is a linear search */
+                                for(combo_i = 0; combo_i < cur_combo; combo_i++) {
+#if EXTRAPOLATE_DEBUG
+                                    DBG_log("%d: <%d checking combo dh:%d:%d encr:%d:%d integ:%d:%d"
+                                            , combo_i, cur_combo
+                                            , cur_dtf->group_transid
+                                            , dtf[combo_i].group_transid
+                                            , cur_dtf->encr_transid
+                                            , dtf[combo_i].encr_transid
+                                            , cur_dtf->integ_transid
+                                            , dtf[combo_i].integ_transid);
+#endif
+                                    if(cur_dtf->group_transid  == dtf[combo_i].group_transid
+                                       && cur_dtf->encr_transid == dtf[combo_i].encr_transid
+                                       && cur_dtf->integ_transid == dtf[combo_i].integ_transid) {
+                                        /* it is duplicate */
+#if EXTRAPOLATE_DEBUG
+                                        DBG_log("    combo duplicate of %u", combo_i);
+#endif
+                                        break;
+                                    }
+                                    if(combo_i < cur_combo) continue;
+                                }
+
+                                /*
+                                 * some of the encr or integ values might not exist in IKEv1,
+                                 * so skip them.
+                                 */
+                                if(v2tov1_encr(cur_dtf->encr_transid) == 0
+                                   || v2tov1_integ(cur_dtf->integ_transid) == 0) {
+                                    DBG(DBG_EMITTING
+                                        , DBG_log("encr or integ transid not available in IKEv1"));
+                                    continue;
+                                }
+
+                                DBG(DBG_EMITTING
+                                    ,DBG_log("new combo %d: dh:%d encr:%d integ:%d"
+                                             , cur_combo
+                                             , cur_dtf->group_transid
+                                             , cur_dtf->encr_transid
+                                             , cur_dtf->integ_transid));
+                                cur_dtf++;
+                                *cur_dtf = *old_dtf;
+                                ++cur_combo;
+                                passert(cur_combo <= tot_combos);
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
 
-    /* there is probably an additional combination at the end */
-    if((transform_values[IKEv2_TRANS_TYPE_DH] != -1 || sadb->parentSA == FALSE)
-       && transform_values[IKEv2_TRANS_TYPE_ENCR] != -1
-       && transform_values[IKEv2_TRANS_TYPE_INTEG] != -1) {
-        tot_combos++;
-    }
-    /* make a list of them all */
-    dtf = alloca(sizeof(struct db_trans_flat)*tot_combos);
-    memset(dtf, 0, sizeof(struct db_trans_flat)*tot_combos);
-    cur_dtf = dtf;
+        if(pass == 0) {
+            /* there is probably an additional combination at the end */
+            if((transform_values[IKEv2_TRANS_TYPE_DH] != -1 || sadb->parentSA == FALSE)
+               && transform_values[IKEv2_TRANS_TYPE_ENCR] != -1
+               && transform_values[IKEv2_TRANS_TYPE_INTEG] != -1) {
+                tot_combos++;
+            }
+            /* make a list of them all */
+            dtf = alloca(sizeof(struct db_trans_flat)*tot_combos);
+            memset(dtf, 0, sizeof(struct db_trans_flat)*tot_combos);
+            cur_dtf = dtf;
 
-    cur_combo=0;
+            cur_combo=0;
 
-    if(tot_combos == 0) {
-        openswan_log("can not extrapolate IKEv1 policy from empty IKEv2 policy");
-        return FALSE;
-    }
+            if(tot_combos == 0) {
+                openswan_log("can not extrapolate IKEv1 policy from empty IKEv2 policy");
+                return FALSE;
+            }
 
-    /* make sure we saw combinations for all the things we care about */
-    if(transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
-       || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1) {
-        openswan_log("can not extrapolate IKEv1 policy from v2 policy missing encryption or integrity settings");
-        return FALSE;
-    }
+            /* make sure we saw combinations for all the things we care about */
+            if(transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
+               || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1) {
+                openswan_log("can not extrapolate IKEv1 policy from v2 policy missing encryption or integrity settings");
+                return FALSE;
+            }
 
-    if(sadb->parentSA == TRUE) {
-        if(transform_values[IKEv2_TRANS_TYPE_DH] == -1) {
-            openswan_log("can not extrapolate IKEv1 parent policy from v2 policy missing group settings");
-            return FALSE;
-        }
-    }
-    for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
-        unsigned int prop_conj;
-        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
-        /* reset the transform values */
-        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-            transform_values[i] = -1;
-        }
-
-        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
-            unsigned int trans_i;
-            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
-            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
-                //int attr_i;
-                struct db_v2_trans *tr = &pc->trans[trans_i];
-
-                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
-
-                /* IKEv1 does not negotiate PRF, so ignore options like that */
-                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
-
-#if 0
-                DBG_log("B: %u,%u,%u, cc: %u setting type: tt[%u]=%d vs %d",
-                        prop_disj, prop_conj, trans_i, cur_combo,
-                        tr->transform_type,
-                        transform_values[tr->transform_type],
-                        tr->value);
-#endif
-                if(transform_values[tr->transform_type]==-1) {
-                    transform_values[tr->transform_type] = tr->value;
-                }
-
-                switch(tr->transform_type) {
-                case IKEv2_TRANS_TYPE_DH:
-                    cur_dtf->group_transid = tr->value;
-                    break;
-
-                case IKEv2_TRANS_TYPE_ENCR:
-                    cur_dtf->encr_transid = tr->value;
-                    break;
-
-                case IKEv2_TRANS_TYPE_INTEG:
-                    cur_dtf->integ_transid = tr->value;
-                    break;
-
-                default:
-                    /* if the trans_type is of another type, then just continue,
-                     * because there is no value in the combinations IKEv1 can
-                     * not express
-                     */
-                    continue;
-                }
-
-                if(transform_values[tr->transform_type] != tr->value) {
-                    int combo_i;
-                    struct db_trans_flat *old_dtf = cur_dtf;
-                    transform_values[tr->transform_type] = tr->value;
-
-                    /* do a duplicate check, which is a linear search */
-                    for(combo_i = 0; combo_i < cur_combo; combo_i++) {
-#if 0
-                        DBG_log("%d: checking combo dh:%d:%d encr:%d:%d integ:%d:%d"
-                            , combo_i
-                            , cur_dtf->group_transid
-                            , dtf[combo_i].group_transid
-                            , cur_dtf->encr_transid
-                            , dtf[combo_i].encr_transid
-                            , cur_dtf->integ_transid
-                            , dtf[combo_i].integ_transid);
-#endif
-                        if(cur_dtf->group_transid  == dtf[combo_i].group_transid
-                           && cur_dtf->encr_transid == dtf[combo_i].encr_transid
-                           && cur_dtf->integ_transid == dtf[combo_i].integ_transid) {
-                            /* it is duplicate */
-#if 0
-                            DBG_log("    combo duplicate of %u", combo_i);
-#endif
-                            break;
-                }
-                    }
-                    if(combo_i < cur_combo) continue;
-
-                    /*
-                     * some of the encr or integ values might not exist in IKEv1,
-                     * so skip them.
-                     */
-                    if(v2tov1_encr(cur_dtf->encr_transid) == 0
-                       || v2tov1_integ(cur_dtf->integ_transid) == 0) {
-                        continue;
-                    }
-
-                    DBG(DBG_EMITTING
-                        ,DBG_log("new combo %d: dh:%d encr:%d integ:%d"
-                                 , cur_combo
-                                 , cur_dtf->group_transid
-                                 , cur_dtf->encr_transid
-                                 , cur_dtf->integ_transid));
-                    cur_dtf++;
-                    *cur_dtf = *old_dtf;
-                    ++cur_combo;
-                    passert(cur_combo <= tot_combos);
+            if(sadb->parentSA == TRUE) {
+                if(transform_values[IKEv2_TRANS_TYPE_DH] == -1) {
+                    openswan_log("can not extrapolate IKEv1 parent policy from v2 policy missing group settings");
+                    return FALSE;
                 }
             }
         }
