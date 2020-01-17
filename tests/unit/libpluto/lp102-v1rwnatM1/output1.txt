@@ -94,6 +94,17 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: none
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="3des" [attrs: 0]
+|     trans-type-prf value="prf-hmac-md5" [attrs: 0]
+|     trans-type-integ value="hmac_md5_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
