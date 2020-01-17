@@ -97,6 +97,17 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="3des" [attrs: 0]
+|     trans-type-prf value="prf-hmac-md5" [attrs: 0]
+|     trans-type-integ value="hmac_md5_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
@@ -511,39 +522,6 @@ sending 324 bytes for STATE_MAIN_I2 through eth0:4500 [93.184.216.34:55045] to 1
 | phase 1 is done, looking for phase 2 to unpend
 2: output to OUTPUT/v1rwnatQI1.pcap
 |   =========== input from pcap file v1rwnatN3.pcap ========
-picking: eth0:4500 float outside: 55045 <=> d: 55045
-| *received 324 bytes from 192.168.0.2:4500 on eth0 (port=4500)
-|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
-|   05 10 02 01  00 00 00 00  00 00 01 44  21 07 85 ee
-|   13 67 e8 fb  ea 0f d4 7e  24 f3 da 1f  39 64 79 30
-|   e0 cf 2e 4f  82 45 83 1d  df 5c 13 0f  ba b7 52 ca
-|   54 b9 24 69  6e 36 60 a7  0a 71 de 2b  1c c6 67 99
-|   ed 72 b9 11  e2 e2 90 b9  28 9c 9e ed  ff 8d 38 31
-|   06 a3 1f d5  af b6 74 49  de 76 c0 86  4a 0c a2 57
-|   7a b4 08 64  2d 65 f5 e5  50 0a 20 b9  db ff c0 65
-|   8b 0f 2c 8c  d1 ad a3 86  bf a4 92 06  8f 72 03 97
-|   da 50 b7 36  60 3c 13 1f  f7 95 31 8f  da cc 5c 28
-|   12 77 78 8d  fd e9 d1 c9  42 5e 65 0c  96 f4 ef bd
-|   32 e5 76 75  e5 4b cc e8  16 b1 e7 f3  e1 74 3b a1
-|   5c 75 d1 35  6d ad ce 73  f6 10 3e 88  a3 23 28 12
-|   b1 91 4f 9e  28 89 5e 78  9d 1f 10 41  b6 7c 6b c9
-|   4a 6f e2 c7  e3 68 bb f8  f9 fe c3 cc  23 12 1c ef
-|   33 79 12 d8  b0 e1 ba 50  e9 85 93 f7  b8 25 d7 b6
-|   95 3f 26 a0  31 bb 66 b0  05 58 63 4c  34 8d 65 55
-|   d3 75 01 89  34 0d 83 f6  7b a6 97 15  0d da e5 c3
-|   8d 1c f9 13  88 eb f7 0d  ec 61 a0 6f  8f 38 5c a6
-|   c4 83 85 d4  2a ff ab e6  90 71 15 32  5f 35 3c 8a
-|   08 96 45 a2
-|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
-| state hash entry 30
-| v1 state object not found
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| v1 state object not found
-./v1rwnatQI1 phase 1 message is part of an unknown exchange
 3: output closed
 ./v1rwnatQI1 deleting connection
 | pass 0: considering CHILD SAs to delete
