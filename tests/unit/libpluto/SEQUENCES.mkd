@@ -134,7 +134,6 @@ After keying with lp36/37/38/39, then there is a rekey of the parent SA.
 
 ikev1 certificate
 =================
-
 This test uses IKEv1 with certificates
 
 
@@ -144,3 +143,16 @@ This test uses IKEv1 with certificates
     lp84-v1certM2        ---I2-->
                                      lp85-v1certN2
                          <--R2---
+
+ikev1 with NAT-traversal
+========================
+This test uses IKEv1 with certificates and NAT-traversal.
+
+
+    lp102-v1rwnatM1      ---M1-->
+                                     lp103-v1rwnatN1
+                         <--N1---
+    lp104-v1rwnatM2      ---M2-->
+                                     lp105-v1rwnatN2
+                         <--N2---
+
