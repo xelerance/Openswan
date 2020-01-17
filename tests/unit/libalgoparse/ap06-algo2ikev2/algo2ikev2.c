@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     load_oswcrypto();
 
     progname = argv[0];
+    cur_debugging = DBG_EMITTING;
 
     zero(info_buf);
     ei = alg_info_ike_defaults();
