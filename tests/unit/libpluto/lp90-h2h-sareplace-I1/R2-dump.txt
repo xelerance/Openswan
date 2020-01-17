@@ -1,6 +1,6 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 64, bad cksum 0 (->4627)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 412, bad cksum 0 (->44cb)!)
     132.213.238.7.500 > 192.168.1.1.500: isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[R]:
-    (n: prot_id=isakmp type=24(authentication_failed))
+    (v2e: len=352)
 IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 108, bad cksum 0 (->45fb)!)
     132.213.238.7.500 > 192.168.1.1.500: isakmp 2.0 msgid 00000000: parent_sa inf2:
     (v2e: len=48)
@@ -38,7 +38,7 @@ IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 656, b
             (t: #3 type=integ id=hmac-sha )
             (t: #4 type=dh id=modp3072 )))
     (v2ke: len=256 group=modp2048)
-    (nonce: len=16 data=(c6ba319f885be7b7a293...707362f1000000104f45706c75746f756e697430))
+    (nonce: len=16 data=(20989d37a814a64d8ff0...707362f1000000104f45706c75746f756e697430))
     (n: prot_id=#0 type=16388(nat_detection_source_ip))
     (n: prot_id=#0 type=16389(nat_detection_destination_ip))
     (v2vid: len=12 vid=OEababababab)
