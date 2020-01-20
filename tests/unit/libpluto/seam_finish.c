@@ -25,7 +25,7 @@ void finish_dh_v2(struct state *st,
     CLONEIT(skey_pi);
     CLONEIT(skey_pr);
 
-    ikev2_validate_key_lengths(st);
+    __validate_key_lengths(st, "seam", __func__, __LINE__);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
@@ -46,7 +46,7 @@ void finish_dh_secretiv(struct state *st,
     memcpy(st->st_new_iv, SS(new_iv.ptr), SS(new_iv.len));
     st->st_new_iv_len = SS(new_iv.len);
 
-    ikev2_validate_key_lengths(st);
+    __validate_key_lengths(st, "seam", __func__, __LINE__);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     r->pcr_success = TRUE;
