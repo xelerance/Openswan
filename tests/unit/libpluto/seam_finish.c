@@ -46,6 +46,7 @@ void finish_dh_secretiv(struct state *st,
     memcpy(st->st_new_iv, SS(new_iv.ptr), SS(new_iv.len));
     st->st_new_iv_len = SS(new_iv.len);
 
+    //fprintf(stderr, "seam %s %u %u\n",  SS(secrets_name), SS(new_iv.len), st->st_new_iv_len);
     __validate_key_lengths(st, "seam", __func__, __LINE__);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
