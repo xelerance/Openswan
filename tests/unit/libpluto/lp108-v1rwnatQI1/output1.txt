@@ -414,10 +414,6 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
 | complete state transition with STF_SUSPEND
 | main inR2_outI3: calculated DH, sending I3
-| WARNING: finish_dh_secretiv:49: encryptor '3des' expects keylen 24/192, SA #1 INITIATOR keylen is 16
-| WARNING: finish_dh_secretiv:49: encryptor '3des' expects keylen 24/192, SA #1 RESPONDER keylen is 16
-| WARNING: finish_dh_secretiv:49: hasher 'md5' expects keylen 16/16, SA #1 INITIATOR keylen is 20
-| WARNING: finish_dh_secretiv:49: hasher 'md5' expects keylen 16/16, SA #1 RESPONDER keylen is 20
 | ../seam_x509.c: ikev1_decode_cr() not implemented
 | thinking about whether to send my certificate:
 |   I have RSA key: OAKLEY_RSA_SIG cert.type: CERT_NONE
@@ -486,118 +482,110 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   76 20 71 a7  4c 45 46 61  a9 e7 b7 68  ac 7e 75 9b
 |   be 9d 7f
 | IV:
-|   bc d5 89 68  0c 42 2e cd  14 72 ae a3  97 42 67 41
+|   bc d5 89 68  0c 42 2e cd
 | unpadded size is: 291
 | emitting 5 zero bytes of encryption padding into ISAKMP Message
 | encrypting 296 using OAKLEY_3DES_CBC
-| next IV:  e0 25 c9 12  c4 1b 2c 67
+| next IV:  44 12 39 bc  97 53 1f d0
 | emitting length of ISAKMP Message: 324
 | complete state transition with STF_OK
 ./v1rwnatQI1 transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
 | sending reply packet to 192.168.0.2:4500 (from port 4500)
 sending 324 bytes for STATE_MAIN_I2 through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   05 10 02 01  00 00 00 00  00 00 01 44  54 f4 f0 46
-|   28 4d 46 1c  a7 79 7f 48  82 26 cb f6  2d 07 3a 10
-|   5e 52 d8 5d  3b a3 0e 0c  6e 7e 3e 64  06 8f 2a 4a
-|   91 01 7e b6  98 d7 90 10  de 0a 6d 86  d2 7b 61 67
-|   d8 17 8d d4  14 08 cd 05  1e ad d7 fa  20 cc 4b ee
-|   85 a7 5d bc  9a 1d c6 22  31 92 dd d6  95 a8 26 5b
-|   b1 4b 72 f6  a9 82 4c 2c  0e 93 b1 fe  f6 b4 d8 6c
-|   ce ff a5 f0  aa 21 10 43  81 59 bf ce  14 f9 10 ea
-|   71 96 74 0e  5d 1a b9 ad  35 98 94 b1  6d 3c 2a a8
-|   8e 0c d8 0e  00 8b f5 2e  28 10 67 c3  bf 59 f9 f6
-|   21 b2 3b 83  1e 99 49 a9  08 e5 75 6c  95 46 3d c9
-|   cc ef e0 5c  d3 bf fa 85  c6 de d1 c3  bb 71 ea e2
-|   67 7b 36 b6  ff 07 ff d9  8e f4 67 61  45 84 39 33
-|   b7 51 bc 8a  37 6a 8a 7d  74 58 c1 20  0a d1 6c 3a
-|   6e 3e eb 72  5d 7c 3b 60  63 98 7b b0  2b 41 64 c6
-|   ee 73 79 45  ee 0f da e6  d8 c2 2f 43  2c 57 d1 81
-|   53 c5 3d 96  60 4a 0c 8d  ef da 16 7b  5f 47 32 bc
-|   7a 8d 57 0d  72 06 72 aa  a1 d4 28 04  13 9d 0b 4e
-|   6c f1 63 16  b7 65 c5 0d  d6 03 27 e5  e0 25 c9 12
-|   c4 1b 2c 67
+|   05 10 02 01  00 00 00 00  00 00 01 44  8e 4e ae 70
+|   f5 15 0a ec  9a c7 0c c3  bb db 97 fc  f0 fd ed c2
+|   b6 b1 21 97  0e 3e c6 48  9d 58 97 cf  e7 c8 e9 c5
+|   aa 95 9e 5c  1f b6 47 32  91 e9 27 c4  45 2e 7e 6e
+|   99 13 68 c9  ae 20 9d b8  84 7c a1 1c  82 2a b2 8e
+|   27 b9 6a c9  28 08 07 84  ec c5 3d a0  ad d9 dc 3e
+|   a1 d0 01 4b  08 e3 6c e4  20 d3 40 8a  ac a4 95 e0
+|   88 a2 63 7c  97 3b 00 17  db ec a2 2a  32 09 90 ad
+|   55 f8 e4 30  ed 86 6a 79  93 ef d6 d6  03 e4 7e 25
+|   f7 bb ee 28  ed 39 96 ed  ee c9 ba 88  54 aa bd 8a
+|   22 e6 d3 61  fc c0 58 07  28 66 e5 62  f9 0f e0 11
+|   f7 ea 70 fa  de e8 a1 41  ca df 25 30  80 25 2f 6e
+|   3f e6 1c 3e  d5 12 7b 41  9e 21 f8 35  a0 31 e9 06
+|   43 a7 b7 31  18 dc 95 34  55 ce 44 22  79 09 64 cd
+|   1a a2 44 45  77 6c e9 92  13 5f 93 fa  ce 8c 3f 4e
+|   64 d5 7f 1c  46 0e a7 22  93 a6 67 db  02 8d d2 35
+|   74 b1 7d 40  90 7b 68 eb  e5 d9 dd 1f  e6 37 1c fb
+|   5f 2f 35 ca  65 53 47 b4  f0 b3 f8 55  03 99 81 ac
+|   4b 4a 53 8b  db 1e 6b 03  41 e0 d8 32  44 12 39 bc
+|   97 53 1f d0
 ./v1rwnatQI1 STATE_MAIN_I3: sent MI3, expecting MR3
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
 2: output to OUTPUT/v1rwnatQI1.pcap
 |   =========== input from pcap file v1rwnatN3.pcap ========
-3: output closed
-./v1rwnatQI1 deleting connection
-| pass 0: considering CHILD SAs to delete
-./v1rwnatQI1 deleting state #1 (STATE_MAIN_I3)
-| removing state object #1
+picking: eth0:4500 float outside: 55045 <=> d: 55045
+| *received 324 bytes from 192.168.0.2:4500 on eth0 (port=4500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   05 10 02 01  00 00 00 00  00 00 01 44  4a 95 28 0f
+|   4b 1c cd 91  20 62 00 60  7d 4d ad 4a  a7 85 fd ab
+|   44 f4 51 97  4f 06 1f 3c  c7 a9 7b e4  9e 81 ec 78
+|   b9 ec 24 84  23 1b 34 90  a7 ba 4e eb  c8 9a 7c 23
+|   48 c9 76 df  33 84 1d 32  31 52 dc 90  ca e4 41 12
+|   ba 11 ad 9b  f4 60 98 1c  69 be 68 82  f4 64 01 ab
+|   60 06 90 9d  c1 b2 9a b7  f7 d2 4f 93  84 af b9 f9
+|   34 27 3a d1  bf 77 f8 fe  89 d2 c8 90  91 69 89 1d
+|   93 06 77 a2  d0 17 97 0a  c1 da ec 8c  02 96 be 2a
+|   12 75 c8 c4  78 ed 8d 83  13 4c b9 f5  5d c6 29 8f
+|   c9 48 d6 f1  c1 a2 12 1f  5c c0 91 41  fe f3 5d 9e
+|   93 79 f4 2b  29 8f 0f ea  47 e8 bf 21  52 a5 8a bd
+|   69 fa ef 57  4a 48 c0 6f  f1 bf a9 2a  2f 1c d2 27
+|   50 50 b3 15  ea 94 20 ce  71 54 7c 05  85 5d de bd
+|   e0 11 57 64  0a 21 9b 67  cd e4 1b f9  08 e7 dd 01
+|   4a 65 3a 92  64 19 fa 58  12 e1 ad f8  01 d5 7d e6
+|   96 72 87 6f  fe fb 80 e2  c3 35 26 e0  ce 83 d4 96
+|   5e 37 66 cc  67 03 7e 08  b8 8b 2a 05  93 54 97 21
+|   af 9a 8a 43  fa 97 a9 ea  cb 2c 56 20  b1 9b 24 c7
+|   4d c8 16 88
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
-| pass 1: considering PARENT SAs to delete
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
-| alg_info_delref(ADDRESS) freeing alg_info
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
-| alg_info_delref(ADDRESS) freeing alg_info
-./v1rwnatQI1 leak: reply packet, item size: X
-./v1rwnatQI1 leak: raw packet, item size: X
-./v1rwnatQI1 leak: calculated enc_keyshared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_prshared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_pishared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_ershared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_eishared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_arshared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_aishared secret, item size: X
-./v1rwnatQI1 leak: calculated skey_dshared secret, item size: X
-./v1rwnatQI1 leak: calculated sharedshared secret, item size: X
-./v1rwnatQI1 leak: aggr outR1 DH, item size: X
-./v1rwnatQI1 leak: nonce, item size: X
-./v1rwnatQI1 leak: Gr, item size: X
-./v1rwnatQI1 leak: initiator nonce, item size: X
-./v1rwnatQI1 leak: long term secret, item size: X
-./v1rwnatQI1 leak: saved gi value, item size: X
-./v1rwnatQI1 leak: outI2 KE, item size: X
-./v1rwnatQI1 leak: msg_digest, item size: X
-./v1rwnatQI1 leak: 67 * VendorID MD5, item size: X
-./v1rwnatQI1 leak: 3 * vid->data, item size: X
-./v1rwnatQI1 leak: 15 * VendorID MD5, item size: X
-./v1rwnatQI1 leak: self-vendor ID, item size: X
-./v1rwnatQI1 leak: init_pluto_vendorid, item size: X
-./v1rwnatQI1 leak: 4 * fswan VID, item size: X
-./v1rwnatQI1 leak: vid->data, item size: X
-./v1rwnatQI1 leak: 23 * VendorID MD5, item size: X
-./v1rwnatQI1 leak: vid->data, item size: X
-./v1rwnatQI1 leak: sa in main_outI1, item size: X
-./v1rwnatQI1 leak: struct state in new_state(), item size: X
-./v1rwnatQI1 leak: keep id name, item size: X
-./v1rwnatQI1 leak: pubkey entry, item size: X
-./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
-./v1rwnatQI1 leak: pubkey, item size: X
-./v1rwnatQI1 leak: keep id name, item size: X
-./v1rwnatQI1 leak: pubkey entry, item size: X
-./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
-./v1rwnatQI1 leak: pubkey, item size: X
-./v1rwnatQI1 leak: 2 * id list, item size: X
-./v1rwnatQI1 leak: rfc3110 format of public key [created], item size: X
-./v1rwnatQI1 leak: pubkey, item size: X
-./v1rwnatQI1 leak: secret, item size: X
-./v1rwnatQI1 leak: policies path, item size: X
-./v1rwnatQI1 leak: ocspcerts path, item size: X
-./v1rwnatQI1 leak: aacerts path, item size: X
-./v1rwnatQI1 leak: certs path, item size: X
-./v1rwnatQI1 leak: private path, item size: X
-./v1rwnatQI1 leak: crls path, item size: X
-./v1rwnatQI1 leak: cacert path, item size: X
-./v1rwnatQI1 leak: acert path, item size: X
-./v1rwnatQI1 leak: override ipsec.d, item size: X
-./v1rwnatQI1 leak: 4 * hasher name, item size: X
-./v1rwnatQI1 leak: 10 * group description, item size: X
-./v1rwnatQI1 leak: policies path, item size: X
-./v1rwnatQI1 leak: ocspcerts path, item size: X
-./v1rwnatQI1 leak: aacerts path, item size: X
-./v1rwnatQI1 leak: certs path, item size: X
-./v1rwnatQI1 leak: private path, item size: X
-./v1rwnatQI1 leak: crls path, item size: X
-./v1rwnatQI1 leak: cacert path, item size: X
-./v1rwnatQI1 leak: acert path, item size: X
-./v1rwnatQI1 leak: default conf var_dir, item size: X
-./v1rwnatQI1 leak: default conf conffile, item size: X
-./v1rwnatQI1 leak: default conf ipsecd_dir, item size: X
-./v1rwnatQI1 leak: default conf ipsec_conf_dir, item size: X
-./v1rwnatQI1 leak detective found Z leaks, total size X
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I3
+| received encrypted packet from 192.168.0.2:4500
+| decrypting 296 bytes using algorithm OAKLEY_3DES_CBC
+| decrypted:
+|   09 00 00 0b  02 00 00 00  73 75 6e 00  00 01 16 a7
+|   e5 fc 90 a1  8a a0 5e dc  38 1d b3 51  b8 f0 6a 2e
+|   d4 9f 5e 69  5c 92 fc c8  f1 b8 c4 57  d8 a3 6d 97
+|   da 7c 50 b9  2f ee 21 6c  b7 90 08 73  22 14 d4 a9
+|   68 f4 d9 93  36 0a ee 95  ce 21 6d e3  82 44 d5 d4
+|   61 09 79 63  62 ed 4b 53  5b bb 04 52  20 91 b2 4e
+|   c1 2c 2a f9  a3 27 e3 1b  31 6d 36 48  09 08 31 cf
+|   a4 be b6 c7  05 bb 1b 48  f3 66 95 30  e6 09 c0 45
+|   51 a4 c7 1d  90 d9 b8 c3  4c 46 3a 13  b4 16 f4 68
+|   75 ef a2 3e  6a 5c b2 fd  4a f2 fa 23  9e f1 07 37
+|   91 d4 df 64  47 2b 6a 0c  b1 94 85 91  3f d2 d6 f8
+|   40 16 e3 f3  e3 12 f6 6e  7d 3a 5e 47  76 59 a7 7e
+|   35 d1 8b cb  c4 5a 29 6c  c1 64 a1 56  2a ec b7 0d
+|   2f 7d 28 94  18 12 59 19  01 23 27 56  44 41 7e b5
+|   03 94 ae e8  e8 85 c7 9b  78 d3 7c 5b  ab 52 61 51
+|   12 1c 87 af  6a 36 5f bf  0e 22 63 fb  f4 32 96 28
+|   a2 7b b1 bc  20 aa de e0  0c 83 93 a4  41 97 b4 be
+|   61 4a 28 e9  64 e3 9b 05  98 0f ae 24  ae 50 59 97
+|   01 00 00 00  00 00 00 00
+| next IV:  b1 9b 24 c7  4d c8 16 88
+./v1rwnatQI1 Main mode peer ID is ID_FQDN: '@sun'
+| hashing 48 bytes of SA
+| authentication succeeded
+| complete state transition with STF_OK
+./v1rwnatQI1 transition from state STATE_MAIN_I3 to state STATE_MAIN_I4
+./v1rwnatQI1 STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG oursig= theirsig= cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp2048}
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+| unqueuing pending Quick Mode with 192.168.0.2 "bobnet-ikev1" import:admin initiate
+| duplicating state object #1
+| creating state object #2 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #2 bucket: 5
+./v1rwnatQI1 initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK {using isakmp#1 msgid:03020180 proposal=3des(3)_192-hmac_md5_96(1)_128 pfsgroup=OAKLEY_GROUP_MODP2048}
+| quick outI1: calculated ke+nonce, sending I1
+| quick_outI1_continue:692 set_suspended() called on #2 with md=NULL, but st_suspended_md was already NULL (at (null):0)
+./v1rwnatQI1 ASSERTION FAILED at /osw/t7257-build5/programs/pluto/ikev1_quick.c:692: impossible

@@ -12,7 +12,7 @@
 #include "seam_rsasig.c"
 #include "seam_x509.c"
 #include "seam_dpd.c"
-#include "seam_gi_md5.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_ikev1_crypto.c"

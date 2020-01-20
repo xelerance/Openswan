@@ -14,7 +14,7 @@
 #include "seam_crypt.c"
 #include "seam_x509.c"
 #include "seam_rsasig.c"
-#include "seam_gi_md5.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_command.c"
 #include "seam_rsa_check.c"

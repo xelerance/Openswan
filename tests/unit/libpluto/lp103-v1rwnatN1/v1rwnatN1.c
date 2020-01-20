@@ -4,7 +4,7 @@
 #include "../lp08-parentR1/parentR1_head.c"
 #include "seam_host_sun.c"
 #include "seam_x509.c"
-#include "seam_gi_md5.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
