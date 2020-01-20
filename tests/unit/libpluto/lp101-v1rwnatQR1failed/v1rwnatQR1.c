@@ -15,7 +15,7 @@
 #include "seam_nonce.c"
 #include "seam_rsasig.c"
 #include "seam_rsa_check.c"
-#include "seam_gi_sha1.c"
+#include "seam_gi_md5.c"
 #include "seam_finish.c"
 #include "seam_kernel.c"
 #include "seam_ikev1_crypto.c"
@@ -52,8 +52,6 @@ static void init_loaded(void)
 
 
 #define PCAP_INPUT_COUNT 4
-
-#include "seam_gi_sha1.c"
 
 static void update_ngi_tc3(struct pcr_kenonce *kn)
 {

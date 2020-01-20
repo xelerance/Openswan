@@ -481,7 +481,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   76 20 71 a7  4c 45 46 61  a9 e7 b7 68  ac 7e 75 9b
 |   be 9d 7f
 | IV:
-|   bc d5 89 68  0c 42 2e cd  14 72 ae a3  97 42 67 41
+|   bc d5 89 68  0c 42 2e cd
 | unpadded size is: 291
 | emitting 5 zero bytes of encryption padding into ISAKMP Message
 | encrypting 296 using OAKLEY_3DES_CBC

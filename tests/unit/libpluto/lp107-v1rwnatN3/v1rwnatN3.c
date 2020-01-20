@@ -16,7 +16,7 @@
 #include "seam_crypt.c"
 #include "seam_rsasig.c"
 #include "seam_rsa_check.c"
-#include "seam_gi_md5.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
@@ -69,8 +69,6 @@ static void init_loaded(void)
 
 
 #define PCAP_INPUT_COUNT 3
-
-// #include "seam_gi_sha1.c"
 
 static void update_ngi_tc3(struct pcr_kenonce *kn)
 {
