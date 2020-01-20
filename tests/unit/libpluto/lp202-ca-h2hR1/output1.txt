@@ -50,63 +50,47 @@ RC=0 "rw":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 |   =========== input from pcap file h2hI1.pcap ========
-| *received 892 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 628 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
-|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
-|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
-|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
-|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
-|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
-|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
-|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
-|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
-|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
-|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
-|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
-|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
-|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
-|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
-|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
-|   29 00 00 14  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c
-|   0d e6 bc 04  29 00 00 1c  00 00 40 04  ea 59 1e 1b
-|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
-|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
-|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  bf da ea a0  86 55 9f df
+|   bf bb 5e 42  b9 a6 18 18  ab ca 13 b4  cf 6a 92 77
+|   44 6c 57 46  1c 07 a0 86  44 e0 9c 5f  98 41 7c 4a
+|   3b ab 6c 35  56 5a 63 cc  0b 2e 40 97  16 18 bf c0
+|   83 55 57 cc  94 04 cd 6b  a2 f2 b9 a6  3b 9b 0d fd
+|   73 7f 91 04  06 28 86 f9  cb 0b 8a 65  14 a0 f5 b2
+|   ed 6b 23 1f  7d df 90 28  b8 0f 28 95  fb 00 22 c9
+|   e3 8f b9 df  b8 7c 66 bc  75 1b c8 61  ba b5 93 17
+|   d6 df 87 26  d3 4d 2d 0a  a4 80 e4 51  fd 38 fa 42
+|   ca b5 f5 2d  90 80 be a4  9c 08 17 b6  ab a9 49 4c
+|   f7 45 53 50  cb 49 f8 b4  44 50 86 91  37 f7 5c b0
+|   4a ce 96 1f  fc 2a a5 16  e9 45 e4 f2  e5 f0 c9 81
+|   c1 66 68 55  ed c9 3b 62  27 a9 34 0e  01 a8 54 63
+|   7f 99 2f ea  6d 3a 21 4c  32 72 bf bb  85 df 2b 8e
+|   cc a0 40 3e  96 16 fa 03  96 7f cd d7  d0 11 d0 17
+|   89 96 cd 01  25 d3 3d dd  d2 5e 2c bd  2e 3a e4 97
+|   b6 33 a3 5c  41 01 ed 8e  29 00 00 14  3c d5 15 14
+|   50 ab 73 9a  c8 ac 54 1c  0d e6 bc 04  29 00 00 1c
+|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
+|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
+|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -201,440 +185,193 @@ RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREF
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
+|    length: 40
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
+|    length: 8
 |    transform type: 1
 |    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
 | collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 1   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 1 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 1 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
+|    length: 40
 |    prop #: 2
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
+| ****emit IKEv2 Proposal Substructure Payload:
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
+| ******emit IKEv2 Attribute Substructure Payload:
 |    af+type: KEY_LENGTH
 |    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 2   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 2 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 2 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 2   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 3
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 3 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 3 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 3 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 3   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 4
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 4 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 4 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 4 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 4   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 5
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 5
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 5<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 5   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 5 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 5 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 5 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1536)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 6
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 5
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 5<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 6   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 6 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 6 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 6 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1536)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 7
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 5
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 5<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 7 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 7 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 7 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 7 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1536)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 8
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 5
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 5<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 8 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 8 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 8 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 8 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1536)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 9
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 2
-| collect encr: 3<=1 integ: 2<=1 prf: 2<=1 dh: 2<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 9 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 9 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 9 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 9 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1024)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 10
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 3
-| collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 2
-| collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 2<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 10 failed encr= (policy:             aes_cbc[-1] vs offered:3des[-1]) [0,1]
-| proposal 10 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 10 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 10 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1024)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 11
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 2<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 11   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 11 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
-| proposal 11 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
-| proposal 11 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1024)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 12
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 1
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 2
-| collect encr: 12<=1 integ: 1<=1 prf: 1<=1 dh: 2<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 12   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 12 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_md5_96)
-| proposal 12 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-md5)
-| proposal 12 failed dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP1024)
-| #1 complete v2 state transition with STF_FAIL+14
-./h2hR1 STATE_PARENT_R1: NO_PROPOSAL_CHOSEN
-./h2hR1 sending notification ISAKMP_v2_SA_INIT/v2N_NO_PROPOSAL_CHOSEN to 192.168.1.1:500
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Security Association Payload: 48
+| DH public value received:
+|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+|    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
+| ***emit IKEv2 Key Exchange Payload:
+|    critical bit: none
+|    transform type: 14
+| emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x  25 9a 4e 99  8d ac d9 7b  7d ad 9b 2a  bd 38 04 00
+|   f7 71 32 4c  b0 95 5e 5c  c1 0b e2 92  80 c3 9f b5
+|   30 9b f3 89  51 96 5b 75  c6 5b 85 1a  8f f3 2d 6a
+|   b1 b9 66 fe  c5 2e a9 f4  9e e2 34 c3  d9 dd 47 17
+|   18 90 fd ce  66 bd 6c e4  43 8a 74 49  1c 72 97 9f
+|   d7 74 86 b1  82 7e 9f 17  82 5e 06 ba  d2 fd 71 7e
+|   73 10 4b 8b  52 14 00 26  48 d2 59 2e  1c 89 3c bb
+|   e7 e0 12 4a  cb 9b b4 06  45 ca df 18  ca 11 f3 28
+|   68 35 09 9f  16 e5 14 33  ff a8 5c 28  ab 17 4b 29
+|   3b 56 32 c7  53 ad 99 61  9c 56 f8 50  25 21 34 ab
+|   2d b8 f0 ec  f9 23 ae 8c  b5 24 4d e0  e6 3e 29 d4
+|   2e da b1 9c  6c 3b 1f 0b  bf ae be 6d  0f 58 c3 7a
+|   95 be 9b 9f  8a e7 07 38  a6 54 e9 32  80 63 8c 60
+|   b3 ed 8b 59  27 d3 03 7d  46 04 05 4c  6d d1 26 3c
+|   4e 09 ea 63  e0 7a 6a 7a  a6 3d ed ac  39 8c bf 1f
+|   de 9c d9 09  d2 a1 63 e1  28 12 5a 18  31 fb 82 ee
+| emitting length of IKEv2 Key Exchange Payload: 264
+|    next-payload: ISAKMP_NEXT_v2Ni [@76=0x28]
+| ***emit IKEv2 Nonce Payload:
+|    critical bit: none
+| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
+| IKEv2 nonce  00 84 b6 7e  d1 b6 d1 52  89 0e d7 1c  74 b9 26 e4
+| emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@340=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
-|    Protocol ID: PROTO_ISAKMP
+|    Protocol ID: PROTO_RESERVED
 |    SPI size: 0
-|    Notify Message Type: v2N_NO_PROPOSAL_CHOSEN
-| emitting length of IKEv2 Notify Payload: 8
-| emitting length of ISAKMP Message: 36
-sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe
+| emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   c0 a8 01 01  01 f4
+| Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@360=0x29]
+| ***emit IKEv2 Notify Payload:
+|    critical bit: none
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
+|   25 31 bf 62
+| emitting length of IKEv2 Notify Payload: 28
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   my next payload will not be a certificate request
+| I did not send a certificate request (CERTREQ) because
+|   no known CA for the other end
+|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+| emitting length of ISAKMP Vendor ID Payload: 16
+| emitting length of ISAKMP Message: 432
+| #1 complete v2 state transition with STF_OK
+./h2hR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
+| v2_state_transition: st is #1; pst is #0; transition_st is #1
+./h2hR1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
+| sending reply packet to 192.168.1.1:500 (from port 500)
+sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
-|   01 00 00 0e
-| state transition function for STATE_PARENT_R1 failed: NO_PROPOSAL_CHOSEN
+|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
+|   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
+|   00 0e 00 00  25 9a 4e 99  8d ac d9 7b  7d ad 9b 2a
+|   bd 38 04 00  f7 71 32 4c  b0 95 5e 5c  c1 0b e2 92
+|   80 c3 9f b5  30 9b f3 89  51 96 5b 75  c6 5b 85 1a
+|   8f f3 2d 6a  b1 b9 66 fe  c5 2e a9 f4  9e e2 34 c3
+|   d9 dd 47 17  18 90 fd ce  66 bd 6c e4  43 8a 74 49
+|   1c 72 97 9f  d7 74 86 b1  82 7e 9f 17  82 5e 06 ba
+|   d2 fd 71 7e  73 10 4b 8b  52 14 00 26  48 d2 59 2e
+|   1c 89 3c bb  e7 e0 12 4a  cb 9b b4 06  45 ca df 18
+|   ca 11 f3 28  68 35 09 9f  16 e5 14 33  ff a8 5c 28
+|   ab 17 4b 29  3b 56 32 c7  53 ad 99 61  9c 56 f8 50
+|   25 21 34 ab  2d b8 f0 ec  f9 23 ae 8c  b5 24 4d e0
+|   e6 3e 29 d4  2e da b1 9c  6c 3b 1f 0b  bf ae be 6d
+|   0f 58 c3 7a  95 be 9b 9f  8a e7 07 38  a6 54 e9 32
+|   80 63 8c 60  b3 ed 8b 59  27 d3 03 7d  46 04 05 4c
+|   6d d1 26 3c  4e 09 ea 63  e0 7a 6a 7a  a6 3d ed ac
+|   39 8c bf 1f  de 9c d9 09  d2 a1 63 e1  28 12 5a 18
+|   31 fb 82 ee  29 00 00 14  00 84 b6 7e  d1 b6 d1 52
+|   89 0e d7 1c  74 b9 26 e4  29 00 00 1c  00 00 40 04
+|   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
+|   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 ./h2hR1 deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
+| freeing state object #1
 ./h2hR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./h2hR1 leak: notification packet, item size: X
-./h2hR1 leak: db_context->trans (expand), item size: X
-./h2hR1 leak: db_context->conj (expand), item size: X
 ./h2hR1 leak: alg_info_ike, item size: X
-./h2hR1 leak: db_context->attrs, item size: X
-./h2hR1 leak: db_context->conj, item size: X
-./h2hR1 leak: v2 policy database, item size: X
-./h2hR1 leak: saved first received packet, item size: X
 ./h2hR1 leak: ikev2_inI1outR1 KE, item size: X
-./h2hR1 leak: struct state in new_state(), item size: X
 ./h2hR1 leak: msg_digest, item size: X
 ./h2hR1 leak: rfc3110 format of public key [created], item size: X
 ./h2hR1 leak: issuer dn, item size: X

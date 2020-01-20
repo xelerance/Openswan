@@ -1,3 +1,13 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 64, bad cksum 0 (->4627)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 460, bad cksum 0 (->449b)!)
     132.213.238.7.500 > 192.168.1.1.500: isakmp 2.0 msgid 00000000: parent_sa ikev2_init[R]:
-    (n: prot_id=isakmp type=14(no_protocol_chosen))
+    (sa: len=44
+        (p: #1 protoid=isakmp transform=4 len=44
+            (t: #1 type=encr id=aes (type=keylen value=0080))
+            (t: #2 type=integ id=#12 )
+            (t: #3 type=prf id=#5 )
+            (t: #4 type=dh id=modp2048 )))
+    (v2ke: len=256 group=modp2048)
+    (nonce: len=16 data=(0084b67ed1b6d152890e...2531bf62000000104f45706c75746f756e697430))
+    (n: prot_id=#0 type=16388(nat_detection_source_ip))
+    (n: prot_id=#0 type=16389(nat_detection_destination_ip))
+    (v2vid: len=12 vid=OEababababab)

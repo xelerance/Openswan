@@ -1,14 +1,15 @@
 # -*- makefile -*-
 
+TESTNAME=cryptoR2
 SAMPLEDIR=../../libpluto/samples
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=parker1--jj2
-UNITTEST1ARGS=${WHACKFILE} parker1--jj2 OUTPUT/cryptoR2.pcap parentI1.pcap parentI2.pcap
+UNITTEST1ARGS=${WHACKFILE} parker1--jj2 OUTPUT/${TESTNAME}.pcap parentI1.pcap parentI2.pcap
 # purposely use the same conn file as client, it should swap and work.
 ENDNAME=parker
 
-TESTNAME=cryptoR2
 
 pcapupdate:
+	cp ../ct02-parentI1/OUTPUT/cryptoI1.pcap parentI1.pcap
 	cp ../ct10-parentI2/OUTPUT/cryptoI2.pcap parentI2.pcap
 

@@ -2,8 +2,8 @@
 # -*- makefile -*-
 CONNNAME=home
 ENDNAME=davecert-id
-PCAPOUTPUT=davecertI2-id.pcap
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} davecert-R1-id.pcap  OUTPUT/${PCAPOUTPUT}
+PCAPOUTPUT=${TESTNAME}.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${PCAPOUTPUT} davecert-R1-id.pcap
 
 TESTNAME=davecertI2-id
 

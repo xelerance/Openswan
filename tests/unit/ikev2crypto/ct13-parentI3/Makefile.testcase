@@ -1,7 +1,7 @@
 # -*- makefile -*-
 TESTNAME=ct13-parentI3
 
-SAMPLEDIR=../../libpluto/samples/
+SAMPLEDIR=../../libpluto/samples
 CONNNAME=parker1--jj2
 ENDNAME=parker
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
