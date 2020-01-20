@@ -1,9 +1,9 @@
 # -*- makefile -*-
+TESTNAME=rekeyv2nopfs-R1
 CONNNAME=parker1--jj2--nopfs
 ENDNAME=parker
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/rekeyv2nopfs-R1.pcap ../lp12-parentR2/parentI1.pcap ../lp12-parentR2/parentI2.pcap rekeyCI1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ../lp12-parentR2/parentI1.pcap ../lp12-parentR2/parentI2.pcap rekeyCI1.pcap
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-TESTNAME=rekeyv2nopfs-R1
 
 all: check
 
