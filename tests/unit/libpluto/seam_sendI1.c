@@ -1,5 +1,3 @@
-#include "seam_gi_sha1.c"
-
 void sendI1b(struct connection *c1, int debugging, int calculate)
 {
 	struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;  /* r is a global in the seams */

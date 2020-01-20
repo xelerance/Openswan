@@ -7,7 +7,7 @@ struct seam_chunk {
 };
 
 struct seam_secrets {
-
+  const char *secrets_name;
 	/* config */
 
 	u_int16_t        oakleygroup;
@@ -67,6 +67,7 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 
 #define SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role,...) \
 	struct seam_secrets SS = { \
+          .secrets_name = #SS, \
 		.oakleygroup = _oakleygroup, \
 		.auth = _auth, \
 		.hash = _hash, \

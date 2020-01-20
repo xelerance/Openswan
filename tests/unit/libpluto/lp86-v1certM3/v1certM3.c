@@ -5,7 +5,7 @@
 #define SEAM_CRYPTO
 #include "../lp10-parentI2/parentI2_head.c"
 #include "seam_kernel.c"
-#include "seam_gi_sha1.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_crypt.c"
 #include "seam_ikev1_crypto.c"
