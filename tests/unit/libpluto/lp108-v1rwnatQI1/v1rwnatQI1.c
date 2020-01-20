@@ -20,10 +20,10 @@
 #include "seam_ikev1_crypto.c"
 #include "seam_nonce.c"
 #include "seam_rsa_check.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_sendI1.c"
 #include "seam_finish.c"
 #include "seam_ikev1_aggr.c"
-#include "seam_gi_md5.c"
 
 #define TESTNAME "v1rwnatQI1"
 
