@@ -18,8 +18,8 @@
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection home512 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-| from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| from whack: got --esp=3des-md5;modp2048
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(16); flags=-strict
 ./v1sha512M1   loading certificate from carolCert.pem
 ./v1sha512M1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
@@ -51,7 +51,7 @@ RC=0 "home512":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_
 RC=0 "home512":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
 RC=0 "home512":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(16); flags=-strict
 RC=0 "home512":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_512_256(14)_512-prfsha2_512(7)-MODP4096(16)
-RC=0 "home512":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "home512":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 | esp algid=3 not available
 RC=0 "home512":   ESP algorithms loaded: none
 | find_phase1_state: no SA found for conn 'home512'
@@ -74,6 +74,18 @@ RC=0 "home512":   ESP algorithms loaded: none
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-prf value="prf-hmac-sha2-512" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_512_256" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP4096" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:16(OAKLEY_GROUP_MODP4096) encr:12(aes_cbc) integ:14(hmac_sha2_512_256)
+| pass: 1 noticed combo 0/2: dh:16(OAKLEY_GROUP_MODP4096) encr:12(aes_cbc) integ:14(hmac_sha2_512_256)
+| new combo 0: dh:16 encr:12 integ:14
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:

@@ -18,8 +18,8 @@
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection homeV1empty with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-| from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| from whack: got --esp=3des-md5;modp2048
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 | ike (phase1) algorihtm values: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 ./v1emptyM1   loading certificate from carolCert.pem
 ./v1emptyM1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
@@ -51,7 +51,7 @@ RC=0 "homeV1empty":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; re
 RC=0 "homeV1empty":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
 RC=0 "homeV1empty":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 RC=0 "homeV1empty":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
-RC=0 "homeV1empty":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "homeV1empty":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 | esp algid=3 not available
 RC=0 "homeV1empty":   ESP algorithms loaded: none
 | find_phase1_state: no SA found for conn 'homeV1empty'
@@ -74,6 +74,9 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=0 [next=1]
 ./v1emptyM1 can not extrapolate IKEv1 policy from empty IKEv2 policy
 ./v1emptyM1 can not derive IKEv1 policy from IKEv2 settings, failed
 ./v1emptyM1 outsa fail
