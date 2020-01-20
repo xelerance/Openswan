@@ -252,8 +252,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
 | selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: finish_dh_v2:28: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -372,8 +370,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting length of IKEv2 Encryption Payload: 436
 | emitting length of ISAKMP Message: 464
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 20
 | #2 complete v2 state transition with STF_OK
 ./parentI2duplicate transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -408,7 +404,7 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
 |   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
-|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
 |   =========== input from pcap file ../lp10-parentI2/parentR1.pcap ========
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -475,14 +471,12 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | emitting length of IKEv2 Encryption Payload: 52
 | emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 20
-| WARNING: ikev2_encrypt_msg:269: hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 20
 sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+|   2e b7 20 0f  71 09 f3 cf  a6 75 27 73  2c 23 e2 2b
 | pass 1: considering PARENT SAs to delete
 ./parentI2duplicate deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state

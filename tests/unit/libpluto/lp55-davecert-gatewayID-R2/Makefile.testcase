@@ -2,7 +2,7 @@
 # -*- makefile -*-
 TESTNAME=davecertR2-id
 CONNNAME=rw-dave
-UNITTEST1PCAP=OUTPUT/davecertR2-id.pcap
+UNITTEST1PCAP=OUTPUT/${TESTNAME}.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} davecertI1-id.pcap davecertI2-id.pcap
 ENDNAME=gatewaycert-id
 

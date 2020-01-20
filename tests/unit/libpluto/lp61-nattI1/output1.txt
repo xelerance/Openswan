@@ -1,29 +1,28 @@
-./cryptoI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
-./cryptoI1 loading secrets from "../../libpluto/samples/parker.secrets"
-./cryptoI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./nattI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./nattI1 loading secrets from "../samples/parker.secrets"
+./nattI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./cryptoI1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./nattI1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
-./cryptoI1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./nattI1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./cryptoI1 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+./nattI1 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
-./cryptoI1 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+./nattI1 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| orient parker1--jj2 reference sr#1 this: addr:132.213.238.7 that: addr:192.168.1.1
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
@@ -34,27 +33,18 @@ processing whack msg time: X size: Y
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
 | find_ID_host_pair: looking for me=@parker01.emmjay.credil.org him=@jamesjohnson.emmjay.credil.org (exact)
 |   concluded with <none>
-./cryptoI1 adding connection: "parker1--jj2"
+./nattI1 adding connection: "parker1--jj2"
 | fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./cryptoI1 ike_alg_add(): ERROR: algo_type '1', algo_id '7', Algorithm type already exists
-./cryptoI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: FAILED (ret=-17)
-./cryptoI1 ike_alg_add(): ERROR: algo_type '1', algo_id '5', Algorithm type already exists
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: FAILED (ret=-17)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: FAILED (ret=-17)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-sha1: FAILED (ret=-17)
-./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-md5: FAILED (ret=-17)
-./cryptoI1 ike_alg_register_hash(): Activating OAKLEY_MD5: FAILED (ret=-17)
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
-| orient parker1--jj2 reference sr#1 this: addr:192.168.1.1 that: addr:132.213.238.7
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
@@ -64,26 +54,19 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
-./cryptoI1 initiating v2 parent SA
-./cryptoI1 STATE_PARENT_I1: initiate
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
+./nattI1 initiating v2 parent SA
+./nattI1 STATE_PARENT_I1: initiate
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
@@ -288,10 +271,10 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    next-payload: ISAKMP_NEXT_v2V [@584=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 628
-sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
 |   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
@@ -332,50 +315,58 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
-| inserting event EVENT_v2_RETRANSMIT, timeout in 10 seconds for #1
 | #1 complete v2 state transition with STF_OK
-./cryptoI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+./nattI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
-./cryptoI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
-./cryptoI1 deleting state #1 (STATE_PARENT_I1)
+./nattI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
+./nattI1 deleting state #1 (STATE_PARENT_I1)
 | considering request to delete IKE parent state
-| incomplete SA, just deleting
 | removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
-./cryptoI1 deleting connection
+./nattI1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./cryptoI1 leak: msg_digest, item size: X
-./cryptoI1 leak: ikev2_outI1 KE, item size: X
-./cryptoI1 leak: alg_info_ike, item size: X
-./cryptoI1 leak: 10 * group description, item size: X
-./cryptoI1 leak: keep id name, item size: X
-./cryptoI1 leak: pubkey entry, item size: X
-./cryptoI1 leak: rfc3110 format of public key, item size: X
-./cryptoI1 leak: pubkey, item size: X
-./cryptoI1 leak: keep id name, item size: X
-./cryptoI1 leak: pubkey entry, item size: X
-./cryptoI1 leak: rfc3110 format of public key, item size: X
-./cryptoI1 leak: pubkey, item size: X
-./cryptoI1 leak: 2 * id list, item size: X
-./cryptoI1 leak: rfc3110 format of public key [created], item size: X
-./cryptoI1 leak: pubkey, item size: X
-./cryptoI1 leak: secret, item size: X
-./cryptoI1 leak: 4 * hasher name, item size: X
-./cryptoI1 leak: 10 * group description, item size: X
-./cryptoI1 leak: policies path, item size: X
-./cryptoI1 leak: ocspcerts path, item size: X
-./cryptoI1 leak: aacerts path, item size: X
-./cryptoI1 leak: certs path, item size: X
-./cryptoI1 leak: private path, item size: X
-./cryptoI1 leak: crls path, item size: X
-./cryptoI1 leak: cacert path, item size: X
-./cryptoI1 leak: acert path, item size: X
-./cryptoI1 leak: default conf var_dir, item size: X
-./cryptoI1 leak: default conf conffile, item size: X
-./cryptoI1 leak: default conf ipsecd_dir, item size: X
-./cryptoI1 leak: default conf ipsec_conf_dir, item size: X
-./cryptoI1 leak detective found Z leaks, total size X
+./nattI1 leak: saved first packet, item size: X
+./nattI1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./nattI1 leak: sa in main_outI1, item size: X
+./nattI1 leak: initiator nonce, item size: X
+./nattI1 leak: long term secret, item size: X
+./nattI1 leak: saved gi value, item size: X
+./nattI1 leak: msg_digest, item size: X
+./nattI1 leak: ikev2_outI1 KE, item size: X
+./nattI1 leak: db_context->trans (expand), item size: X
+./nattI1 leak: db_context->conj (expand), item size: X
+./nattI1 leak: alg_info_ike, item size: X
+./nattI1 leak: db_context->attrs, item size: X
+./nattI1 leak: db_context->conj, item size: X
+./nattI1 leak: v2 policy database, item size: X
+./nattI1 leak: struct state in new_state(), item size: X
+./nattI1 leak: keep id name, item size: X
+./nattI1 leak: pubkey entry, item size: X
+./nattI1 leak: rfc3110 format of public key, item size: X
+./nattI1 leak: pubkey, item size: X
+./nattI1 leak: keep id name, item size: X
+./nattI1 leak: pubkey entry, item size: X
+./nattI1 leak: rfc3110 format of public key, item size: X
+./nattI1 leak: pubkey, item size: X
+./nattI1 leak: policies path, item size: X
+./nattI1 leak: ocspcerts path, item size: X
+./nattI1 leak: aacerts path, item size: X
+./nattI1 leak: certs path, item size: X
+./nattI1 leak: private path, item size: X
+./nattI1 leak: crls path, item size: X
+./nattI1 leak: cacert path, item size: X
+./nattI1 leak: acert path, item size: X
+./nattI1 leak: default conf var_dir, item size: X
+./nattI1 leak: default conf conffile, item size: X
+./nattI1 leak: default conf ipsecd_dir, item size: X
+./nattI1 leak: default conf ipsec_conf_dir, item size: X
+./nattI1 leak: 2 * id list, item size: X
+./nattI1 leak: rfc3110 format of public key [created], item size: X
+./nattI1 leak: pubkey, item size: X
+./nattI1 leak: secret, item size: X
+./nattI1 leak: 4 * hasher name, item size: X
+./nattI1 leak: 10 * group description, item size: X
+./nattI1 leak detective found Z leaks, total size X

@@ -1,10 +1,14 @@
+/*
+ * This device is behind a NAT, so it has NAPT_ENABLED, which mangles the
+ * packets before they go into the pcap file.
+ */
+#define NAPT_ENABLED 1
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_x509.c"
-#include "seam_gi_sha1.c"
-#include "seam_gi_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_rsasig.c"
