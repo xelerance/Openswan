@@ -1,11 +1,10 @@
 /*
- * This device is behind a NAT, so it does not have NAPT_ENABLED, because
- * it does not need it's packets mangled, it's the other end that will see
- * the result.
+ * This device is behind a NAT, so it has NAPT_ENABLED, which mangles the
+ * packets before they go into the pcap file.
  */
+#define NAPT_ENABLED 1
 #include "../lp02-parentI1/parentI1_head.c"
-#include "seam_gi_sha1.c"
-#include "seam_gi_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_x509.c"

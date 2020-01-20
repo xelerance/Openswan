@@ -1,7 +1,6 @@
 #define WANT_THIS_DBG DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE|DBG_LIFECYCLE|DBG_PARSING
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_x509.c"
-#include "seam_gi_sha1.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"

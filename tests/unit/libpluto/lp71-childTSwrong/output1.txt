@@ -35,11 +35,10 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./childTSwrong use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| orient parker-wrong-TS reference sr#1 this: %any that: %defaultroute
 | orient parker-wrong-TS checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker-wrong-TS checking against if: eth0 (AF_INET:132.213.238.7:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient parker-wrong-TS matching on public/private keys: this=no[%any] that=no[%defaultroute]
 |   orient parker-wrong-TS matched on that being defaultroute, and this lacking private key
 | pick_if looking for port: 500, family: 0
@@ -60,9 +59,8 @@ RC=0 "parker-wrong-TS": fd68:c9f9:4157::/64===%any[@jamesjohnson.emmjay.credil.o
 RC=0 "parker-wrong-TS":     myip=unset; hisip=unset;
 RC=0 "parker-wrong-TS":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none...
 RC=0 "parker-wrong-TS":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
-RC=0 "parker-wrong-TS":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker-wrong-TS":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 96,64; interface: eth0; kind=CK_PERMANENT
-0: input from ../lp62-nattR1/nattI1.pcap
 |   =========== input from pcap file ../lp62-nattR1/nattI1.pcap ========
 | *received 628 bytes from 93.184.216.34:55044 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -106,7 +104,8 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -116,11 +115,11 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:55044 policy=IKEv2ALLOW/-
@@ -133,11 +132,10 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | find_host_connection2 returns parker-wrong-TS (ike=none/none)
 ./childTSwrong tentatively considering connection: parker-wrong-TS
 | creating state object #1 at Z
-| orient parker-wrong-TS reference sr#1 this: %defaultroute that: %any
 | orient parker-wrong-TS checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker-wrong-TS checking against if: eth0 (AF_INET:132.213.238.7:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient parker-wrong-TS matching on public/private keys: this=no[%defaultroute] that=no[%any]
 |   orient parker-wrong-TS matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 0
@@ -149,7 +147,6 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | inserting state object #1 bucket: 5
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 | will not send/process a dcookie
 | received a notify..
 | processor 'responder-V2_init' returned STF_SUSPEND (2)
@@ -194,11 +191,17 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
 | __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
 | __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 40
@@ -332,13 +335,19 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | Notify data  c4 00 10 99  12 11 34 5e  78 ab 84 55  96 7a 2b 38
 |   63 63 32 03
 | emitting length of IKEv2 Notify Payload: 28
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+|   my next payload will not be a certificate request
+| I did not send a certificate request (CERTREQ) because
+|  has a preloaded a public for that end in st
+|   no known CA for the other end
+|   no CA certs available for validation
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 432
-| inserting event EVENT_SO_DISCARD, timeout in 300 seconds for #1
 | #1 complete v2 state transition with STF_OK
 ./childTSwrong transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
@@ -371,9 +380,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  c4 00 10 99
 |   12 11 34 5e  78 ab 84 55  96 7a 2b 38  63 63 32 03
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 1: output to OUTPUT/childTSwrong.pcap
-1: input from nattI2.pcap
 |   =========== input from pcap file nattI2.pcap ========
 | *received 464 bytes from 93.184.216.34:55045 on eth0 (port=4500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -406,7 +414,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
 |   e0 e4 b9 e1  a4 59 e2 af  5c 8b 61 b9  d1 a1 19 07
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -418,11 +427,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | v2 state object #1 (parker-wrong-TS) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
+|   reject: received request, needs response message
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -557,12 +566,12 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
 | key issuer CA is '%any'
-./childTSwrong PARENT SA now authenticated. Send R2 and considering Child-SA
-| inserting event EVENT_SA_REPLACE, timeout in 3600 seconds for #1
+| PARENT SA now authenticated, building child and reply
 | pick_if looking for port: 4500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0
 |   picking maching interface for family[2,0]: AF_INET resulted in: 132.213.238.7
+./childTSwrong nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -728,7 +737,6 @@ sending 320 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 
 |   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
 |   c4 86 d4 df  64 78 ef b9  4c 46 95 07  62 44 8c 63
 |   be 55 2d 2a  b6 d5 f9 fb  6a 21 4b 65  66 9c e0 88
-| inserting event EVENT_SA_REPLACE, timeout in 3330 seconds for #1
 | freeing state object #1
 ./childTSwrong leak: ikev2_inI2outR2 KE, item size: X
 ./childTSwrong leak: alg_info_ike, item size: X
