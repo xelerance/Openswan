@@ -99,7 +99,7 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | #1 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -133,7 +133,7 @@ sending 428 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8  ec 7e 9b fe
 |   2b 00 00 1c  00 00 40 05  81 b5 74 15  c4 1e 64 b8
 |   4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator

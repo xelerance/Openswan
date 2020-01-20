@@ -139,10 +139,16 @@ This test uses IKEv1 with certificates
 
     lp82-v1certM1        ---M1-->
                                      lp83-v1certN1
-                         <--R1---
-    lp84-v1certM2        ---I2-->
+                         <--N1---
+    lp84-v1certM2        ---M2-->
                                      lp85-v1certN2
-                         <--R2---
+                         <--N2---
+    lp86-v1certM3        ---M3-->
+                                     lp87-v1certN3
+                         <--N3---
+
+    lp92-v1emptyM1       ---M1-->
+
 
 ikev1 with NAT-traversal
 ========================
@@ -155,4 +161,8 @@ This test uses IKEv1 with certificates and NAT-traversal.
     lp104-v1rwnatM2      ---M2-->
                                      lp105-v1rwnatN2
                          <--N2---
-
+    lp106-v1rwnatM3      ---M3-->
+                                     lp107-v1rwnatN3
+                         <--N3---
+    lp108-v1rwnatQI1     ---QI1->
+                                     lp
