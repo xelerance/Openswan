@@ -595,6 +595,9 @@ out_sa(pb_stream *outs
           , esp_spi_generated = FALSE
           , ipcomp_cpi_generated = FALSE;
 
+    DBG_log("IKEv1 outsa starts ");
+    sa_v2_print(sadb);
+
     if(!extrapolate_v1_from_v2(sadb, st->st_policy, role)) {
         openswan_log("can not derive IKEv1 policy from IKEv2 settings, failed");
         return_on(ret, FALSE);

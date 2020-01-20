@@ -1229,7 +1229,7 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
-    ikev2_validate_key_lengths(st);
+    ikev1_validate_key_lengths(st);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
