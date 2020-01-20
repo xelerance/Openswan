@@ -345,7 +345,7 @@ sending 348 bytes for STATE_MAIN_R1 through eth0:500 [192.168.0.2:500] to 93.184
 | v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
 | v1 state object #1 found, in STATE_MAIN_R2
 | received encrypted packet from 93.184.216.34:55045
-| decrypting 296 bytes using algorithm OAKLEY_BLOWFISH_CBC
+| decrypting 296 bytes using algorithm OAKLEY_3DES_CBC
 | decrypted:
 |   09 00 00 0d  02 00 00 00  61 6c 69 63  65 00 00 01
 |   16 25 89 f7  5b 65 32 4b  6a 19 ad fc  cc 1c dc fd
