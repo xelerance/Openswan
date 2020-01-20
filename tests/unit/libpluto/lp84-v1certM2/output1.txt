@@ -21,9 +21,9 @@
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
-| from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+| from whack: got --esp=3des-md5;modp2048
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1certM2   loading certificate from carolCert.pem
 ./v1certM2   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
 | certificate is valid
@@ -52,9 +52,9 @@ RC=0 "home":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none.
 RC=0 "home":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
-RC=0 "home":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
-RC=0 "home":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
-RC=0 "home":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "home":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+RC=0 "home":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+RC=0 "home":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'home'
 | creating state object #1 at Z
@@ -65,7 +65,7 @@ RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
 ./v1certM2 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -83,10 +83,10 @@ RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |     trans-type-encr value="3des" [attrs: 0]
 |     trans-type-prf value="prf-hmac-md5" [attrs: 0]
 |     trans-type-integ value="hmac_md5_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
-| pass: 0 noticed combo 0/0: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
-| pass: 1 noticed combo 0/2: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
-| new combo 0: dh:5 encr:3 integ:1
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
@@ -122,8 +122,8 @@ RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |     [1 is OAKLEY_MD5]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -167,7 +167,7 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
 |   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
