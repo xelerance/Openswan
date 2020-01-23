@@ -541,6 +541,16 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   5e 37 66 cc  67 03 7e 08  b8 8b 2a 05  93 54 97 21
 |   af 9a 8a 43  fa 97 a9 ea  cb 2c 56 20  b1 9b 24 c7
 |   4d c8 16 88
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  00 00 00 00
+|    length: 324
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
@@ -570,6 +580,17 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   61 4a 28 e9  64 e3 9b 05  98 0f ae 24  ae 50 59 97
 |   01 00 00 00  00 00 00 00
 | next IV:  b1 9b 24 c7  4d c8 16 88
+| got payload 0x20(ISAKMP_NEXT_ID) needed: 0x220 opt: 0x20c0
+| ***parse ISAKMP Identification Payload:
+|    length: 11
+|    ID type: ID_FQDN
+|    DOI specific A: 0
+|    DOI specific B: 0
+|      obj:   73 75 6e
+| got payload 0x200(ISAKMP_NEXT_SIG) needed: 0x200 opt: 0x20c0
+| ***parse ISAKMP Signature Payload:
+|    length: 278
+| removing 7 bytes of padding
 ./v1rwnatQI1 Main mode peer ID is ID_FQDN: '@sun'
 | hashing 48 bytes of SA
 | authentication succeeded
@@ -587,5 +608,262 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 | inserting state object #2 bucket: 5
 ./v1rwnatQI1 initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK {using isakmp#1 msgid:03020180 proposal=3des(3)_192-hmac_md5_96(1)_128 pfsgroup=OAKLEY_GROUP_MODP2048}
 | quick outI1: calculated ke+nonce, sending I1
-| quick_outI1_continue:692 set_suspended() called on #2 with md=NULL, but st_suspended_md was already NULL (at (null):0)
-./v1rwnatQI1 ASSERTION FAILED at /osw/t7257-build5/programs/pluto/ikev1_quick.c:692: impossible
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_QUICK
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  80 01 02 03
+| ***emit ISAKMP Hash Payload:
+| emitting 16 zero bytes of HASH into ISAKMP Hash Payload
+| emitting length of ISAKMP Hash Payload: 20
+| IKEv1 outsa starts
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
+| 1:  protoid="PROTO_IPSEC_ESP" [trans: 2]
+|     trans-type-encr value="3des" [attrs: 0]
+|     trans-type-integ value="hmac_md5_96" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:-1((null)) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:-1((null)) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:0 encr:3 integ:1
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 1
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_IPSEC_ESP
+|    SPI size: 4
+|    number of transforms: 1
+| emitting 4 raw bytes of SPI into ISAKMP Proposal Payload
+| SPI  12 34 56 78
+| *****emit ISAKMP Transform Payload (ESP):
+|    transform number: 0
+|    ESP transform ID: ESP_3DES
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: ENCAPSULATION_MODE
+|    length/value: 3
+|     [3 is ENCAPSULATION_MODE_UDP_TUNNEL_RFC]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_TYPE
+|    length/value: 1
+|     [1 is SA_LIFE_TYPE_SECONDS]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_DURATION
+|    length/value: 1200
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: AUTH_ALGORITHM
+|    length/value: 1
+|     [1 is AUTH_ALGORITHM_HMAC_MD5]
+| emitting length of ISAKMP Transform Payload (ESP): 28
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+| emitting length of ISAKMP Nonce Payload: 20
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 0 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value
+| emitting length of ISAKMP Key Exchange Payload: 4
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+| emitting 4 raw bytes of client network into ISAKMP Identification Payload (IPsec DOI)
+| client network  0a 01 00 0a
+| emitting 4 raw bytes of client mask into ISAKMP Identification Payload (IPsec DOI)
+| client mask  ff ff ff ff
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 16
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+| emitting 4 raw bytes of client network into ISAKMP Identification Payload (IPsec DOI)
+| client network  0a 02 00 00
+| emitting 4 raw bytes of client mask into ISAKMP Identification Payload (IPsec DOI)
+| client mask  ff ff 00 00
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 16
+| HASH(1) computed:
+|   01 0f ed 6f  1b e4 8d 20  4e 7f d5 c4  27 99 94 bb
+| last Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
+| current Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
+| computed Phase 2 IV:
+|   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
+| encrypting:
+|   01 00 00 14  01 0f ed 6f  1b e4 8d 20  4e 7f d5 c4
+|   27 99 94 bb  0a 00 00 34  00 00 00 01  00 00 00 01
+|   00 00 00 28  00 03 04 01  12 34 56 78  00 00 00 1c
+|   00 03 00 00  80 03 00 0e  80 04 00 03  80 01 00 01
+|   80 02 04 b0  80 05 00 01  04 00 00 14  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  05 00 00 04
+|   05 00 00 10  04 00 00 00  0a 01 00 0a  ff ff ff ff
+|   00 00 00 10  04 00 00 00  0a 02 00 00  ff ff 00 00
+| IV:
+|   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
+| unpadded size is: 128
+| encrypting 128 using OAKLEY_3DES_CBC
+| next IV:  4b 03 dd 24  3b bf 33 66
+| emitting length of ISAKMP Message: 156
+sending 156 bytes for quick_outI1 through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #2)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   08 10 20 01  80 01 02 03  00 00 00 9c  bc 63 cc 8a
+|   3f 7a fb f9  c9 fa 8f 19  b0 83 79 d6  00 87 79 e6
+|   40 ab 7d 1b  9c 3a 75 1b  fd f4 1c a1  55 cb b5 75
+|   a4 d9 53 5c  5e 0a b5 61  33 8e 5d 7e  67 8f 72 0e
+|   f6 f3 10 60  7d 74 b2 dc  a8 78 02 34  81 5e 5c be
+|   9d ad aa 5b  46 49 32 75  e5 d4 65 30  54 fa 72 0b
+|   19 b4 74 26  62 16 11 61  f7 92 4f ea  61 61 10 51
+|   ed 00 fd 56  ce 43 d6 9f  c1 c9 dc 52  91 19 68 ea
+|   49 c0 04 06  4b 03 dd 24  3b bf 33 66
+RC=118 STATE_QUICK_I1: initiate
+3: output closed
+./v1rwnatQI1 deleting connection
+| pass 0: considering CHILD SAs to delete
+./v1rwnatQI1 deleting state #2 (STATE_QUICK_I1)
+| removing state object #2
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| pass 1: considering PARENT SAs to delete
+./v1rwnatQI1 deleting state #1 (STATE_MAIN_I4)
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_INFO
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  80 01 02 03
+| ***emit ISAKMP Hash Payload:
+| emitting 16 zero bytes of HASH(1) into ISAKMP Hash Payload
+| emitting length of ISAKMP Hash Payload: 20
+| ***emit ISAKMP Delete Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+|    protocol ID: 1
+|    SPI size: 16
+|    number of SPIs: 1
+| emitting 16 raw bytes of delete payload into ISAKMP Delete Payload
+| delete payload  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+| emitting length of ISAKMP Delete Payload: 28
+| HASH(1) computed:
+|   4f 9c 37 d8  46 43 2c 6e  4f d9 e7 7e  bc 5b d3 82
+| last Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
+| current Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
+| computed Phase 2 IV:
+|   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
+| encrypting:
+|   0c 00 00 14  4f 9c 37 d8  46 43 2c 6e  4f d9 e7 7e
+|   bc 5b d3 82  00 00 00 1c  00 00 00 01  01 10 00 01
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+| IV:
+|   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
+| unpadded size is: 48
+| encrypting 48 using OAKLEY_3DES_CBC
+| next IV:  fe 57 1a c3  4d 6b a6 c3
+| emitting length of ISAKMP Message: 76
+sending 76 bytes for delete notify through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   08 10 05 01  80 01 02 03  00 00 00 4c  cc c4 0f 94
+|   fd 86 5b d0  66 71 01 b8  66 90 14 48  2d 02 ea 21
+|   14 02 31 13  29 5e 29 b9  8a fc 30 ea  54 73 09 a8
+|   a4 04 01 80  fe 57 1a c3  4d 6b a6 c3
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+./v1rwnatQI1 leak: reply packet from quick_outI1, item size: X
+./v1rwnatQI1 leak: long term secret, item size: X
+./v1rwnatQI1 leak: saved gi value, item size: X
+./v1rwnatQI1 leak: initiator nonce, item size: X
+./v1rwnatQI1 leak: quick_outI1 KE, item size: X
+./v1rwnatQI1 leak: st_nr in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_pr in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_pi in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_er in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_ei in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_ar in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_ai in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skey_d in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_skeyseed in duplicate_state, item size: X
+./v1rwnatQI1 leak: st_enc_key in duplicate_state, item size: X
+./v1rwnatQI1 leak: struct state in new_state(), item size: X
+./v1rwnatQI1 leak: raw packet, item size: X
+./v1rwnatQI1 leak: calculated enc_keyshared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_prshared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_pishared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_ershared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_eishared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_arshared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_aishared secret, item size: X
+./v1rwnatQI1 leak: calculated skey_dshared secret, item size: X
+./v1rwnatQI1 leak: calculated sharedshared secret, item size: X
+./v1rwnatQI1 leak: aggr outR1 DH, item size: X
+./v1rwnatQI1 leak: nonce, item size: X
+./v1rwnatQI1 leak: Gr, item size: X
+./v1rwnatQI1 leak: initiator nonce, item size: X
+./v1rwnatQI1 leak: long term secret, item size: X
+./v1rwnatQI1 leak: saved gi value, item size: X
+./v1rwnatQI1 leak: outI2 KE, item size: X
+./v1rwnatQI1 leak: msg_digest, item size: X
+./v1rwnatQI1 leak: 67 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: 3 * vid->data, item size: X
+./v1rwnatQI1 leak: 15 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: self-vendor ID, item size: X
+./v1rwnatQI1 leak: init_pluto_vendorid, item size: X
+./v1rwnatQI1 leak: 4 * fswan VID, item size: X
+./v1rwnatQI1 leak: vid->data, item size: X
+./v1rwnatQI1 leak: 23 * VendorID MD5, item size: X
+./v1rwnatQI1 leak: vid->data, item size: X
+./v1rwnatQI1 leak: sa in main_outI1, item size: X
+./v1rwnatQI1 leak: struct state in new_state(), item size: X
+./v1rwnatQI1 leak: keep id name, item size: X
+./v1rwnatQI1 leak: pubkey entry, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: keep id name, item size: X
+./v1rwnatQI1 leak: pubkey entry, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key, item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: 2 * id list, item size: X
+./v1rwnatQI1 leak: rfc3110 format of public key [created], item size: X
+./v1rwnatQI1 leak: pubkey, item size: X
+./v1rwnatQI1 leak: secret, item size: X
+./v1rwnatQI1 leak: policies path, item size: X
+./v1rwnatQI1 leak: ocspcerts path, item size: X
+./v1rwnatQI1 leak: aacerts path, item size: X
+./v1rwnatQI1 leak: certs path, item size: X
+./v1rwnatQI1 leak: private path, item size: X
+./v1rwnatQI1 leak: crls path, item size: X
+./v1rwnatQI1 leak: cacert path, item size: X
+./v1rwnatQI1 leak: acert path, item size: X
+./v1rwnatQI1 leak: override ipsec.d, item size: X
+./v1rwnatQI1 leak: 4 * hasher name, item size: X
+./v1rwnatQI1 leak: 10 * group description, item size: X
+./v1rwnatQI1 leak: policies path, item size: X
+./v1rwnatQI1 leak: ocspcerts path, item size: X
+./v1rwnatQI1 leak: aacerts path, item size: X
+./v1rwnatQI1 leak: certs path, item size: X
+./v1rwnatQI1 leak: private path, item size: X
+./v1rwnatQI1 leak: crls path, item size: X
+./v1rwnatQI1 leak: cacert path, item size: X
+./v1rwnatQI1 leak: acert path, item size: X
+./v1rwnatQI1 leak: default conf var_dir, item size: X
+./v1rwnatQI1 leak: default conf conffile, item size: X
+./v1rwnatQI1 leak: default conf ipsecd_dir, item size: X
+./v1rwnatQI1 leak: default conf ipsec_conf_dir, item size: X
+./v1rwnatQI1 leak detective found Z leaks, total size X
