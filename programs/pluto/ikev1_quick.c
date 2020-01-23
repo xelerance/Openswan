@@ -689,7 +689,7 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(qke->md == NULL);	// there is no md, because we are initiating
 
     set_cur_state(st);	/* we must reset before exit */
-    set_suspended(st, NULL);
+
     e = quick_outI1_tail(pcrc, r, st);
     if (e == STF_INTERNAL_ERROR)
 	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
