@@ -57,11 +57,10 @@ static void init_loaded(void) {}
 #define PCAP_INPUT_COUNT 3
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
     recv_pcap_packet,
-    recv_pcap_packet,
-    recv_pcap_packet,
+    recv_pcap_packet2ikev1,
+    recv_pcap_packet3ikev1,
 };
 #endif
-
 
 #include "../lp10-parentI2/parentI2_main.c"
 
