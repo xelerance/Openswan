@@ -1,4 +1,4 @@
-include ../lp15-respondself/Makefile
+include ../lp08-parentR1/Makefile
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 include Makefile.testcase
 
