@@ -1,27 +1,27 @@
-#define OMIT_IKEv1
-#define OMIT_SEAM_INITIATE
-#define OMIT_ADD_PENDING
-#define OMIT_PENDING_USE
 #define INCLUDE_IKEV1_PROCESSING
 #define INCLUDE_QUICK_MODE
 #define OMIT_MAIN_MODE
+#define OMIT_SEAM_INITIATE
+#define OMIT_ADD_PENDING
+#define OMIT_IKEv1
+#define OMIT_PENDING_USE
 #define NAT_TRAVERSAL
 #define SEAM_CRYPTO
 #include "../lp12-parentR2/parentR2_head.c"
 #include "seam_host_sun.c"
 #include "nat_traversal.h"
+#include "seam_dpd.c"
+#include "seam_ikev1_aggr.c"
+#include "seam_command.c"
+#include "seam_kernel.c"
 #include "seam_crypt.c"
 #include "seam_x509.c"
 #include "seam_nonce.c"
 #include "seam_rsasig.c"
 #include "seam_rsa_check.c"
-#include "seam_gi_md5.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
-#include "seam_kernel.c"
 #include "seam_ikev1_crypto.c"
-#include "seam_ikev1_aggr.c"
-#include "seam_dpd.c"
-#include "seam_command.c"
 
 #define TESTNAME "v1rwnatQR1"
 
@@ -52,6 +52,8 @@ static void init_loaded(void)
 
 
 #define PCAP_INPUT_COUNT 4
+
+// #include "seam_gi_sha1.c"
 
 static void update_ngi_tc3(struct pcr_kenonce *kn)
 {

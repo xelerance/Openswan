@@ -9,6 +9,7 @@ void recv_pcap_packetC1(u_char *user
 
     /* find st involved */
     st = state_with_serialno(3);
+    passert(st != NULL);
     st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
     /* now fill in the KE values from a constant.. not calculated */
