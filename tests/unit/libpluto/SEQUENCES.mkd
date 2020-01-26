@@ -165,4 +165,6 @@ This test uses IKEv1 with certificates and NAT-traversal.
                                      lp107-v1rwnatN3
                          <--N3---
     lp108-v1rwnatQI1     ---QI1->
-                                     lp
+                                     lp109-v1rwnatQR1
+
+
