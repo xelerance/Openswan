@@ -163,7 +163,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator

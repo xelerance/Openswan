@@ -9,9 +9,9 @@
 #include "unit_test_includes.h"
 
 #include "whackmsgtestlib.c"
+#include "pluto/vendor.h"
 #include "seam_debug.c"
 #include "seam_timer.c"
-#include "seam_fakevendor.c"
 #include "seam_pending.c"
 #include "seam_ikev1.c"
 #include "seam_ikev1_aggr.c"

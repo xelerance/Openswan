@@ -360,7 +360,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
 |   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 1: output to OUTPUT/rekeyChildSA-fromR2.pcap
 |   =========== input from pcap file h2hI2.pcap ========
 | recv_pcap_packet2_and_rekey() call 1: enter
