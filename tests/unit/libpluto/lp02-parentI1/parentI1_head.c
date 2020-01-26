@@ -9,10 +9,10 @@
 #include "unit_test_includes.h"
 
 #include "whackmsgtestlib.c"
-#include <pluto/nat_traversal.h>
+#include "pluto/nat_traversal.h"
+#include "pluto/vendor.h"
 #include "seam_debug.c"
 #include "seam_timer.c"
-#include "seam_fakevendor.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
 #include "seam_kernel.c"
