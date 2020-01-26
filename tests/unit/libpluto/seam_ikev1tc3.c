@@ -68,7 +68,7 @@ void recv_pcap_packet3ikev1(u_char *user
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */
-    st = state_with_serialno(1);
+    st = state_with_serialno(2);
     if(st) {
       run_continuation(crypto_req);
     }
