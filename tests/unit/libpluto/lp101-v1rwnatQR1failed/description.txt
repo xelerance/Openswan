@@ -1,5 +1,7 @@
 This test case is an IKEv1 responder, receive I3 message, send the R3.
 
+It is supposed fail, but the record of why/what is unclear now (MCR)
+
 
 
 
