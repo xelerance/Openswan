@@ -22,6 +22,9 @@ PSK:
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 0: dh:14 encr:12 integ:2
 v1 (PSK):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
@@ -41,6 +44,9 @@ RSA:
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 0: dh:14 encr:12 integ:2
 v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
@@ -60,6 +66,9 @@ RSA+PSK:
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 0: dh:14 encr:12 integ:2
 v1 (RSA+PSK):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 2 
@@ -161,29 +170,39 @@ default RSA:
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
-| counted combo 1: dh:14 encr:18 integ:12
-| counted combo 2: dh:14 encr:12 integ:12
-| counted combo 3: dh:14 encr:12 integ:2
-| counted combo 4: dh:14 encr:18 integ:2
-| counted combo 5: dh:14 encr:12 integ:2
-| counted combo 6: dh:14 encr:12 integ:12
-| counted combo 7: dh:5 encr:12 integ:12
-| counted combo 8: dh:5 encr:18 integ:12
-| counted combo 9: dh:5 encr:12 integ:12
-| counted combo 10: dh:5 encr:12 integ:2
-| counted combo 11: dh:5 encr:18 integ:2
-| counted combo 12: dh:5 encr:12 integ:2
-| counted combo 13: dh:5 encr:12 integ:12
-| counted combo 14: dh:15 encr:12 integ:12
-| counted combo 15: dh:15 encr:18 integ:12
-| counted combo 16: dh:15 encr:12 integ:12
-| counted combo 17: dh:15 encr:12 integ:2
-| counted combo 18: dh:15 encr:18 integ:2
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 2/2: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 3/3: dh:14(OAKLEY_GROUP_MODP2048) encr:18(aes_gcm_8) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:5(OAKLEY_GROUP_MODP1536) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 6/6: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 7/7: dh:5(OAKLEY_GROUP_MODP1536) encr:18(aes_gcm_8) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 8/8: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 9/9: dh:15(OAKLEY_GROUP_MODP3072) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 10/10: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 11/11: dh:15(OAKLEY_GROUP_MODP3072) encr:18(aes_gcm_8) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/13: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/13: dh:14(OAKLEY_GROUP_MODP2048) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| encr or integ transid not available in IKEv1
+| pass: 1 noticed combo 1/13: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
 | new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/13: dh:14(OAKLEY_GROUP_MODP2048) encr:18(aes_gcm_8) integ:2(hmac_sha1_96)
+| encr or integ transid not available in IKEv1
+| pass: 1 noticed combo 2/13: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/13: dh:5(OAKLEY_GROUP_MODP1536) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| encr or integ transid not available in IKEv1
+| pass: 1 noticed combo 3/13: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
 | new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/13: dh:5(OAKLEY_GROUP_MODP1536) encr:18(aes_gcm_8) integ:2(hmac_sha1_96)
+| encr or integ transid not available in IKEv1
+| pass: 1 noticed combo 4/13: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/13: dh:15(OAKLEY_GROUP_MODP3072) encr:18(aes_gcm_8) integ:12(hmac_sha2_256_128)
+| encr or integ transid not available in IKEv1
+| pass: 1 noticed combo 5/13: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
 | new combo 5: dh:15 encr:12 integ:2
 default v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
@@ -337,6 +356,9 @@ default v1 (RSA):| sa disjunct cnt: 1
 |     trans-type-prf value="prf-hmac-sha2-512" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_512_256" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:14(hmac_sha2_512_256)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:14(hmac_sha2_512_256)
+| new combo 0: dh:14 encr:12 integ:14
 strong v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
