@@ -29,6 +29,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o

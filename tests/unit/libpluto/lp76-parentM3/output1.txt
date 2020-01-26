@@ -349,7 +349,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | state hash entry 4
 | v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
 | v1 state object #1 found, in STATE_MAIN_I1
-./parentM3 received Vendor ID payload [Openswan (this version) 2.6.52dev1-280-gc7456c965-dirty ]
+./parentM3 ignoring unknown Vendor ID payload [4f53575c5349656779485d62]
 ./parentM3 received Vendor ID payload [Dead Peer Detection]
 ./parentM3 received Vendor ID payload [RFC 3947] meth=115, but port floating is off
 | complete state transition with STF_SUSPEND
