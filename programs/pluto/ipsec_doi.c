@@ -486,7 +486,6 @@ ipsecdoi_replace(struct state *st
 	policy = policy | policy_add;
 
 	initiator = pick_initiator(c, policy);
-	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
 	    (void) initiator(whack_sock, st->st_connection, st, &newstateno, policy
 			     , try, st->st_import
