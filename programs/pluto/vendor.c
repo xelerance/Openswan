@@ -772,8 +772,7 @@ bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 		DBG_log("out_vendorid(): sending [%s]", pvid->descr);
 	);
 
-	if (!out_modify_previous_np(ISAKMP_NEXT_VID, outs))
-		return FALSE;
+        pbs_set_np(outs, ISAKMP_NEXT_VID);
 
 	return out_generic_raw(np, &isakmp_vendor_id_desc, outs,
 		pvid->vid, pvid->vid_len, "V_ID");
