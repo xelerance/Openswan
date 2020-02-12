@@ -100,6 +100,14 @@ DBG(DBG_CRYPT, DBG_log("NSS do_aes: exit"));
     char iv_bak[AES_CBC_BLOCK_SIZE];
     char *new_iv = NULL;	/* logic will avoid copy to NULL */
 
+    /*
+     * if key is NULL We have segfault in aes_set_key()
+     * We can go out from do_aes() and try to get aes key again
+     */
+    if (key == NULL) {
+	loglog(RC_LOG_SERIOUS, "do_aes: enc key is NULL.");
+	return;
+    }
     aes_set_key(&aes_ctx, key, key_size, 0);
 
     /*
