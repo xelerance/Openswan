@@ -436,7 +436,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   =========== input from pcap file carolI2.pcap ========
 | *received 1520 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -2038,7 +2038,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   f3 71 b6 36  19 32 87 fc  7f b2 9b 73  de 8a d0 75
 |   d9 71 fc c6  2b 00 00 1c  00 00 40 05  64 2a d2 2a
 |   dc 2f fc 41  eb 93 5f 7b  44 d8 3f 95  fd c3 8c 0f
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | freeing state object #1
 ./certreplydaveR1 leak: reply packet, item size: X
 ./certreplydaveR1 leak: saved first packet, item size: X

@@ -11,6 +11,12 @@
 ./certificateselfI1 loading secrets from "../samples/rwcert.secrets"
 ./certificateselfI1   loaded private key file '../samples/rwcert/private/carolKey.pem' (CERT bytes)
 ./certificateselfI1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
+./certificateselfI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./certificateselfI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./certificateselfI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./certificateselfI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./certificateselfI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./certificateselfI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -372,10 +378,18 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./certificateselfI1 leak: cacert path, item size: X
 ./certificateselfI1 leak: acert path, item size: X
 ./certificateselfI1 leak: override ipsec.d, item size: X
+./certificateselfI1 leak: 4 * hasher name, item size: X
+./certificateselfI1 leak: 10 * group description, item size: X
+./certificateselfI1 leak: policies path, item size: X
+./certificateselfI1 leak: ocspcerts path, item size: X
+./certificateselfI1 leak: aacerts path, item size: X
+./certificateselfI1 leak: certs path, item size: X
+./certificateselfI1 leak: private path, item size: X
+./certificateselfI1 leak: crls path, item size: X
+./certificateselfI1 leak: cacert path, item size: X
+./certificateselfI1 leak: acert path, item size: X
 ./certificateselfI1 leak: default conf var_dir, item size: X
 ./certificateselfI1 leak: default conf conffile, item size: X
 ./certificateselfI1 leak: default conf ipsecd_dir, item size: X
 ./certificateselfI1 leak: default conf ipsec_conf_dir, item size: X
-./certificateselfI1 leak: 4 * hasher name, item size: X
-./certificateselfI1 leak: 10 * group description, item size: X
 ./certificateselfI1 leak detective found Z leaks, total size X
