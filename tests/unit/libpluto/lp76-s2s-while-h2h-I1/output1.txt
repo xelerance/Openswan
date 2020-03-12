@@ -9,6 +9,12 @@
 ./s2sI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./s2sI1 loading secrets from "../samples/parker.secrets"
 ./s2sI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./s2sI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./s2sI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./s2sI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./s2sI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./s2sI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./s2sI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -349,6 +355,12 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./s2sI1 leak: pubkey entry, item size: X
 ./s2sI1 leak: rfc3110 format of public key, item size: X
 ./s2sI1 leak: pubkey, item size: X
+./s2sI1 leak: 2 * id list, item size: X
+./s2sI1 leak: rfc3110 format of public key [created], item size: X
+./s2sI1 leak: pubkey, item size: X
+./s2sI1 leak: secret, item size: X
+./s2sI1 leak: 4 * hasher name, item size: X
+./s2sI1 leak: 10 * group description, item size: X
 ./s2sI1 leak: policies path, item size: X
 ./s2sI1 leak: ocspcerts path, item size: X
 ./s2sI1 leak: aacerts path, item size: X
@@ -361,10 +373,4 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./s2sI1 leak: default conf conffile, item size: X
 ./s2sI1 leak: default conf ipsecd_dir, item size: X
 ./s2sI1 leak: default conf ipsec_conf_dir, item size: X
-./s2sI1 leak: 2 * id list, item size: X
-./s2sI1 leak: rfc3110 format of public key [created], item size: X
-./s2sI1 leak: pubkey, item size: X
-./s2sI1 leak: secret, item size: X
-./s2sI1 leak: 4 * hasher name, item size: X
-./s2sI1 leak: 10 * group description, item size: X
 ./s2sI1 leak detective found Z leaks, total size X

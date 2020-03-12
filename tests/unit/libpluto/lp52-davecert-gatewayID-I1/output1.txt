@@ -11,6 +11,12 @@
 ./davecertI1-id loading secrets from "../samples/davecert.secrets"
 ./davecertI1-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (CERT bytes)
 ./davecertI1-id loaded private key for keyid: PPK_RSA:AwEAAdzsB/71EF 2412 7A30 AD54 C288 FC00 B917 3DAB 8E76 4790
+./davecertI1-id registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./davecertI1-id registed kernel encr algorithm 3des [3, 192<=key<=192]
+./davecertI1-id registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./davecertI1-id registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./davecertI1-id registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./davecertI1-id registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -370,10 +376,18 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: cacert path, item size: X
 ./davecertI1-id leak: acert path, item size: X
 ./davecertI1-id leak: override ipsec.d, item size: X
+./davecertI1-id leak: 4 * hasher name, item size: X
+./davecertI1-id leak: 10 * group description, item size: X
+./davecertI1-id leak: policies path, item size: X
+./davecertI1-id leak: ocspcerts path, item size: X
+./davecertI1-id leak: aacerts path, item size: X
+./davecertI1-id leak: certs path, item size: X
+./davecertI1-id leak: private path, item size: X
+./davecertI1-id leak: crls path, item size: X
+./davecertI1-id leak: cacert path, item size: X
+./davecertI1-id leak: acert path, item size: X
 ./davecertI1-id leak: default conf var_dir, item size: X
 ./davecertI1-id leak: default conf conffile, item size: X
 ./davecertI1-id leak: default conf ipsecd_dir, item size: X
 ./davecertI1-id leak: default conf ipsec_conf_dir, item size: X
-./davecertI1-id leak: 4 * hasher name, item size: X
-./davecertI1-id leak: 10 * group description, item size: X
 ./davecertI1-id leak detective found Z leaks, total size X

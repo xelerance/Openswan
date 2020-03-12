@@ -9,6 +9,12 @@
 ./initiateselfI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./initiateselfI1 loading secrets from "../samples/rw.secrets"
 ./initiateselfI1 loaded private key for keyid: PPK_RSA:AQOa+OIzC/4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
+./initiateselfI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./initiateselfI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./initiateselfI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./initiateselfI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./initiateselfI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./initiateselfI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -362,6 +368,12 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./initiateselfI1 leak: pubkey entry, item size: X
 ./initiateselfI1 leak: rfc3110 format of public key, item size: X
 ./initiateselfI1 leak: pubkey, item size: X
+./initiateselfI1 leak: 2 * id list, item size: X
+./initiateselfI1 leak: rfc3110 format of public key [created], item size: X
+./initiateselfI1 leak: pubkey, item size: X
+./initiateselfI1 leak: secret, item size: X
+./initiateselfI1 leak: 4 * hasher name, item size: X
+./initiateselfI1 leak: 10 * group description, item size: X
 ./initiateselfI1 leak: policies path, item size: X
 ./initiateselfI1 leak: ocspcerts path, item size: X
 ./initiateselfI1 leak: aacerts path, item size: X
@@ -374,10 +386,4 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./initiateselfI1 leak: default conf conffile, item size: X
 ./initiateselfI1 leak: default conf ipsecd_dir, item size: X
 ./initiateselfI1 leak: default conf ipsec_conf_dir, item size: X
-./initiateselfI1 leak: 2 * id list, item size: X
-./initiateselfI1 leak: rfc3110 format of public key [created], item size: X
-./initiateselfI1 leak: pubkey, item size: X
-./initiateselfI1 leak: secret, item size: X
-./initiateselfI1 leak: 4 * hasher name, item size: X
-./initiateselfI1 leak: 10 * group description, item size: X
 ./initiateselfI1 leak detective found Z leaks, total size X
