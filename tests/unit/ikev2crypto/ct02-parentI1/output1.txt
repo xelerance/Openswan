@@ -9,6 +9,12 @@
 ./cryptoI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./cryptoI1 loading secrets from "../../libpluto/samples/parker.secrets"
 ./cryptoI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./cryptoI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./cryptoI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./cryptoI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./cryptoI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./cryptoI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./cryptoI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -360,6 +366,12 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./cryptoI1 leak: pubkey entry, item size: X
 ./cryptoI1 leak: rfc3110 format of public key, item size: X
 ./cryptoI1 leak: pubkey, item size: X
+./cryptoI1 leak: 2 * id list, item size: X
+./cryptoI1 leak: rfc3110 format of public key [created], item size: X
+./cryptoI1 leak: pubkey, item size: X
+./cryptoI1 leak: secret, item size: X
+./cryptoI1 leak: 4 * hasher name, item size: X
+./cryptoI1 leak: 10 * group description, item size: X
 ./cryptoI1 leak: policies path, item size: X
 ./cryptoI1 leak: ocspcerts path, item size: X
 ./cryptoI1 leak: aacerts path, item size: X
@@ -372,10 +384,4 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./cryptoI1 leak: default conf conffile, item size: X
 ./cryptoI1 leak: default conf ipsecd_dir, item size: X
 ./cryptoI1 leak: default conf ipsec_conf_dir, item size: X
-./cryptoI1 leak: 2 * id list, item size: X
-./cryptoI1 leak: rfc3110 format of public key [created], item size: X
-./cryptoI1 leak: pubkey, item size: X
-./cryptoI1 leak: secret, item size: X
-./cryptoI1 leak: 4 * hasher name, item size: X
-./cryptoI1 leak: 10 * group description, item size: X
 ./cryptoI1 leak detective found Z leaks, total size X

@@ -25,13 +25,16 @@ int main(int argc, char *argv[])
         argc--; argv++;
     }
 
+    oco = osw_init_options();
     tool_init_log();
     init_crypto();
     load_oswcrypto();
     init_fake_vendorid();
-    init_fake_secrets();
     init_local_interface();
+    init_fake_secrets();
     enable_debugging();
+    init_demux();
+    init_seam_kernelalgs();
 
     init_nat_traversal(TRUE, /* keep alive interval */0
                        , /* force keep alive */FALSE, /* port forwarding enabled */TRUE);

@@ -11,6 +11,12 @@
 ./v1emptyM1 loading secrets from "../samples/carol.secrets"
 ./v1emptyM1   loaded private key file '../samples/carol/private/carolKey.pem' (CERT bytes)
 ./v1emptyM1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
+./v1emptyM1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1emptyM1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./v1emptyM1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1emptyM1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1emptyM1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1emptyM1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./v1emptyM1 Setting NAT-Traversal port-4500 floating to on
 ./v1emptyM1    port floating activation criteria nat_t=1/port_float=1
 ./v1emptyM1    NAT-Traversal support  [enabled]
@@ -52,8 +58,7 @@ RC=0 "homeV1empty":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; p
 RC=0 "homeV1empty":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 RC=0 "homeV1empty":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16); flags=-strict
 RC=0 "homeV1empty":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
-| esp algid=3 not available
-RC=0 "homeV1empty":   ESP algorithms loaded: none
+RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'homeV1empty'
 | creating state object #1 at Z
 | orient homeV1empty checking against if: eth0 (AF_INET:0.0.0.0:500)
@@ -135,10 +140,18 @@ RC=0 "homeV1empty":   ESP algorithms loaded: none
 ./v1emptyM1 leak: cacert path, item size: X
 ./v1emptyM1 leak: acert path, item size: X
 ./v1emptyM1 leak: override ipsec.d, item size: X
+./v1emptyM1 leak: 4 * hasher name, item size: X
+./v1emptyM1 leak: 10 * group description, item size: X
+./v1emptyM1 leak: policies path, item size: X
+./v1emptyM1 leak: ocspcerts path, item size: X
+./v1emptyM1 leak: aacerts path, item size: X
+./v1emptyM1 leak: certs path, item size: X
+./v1emptyM1 leak: private path, item size: X
+./v1emptyM1 leak: crls path, item size: X
+./v1emptyM1 leak: cacert path, item size: X
+./v1emptyM1 leak: acert path, item size: X
 ./v1emptyM1 leak: default conf var_dir, item size: X
 ./v1emptyM1 leak: default conf conffile, item size: X
 ./v1emptyM1 leak: default conf ipsecd_dir, item size: X
 ./v1emptyM1 leak: default conf ipsec_conf_dir, item size: X
-./v1emptyM1 leak: 4 * hasher name, item size: X
-./v1emptyM1 leak: 10 * group description, item size: X
 ./v1emptyM1 leak detective found Z leaks, total size X
