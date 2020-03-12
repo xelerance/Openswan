@@ -362,7 +362,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   cc 1b 6f 85  74 c9 67 04  00 2b 82 fd  39 ca 41 bc
 |   76 15 7c 80  2b 00 00 1c  00 00 40 05  5b 99 ec 1e
 |   46 90 94 2f  3a df fb bb  b4 da 86 23  e7 d9 0b 8b
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 ./davecert-R1-id deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
 | removing state object #1

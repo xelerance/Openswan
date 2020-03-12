@@ -380,7 +380,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  c4 00 10 99
 |   12 11 34 5e  78 ab 84 55  96 7a 2b 38  63 63 32 03
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 ./nattR1 deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
 | removing state object #1

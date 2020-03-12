@@ -9,6 +9,12 @@
 ./ikev1derived ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./ikev1derived loading secrets from "../samples/parker.secrets"
 ./ikev1derived loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+./ikev1derived registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./ikev1derived registed kernel encr algorithm 3des [3, 192<=key<=192]
+./ikev1derived registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./ikev1derived registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./ikev1derived registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./ikev1derived registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./ikev1derived Setting NAT-Traversal port-4500 floating to on
 ./ikev1derived    port floating activation criteria nat_t=1/port_float=1
 ./ikev1derived    NAT-Traversal support  [enabled]
@@ -65,8 +71,7 @@ RC=0 "t4901-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32;
 RC=0 "t4901-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
 RC=0 "t4901-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
 RC=0 "t4901-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
-| esp algid=3 not available
-RC=0 "t4901-ikev1":   ESP algorithms loaded: none
+RC=0 "t4901-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 't4901-ikev1'
 | creating state object #1 at Z
 | orient t4901-ikev1 checking against if: eth0 (AF_INET:192.168.1.1:500)
@@ -230,6 +235,12 @@ RC=105 STATE_MAIN_I1: initiate
 ./ikev1derived leak: pubkey entry, item size: X
 ./ikev1derived leak: rfc3110 format of public key, item size: X
 ./ikev1derived leak: pubkey, item size: X
+./ikev1derived leak: 2 * id list, item size: X
+./ikev1derived leak: rfc3110 format of public key [created], item size: X
+./ikev1derived leak: pubkey, item size: X
+./ikev1derived leak: secret, item size: X
+./ikev1derived leak: 4 * hasher name, item size: X
+./ikev1derived leak: 10 * group description, item size: X
 ./ikev1derived leak: policies path, item size: X
 ./ikev1derived leak: ocspcerts path, item size: X
 ./ikev1derived leak: aacerts path, item size: X
@@ -242,10 +253,4 @@ RC=105 STATE_MAIN_I1: initiate
 ./ikev1derived leak: default conf conffile, item size: X
 ./ikev1derived leak: default conf ipsecd_dir, item size: X
 ./ikev1derived leak: default conf ipsec_conf_dir, item size: X
-./ikev1derived leak: 2 * id list, item size: X
-./ikev1derived leak: rfc3110 format of public key [created], item size: X
-./ikev1derived leak: pubkey, item size: X
-./ikev1derived leak: secret, item size: X
-./ikev1derived leak: 4 * hasher name, item size: X
-./ikev1derived leak: 10 * group description, item size: X
 ./ikev1derived leak detective found Z leaks, total size X
