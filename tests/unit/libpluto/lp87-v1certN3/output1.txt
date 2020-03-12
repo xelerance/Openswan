@@ -5,11 +5,11 @@
 ./v1certN3 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./v1certN3 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./v1certN3 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./v1certN3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1certN3 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1certN3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./v1certN3 adjusting ipsec.d to ../samples/moon
 ./v1certN3 loading secrets from "../samples/moon.secrets"
-./v1certN3   loaded private key file '../samples/moon/private/moonKey.pem' (1679 bytes)
+./v1certN3   loaded private key file '../samples/moon/private/moonKey.pem' (CERT bytes)
 ./v1certN3 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 ./v1certN3 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./v1certN3 registed kernel encr algorithm 3des [3, 192<=key<=192]
@@ -28,7 +28,7 @@ processing whack msg time: X size: Y
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
 ./v1certN3   loading certificate from moonCert.pem
-./v1certN3   loaded host cert file '../samples/moon/certs/moonCert.pem' (1411 bytes)
+./v1certN3   loaded host cert file '../samples/moon/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for (none) is 15
@@ -36,7 +36,6 @@ processing whack msg time: X size: Y
 | based upon ID_wildcard policy, the connection is a template.
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient rw reference sr#1 this: addr:192.168.0.1 that: %any
 | orient rw checking against if: eth0 (AF_INET:0.0.0.0:4500)
 | orient rw checking against if: eth0 (AF_INET:0.0.0.0:500)
 |     orient matched on IP
@@ -54,46 +53,49 @@ RC=0 "rw": 10.1.0.0/16===192.168.0.1[@moon.strongswan.org]...%any; unrouted; ero
 RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw":   CAs: '%any'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 RC=0 "rw":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+RC=0 "rw":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
 RC=0 "rw":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | Changed path to directory '../samples/moon/cacerts'
-./v1certN3   loaded CA cert file 'rootCA.pem' (1525 bytes)
+./v1certN3   loaded CA cert file 'rootCA.pem' (CERT bytes)
 | Changed path to directory '../samples/moon/aacerts'
 | Changed path to directory '../samples/moon/ocspcerts'
 | Found -1 items in directory '../samples/moon/crls'
 RC=0
 RC=0 List of X.509 End Certificates:
 RC=0
-RC=0 count: 1
-RC=0        subject: 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
-RC=0        issuer:  'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0        serial:   00:8c:b2:68:2f:b0:f4:5a:93
+RC=0 Jan 31 17:04:55 UTC 2020, count: 1
+RC=0        subject: 'C=CA, ST=ON, O=Xelerance, CN=moon@openswan.org'
+RC=0        issuer:  'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0        serial:   06
 RC=0        pubkey:   2048 RSA Key AwEAAeOoT, has private key
-RC=0        validity: not before Jan 16 16:48:38 UTC 2017 ok
-RC=0                  not after  Nov 06 16:48:38 UTC 2019 ok
+RC=0        validity: not before Sep 03 04:15:59 UTC 2019 ok
+RC=0                  not after  Dec 11 04:15:59 UTC 2021 ok
+RC=0        subjkey:  c2:64:69:e8:dc:88:e3:23:58:47:07:86:4b:5e:d4:b3:ea:bc:a7:10
+RC=0        authkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
 RC=0
 RC=0 List of X.509 CA Certificates:
 RC=0
-RC=0 count: 1
-RC=0        subject: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0        issuer:  'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0        serial:   00:f7:85:a2:4b:c9:65:98:f2
-RC=0        pubkey:   2048 RSA Key AwEAAbCBn
-RC=0        validity: not before Jan 14 13:36:54 UTC 2017 ok
-RC=0                  not after  Nov 04 13:36:54 UTC 2019 ok
-RC=0        subjkey:  99:12:46:33:fb:fd:7a:46:9f:7e:d5:39:72:86:f1:e1:cf:5e:59:dd
-RC=0        authkey:  99:12:46:33:fb:fd:7a:46:9f:7e:d5:39:72:86:f1:e1:cf:5e:59:dd
-0: input from v1certM1.pcap
+RC=0 Jan 31 17:04:55 UTC 2020, count: 1
+RC=0        subject: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0        issuer:  'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0        serial:   00:92:b6:0a:e8:8c:ee:ce:aa
+RC=0        pubkey:   2048 RSA Key AwEAAcwrC
+RC=0        validity: not before Aug 30 21:31:29 UTC 2019 ok
+RC=0                  not after  Jan 01 21:31:29 UTC 2023 ok
+RC=0        subjkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
+RC=0        authkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
 |   =========== input from pcap file v1certM1.pcap ========
-| *received 216 bytes from 93.184.216.34:55044 on eth0 (port=500)
+| *received 216 bytes from 192.168.0.100:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
@@ -103,33 +105,31 @@ RC=0        authkey:  99:12:46:33:fb:fd:7a:46:9f:7e:d5:39:72:86:f1:e1:cf:5e:59:d
 |   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
 |   0b e8 a8 46  95 79 dd cc
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
-./v1certN3 received Vendor ID payload [Openswan (this version) 2.6-regression ]
 ./v1certN3 received Vendor ID payload [Dead Peer Detection]
 ./v1certN3 received Vendor ID payload [RFC 3947] method set to=115
 ./v1certN3 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
 ./v1certN3 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but already using method 115
 ./v1certN3 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02] meth=107, but already using method 115
 ./v1certN3 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
-| find_host_connection2 called from main_inI1_outR1, me=192.168.0.1:500 him=93.184.216.34:55044 policy=/!IKEv1
-| find_host_pair: looking for me=192.168.0.1:500 %address him=93.184.216.34:55044 any-match
+| find_host_connection2 called from main_inI1_outR1, me=192.168.0.1:500 him=192.168.0.100:500 policy=/!IKEv1
+| find_host_pair: looking for me=192.168.0.1:500 %address him=192.168.0.100:500 any-match
 | find_host_pair: comparing to me=192.168.0.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with rw
-| found_host_pair_conn (find_host_connection2): 192.168.0.1:500 %address/93.184.216.34:55044 -> hp:rw
+| found_host_pair_conn (find_host_connection2): 192.168.0.1:500 %address/192.168.0.100:500 -> hp:rw
 | searching for connection with policy = /!IKEv1
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (rw)
 | find_host_connection2 returns rw (ike=none/none)
 | creating state object #1 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
-| inserting state object #1 bucket: 5
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+| RCOOKIE:  d4 c3 f7 a7  13 5d a6 55
+| state hash entry 12
+| inserting state object #1 bucket: 12
 ./v1certN3 responding to Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
-|   64 0a 06 43  5c 7c 4b 31
+|   d4 c3 f7 a7  13 5d a6 55
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
@@ -148,13 +148,13 @@ RC=0        authkey:  99:12:46:33:fb:fd:7a:46:9f:7e:d5:39:72:86:f1:e1:cf:5e:59:d
 |    transform ID: KEY_IKE
 | emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
 | attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 05
-|   80 02 00 01  80 04 00 05
+|   80 02 00 01  80 04 00 0e
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -170,25 +170,23 @@ RC=0        authkey:  99:12:46:33:fb:fd:7a:46:9f:7e:d5:39:72:86:f1:e1:cf:5e:59:d
 | emitting length of ISAKMP Message: 136
 | complete state transition with STF_OK
 ./v1certN3 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
-| sending reply packet to 93.184.216.34:55044 (from port 500)
-sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184.216.34:55044 (using #1)
-|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+| sending reply packet to 192.168.0.100:500 (from port 500)
+sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 192.168.0.100:500 (using #1)
+|   80 01 02 03  04 05 06 07  d4 c3 f7 a7  13 5d a6 55
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
-| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
 ./v1certN3 STATE_MAIN_R1: sent MR1, expecting MI2
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
-1: input from v1certM2.pcap
 |   =========== input from pcap file v1certM2.pcap ========
 | *received 284 bytes from 93.184.216.34:55044 on eth0 (port=500)
-|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   80 01 02 03  04 05 06 07  d4 c3 f7 a7  13 5d a6 55
 |   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
 |   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
 |   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
@@ -203,13 +201,13 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184
 |   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
 |   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
 |   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  14 00 00 14  0a a3 c9 12  61 69 80 42
-|   6b 3d 4f 1a  93 88 79 f4  00 00 00 14  c0 bd db 7f
-|   0c fc b2 1a  80 8d 0b 49  36 64 ad ce
+|   53 05 b3 c4  14 00 00 14  0f 21 f1 bf  f1 0d f6 39
+|   0e 1b 45 be  75 bf 1f 9e  00 00 00 14  45 d8 34 5d
+|   01 68 10 00  64 d0 46 32  ce 0d 18 3c
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
+| RCOOKIE:  d4 c3 f7 a7  13 5d a6 55
+| state hash entry 12
 | v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
 | v1 state object #1 found, in STATE_MAIN_R1
 | got payload 0x10(ISAKMP_NEXT_KE) needed: 0x410 opt: 0x102080
@@ -238,14 +236,13 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184
 |   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
 |   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
 ./v1certN3 NAT-Traversal: Result using draft-ietf-ipsec-nat-t-ike (MacOS X): peer is NATed
-| inserting event EVENT_NAT_T_KEEPALIVE, timeout in 0 second
 | complete state transition with STF_SUSPEND
 | main inI2_outR2: calculated ke+nonce, sending R2
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
-|   64 0a 06 43  5c 7c 4b 31
+|   d4 c3 f7 a7  13 5d a6 55
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
@@ -270,23 +267,24 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 93.184
 | Nr  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
 | emitting length of ISAKMP Nonce Payload: 20
 | sending NAT-D payloads
-|    next-payload: ISAKMP_NEXT_NAT-D [@224=0x14]
 | ***emit ISAKMP NAT-D Payload:
 | emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  1c 61 12 96  eb 16 2d 56  d4 98 f1 a0  1b b0 43 90
+| NAT-D  c6 91 55 11  28 a3 75 8b  b7 49 70 f1  ca 01 34 42
 | emitting length of ISAKMP NAT-D Payload: 20
 | ***emit ISAKMP NAT-D Payload:
 | emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
-| NAT-D  0a a3 c9 12  61 69 80 42  6b 3d 4f 1a  93 88 79 f4
+| NAT-D  0f 21 f1 bf  f1 0d f6 39  0e 1b 45 be  75 bf 1f 9e
 | emitting length of ISAKMP NAT-D Payload: 20
 | emitting length of ISAKMP Message: 284
 | main inI2_outR2: starting async DH calculation (group=5)
 | started dh_secretiv, returned: stf=STF_SUSPEND
 | complete state transition with STF_OK
 ./v1certN3 transition from state STATE_MAIN_R1 to state STATE_MAIN_R2
+| state #1 NAT-T: new mapping 93.184.216.34:55044
+./v1certN3 new NAT mapping for #1, was 192.168.0.100:500, now 93.184.216.34:55044
 | sending reply packet to 93.184.216.34:55044 (from port 500)
 sending 284 bytes for STATE_MAIN_R1 through eth0:500 [192.168.0.1:500] to 93.184.216.34:55044 (using #1)
-|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   80 01 02 03  04 05 06 07  d4 c3 f7 a7  13 5d a6 55
 |   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
 |   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
 |   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
@@ -301,10 +299,9 @@ sending 284 bytes for STATE_MAIN_R1 through eth0:500 [192.168.0.1:500] to 93.184
 |   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
 |   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
 |   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
-|   53 05 b3 c4  14 00 00 14  1c 61 12 96  eb 16 2d 56
-|   d4 98 f1 a0  1b b0 43 90  00 00 00 14  0a a3 c9 12
-|   61 69 80 42  6b 3d 4f 1a  93 88 79 f4
-| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+|   53 05 b3 c4  14 00 00 14  c6 91 55 11  28 a3 75 8b
+|   b7 49 70 f1  ca 01 34 42  00 00 00 14  0f 21 f1 bf
+|   f1 0d f6 39  0e 1b 45 be  75 bf 1f 9e
 ./v1certN3 STATE_MAIN_R2: sent MR2, expecting MI3
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
@@ -318,7 +315,6 @@ sending 284 bytes for STATE_MAIN_R1 through eth0:500 [192.168.0.1:500] to 93.184
 | WARNING: FILE: hasher 'md5' expects keylen 16/16, SA #1 INITIATOR keylen is 20
 | WARNING: FILE: hasher 'md5' expects keylen 16/16, SA #1 RESPONDER keylen is 20
 2: output to OUTPUT/v1certN3.pcap
-2: input from v1certM3.pcap
 |   =========== input from pcap file v1certM3.pcap ========
 | *received 1500 bytes from 93.184.216.34:55044 on eth0 (port=4500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31

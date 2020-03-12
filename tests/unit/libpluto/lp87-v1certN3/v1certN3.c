@@ -6,7 +6,7 @@
 #include "seam_ikev1.c"
 #include "seam_ikev1_aggr.c"
 #include "seam_pending.c"
-#include "seam_gi_sha1.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_finish.c"
 #include "seam_crypt.c"
 #include "seam_dpd.c"
