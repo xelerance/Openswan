@@ -106,6 +106,9 @@ int main(int argc, char *argv[])
     }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+    cur_debugging |= MORE_DEBUGGING;
+#endif
     if(readwhackmsg(infile) == 0) exit(10);
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
@@ -128,6 +131,9 @@ int main(int argc, char *argv[])
 
         /* process first I1 packet */
         cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+        cur_debugging |= MORE_DEBUGGING;
+#endif
         pcap_dispatch(pt, 1, recv_inputs[i], NULL);
 
         /* set up output file */
