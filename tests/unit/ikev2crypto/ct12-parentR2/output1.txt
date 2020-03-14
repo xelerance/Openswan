@@ -90,6 +90,16 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 00
+|    length: 628
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -101,6 +111,37 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
+| ***parse IKEv2 Security Association Payload:
+|    critical bit: none
+|    length: 244
+| processing payload: ISAKMP_NEXT_v2SA (len=244)
+| ***parse IKEv2 Key Exchange Payload:
+|    critical bit: none
+|    length: 264
+|    transform type: 14
+| processing payload: ISAKMP_NEXT_v2KE (len=264)
+| ***parse IKEv2 Nonce Payload:
+|    critical bit: none
+|    length: 20
+| processing payload: ISAKMP_NEXT_v2Ni (len=20)
+| ***parse IKEv2 Notify Payload:
+|    critical bit: none
+|    length: 28
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
+| processing payload: ISAKMP_NEXT_v2N (len=28)
+| ***parse IKEv2 Notify Payload:
+|    critical bit: none
+|    length: 28
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
+| processing payload: ISAKMP_NEXT_v2N (len=28)
+| ***parse IKEv2 Vendor ID Payload:
+|    critical bit: none
+|    length: 16
+| processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 |   reject: received request, needs response message
 | considering state entry: 1
@@ -397,6 +438,16 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   55 4e 92 50  7a 1e b9 64  bc 32 22 22  71 a4 d0 7f
 |   79 ea 33 7c  02 c7 dd 66  04 8c 6a 4d  b0 64 de f7
 |   e0 c2 f6 9e  49 7d f3 97  7e 41 65 24  a8 f3 d5 80
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_AUTH
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 01
+|    length: 528
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -410,6 +461,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
+| ***parse IKEv2 Encryption Payload:
+|    critical bit: none
+|    length: 500
+| processing payload: ISAKMP_NEXT_v2E (len=500)
 | considering state entry: 0
 |   reject: received request, needs response message
 | considering state entry: 1
