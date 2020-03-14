@@ -7,8 +7,8 @@ UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} ../lp202-ca-h2hR1/h2hI1.
 
 TESTNAME=h2hR2
 
-PCAPDEPENDENCIES = ../lp203-ca-h2hI2//OUTPUT/h2hI2.pcap
+PCAPDEPENDENCIES = ../lp203-ca-h2hI2/OUTPUT/h2hI2.pcap
 include ../Makefile.pcapupdate
 
 pcapupdate: ${PCAPDEPENDENCIES}
-	cp ../lp203-ca-h2hI2//OUTPUT/h2hI2.pcap .
+	cp ../lp203-ca-h2hI2/OUTPUT/h2hI2.pcap .
