@@ -22,7 +22,11 @@ static void init_fake_secrets(void)
 }
 
 static void init_loaded(void)
-{   /* nothing */ }
+{
+    /* */
+}
+
+#define MORE_DEBUGGING DBG_CRYPT|DBG_PARSING|DBG_EMITTING
 
 #include "seam_parentR2.c"
 #include "../../libpluto/lp12-parentR2/parentR2_main.c"

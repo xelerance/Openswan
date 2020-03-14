@@ -1,6 +1,6 @@
 This test case is an IKEv2 responder. This test is identical in concept to
 lp12-parentR2, except that when generating the reply, it uses the proper
-cryptographic routines.
+cryptographic routines to authenticate the I2 packet.
 
 This test case receives a second (I2) packet from the initiator.
 To set up, it must receive an I1, reply to that, and then process the I2.
