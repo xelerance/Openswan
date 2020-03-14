@@ -106,6 +106,10 @@ void recv_pcap_packet3ikev1(u_char *user
     if(st) {
       run_continuation(crypto_req);
     }
+
+#ifdef EXTRA_PACKET2
+    EXTRA_PACKET2
+#endif
 }
 
 #ifndef PCAP_INPUT_COUNT
