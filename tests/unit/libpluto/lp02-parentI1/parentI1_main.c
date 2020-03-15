@@ -43,6 +43,9 @@ int main(int argc, char *argv[])
     conn_name = argv[1];
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+    cur_debugging |= MORE_DEBUGGING;
+#endif
     if(readwhackmsg(infile) == 0) {
         fprintf(stderr, "failed to read whack file: %s\n", infile);
         exit(11);
