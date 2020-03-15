@@ -58,6 +58,9 @@ int main(int argc, char *argv[])
     }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+    cur_debugging |= MORE_DEBUGGING;
+#endif
     if(readwhackmsg(infile) == 0) exit(10);
 
     /* output first packets to /dev/null */
@@ -71,7 +74,11 @@ int main(int argc, char *argv[])
     init_loaded();
 
     reset_globals();
+#ifdef MORE_DEBUGGING
+    st = sendI1(c1, MORE_DEBUGGING|DBG_CONTROL, regression == 0);
+#else
     st = sendI1(c1, DBG_CONTROL, regression == 0);
+#endif
     enable_debugging_on_sa(1);
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
