@@ -3,7 +3,7 @@ SAMPLEDIR=../../libpluto/samples
 TESTNAME=cryptoI2
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=parker1--jj2
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap parentR1.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap parentR1.pcap
 ENDNAME=parker
 
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o

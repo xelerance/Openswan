@@ -108,7 +108,7 @@ void recv_pcap_packet3ikev1(u_char *user
     }
 
 #ifdef EXTRA_PACKET2
-    EXTRA_PACKET2
+    EXTRA_PACKET2;
 #endif
 }
 
