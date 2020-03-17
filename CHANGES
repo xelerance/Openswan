@@ -5,6 +5,17 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 
+v2.6.52.1 (March 17, 2020)
+
+Fixing compiler warning and working with musl.
+
+* fix warning about switch fallthrough in parse_isakmp_sa_body() [anatoli]
+* fix warning about switch fallthrough in nat_traversal_vid_to_method() [anatoli]
+* fix warning about switch fallthrough in finish_pfkey_msg() [anatoli]
+* fix warning about switch fallthrough in informational() [anatoli]
+* fix warning about switch fallthrough in xauth_inI0() [anatoli]
+* lib/libpluto/writehackmsg.c: fix build on musl [Fabrice Fontaine]
+
 v2.6.52 (December 25, 2019)
 
 Bug fixes for various issues.
