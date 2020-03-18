@@ -21,8 +21,8 @@ processing whack msg time: X size: Y
 ./initiateselfI1 use keyid: 1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E / 2:<>
 | counting wild cards for @example.com is 0
 | orient gateway--any checking against if: eth0 (AF_INET:93.184.216.34:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient gateway--any matching on public/private keys: this=no[%address] that=yes[%any]
 |   orient gateway--any matched on that having private key
 | pick_if looking for port: 500, family: 2
@@ -42,13 +42,13 @@ RC=0 "gateway--any": %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.cre
 RC=0 "gateway--any":     myip=unset; hisip=unset;
 RC=0 "gateway--any":   keys: 1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E 2:none...
 RC=0 "gateway--any":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
-RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'gateway--any'
 | creating state object #1 at Z
 | orient gateway--any checking against if: eth0 (AF_INET:93.184.216.34:500)
-|   trusted_ca called with a=(empty) b=(empty)
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient gateway--any matching on public/private keys: this=yes[%any] that=no[%address]
 |   orient gateway--any matched on this having private key
 | pick_if looking for port: 500, family: 2
@@ -420,7 +420,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    next-payload: ISAKMP_NEXT_v2V [@848=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 892
 sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:500] to 132.213.238.7:500 (using #1)
@@ -479,7 +479,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   d5 28 36 92  28 23 8a 58  36 a2 4f d8  ee 6c cd bb
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | #1 complete v2 state transition with STF_OK
 ./initiateselfI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0

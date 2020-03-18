@@ -34,7 +34,7 @@ RC=0 "mytunnel": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
 RC=0 "mytunnel":   keys: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none...
 RC=0 "mytunnel":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:none
-RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 0: input from ../lp37-h2hR1/h2hI1.pcap
 |   =========== input from pcap file ../lp37-h2hR1/h2hI1.pcap ========
@@ -96,7 +96,8 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -106,11 +107,11 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
@@ -189,6 +190,7 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -293,6 +295,13 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | Notify data  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
 |   25 31 bf 62
 | emitting length of IKEv2 Notify Payload: 28
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   my next payload will not be a certificate request
+| I did not send a certificate request (CERTREQ) because
+|  has a preloaded a public for that end in st
+|   no known CA for the other end
+|   no CA certs available for validation
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
@@ -379,7 +388,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    message ID:  00 00 00 01
 |    length: 492
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -395,11 +405,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    length: 464
 | processing payload: ISAKMP_NEXT_v2E (len=464)
 | considering state entry: 0
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
+|   reject: received request, needs response message
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -595,7 +605,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  84 d5 ee 07
 | ikev2_evaluate_connection_fit, evaluating base fit for mytunnel
-|   ikev2_evaluate_connection_fit evaluating our I=mytunnel:<noclient>:0/0 R=<noclient:0/0  to their:
+|   ikev2_evaluate_connection_fit evaluating our I=mytunnel:<noclient>:0/0 R=<noclient>:0/0  to their:
 |     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535, tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=0 maskbits2=32 fitbits=8224 <> -1
@@ -1008,9 +1018,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  c0 a8 01 01
+| ipv4 low  84 d5 ee 07
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  c0 a8 01 01
+| ipv4 high  84 d5 ee 07
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 |    next-payload: ISAKMP_NEXT_v2TSr [@440=0x2d]
@@ -1023,9 +1033,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  84 d5 ee 07
+| ipv4 low  c0 a8 01 01
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  84 d5 ee 07
+| ipv4 high  c0 a8 01 01
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 | emitting 8 raw bytes of padding and length into cleartext
@@ -1063,9 +1073,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   05 00 00 00  00 00 00 24  04 03 04 03  34 56 78 12
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
 |   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
-|   07 00 00 10  00 00 ff ff  c0 a8 01 01  c0 a8 01 01
+|   07 00 00 10  00 00 ff ff  84 d5 ee 07  84 d5 ee 07
 |   00 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
-|   84 d5 ee 07  84 d5 ee 07  00 01 02 03  04 05 06 07
+|   c0 a8 01 01  c0 a8 01 01  00 01 02 03  04 05 06 07
 | data after encryption:
 |   c9 15 89 40  73 7d 7f 6f  46 e0 3b b1  0c 11 e3 68
 |   05 ae 11 e9  ef cc 33 1b  08 81 c6 46  ae 54 32 8b
@@ -1095,9 +1105,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 01  00 00 00 00  00 00 02 2c  22 00 02 10
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1129,11 +1139,11 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
 | out calculated auth:
-|   16 cd 14 21  c9 53 be 3c  1e 4f 26 e0
+|   22 91 66 a1  62 b0 b0 0b  c5 7c fd 7d
 sending 556 bytes for ikev2child_outC1_tail through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 01  00 00 00 00  00 00 02 2c  22 00 02 10
@@ -1166,10 +1176,10 @@ sending 556 bytes for ikev2child_outC1_tail through eth0:500 [132.213.238.7:500]
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
-|   16 cd 14 21  c9 53 be 3c  1e 4f 26 e0
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
+|   22 91 66 a1  62 b0 b0 0b  c5 7c fd 7d
 | #3 complete v2 state transition with STF_OK
 ./rekeyChildSA-fromR2 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 | v2_state_transition: st is #3; pst is #0; transition_st is #3

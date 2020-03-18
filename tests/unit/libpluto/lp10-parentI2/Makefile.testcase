@@ -5,5 +5,8 @@ CONNNAME=parker1--jj2
 ENDNAME=parker
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap OUTPUT/${TESTNAME}.pcap
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp08-parentR1/OUTPUT/parentR1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp08-parentR1/OUTPUT/parentR1.pcap .

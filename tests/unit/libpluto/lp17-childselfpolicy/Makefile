@@ -72,7 +72,7 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 include Makefile.testcase
 
 EF_DISABLE_BANNER=1
@@ -93,7 +93,7 @@ OUTPUT/R2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	tcpdump -n -t -v -r ${UNITTEST1PCAP} | tee OUTPUT/R2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-dump.txt
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 
 ifneq (${UNITTEST2PCAP},)
 check:: OUTPUT/R2-any.txt
@@ -104,7 +104,7 @@ OUTPUT/R2-any.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "set args "${UNITTEST2ARGS} >>.gdb2init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
 	tcpdump -n -t -v -r ${UNITTEST2PCAP} | tee OUTPUT/R2-any.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-any.txt
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
+	@${FILTERS} OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
 endif
 
 ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
@@ -114,14 +114,14 @@ ifneq (${UNITTEST2PCAP},)
 update:: update2
 update2:
 	-make OUTPUT/R2-any.txt
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
+	${FILTERS} OUTPUT/${TESTNAME}_2.txt >output2.txt
 	[ -f OUTPUT/R2-any.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-any.txt >R2-any.txt
 endif
 
 update:: update1
 update1:
 	-make OUTPUT/R2-dump.txt
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	${FILTERS} OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-dump.txt >R2-dump.txt
 
 

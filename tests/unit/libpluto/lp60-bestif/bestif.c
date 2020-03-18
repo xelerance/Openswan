@@ -88,10 +88,6 @@ int run_permutted_test(unsigned int numbers[6])
 
 int main(int argc, char *argv[])
 {
-    int   len;
-    char *infile;
-    char *conn_name;
-    int  lineno=0;
     int  numbers[IFACES_COUNT];
     int exits = 0;
 

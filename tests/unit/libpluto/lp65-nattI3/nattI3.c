@@ -3,10 +3,19 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_x509.c"
 #include "seam_gi_sha1.c"
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+
+static void init_fake_secrets(void)
+{
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL, NULL);
+}
 
 static void init_loaded(void)
 {   /* nothing */ }
@@ -18,9 +27,6 @@ void recv_pcap_packet(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
-    struct state *st;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
-
     recv_pcap_packet_gen(user, h, bytes);
     run_continuation(crypto_req);
 }
@@ -32,9 +38,6 @@ void recv_pcap_I3_process(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
-    struct state *st = NULL;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
-
     /* create a socket for a possible whack process that is doing --up */
     int fake_whack_fd = open("/dev/null", O_RDWR);
     passert(fake_whack_fd != -1);

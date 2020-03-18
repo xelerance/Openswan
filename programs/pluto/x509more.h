@@ -30,8 +30,8 @@ struct msg_digest;
 
 extern void decode_cert(struct msg_digest *md);
 extern void ikev2_decode_cert(struct msg_digest *md);
-extern void ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca);
-extern void decode_cr(struct msg_digest *md, generalName_t **requested_ca);
+extern void ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca_hashes);
+extern void ikev1_decode_cr(struct msg_digest *md, generalName_t **requested_ca_names);
 extern bool collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top);
 extern bool build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np);
 extern bool ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np);

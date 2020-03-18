@@ -32,7 +32,7 @@ processing whack msg time: X size: Y
 |   orient mytunnel-no-ikev2 finished with: 1 [132.213.238.7]
 RC=0 "mytunnel-no-ikev2": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel-no-ikev2":     myip=unset; hisip=unset;
-RC=0 "mytunnel-no-ikev2":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel-no-ikev2":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file h2hI1.pcap ========
 | *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
@@ -90,7 +90,8 @@ RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+S
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -100,11 +101,11 @@ RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+S
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
@@ -123,8 +124,8 @@ RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+S
 | searching for connection with policy = IKEv2ALLOW/-
 | find_host_connection2 returns empty (ike=mytunnel-no-ikev2/none)
 ./h2hR1-noikev2 connection refused, IKEv2 not authorized
-| processor 'responder-V2_init' returned STF_FAIL+32 (32)
-| #0 complete v2 state transition with STF_FAIL+32
+| processor 'responder-V2_init' returned STF_FAIL+24 (32)
+| #0 complete v2 state transition with STF_FAIL+24
 ./h2hR1-noikev2 no-state: AUTHENTICATION_FAILED
 ./h2hR1-noikev2 sending notification ISAKMP_v2_SA_INIT/v2N_AUTHENTICATION_FAILED to 192.168.1.1:500
 | **emit ISAKMP Message:

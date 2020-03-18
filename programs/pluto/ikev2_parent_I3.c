@@ -97,6 +97,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         /* in v1 code it is  decode_cert(struct msg_digest *md) */
         openswan_log("v2_CERT received on initiator, attempting to validate");
         ikev2_decode_cert(md);
+        st->hidden_variables.st_got_cert_from_peer = TRUE;
     }
 
     /* process AUTH payload */

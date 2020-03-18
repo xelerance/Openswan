@@ -53,7 +53,7 @@ void recv_pcap_packet(u_char *user
 		      , const u_char *bytes)
 {
     struct state *st;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+    //struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     recv_pcap_packet_gen(user, h, bytes);
 
@@ -69,10 +69,8 @@ void recv_pcap_packet(u_char *user
 
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
-    int  lineno=0;
     int  regression = 0;
     struct connection *c1;
     struct state *st;

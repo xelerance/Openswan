@@ -143,7 +143,8 @@ struct hidden_variables {
     int            st_xauth_client_attempt;
     bool           st_modecfg_server_done;
     bool           st_modecfg_vars_set;
-    bool           st_got_certrequest;
+    bool           st_got_cert_from_peer;  /* prevents sending more CERTREQ */
+    bool           st_got_certrequest;     /* we received a CERTREQ from peer */
     bool           st_modecfg_started;
     bool           st_skeyid_calculated;
     bool           st_dpd;                 /* Peer supports DPD */
@@ -157,9 +158,48 @@ struct hidden_variables {
     ip_address     st_natd;
 };
 
-#define set_suspended(st,md) do { st->st_suspended_md=md; \
-                                  st->st_suspended_md_func=__FUNCTION__; \
-                                  st->st_suspended_md_line=__LINE__; } while(0)
+/* return true if the state has async crypto operation */
+#define is_suspended(st) ((READ_ONCE(st->st_suspended_md)) != NULL)
+
+/* assert that state and md are bound on async crypto operation */
+#define assert_suspended(_st,_md) do { \
+    passert((_st)); \
+    if ((_st)->st_suspended_md != (_md)) { \
+        DBG_log("%s:%u st=%p->st_suspended_md=%p != md=%p", \
+                __func__, __LINE__, (_st), \
+                (_st) ? (_st)->st_suspended_md : NULL, (_md)); \
+        impossible(); \
+    } \
+    if((_md) && (_md)->st != (_st)) { \
+        DBG_log("%s:%u md=%p->st=%p != st=%p", \
+                __func__, __LINE__, (_md), (_md)->st, (_st)); \
+        impossible(); \
+    } \
+} while(0)
+
+
+/* assign or clear (md==NULL) async crypto operation */
+#define set_suspended(_st,_md) do { \
+    struct msg_digest *had_md = READ_ONCE((_st)->st_suspended_md); \
+    if (_md) { /* we are about to suspend the md */ \
+        if (had_md) { \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=%p, already claimed by md=%p (at %s:%u)", \
+                    __func__, __LINE__, (_st)->st_serialno, (_md), had_md, \
+		    (_st)->st_suspended_md_func, (_st)->st_suspended_md_line); \
+            impossible(); \
+        } \
+    } else { /* we are resuming a suspended md */ \
+        if (!had_md) { \
+            DBG_log("%s:%u set_suspended() called on #%lu with md=NULL, but st_suspended_md was already NULL (at %s:%u)", \
+                    __func__, __LINE__, (_st)->st_serialno, \
+		    (_st)->st_suspended_md_func, (_st)->st_suspended_md_line); \
+            impossible(); \
+        } \
+    } \
+    _st->st_suspended_md=(_md); \
+    _st->st_suspended_md_func=__FUNCTION__; \
+    _st->st_suspended_md_line=__LINE__; \
+} while(0)
 
 /* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
@@ -204,7 +244,7 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
-    bool               st_ikev2_orig_initiator;  /* if we keyed the parent SA */
+    bool               st_orig_initiator;    /* if we keyed the parent SA */
     u_char             st_ike_maj;
     u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
@@ -408,6 +448,7 @@ struct state
     u_int32_t           st_dpd_expectseqno;     /* Next R_U_THERE_ACK
 						   to receive */
     u_int32_t           st_dpd_peerseqno;       /* global variables */
+    u_int32_t           st_dpd_rdupcount;	/* openbsd isakmpd bug workaround */
     struct event       *st_dpd_event;          /* backpointer for DPD events */
 
     u_int32_t           st_seen_vendorid;      /* Bit field about
@@ -418,11 +459,11 @@ struct state
 };
 #define NULL_STATE NULL
 
-#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_ikev2_orig_initiator)
+#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_orig_initiator)
 #define IKEv2_ORIG_INITIATOR_FLAG(st) (IKEv2_IS_ORIG_INITIATOR(st)?ISAKMP_FLAGS_I : 0)
 
-/* map state->st_ikev2_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
-#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st1) ? INITIATOR : RESPONDER )
+/* map state->st_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
+#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st) ? INITIATOR : RESPONDER )
 
 extern bool states_use_connection(struct connection *c);
 

@@ -135,6 +135,8 @@ help(void)
             " [--dpddelay <seconds> --dpdtimeout <seconds>]"
             " [--dpdaction (clear|hold|restart|restart_by_peer)]"
             " \\\n   "
+            " [--firstmsgid [0|1]"
+            " \\\n   "
 
 #ifdef XAUTH
 	    " [--xauthserver]"
@@ -500,6 +502,7 @@ enum option_enums {
     CD_DPDDELAY,
     CD_DPDTIMEOUT,
     CD_DPDACTION,
+    CD_FIRSTMSGID,
     CD_FORCEENCAPS,
     CD_IKE,
     CD_PFSGROUP,
@@ -696,6 +699,7 @@ static const struct option long_opts[] = {
     { "dpddelay", required_argument, NULL, CD_DPDDELAY + OO + NUMERIC_ARG },
     { "dpdtimeout", required_argument, NULL, CD_DPDTIMEOUT + OO + NUMERIC_ARG },
     { "dpdaction", required_argument, NULL, CD_DPDACTION + OO },
+    { "firstmsgid", required_argument, NULL, CD_FIRSTMSGID + OO + NUMERIC_ARG },
 #ifdef XAUTH
     { "xauth", no_argument, NULL, END_XAUTHSERVER + OO },
     { "xauthserver", no_argument, NULL, END_XAUTHSERVER + OO },
@@ -1530,6 +1534,10 @@ main(int argc, char **argv)
             }
             continue;
 
+        case CD_FIRSTMSGID:
+            msg.first_msgid = opt_whole;
+            continue;
+
 	case CD_IKE:	/* --ike <ike_alg1,ike_alg2,...> */
 	    msg.ike = optarg;
 	    continue;
@@ -1927,6 +1935,15 @@ main(int argc, char **argv)
          && msg.dpd_action != DPD_ACTION_RESTART && msg.dpd_action != DPD_ACTION_RESTART_BY_PEER) {
             diag("dpdaction can only be \"clear\", \"hold\", \"restart\" or \"restart_by_peer\", defaulting to \"hold\"");
             msg.dpd_action = DPD_ACTION_HOLD;
+    }
+
+    switch (msg.first_msgid) {
+    case 0:
+    case 1:
+        break;
+    default:
+        diag("firstmsgid can only be 0 or 1");
+        break;
     }
 
     if (msg.remotepeertype != CISCO && msg.remotepeertype != NON_CISCO) {

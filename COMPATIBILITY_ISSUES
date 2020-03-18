@@ -9,7 +9,7 @@
   ---------
   conn os-ss
     ikev2=insist
-    ike=aes128-md5-modp2048
+    ike=aes128-md5;modp2048
     phase2alg=aes256-sha1
     pfs=no
 
@@ -31,7 +31,31 @@
   when pfs=yes
 
   In the case of pfs=yes configuration, a DH-group must be negotiated
-  for the child/ESP SA. Currently, the latest version of pluto will not
-  include the DH-group when negotiating ESP.
+  for the child/ESP SA. The latest version of pluto (2.6.52) may fail to
+  correctly negotiate the DH group for child SA.
 
-  Therefore, it is advised to explicitly disable PFS.
+  It is advised to explicitly disable PFS (pfs=no) or use the same
+  DH group for both ike= and phase2alg= statements.
+
+* Openswan v2.6.51+ may not interoperate with earlier versions.  While fixes
+  made in v2.6.51 adhere to the RFCs more closely, they lead to interop issues
+  with previous releases.  When interoperating with v2.6.50, or older, consider:
+
+  * using pfs=yes
+  * use a smaller ikelifetime= and keylife= on the newer version
+    NOTE: this is not advised if the newer version is behind NATT
+
+* Openswan v2.6.52 changes the behaviour of IKEv2 rekeys initiated by the
+  original responder of the IKE SA.  That is to say, if the host that did not
+  initiate the connection later attempts to rekey the child SA, things may
+  break between older (pre v2.6.52) and latter (v2.6.52+) versions of Openswan.
+
+  This change makes Openswan interoperate with strongSwan.  With the change
+  Openswan will adhere to the RFCs more closely, and like strongSwan, will
+  use message id of 0 for the first request message sent from either side
+  of the connection.
+
+  A new conn variable was added for ipsec.conf which allows for backwards
+  compatibility with Openswan 2.6.51 and prior.  Setting firstmsgid=1 will
+  allow for seamless interoperability with older versions.  The variable
+  defaults to 0, which breaks backwards compatibility, but is RFC complaint.

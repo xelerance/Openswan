@@ -4,18 +4,5 @@
 # it used by tests/build/b02-libnss/, but also by developers to
 # validate libnss builds.
 
-if [ -z "${DESTDIR}" ]; then
-   DESTDIR=`pwd`/OBJ.libnss.${BUILDENV}.${ARCH}/root
-   mkdir -p $DESTDIR
-fi
-
-if [ -z "${BUILDENV}" ]; then
-    BUILDENV=$(uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
-fi
-if [ -z "${ARCH}" ]; then
-    ARCH=$(uname -m)
-fi
-
-
-${MAKE-make} --no-print-directory USE_LIBNSS=true DESTDIR=${DESTDIR} OBJDIR=OBJ.libnss.${BUILDENV}.${ARCH} USE_LIBNSS=true programs install
+${MAKE-make} --no-print-directory USE_LIBNSS=true USE_LIBNSS=true programs
 

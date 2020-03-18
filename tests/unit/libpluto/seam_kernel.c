@@ -32,7 +32,8 @@ const char *kernel_if_name()
     return "kernel_seam";
 }
 
-void scan_proc_shunts(void) {}
+void pfkey_scan_proc_shunts(void) {}
+void netlink_scan_bare_shunts(void) {}
 
 bool kernel_overlap_supported()
 {

@@ -16,14 +16,24 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-clean check:
-	@${MAKE} -C lo01-sameid $@
-	@${MAKE} -C lo02-verifysigs $@
-	@${MAKE} -C lo03-includesecrets $@
-	@${MAKE} -C lo04-verifypubkeys  $@
-	@${MAKE} -C lo05-datatot        $@
-	@${MAKE} -C lo06-verifybadsigs $@
-	@${MAKE} -C lo07-bleichenbacher-attack $@
+UNITTESTS=
+UNITTESTS+=lo01-sameid
+UNITTESTS+=lo02-verifysigs
+UNITTESTS+=lo03-includesecrets
+UNITTESTS+=lo04-verifypubkeys
+UNITTESTS+=lo05-datatot
+UNITTESTS+=lo06-verifybadsigs
+UNITTESTS+=lo07-bleichenbacher-attack
+
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+
+programs clean check pcapupdate:
+clean check pcapupdate programs:
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}
+
 
 
 

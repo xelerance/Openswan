@@ -1,0 +1,42 @@
+debugging mode enabled
+Loading default conn
+Loading conn berri
+Loading conn peel
+Loading conn berrinet
+	while loading conn 'berrinet' also including 'berri'
+Loading conn peelnet
+	while loading conn 'peelnet' also including 'peel'
+Loading conn green
+	while loading conn 'green' also including 'peelnet'
+	while processing section 'peelnet' added also=peel
+	while loading conn 'green' also including 'peel'
+	while loading conn 'green' also including 'berrinet'
+	while processing section 'berrinet' added also=berri
+	while loading conn 'green' also including 'berri'
+emitting conn green with end-family: 2 and tunnel-family: 10
+./whacksemantics WARNING: cannot handle TRANSPORT mode with subnets
+./whacksemantics WARNING: connection green marked as INVALID_CONFIG
+./whacksemantics use keyid: 1:<> / 2:<>
+./whacksemantics use keyid: 1:<> / 2:<>
+./whacksemantics adding connection: "green"
+./whacksemantics leak: ID host_pair, item size: X
+./whacksemantics leak: 2 * host ip, item size: X
+./whacksemantics leak: connection name, item size: X
+./whacksemantics leak: struct connection, item size: X
+./whacksemantics leak: alsos, item size: X
+./whacksemantics leak: conn->alsos, item size: X
+./whacksemantics leak: new_list item, item size: X
+./whacksemantics leak: alsos, item size: X
+./whacksemantics leak: conn->alsos, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: default base, item size: X
+./whacksemantics leak detective found Z leaks, total size X
+processing requested conn adds
+green: was requested
+green: was loaded
+green: calling add_connection()
+green: was added
+green: policy RSASIG+ENCRYPT+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+0x40000000+INVALID_CONFIG+NEVER_NEGOTIATE

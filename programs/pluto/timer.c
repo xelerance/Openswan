@@ -48,6 +48,7 @@
 #include "log.h"
 #include "rnd.h"
 #include "timer.h"
+#include "replace.h"
 #include "whack.h"
 #include "dpd.h"
 #include "oswtime.h"
@@ -446,40 +447,16 @@ handle_timer_event(void)
 }
 
 void
-handle_next_timer_event(void)
+handle_a_timer_event(struct event *ev)
 {
-    struct event *ev = evlist;
-    time_t tm;
     int type;
     struct state *st;
 
-    tm = now();
-
-    if (ev == (struct event *) NULL)
-    {
+    if (!ev)
 	return;
-    }
 
-    evlist = evlist->ev_next;		/* Ok, we'll handle this event */
     type = ev->ev_type;
     st = ev->ev_state;
-
-    if(DBGP(DBG_CONTROL)) {
-        DBG_log("at %s handling event %s", oswtimestr()
-                , enum_show(&timer_event_names, type));
-    }
-
-    if(DBGP(DBG_CONTROL)) {
-	if (evlist != (struct event *) NULL) {
-	    DBG_log("event after this is %s in %ld seconds"
-		    , enum_show(&timer_event_names, evlist->ev_type)
-		    , (long) (evlist->ev_time - tm));
-	}
-	else {
-	    DBG_log("no more events are scheduled");
-	}
-
-    }
 
     /* for state-associated events, pick up the state pointer
      * and remove the backpointer from the state object.
@@ -507,12 +484,11 @@ handle_next_timer_event(void)
 	    init_secret();
 	    break;
 
-#ifdef KLIPS
 	case EVENT_SHUNT_SCAN:
-	    passert(st == NULL);
-	    scan_proc_shunts();
+	    passert(st == NULL);		// we are not attached to a state
+	    passert(kernel_ops->scan_shunts);	// checked for in init_kernel()
+	    kernel_ops->scan_shunts();
 	    break;
-#endif
 
         case EVENT_PENDING_DDNS:
 	    passert(st == NULL);
@@ -539,98 +515,13 @@ handle_next_timer_event(void)
 
 	case EVENT_SA_REPLACE:
 	case EVENT_SA_REPLACE_IF_USED:
-	    {
-		struct connection *c;
-		so_serial_t newest;
-
-		passert(st != NULL);
-		c = st->st_connection;
-		newest = IS_PARENT_SA(st)
-		    ? c->newest_isakmp_sa : c->newest_ipsec_sa;
-
-		if (newest != st->st_serialno
-		&& newest != SOS_NOBODY)
-		{
-		    /* not very interesting: no need to replace */
-		    DBG(DBG_LIFECYCLE
-			, openswan_log("not replacing stale %s SA: #%lu will do"
-			    , (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"
-			    , newest));
-		}
-		else if (type == EVENT_SA_REPLACE_IF_USED
-		&& st->st_outbound_time <= tm - c->sa_rekey_margin)
-		{
-		    /* we observed no recent use: no need to replace
-		     *
-		     * The sampling effects mean that st_outbound_time
-		     * could be up to SHUNT_SCAN_INTERVAL more recent
-		     * than actual traffic because the sampler looks at change
-		     * over that interval.
-		     * st_outbound_time could also not yet reflect traffic
-		     * in the last SHUNT_SCAN_INTERVAL.
-		     * We expect that SHUNT_SCAN_INTERVAL is smaller than
-		     * c->sa_rekey_margin so that the effects of this will
-		     * be unimportant.
-		     * This is just an optimization: correctness is not
-		     * at stake.
-		     *
-		     * Note: we are abusing the DBG mechanism to control
-		     * normal log output.
-		     */
-		    DBG(DBG_LIFECYCLE
-			, openswan_log("not replacing stale %s SA: inactive for %lus"
-			    , (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"
-			    , (unsigned long)(tm - st->st_outbound_time)));
-		}
-		else
-		{
-		    DBG(DBG_LIFECYCLE
-			, openswan_log("replacing stale %s SA"
-			    , (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"));
-		    ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
-		}
-		delete_dpd_event(st);
-		event_schedule(EVENT_SA_EXPIRE, st->st_margin, st);
-	    }
+	    sa_replace(st, type);
 	    break;
 
 	case EVENT_SA_EXPIRE:
-	    {
-		const char *satype;
-		so_serial_t latest;
-		struct connection *c;
+	    sa_expire(st);
+	    break;
 
-		passert(st != NULL);
-		c = st->st_connection;
-
-		if (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))
-		{
-		    satype = "ISAKMP";
-		    latest = c->newest_isakmp_sa;
-		}
-		else
-		{
-		    satype = "IPsec";
-		    latest = c->newest_ipsec_sa;
-		}
-
-		if (st->st_serialno != latest)
-		{
-		    /* not very interesting: already superseded */
-		    DBG(DBG_LIFECYCLE
-			, openswan_log("%s SA expired (superseded by #%lu)"
-			    , satype, latest));
-		}
-		else
-		{
-		    openswan_log("%s SA expired (%s)", satype
-			, (c->policy & POLICY_DONT_REKEY)
-			    ? "--dontrekey"
-			    : "LATEST!"
-			);
-		}
-	    }
-	    /* FALLTHROUGH */
 	case EVENT_SO_DISCARD:
 	    /* Delete this state object.  It must be in the hash table. */
 #if 0 /* delete_state will take care of this better ? */
@@ -680,6 +571,35 @@ handle_next_timer_event(void)
 
     pfree(ev);
     reset_cur_state();
+}
+
+void
+handle_next_timer_event(void)
+{
+    struct event *ev;
+
+    ev = evlist;
+    evlist = evlist->ev_next;		/* Ok, we'll handle this event */
+
+    if(DBGP(DBG_CONTROL)) {
+        DBG_log("at %s handling event %s", oswtimestr()
+                , enum_show(&timer_event_names, ev->ev_type));
+    }
+
+    if(DBGP(DBG_CONTROL)) {
+	time_t tm = now();
+	if (evlist != (struct event *) NULL) {
+	    DBG_log("event after this is %s in %ld seconds"
+		    , enum_show(&timer_event_names, evlist->ev_type)
+		    , (long) (evlist->ev_time - tm));
+	}
+	else {
+	    DBG_log("no more events are scheduled");
+	}
+
+    }
+
+    handle_a_timer_event(ev);
 }
 
 /*

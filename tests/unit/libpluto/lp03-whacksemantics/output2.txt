@@ -64,6 +64,17 @@ did not find conn: clear-or-private, loading implicit
 did not find conn: private-or-clear, loading implicit
 did not find conn: private, loading implicit
 did not find conn: block, loading implicit
+emitting conn knothole--cassidy with end-family: 2 and tunnel-family: 10
+./whacksemantics use keyid: 1:<> / 2:<>
+./whacksemantics use keyid: 1:<> / 2:<>
+./whacksemantics adding connection: "knothole--cassidy"
+./whacksemantics leak: 2 * keep id name, item size: X
+./whacksemantics leak: ID host_pair, item size: X
+./whacksemantics leak: keep id name, item size: X
+./whacksemantics leak: host ip, item size: X
+./whacksemantics leak: keep id name, item size: X
+./whacksemantics leak: connection name, item size: X
+./whacksemantics leak: struct connection, item size: X
 ./whacksemantics leak: 2 * new_list item, item size: X
 ./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: 2 * new_list item, item size: X
@@ -98,4 +109,9 @@ did not find conn: block, loading implicit
 ./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: default base, item size: X
 ./whacksemantics leak detective found Z leaks, total size X
-processing conn: knothole--cassidy
+processing requested conn adds
+knothole--cassidy: was requested
+knothole--cassidy: was loaded
+knothole--cassidy: calling add_connection()
+knothole--cassidy: was added
+knothole--cassidy: policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK

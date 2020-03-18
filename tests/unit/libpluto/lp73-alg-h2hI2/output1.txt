@@ -34,7 +34,7 @@ processing whack msg time: X size: Y
 |   orient alttunnel finished with: 1 [192.168.1.1]
 RC=0 "alttunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "alttunnel":     myip=unset; hisip=unset;
-RC=0 "alttunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "alttunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "alttunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'alttunnel'
 | creating state object #1 at Z
@@ -149,7 +149,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    message ID:  00 00 00 00
 |    length: 428
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -240,18 +245,19 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| proposal 1 failed encr= (policy:aes-cbc vs offered:3des)
-|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
-|             failed prf=  (policy:prf-hmac-sha1 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| proposal 1 failed encr= (policy:aes-cbc vs offered:3des)
-|             succeeded integ=(policy:auth-hmac-md5-96 vs offered:auth-hmac-md5-96)
-|             succeeded prf=  (policy:prf-hmac-md5 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| proposal 1 succeeded encr= (policy:3des vs offered:3des)
-|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
-|             failed prf=  (policy:prf-hmac-sha1 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1 failed encr= (policy:             aes-cbc[-1] vs offered:3des[128]) [0,1]
+| proposal 1 failed integ=(policy:   auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
+| proposal 1 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1 failed encr= (policy:             aes-cbc[-1] vs offered:3des[128]) [1,2]
+| proposal 1   succ integ=(policy:    auth-hmac-md5-96 vs offered:auth-hmac-md5-96)
+| proposal 1   succ prf=  (policy:        prf-hmac-md5 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1   succ encr= (policy:                3des[-1] vs offered:3des[-1]) [2,3]
+| proposal 1 failed integ=(policy:   auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
+| proposal 1 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| selected proposal 1 encr=3des[-1] integ=auth-hmac-md5-96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
@@ -560,6 +566,7 @@ sending 476 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

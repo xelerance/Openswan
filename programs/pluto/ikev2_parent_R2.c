@@ -46,6 +46,14 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
     struct state *st = md->st;
     /* struct connection *c = st->st_connection; */
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /*
      * the initiator sent us an encrypted payload. We need to calculate
      * our g^xy, and skeyseed values, and then decrypt the payload.
@@ -110,7 +118,7 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == dh->md);
+    assert_suspended(st, dh->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
 
     set_cur_state(st);
@@ -222,6 +230,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                  */
                 openswan_log("v2_CERT received on reponder, attempting to validate");
                 ikev2_decode_cert(md);
+                st->hidden_variables.st_got_cert_from_peer = TRUE;
             }
     }
 
@@ -230,7 +239,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         {
             DBG(DBG_CONTROLMORE
                 ,DBG_log("has a v2CERTREQ payload going to decode it"));
-            ikev2_decode_cr(md, &st->st_connection->requested_ca);
+            ikev2_decode_cr(md, &st->st_connection->ikev2_requested_ca_hashes);
+            if(st->st_connection->ikev2_requested_ca_hashes != NULL)
+                st->hidden_variables.st_got_certrequest = TRUE;
         }
 
     /* process AUTH payload now */
@@ -294,7 +305,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
 
+    /* switch to port 4500, if necessary */
     ikev2_update_nat_ports(st);
+
+    /* enable NAT-T keepalives, if necessary */
+    ikev2_enable_nat_keepalives(st);
 
     authstart = reply_stream.cur;
     /* send response */
@@ -400,8 +415,13 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                   , RESPONDER
                                                   , ISAKMP_NEXT_v2AUTH
                                                   , &e_pbs_cipher);
-            if(certstat != STF_OK) return certstat;
-            }
+            if(certstat != STF_OK)
+                return certstat;
+
+            /* CERTREQ was fulfiled, don't send again */
+            if (st->st_connection->spd.this.sendcert == cert_sendifasked)
+                st->hidden_variables.st_got_certrequest = FALSE;
+        }
 
         /* since authentication good,
          * see if there is a child SA being proposed */
@@ -471,7 +491,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      * at this point, the other end has proven who they are, and so we should stop
      * setting the I bit....
      */
-    st->st_ikev2_orig_initiator = FALSE;
+    st->st_orig_initiator = FALSE;
 
     /* keep it for a retransmit if necessary */
     freeanychunk(st->st_tpacket);

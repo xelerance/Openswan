@@ -33,6 +33,7 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 #include <fcntl.h>
+#include <limits.h>  /* for PATH_MAX */
 #include <time.h>
 
 #include <openswan.h>

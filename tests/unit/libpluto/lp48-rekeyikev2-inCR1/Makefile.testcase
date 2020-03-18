@@ -5,7 +5,10 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null ../lp10-parentI2/parentR1.pcap ../lp13-parentI3/parentR2.pcap rekeyCR1.pcap
 ENDNAME=parker
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp47-rekeyikev2-R1/OUTPUT/rekeyikev2-R1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp47-rekeyikev2-R1/OUTPUT/rekeyikev2-R1.pcap rekeyCR1.pcap
 
 

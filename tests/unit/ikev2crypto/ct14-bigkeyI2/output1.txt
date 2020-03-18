@@ -39,7 +39,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
@@ -151,7 +151,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    message ID:  00 00 00 00
 |    length: 376
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -215,6 +220,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
@@ -655,6 +661,7 @@ sending 620 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 ./pickkeyI2 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

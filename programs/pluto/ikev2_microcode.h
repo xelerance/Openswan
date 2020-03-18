@@ -16,7 +16,8 @@ struct state_v2_microcode {
     lset_t req_enc_payloads;  /* required encrypted payloads (allows just one) for received packet */
     lset_t opt_enc_payloads;  /* optional encrypted payloads (none or one) for received packet */
     enum event_type timeout_event;
-    state_transition_fn *processor;
+    state_transition_fn *processor; /* handle expected message matching payloads as described above */
+    state_transition_fn *ntf_processor; /* handle an encrypted notification */
 };
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;

@@ -75,9 +75,11 @@
 #include "tpm/tpm.h"
 
 enum smf2_flags {
-    SMF2_INITIATOR = LELEM(1),
-    SMF2_STATENEEDED = LELEM(2),
-    SMF2_REPLY = LELEM(3),
+    SMF2_INITIATOR      = LELEM(1),
+    SMF2_STATENEEDED    = LELEM(2),
+    SMF2_REPLY          = LELEM(3),     // microcode processor will generate a reply
+    SMF2_MATCH_REQUEST  = LELEM(4),     // microcode will only match incoming request messages
+    SMF2_MATCH_RESPONSE = LELEM(5),     // microcode will only match incoming request messages
 };
 
 /*
@@ -135,7 +137,7 @@ const struct state_v2_microcode ikev2_childrekey_microcode =
     { .svm_name   = "rekey-child",
       .state      = STATE_UNDEFINED,
       .next_state = STATE_CHILD_C1_REKEY,
-      .flags =  SMF2_INITIATOR,
+      .flags      =  SMF2_INITIATOR,
       .processor  = NULL,
     };
 
@@ -145,7 +147,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-V2_init",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_PARENT_I2,
-      .flags = SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Nr),
       .opt_clear_payloads = P(CERTREQ),
       .processor  = ikev2parent_inR1outI2,
@@ -156,10 +158,10 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-failure",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_IKESA_DEL,
-      .flags = SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
       .opt_clear_payloads = P(N),
-      .processor  = ikev2parent_inR1,
+      .processor  = ikev2parent_ntf_inR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
@@ -167,7 +169,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-auth-process",
       .state      = STATE_CHILD_C0_KEYING,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE|SMF2_INITIATOR|SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDr) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
       .opt_enc_payloads = P(CERT),
@@ -180,7 +182,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "responder-V2_init",
       .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
-      .flags =  /* not SMF2_INITIATOR, not SMF2_STATENEEDED */ SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR, not SMF2_STATENEEDED */ SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Ni),
       .processor  = ikev2parent_inI1outR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
@@ -190,7 +192,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "responder-auth-process",
       .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R2,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDi) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
       .opt_enc_payloads = P(CERT) | P(CERTREQ) | P(IDr),
@@ -203,7 +205,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "none",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
+      .flags      = SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Nr),
       .opt_enc_payloads = 0,
@@ -216,11 +218,12 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-childSA-ack",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
       .opt_enc_payloads = 0,
       .processor  = ikev2child_inCR1,
+      .ntf_processor = ikev2child_inCR1_ntf,
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_SA_REPLACE,
     },
@@ -229,7 +232,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-responder",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
@@ -242,7 +245,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "none",
       .state      = 0,
       .next_state = 0,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = 0,
       .req_enc_payloads = 0,
       .opt_enc_payloads = 0,
@@ -312,7 +315,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-initiator",
       .state      = STATE_PARENT_I3,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
@@ -325,7 +328,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "delete-child-SA-req",
       .state      = STATE_CHILD_C1_KEYED,
       .next_state = STATE_CHILDSA_DEL,
-      .flags =  SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .opt_enc_payloads = P(N) | P(D),
       .processor  =  process_informational_ikev2,
@@ -349,13 +352,51 @@ struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "rekey-child-SA-initiator-2",
       .state      = STATE_CHILD_C1_KEYED,
       .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .flags      = SMF2_MATCH_REQUEST | SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = P(KE),
       .processor  = ikev2child_inI3,
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_SA_REPLACE,
+    },
+
+    /* state 18 */
+    { .svm_name   = "initiator-auth-failure",
+      .state      = STATE_CHILD_C0_KEYING,
+      .next_state = STATE_IKESA_DEL,
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_STATENEEDED,
+      .req_clear_payloads = P(N),
+      .opt_clear_payloads = P(N),
+      .processor  = ikev2parent_ntf_inR2,
+      .recv_type  = ISAKMP_v2_AUTH,
+    },
+
+    /* state 19 */
+    { .svm_name   = "rekey-childSA-ack-R2",
+      .state      = STATE_PARENT_R2,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags      = SMF2_MATCH_RESPONSE | /* not SMF2_INITIATOR */ SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
+      .opt_enc_payloads = 0,
+      .processor  = ikev2child_inCR1,
+      .ntf_processor = ikev2child_inCR1_ntf,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_SA_REPLACE,
+    },
+
+    /* state 20: Informational Response */
+    { .svm_name   = "deleting-ack",
+      .state      = STATE_DELETING,
+      .next_state = STATE_PARENT_R2,
+      /* TODO: we should use flags|=SMF2_REPLY here, and remove send_packet
+       *       from process_informational_ikev2() */
+      .flags      = SMF2_MATCH_RESPONSE | SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .opt_enc_payloads = P(N) | P(D) | P(CP),
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
     /* last entry */
@@ -516,18 +557,44 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     const struct state_v2_microcode *svm = md->svm;
     stf = ikev2_collect_payloads(md, in_pbs, &seen, np);
 
-    if(stf != STF_OK) {
+    /* decryption error, stop now */
+    if(stf != STF_OK)
         return stf;
-    }
 
     if (svm->req_enc_payloads & ~seen) {
         /* missing payloads in encryption part */
-        loglog(RC_LOG_SERIOUS,
-               "missing payloads (within encryption) for v2_state: %s: %s. Message dropped."
-               , svm->svm_name
-               , bitnamesof(payload_name_ikev2_main
-                            , svm->req_enc_payloads & ~seen));
-        return STF_FAIL + v2N_INVALID_SYNTAX;
+
+        if (md->chain[ISAKMP_NEXT_v2N] && svm->ntf_processor) {
+            /* we had en encrypted notification, and there is
+             * a handler set to process the notification */
+
+            DBG(DBG_CONTROL, DBG_log(
+                    "missing payloads (within encryption) for v2_state: %s. "
+                    "Handling encrypted notification.", svm->svm_name));
+
+            stf = (svm->ntf_processor)(md);
+
+            /* we have to return an error to let the caller know that something
+             * went wrong */
+            if (stf == STF_OK) {
+                DBG(DBG_CONTROL, DBG_log(
+                        "notification handler returned OK; "
+                        "maybe FAIL/STOLEN/IGNORE is more appropriate"));
+
+                stf = STF_FAIL; /* XXX or STF_IGNORE or STF_STOLEN XXX */
+            }
+
+        } else {
+            /* we have no other recourse, but to drop the packet */
+
+            loglog(RC_LOG_SERIOUS,
+                   "missing payloads (within encryption) for v2_state: %s: %s. "
+                   "Message dropped."
+                   , svm->svm_name
+                   , bitnamesof(payload_name_ikev2_main
+                                , svm->req_enc_payloads & ~seen));
+            return STF_FAIL + v2N_INVALID_SYNTAX;
+        }
     }
     return stf;
 }
@@ -593,12 +660,20 @@ process_v2_packet(struct msg_digest **mdp)
     /* NOTE: in_struct() did not change the byte order, so make a copy in local order */
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
+    if(IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
+        /* message from the original initiator, that makes me the original responder */
+	DBG(DBG_CONTROL, DBG_log("I am the IKE SA Responder"));
+    } else {
+        /* message from the original responder, that makes me the original initiator */
+	DBG(DBG_CONTROL, DBG_log("I am the IKE SA Initiator"));
+    }
+
     if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
-	/* then I am the responder */
+	/* then I am the responder, to this request */
 
 	md->role = RESPONDER;
 
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
+	DBG(DBG_CONTROL, DBG_log("I am this exchange's Responder"));
 
         st = find_state_ikev2_child(md->hdr.isa_icookie
                                     , md->hdr.isa_rcookie
@@ -645,48 +720,38 @@ process_v2_packet(struct msg_digest **mdp)
 
 	md->role = INITIATOR;
 
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
+	DBG(DBG_CONTROL, DBG_log("I am this exchange's Initiator"));
 
-	if(md->msgid_received==MAINMODE_MSGID) {
-	    st = find_state_ikev2_parent(md->hdr.isa_icookie
-					 , md->hdr.isa_rcookie);
-	    if(st == NULL) {
-		st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
-		if(st) {
-		    /* responder inserted its cookie, record it */
-		    unhash_state(st);
-		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
-		    insert_state(st);
-		} else {
-                    /*
-                     * response is from some weird place. It probably does not
-                     * not belong.  It might be a sign that we have rebooted,
-                     * and we should rekey?
-                     * This logging should be rate limited by remote IP address,
-                     * and we need to find/make a library for rate-limited by remote.
-                     */
-                    openswan_log("ignored received packet with unknown cookies");
-                    /* cookies will have been dumped by state_hash() during lookup */
-                    return;
-                }
-	    }
-	} else {
-	    st = find_state_ikev2_child(md->hdr.isa_icookie
-					, md->hdr.isa_rcookie
-					, md->msgid_received);
-
-	    if(st) {
-		/* found this child state, so we'll use it */
-		/* note we update the st->st_msgid_lastack *AFTER* decryption*/
-	    } else {
-		/*
-		 * didn't find something with the msgid, so maybe it's
-		 * not valid?
-		 */
-		st = find_state_ikev2_parent(md->hdr.isa_icookie
-					     , md->hdr.isa_rcookie);
-	    }
+	st = find_state_ikev2_child(md->hdr.isa_icookie
+				    , md->hdr.isa_rcookie
+				    , md->msgid_received);
+	if (!st) {
+            /* try again, as parent state */
+            st = find_state_ikev2_parent(md->hdr.isa_icookie
+                                         , md->hdr.isa_rcookie);
 	}
+        if (!st) {
+            /* last attempt, parent, with zero cookie */
+            st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
+            if(st) {
+                /* responder inserted its cookie, record it */
+                unhash_state(st);
+                memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+                insert_state(st);
+            }
+        }
+        if (!st) {
+            /*
+             * response is from some weird place. It probably does not
+             * not belong.  It might be a sign that we have rebooted,
+             * and we should rekey?
+             * This logging should be rate limited by remote IP address,
+             * and we need to find/make a library for rate-limited by remote.
+             */
+            openswan_log("ignored received packet with unknown cookies");
+            /* cookies will have been dumped by state_hash() during lookup */
+            return;
+        }
 
         pst = st;
 
@@ -757,6 +822,24 @@ process_v2_packet(struct msg_digest **mdp)
     for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm_num++,svm++) {
         DBG(DBG_CONTROLMORE, DBG_log("considering state entry: %u", svm_num));
         if(svm->processor == NULL) continue;  /* let there be empty states for historical reasons */
+
+	if(svm->flags & SMF2_MATCH_REQUEST) {
+            /* microcode matches request messages */
+            if(md->role == INITIATOR) {
+                /* message is a response */
+                DBG(DBG_CONTROLMORE,DBG_log("  reject: received response, needs request message"));
+                continue;
+            }
+        }
+	if(svm->flags & SMF2_MATCH_RESPONSE) {
+            /* microcode matches reply messages */
+            if(md->role == RESPONDER) {
+                /* message is a request */
+                DBG(DBG_CONTROLMORE,DBG_log("  reject: received request, needs response message"));
+                continue;
+            }
+        }
+
 	if(svm->flags & SMF2_STATENEEDED) {
 	    if(st==NULL) {
                 DBG(DBG_CONTROLMORE,DBG_log("  reject:state needed and state unavailable"));
@@ -1382,10 +1465,16 @@ void complete_v2_state_transition(struct msg_digest **mdp
     case STF_TOOMUCHCRYPTO:
 	/* well, this should never happen during a whack, since
 	 * a whack will always force crypto.
+	 *
+	 * There is a good chance we don't have a st here. In IKEv2 I1/R1
+	 * we have already deleted the state when we saw STF_TOOMUCHCRYPTO
+	 * returned by build_ke() or build_nonce().
 	 */
-	passert(st);
-	set_suspended(st, NULL);
-	pexpect(st->st_calculating == FALSE);
+	if (st) {
+		if (st->st_suspended_md == md)
+                    set_suspended(st, NULL);
+		pexpect(st->st_calculating == FALSE);
+	}
 	openswan_log("message in state %s ignored due to "
 	             "cryptographic overload"
 	             , from_state_name);
@@ -1444,27 +1533,48 @@ void complete_v2_state_transition(struct msg_digest **mdp
 stf_status
 accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *name)
 {
+    struct ikev2_ke *v2ke;
     pb_stream *keyex_pbs;
-    v2_notification_t rn;
+    notification_t rn;
+    u_int16_t group_number;
     chunk_t dc;
+
     if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
         return STF_FAIL;
+
+    /* validate the v2KE group */
+
+    v2ke = &md->chain[ISAKMP_NEXT_v2KE]->payload.v2ke;
+
+    if (st->st_oakley.group->group != v2ke->isak_group) {
+	loglog(RC_LOG_SERIOUS, "KE has DH group %u, but we selected %u",
+               v2ke->isak_group, st->st_oakley.group->group);
+        goto send_invalid_ke_ntf;
+    }
 
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
 
     /* KE in */
-    rn=accept_KE(ke, name, st->st_oakley.group, keyex_pbs);
+    rn = accept_KE(ke, name, st->st_oakley.group, keyex_pbs);
+    if (rn == NOTHING_WRONG)
+        return STF_OK;
 
-    if(rn != v2N_NOTHING_WRONG) {
-        u_int16_t group_number = htons(st->st_oakley.group->group);
-        dc.ptr = (unsigned char *)&group_number;
-        dc.len = 2;
-        SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
-        delete_state(st);
-        return STF_FAIL + rn;
-    }
+    if (rn == INVALID_KEY_INFORMATION)
+        /* special case, we want to send a notification here */
+        goto send_invalid_ke_ntf;
 
-    return STF_OK;
+    /* pass any other failure up to caller */
+    return STF_FAIL+rn;
+
+send_invalid_ke_ntf:
+    group_number = htons(st->st_oakley.group->group);
+    dc.ptr = (unsigned char *)&group_number;
+    dc.len = 2;
+    SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
+    /* notification sent, return failure, but prevent another
+     * notification from complete_v2_state_transition(). */
+    md->note = 0;
+    return STF_FAIL;
 }
 
 v2_notification_t

@@ -109,6 +109,11 @@ initiate_a_connection(struct connection *c
     {
 	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
     }
+    else if (IS_INVALID_CONFIG(c->policy))
+    {
+	loglog(RC_INITSHUNT
+	       , "cannot initiate connection due to invalid configuration");
+    }
     else if (NEVER_NEGOTIATE(c->policy))
     {
 	loglog(RC_INITSHUNT
@@ -1527,7 +1532,9 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	{
 	    struct connection *next = d->ac_next;	/* might move underneath us */
 
-	    if ( ((d->kind == CK_PERMANENT) || (d->kind == CK_INSTANCE) || (d->kind == CK_GOING_AWAY))
+	    if ( c != d
+	    && ((d->kind == CK_PERMANENT) || (d->kind == CK_INSTANCE)
+		|| (d->kind == CK_GOING_AWAY))
 	    && same_id(&c->spd.this.id, &d->spd.this.id)
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr)
@@ -1631,6 +1638,7 @@ static void connection_check_ddns1(struct connection *c)
      * lookup
      */
     update_host_pairs(c);
+    c->proposal_index = 0;
     initiate_connection(c->name, NULL_FD, 0, pcim_demand_crypto);
 
     /* no host pairs,  no more to do */

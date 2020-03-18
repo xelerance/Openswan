@@ -7,7 +7,10 @@ UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} ../lp62-nattR1/nattI1.pc
 
 TESTNAME=nattR2
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp63-nattI2/OUTPUT/nattI2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp63-nattI2/OUTPUT/nattI2.pcap nattI2.pcap
 
 

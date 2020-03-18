@@ -70,11 +70,8 @@ static void init_fake_secrets(void)
 int main(int argc, char *argv[])
 {
     bool  recalculate = FALSE;
-    int   len;
-    err_t err = NULL;
     char *infile;
     char *conn_name;
-    int  lineno=0;
     struct connection *c1 = NULL;
 
 #ifdef HAVE_EFENCE
@@ -95,6 +92,8 @@ int main(int argc, char *argv[])
         recalculate = 1;    /* do all crypto */
         argc--; argv++;
     }
+
+    (void)recalculate;
 
     tool_init_log();
     load_oswcrypto();

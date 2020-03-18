@@ -5,8 +5,6 @@ result in a failure to authenticate.
 In fact, because the RSA auth operations are mock'ed, the authentication does
 not fail, because it isn't performed at all.
 
-parentI1.pcap is copied from ../lp15-certificateselfI1/OUTPUT/certificateselfI1.pcap
-
 
 
 

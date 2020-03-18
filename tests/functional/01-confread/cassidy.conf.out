@@ -330,8 +330,8 @@ conn cassidy--correlhorn
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
 	rekey=no
-	dpddelay=0
-	dpdtimeout=0
+	dpddelay=20
+	dpdtimeout=120
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -358,8 +358,8 @@ conn istari--correlhorn-extrude
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
 	rekey=no
-	dpddelay=0
-	dpdtimeout=0
+	dpddelay=20
+	dpdtimeout=120
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -386,8 +386,8 @@ conn franklin--correlhorn-extrude
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
 	rekey=no
-	dpddelay=0
-	dpdtimeout=0
+	dpddelay=20
+	dpdtimeout=120
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -414,8 +414,8 @@ conn aragorn--correlhorn-extrude
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
 	rekey=no
-	dpddelay=0
-	dpdtimeout=0
+	dpddelay=20
+	dpdtimeout=120
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -586,8 +586,8 @@ conn correlhorn-extrude
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
-	dpddelay=0
-	dpdtimeout=0
+	dpddelay=20
+	dpdtimeout=120
 	auto=ignore
 	type=tunnel
 	compress=no

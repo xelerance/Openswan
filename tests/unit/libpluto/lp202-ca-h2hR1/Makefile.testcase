@@ -1,0 +1,13 @@
+# -*- makefile -*-
+CONNNAME=rw
+ENDNAME=gatewaycert-ca
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} h2hI1.pcap OUTPUT/h2hR1.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=h2hR1
+
+PCAPDEPENDENCIES = ../lp201-ca-h2hI1/OUTPUT/h2hI1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
+	cp ../lp201-ca-h2hI1/OUTPUT/h2hI1.pcap h2hI1.pcap

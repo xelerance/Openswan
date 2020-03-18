@@ -102,13 +102,7 @@ void process_dns_results(void) {
 int main(int argc, char *argv[])
 {
     bool  recalculate = FALSE;
-    int   len;
     err_t e;
-    err_t err = NULL;
-    char *infile;
-    char *conn_name;
-    int  lineno=0;
-    struct connection *c1 = NULL;
     struct id moon, cassidy;
     struct adns_continuation *cr1 = NULL;
 
@@ -131,6 +125,8 @@ int main(int argc, char *argv[])
         recalculate = 1;    /* do all crypto */
         argc--; argv++;
     }
+
+    (void)recalculate;
 
     tool_init_log();
     cur_debugging |= DBG_DNS;
@@ -165,11 +161,14 @@ int main(int argc, char *argv[])
                          cassidy_continue, cr1);
     freeanychunk(cassidy.name);
     process_dns_results();
+#else
+    (void)cassidy;
 #endif
 
     /* re-use cassidy */
     cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
     e = start_adns_hostname(AF_UNSPEC, "cassidy.sandelman.ca", cassidy_host_continue, cr1);
+    (void)e;
     process_dns_results();
 
     stop_adns();

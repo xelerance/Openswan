@@ -18,7 +18,6 @@
 
 char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 
-#include <asm/types.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 /* #include <linux/netdevice.h> */

@@ -481,7 +481,6 @@ ipsecdoi_replace(struct state *st
 	policy = policy | policy_add;
 
 	initiator = pick_initiator(c, policy);
-	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
 	    (void) initiator(whack_sock, st->st_connection, st, &newstateno, policy
 			     , try, st->st_import
@@ -705,13 +704,13 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	struct connection *r;
 
 	/* check for certificate requests */
-	decode_cr(md, &c->requested_ca);
+	ikev1_decode_cr(md, &c->ikev1_requested_ca_names);
 
 	r = refine_host_connection(st, &peer, initiator, aggrmode);
 
 	/* delete the collected certificate requests */
-	free_generalNames(c->requested_ca, TRUE);
-	c->requested_ca = NULL;
+	free_generalNames(c->ikev1_requested_ca_names, TRUE);
+	c->ikev1_requested_ca_names = NULL;
 
 	if (r == NULL)
 	{
@@ -775,7 +774,7 @@ void initialize_new_state(struct state *st
     st->st_try   = try;
 
     st->st_import = importance;
-    st->st_msgid_nextuse = 1;     /* first non-INIT message is 1 */
+    st->st_msgid_nextuse = c->first_msgid; // defaults to 0, firstmsgid=[0|1] from ipsec.conf
     st->st_msgid_lastack = INVALID_MSGID;
 
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {

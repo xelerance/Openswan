@@ -123,17 +123,18 @@ stf_status process_nat_payload(struct state *st
     if(same_chunk(*data, calculated_hash)) {
         DBG(DBG_PARSING|DBG_CONTROLMORE, DBG_log("nat-t payloads for %s match: no NAT", payload_name));
     } else {
-        st->hidden_variables.st_nat_traversal = NAT_T_WITH_RFC_VALUES |
-            NAT_T_DETECTED;
+	st->hidden_variables.st_nat_traversal = NAT_T_WITH_RFC_VALUES;
 
         switch(notify_type) {
         case v2N_NAT_DETECTION_DESTINATION_IP:
             loglog(RC_COMMENT, "detected that I am NATed");
+	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_ME);
             break;
         case v2N_NAT_DETECTION_SOURCE_IP:
             addrtot(addr, 0, addrbuf, ADDRTOT_BUF);
             loglog(RC_COMMENT, "detected that they are NATed at: %s:%u"
                          , addrbuf, port);
+	    st->hidden_variables.st_nat_traversal |= LELEM(NAT_TRAVERSAL_NAT_BHND_PEER);
             break;
         default:
             break;
@@ -203,6 +204,12 @@ stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md)
     }
 
     return STF_OK;
+}
+
+void ikev2_enable_nat_keepalives(struct state *st)
+{
+    if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_KA)
+	nat_traversal_new_ka_event();
 }
 
 /* add notify payload to the rbody */

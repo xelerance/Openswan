@@ -157,8 +157,11 @@ extern bool same_serial(chunk_t a, chunk_t b);
 extern bool same_keyid(chunk_t a, chunk_t b);
 extern bool same_dn(chunk_t a, chunk_t b);
 #define MAX_CA_PATH_LEN		7
-extern bool trusted_ca(chunk_t a, chunk_t b, int *pathlen);
-extern bool match_requested_ca(generalName_t *requested_ca
+extern bool trusted_ca_by_name(chunk_t a, chunk_t b, int *pathlen);
+extern bool trusted_ca_by_keyid(chunk_t a, chunk_t b, int *pathlen);
+extern bool match_requested_ca_name(const generalName_t *requested_ca
+    , chunk_t our_ca, int *our_pathlen);
+extern bool match_requested_ca_keyid(const generalName_t *requested_ca
     , chunk_t our_ca, int *our_pathlen);
 extern bool match_dn(chunk_t a, chunk_t b, int *wildcards);
 extern void hex_str(chunk_t bin, chunk_t *str);

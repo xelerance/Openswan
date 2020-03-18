@@ -1,0 +1,6 @@
+This test case is an IKEv2 initiator on I3.
+
+This test case is for a host to host (/32 to /32) connection.
+
+R1 and R2 packets are copied from OUTPUT of lp202-ca-h2hR1 and lp204-ca-h2hR2
+respectively.  Run make pcapupdate will do this.

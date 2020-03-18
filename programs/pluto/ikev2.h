@@ -42,7 +42,7 @@ extern stf_status ikev2parent_outI1_withstate(struct state *st
 
 extern void ikev2_delete_out(struct state *st);
 
-bool ikev2_out_attr(int type
+bool ikev2_out_attr(unsigned int type
         , unsigned long val
         , struct_desc *attr_desc
         , enum_names **attr_val_descs USED_BY_DEBUG
@@ -60,13 +60,15 @@ extern void complete_v2_state_transition(struct msg_digest **mdp
 
 extern stf_status process_informational_ikev2(struct msg_digest *md);
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
-extern stf_status ikev2parent_inR1(struct msg_digest *md);
+extern stf_status ikev2parent_ntf_inR1(struct msg_digest *md);
+extern stf_status ikev2parent_ntf_inR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
 extern stf_status ikev2child_inCI1(struct msg_digest *md);
 extern stf_status ikev2child_inCR1(struct msg_digest *md);
+extern stf_status ikev2child_inCR1_ntf(struct msg_digest *md);
 extern stf_status ikev2child_inI3(struct msg_digest *md);
 extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
                                                           , struct state *st);
@@ -258,11 +260,18 @@ extern stf_status process_nat_payload(struct state *st
 
 extern stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md);
 
+extern void ikev2_enable_nat_keepalives(struct state *st);
 
 
 
+
+extern bool doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role);
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
+extern stf_status ikev2_send_certreq( struct state *st
+				      , struct msg_digest *md UNUSED
+				      , enum phase1_role role UNUSED
+				      , unsigned int np, pb_stream *outpbs);
 extern stf_status ikev2_send_cert( struct state *st
 				   , struct msg_digest *md
 				   , enum phase1_role role

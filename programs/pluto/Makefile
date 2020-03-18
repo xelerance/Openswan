@@ -120,6 +120,7 @@ DISTSRC = \
 	stubs.c \
 	${SYSDEP_SRC} \
 	timer.c timer.h \
+	replace.c replace.h \
 	$(DISTGCRYPT) \
 	$(X509_DIST_SRCS) \
 	$(HAVE_THREADS_DIST_SRCS) \
@@ -140,7 +141,7 @@ OBJSGCRYPT =
 OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
-OBJSPLUTO += timer.o hmac.o hostpair.o
+OBJSPLUTO += timer.o replace.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
 OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
@@ -188,6 +189,7 @@ doinstall: all
 	mkdir -p -m 700 $(VARDIR)/run/pluto
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(LIBEXECDIR)
 	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
+ifneq ($(USE_NOMANINSTALL),true)
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
 		while read from to ; \
@@ -200,9 +202,11 @@ doinstall: all
 		do \
 		 ln -s -f $$from $(FMANDIR)/$$to; \
 		done
+endif
 
 install_file_list:
 	@echo $(LIBEXECDIR)/$(BINNAMEPLUTO)
+ifneq ($(USE_NOMANINSTALL),true)
 	@echo $(PMANDIR)/ipsec_pluto.8
 	@sh ${OPENSWANSRCDIR}/packaging/utils/manlink pluto.8 | \
 		while read from to; \
@@ -215,6 +219,7 @@ install_file_list:
 		do \
 			echo $(FMANDIR)/$$to; \
 		done
+endif
 
 alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) ${LIBOPENSWAN}
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)

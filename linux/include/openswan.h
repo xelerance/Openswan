@@ -340,6 +340,7 @@ err_t addrtosubnet(const ip_address *addr, ip_subnet *dst);
 err_t rangetosubnet(const ip_address *from, const ip_address *to, ip_subnet *dst);
 int addrtypeof(const ip_address *src);
 int subnettypeof(const ip_subnet *src);
+int subnetsize(const ip_subnet *src);
 size_t addrlenof(const ip_address *src);
 size_t addrbytesptr(const ip_address *src, unsigned char **const dst);
 size_t addrbytesptr_write(ip_address *src, unsigned char **const dst);

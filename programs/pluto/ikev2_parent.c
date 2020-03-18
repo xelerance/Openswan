@@ -360,7 +360,11 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         /* It is not always 96 bytes, it depends upon which integ algo is used*/
         if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
             openswan_log("R2 failed to match authenticator");
-            return STF_FAIL;
+
+            /* force the notification to go out on the next message ID */
+            st->st_msgid = md->msgid_received;
+
+            return STF_FAIL + AUTHENTICATION_FAILED;
         }
     }
 
@@ -500,7 +504,11 @@ ikev2_update_nat_ports(struct state *st)
         st->st_interface = pick_matching_interfacebyfamily(interfaces, pluto_port4500
                                                            , st->st_remoteaddr.u.v4.sin_family
                                                            , &st->st_connection->spd);
-        st->st_localport = st->st_interface->port;
+        if(st->st_interface) {
+            st->st_localport = st->st_interface->port;
+        } else {
+            loglog(RC_COMMENT, "failed to find port 4500 interface");
+        }
     }
 }
 
@@ -1124,7 +1132,8 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                 if(dst != NULL)
                                     {
                                         struct ipsec_proto_info *pr = v2del->isad_protoid == PROTO_IPSEC_AH? &dst->st_ah : &dst->st_esp;
-                                        DBG(DBG_CONTROLMORE, DBG_log("our side spi that needs to be deleted: %s SA(0x%08lx)"
+                                        DBG(DBG_CONTROLMORE, DBG_log("received delete request for #%lu via #%lu, our %s SA spi: 0x%08lx"
+								     , dst->st_serialno, st->st_serialno
                                                                      , enum_show(&protocol_names, v2del->isad_protoid)
                                                                      , (unsigned long)ntohl(pr->our_spi)));
 
@@ -1155,36 +1164,44 @@ stf_status process_informational_ikev2(struct msg_digest *md)
             } /* for */
 
         } /* if have D payload */
-        else
-            {
-                /* empty response to our IKESA delete request*/
-                if((md->hdr.isa_flags & ISAKMP_FLAGS_R) && st->st_state == STATE_IKESA_DEL)
-                    {
-                        /* My understanding is that delete payload for IKE SA
-                         *  should be the only payload in the informational */
-                        if (IS_CHILD_SA(st)) {
-                            DBG(DBG_CONTROLMORE,
-                                DBG_log("received empty delete response via #%ld child SA; looking up parent #%ld..."
-                                        , st->st_serialno, st->st_clonedfrom));
-                            st = state_with_serialno(st->st_clonedfrom);
-                            if (!st) {
-                                DBG(DBG_CONTROLMORE,
-                                    DBG_log("parent SA #%ld not found; ignoring"
-                                            , md->st->st_clonedfrom));
-                                return STF_IGNORE;
-                            }
-                        }
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("received empty delete response via #%ld; deleting #%ld"
-                                    , md->st->st_serialno, st->st_serialno));
+	else {
+	    /* empty response to our IKESA delete request*/
+	    if((md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		/* My understanding is that delete payload for IKE SA
+		 *  should be the only payload in the informational */
+		if (IS_CHILD_SA(st)) {
+		    DBG(DBG_CONTROLMORE,
+			DBG_log("received empty delete response via #%ld child SA; looking up parent #%ld..."
+				, st->st_serialno, st->st_clonedfrom));
+		    st = state_with_serialno(st->st_clonedfrom);
+		    if (!st) {
+			DBG(DBG_CONTROLMORE,
+			    DBG_log("parent SA #%ld not found; ignoring"
+				    , md->st->st_clonedfrom));
+			return STF_IGNORE;
+		    }
+		}
 
-                        /* Now delete the IKE SA state and all its child states
-                         */
-                        delete_state_family(st, TRUE);
-                        /* we cannot trust st after it's deleted */
-                        st = md->st = NULL;
-                    }
-            }
+		if (st->st_state != STATE_IKESA_DEL) {
+		    DBG(DBG_CONTROLMORE,
+			DBG_log("parent SA #%ld in %s; ignoring"
+				, st->st_serialno
+				, enum_name(&state_names, st->st_state)));
+		    return STF_IGNORE;
+		}
+
+
+		DBG(DBG_CONTROLMORE,
+		    DBG_log("received empty delete response via #%ld; deleting #%ld"
+			    , md->st->st_serialno, st->st_serialno));
+
+		/* Now delete the IKE SA state and all its child states */
+		delete_state_family(st, TRUE);
+
+		/* we cannot trust st after it's deleted */
+		st = md->st = NULL;
+	    }
+	}
     }
 
     return STF_IGNORE;
@@ -1252,13 +1269,14 @@ void ikev2_delete_out(struct state *st)
             r_hdr.isa_msgid = htonl(st->st_msgid);
 
             /*set initiator bit if we are initiator*/
-            if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
-                role = INITIATOR;
-            }
-            else {
-                role = RESPONDER;
-            }
+	    role = IKEv2_ORIGINAL_ROLE(pst);
             r_hdr.isa_flags = IKEv2_ORIG_INITIATOR_FLAG(pst);
+
+           DBG(DBG_CONTROLMORE
+              , DBG_log("preparing to delete #%ld, we are the original %s of parent #%ld"
+			, st->st_serialno
+                        , (role == INITIATOR) ? "INITIATOR" : (role == RESPONDER) ? "RESPONDER" : "?"
+			, pst->st_serialno));
 
             if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
                 {

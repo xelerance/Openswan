@@ -45,13 +45,22 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
     lset_t policy_hint = LEMPTY;
-    struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
+    struct connection *c;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (st && is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
+    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , md->iface->port
                                                 , KH_IPADDR
                                                 , &md->sender
                                                 , md->sender_port
                                                 , POLICY_IKEV2_ALLOW, LEMPTY, &policy_hint);
-
     if(c==NULL) {
         if(policy_hint & POLICY_IKEV2_ALLOW) {
             /* connection not found, because IKEv2 was not allowed */
@@ -243,7 +252,7 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
 
     set_cur_state(st);
@@ -274,6 +283,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 #ifdef PLUTO_SENDS_VENDORID
     numvidtosend++;  /* we send Openswan VID */
 #endif
+    bool send_certreq = FALSE;
 
     if (sa_pd == NULL) {
                 return STF_FAIL;
@@ -337,6 +347,9 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     if((notok = accept_v2_KE(md, st, &st->st_gi, "Gi"))!=STF_OK) {
+        /* error notification was already sent, kill the state */
+        md->st = NULL;
+        delete_state(st);
         return notok;
     }
 
@@ -357,6 +370,19 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
         return STF_INTERNAL_ERROR;
     }
 
+    send_certreq = doi_send_ikev2_certreq_thinking(st, RESPONDER);
+    if (send_certreq) {
+        stf_status stf;
+
+	stf = ikev2_send_certreq(st, md, RESPONDER, ISAKMP_NEXT_NONE, &md->rbody);
+	if (stf != STF_OK) {
+            DBG(DBG_CONTROL
+                , DBG_log("sending CERTREQ failed with %s",
+                          stf_status_name(stf)));
+            return stf;
+        }
+    }
+
     /* Send VendrID if needed VID */
     {
         pbs_set_np(&md->rbody, ISAKMP_NEXT_v2V);
@@ -365,7 +391,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_INTERNAL_ERROR;
     }
 
-    close_message(&md->rbody);
+    /* IKEv2 should not add additional padding after the last payload; we used
+     * to call close_message(&md->rbody) here, but that added additional
+     * padding bytes after the last payload, and would mess up auth hashing */
+    close_output_pbs(&md->rbody);
     close_output_pbs(&reply_stream);
 
     /* let TCL hack it before we mark the length. */

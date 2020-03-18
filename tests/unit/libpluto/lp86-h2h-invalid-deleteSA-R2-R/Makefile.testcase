@@ -9,7 +9,10 @@ TESTNAME=deleteChildSA-invalid-fromR2
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ../lp37-h2hR1/h2hI1.pcap h2hI2.pcap h2hI3deleteNack.pcap
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp38-h2hI2/OUTPUT/h2hI2.pcap ../lp85-h2h-invalid-deleteSA-I3/OUTPUT/deleteChildSA-invalid-msgInI3.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp38-h2hI2/OUTPUT/h2hI2.pcap .
 	cp ../lp85-h2h-invalid-deleteSA-I3/OUTPUT/deleteChildSA-invalid-msgInI3.pcap h2hI3deleteNack.pcap
 

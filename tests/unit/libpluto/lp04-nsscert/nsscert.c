@@ -27,9 +27,6 @@ extern int EF_DISABLE_BANNER;
 
 int main(int argc, char *argv[])
 {
-    int i;
-    chunk_t blob, crl_uri;
-    err_t e;
     cert_t cacert,t1;
     time_t until;
 

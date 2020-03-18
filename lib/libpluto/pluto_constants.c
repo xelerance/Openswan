@@ -291,7 +291,7 @@ const char *stf_status_name(stf_status code)
 	if (ret) return ret;
 	/* decode errors past STF_FAIL */
 	snprintf(stf_status_buffer, sizeof(stf_status_buffer),
-		 "STF_FAIL%+d", code);
+		 "STF_FAIL%+d", code-STF_FAIL);
 	return stf_status_buffer;
 }
 
@@ -375,16 +375,17 @@ prettypolicy(lset_t policy)
     const char *bn = bitnamesofb(sa_policy_bit_names
 				 , policy & ~(POLICY_SHUNT_MASK | POLICY_FAIL_MASK)
 				 , pbitnamesbuf, sizeof(pbitnamesbuf));
-    static char buf[200];   /* NOT RE-ENTRANT!  I hope that it is big enough! */
+    static char buf[512];   /* NOT RE-ENTRANT!  I hope that it is big enough! */
     lset_t shunt = (policy & POLICY_SHUNT_MASK) >> POLICY_SHUNT_SHIFT;
     lset_t fail = (policy & POLICY_FAIL_MASK) >> POLICY_FAIL_SHIFT;
 
     if (bn != pbitnamesbuf)
 	pbitnamesbuf[0] = '\0';
-    snprintf(buf, sizeof(buf), "%s%s%s%s%s%s"
+    snprintf(buf, sizeof(buf), "%s%s%s%s%s%s%s"
 	, pbitnamesbuf
 	, shunt != 0 ? "+" : "", shunt != 0 ? policy_shunt_names[shunt] : ""
 	, fail != 0 ? "+failure" : "", fail != 0 ? policy_fail_names[fail] : ""
+	, IS_INVALID_CONFIG(policy) ? "+INVALID_CONFIG" : ""
 	, NEVER_NEGOTIATE(policy) ? "+NEVER_NEGOTIATE" : "");
     return buf;
 }

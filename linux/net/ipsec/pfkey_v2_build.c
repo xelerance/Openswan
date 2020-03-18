@@ -46,7 +46,7 @@
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <sys/errno.h>
+# include <errno.h>
 # include <netinet/in.h>
 # include <stdlib.h>
 # include <stdio.h>

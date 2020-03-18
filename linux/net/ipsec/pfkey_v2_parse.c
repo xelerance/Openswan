@@ -50,7 +50,7 @@ extern int debug_pfkey;
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-# include <sys/errno.h>
+# include <errno.h>
 # include <stdio.h>
 
 # include <openswan.h>

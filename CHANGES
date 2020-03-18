@@ -4,6 +4,294 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+
+v2.6.52.1 (March 17, 2020)
+
+Fixing compiler warning and working with musl.
+
+* fix warning about switch fallthrough in parse_isakmp_sa_body() [anatoli]
+* fix warning about switch fallthrough in nat_traversal_vid_to_method() [anatoli]
+* fix warning about switch fallthrough in finish_pfkey_msg() [anatoli]
+* fix warning about switch fallthrough in informational() [anatoli]
+* fix warning about switch fallthrough in xauth_inI0() [anatoli]
+* lib/libpluto/writehackmsg.c: fix build on musl [Fabrice Fontaine]
+
+v2.6.52 (December 25, 2019)
+
+Bug fixes for various issues.
+
+* fix up 01-confread to included desfails test cases [MCR]
+* updated functional/01-confread so that make update works, and include
+  ikev1= keywords results [MCR]
+* wo#9234 - update unit test output [Bart Trojanowski]
+* wo#9234 - make sure no one passes netlink_raw_eroute() more than 4
+  proto_info[] entries, because that would overflow templ[] [Bart Trojanowski]
+* wo#9234 - allow for rekey of child SA to inherit tunnel/transport mode
+  from exsting child SA [Bart Trojanowski]
+* selecting 1DES does not crash, but pluto proceeds to attempt to negotiate [MCR]
+* lp210 demonstrates what happens when selecting 1des [MCR]
+* fixup NULL pointer check, remove logging of pointer [MCR]
+* Null pointer check. One Segfault less. [anatoli]
+* port 14-deadalgos test case from rebased branch [MCR]
+* Makefile needs to clean out WHACKFILE3 as well [MCR]
+* Incr 'status' size to get rid of  programs/pluto/adns.c [anatoli]
+* Clean compile connections.c & decrementing warns in pluto_constants.c [anatoli]
+* - 2 GCC warng: [anatoli]
+* update COMPATIBILITY_ISSUES to reflect outstanding pfs=yes DH group change
+  on rekey problem [Bart Trojanowski]
+* wo#9094 - fix lp08-parentR1 output, since md->st was cleared after state
+  deletion [Bart Trojanowski]
+* wo#9094 - fix cleanup of st after accept_v2_KE() fails [Bart Trojanowski]
+* wo#9094 - do not remove state from hash if not there [Bart Trojanowski]
+* wo#9094 - avoid crashing with NULL conn when cleaning up state [Bart Trojanowski]
+* wo#7305 - ipsec.conf man page update, add firstmsgid [Bart Trojanowski]
+* wo#7305 - update COMPATIBILITY_ISSUES with firstmsgid=1 [Bart Trojanowski]
+* wo#7305 - unit output output, 'preparing to delete' messages [Bart Trojanowski]
+* wo#7305 - ikev2_delete_out() - fix role setting, and log role [Bart Trojanowski]
+* wo#7305 - add firstmsgid=[0|1] to conn settings [Bart Trojanowski]
+* wo#7305 - unit output output [Bart Trojanowski]
+* wo#7305 - original responder msg_id numbering stats from 0 [Bart Trojanowski]
+* wo#7305 - unit output update [Bart Trojanowski]
+* wo#7305 - remove free_state() from process_packet() [Bart Trojanowski]
+* wo#7305 - state handling for response to our INF/DEL request [Bart Trojanowski]
+* wo#7305 - state handling for response to our CHILD_SA request, as
+  original responder [Bart Trojanowski]
+* wo#7305 - FSM flags to match only request/response messages [Bart Trojanowski]
+* wo#7305 - improve find_state_ when processing responses for our requests [Bart Trojanowski]
+* wo#7305 - unit output update, new 'firstmsgid: 0' text [Bart Trojanowski]
+* wo#7305 - add firstmsgid=[0|1] to conn settings, ignore the value [Bart Trojanowski]
+* ct14-bigkeyI2: fix pcapupdate issue [Bart Trojanowski]
+* pluto-log-merge.pl - improve parsing of the message ID string [Bart Trojanowski]
+* wo#9111 - update output files [Bart Trojanowski]
+* wo#9111 - fix selfsigned/generate-certs.sh, and regenerate keys [Bart Trojanowski]
+* wo#9111 - revert ouptut changes that claim lacking private key [Bart Trojanowski]
+* Revert "wo#9113 - sed <invalid> to 0.0.0.0 for lp08" [Bart Trojanowski]
+* wo#9113 - sed <invalid> to 0.0.0.0 for lp08 [Bart Trojanowski]
+* wo#9111 - update unit test output with new cert [Bart Trojanowski]
+* wo#9111 - regenerate selfsigned certs [Bart Trojanowski]
+* wo#8938 - IKEv1 concurrent continuation checks [Bart Trojanowski]
+* wo#8938 - fix suspended md IKEv1 assertions [Bart Trojanowski]
+* wo#8938 - more debug when throwing suspended-md assertions [Bart Trojanowski]
+* updates to log outputs [Bart Trojanowski]
+* wo#8938 - prevent duplicate async crypto operations [Bart Trojanowski]
+* wo#8938 - add assert_suspended(), use it to test for st<->md
+  association validity [Bart Trojanowski]
+* wo#8938 - assert bad conditions in set_suspended() [Bart Trojanowski]
+* wo#8898 - prevent duplicate %acquire-netlink bare shunts [Bart Trojanowski]
+* wo#8898 - documentation/debug for netlink_raw_eroute() [Bart Trojanowski]
+* wo#8898 - remove netlink_raw_eroute() complaint when deleting [Bart Trojanowski]
+* wo#8898 - scan bare shunts, expire old entries [Bart Trojanowski]
+* wo#8898 - add delete_bare_shunt_ptr() [Bart Trojanowski]
+* wo#8898 - add READ_ONCE() macro [Bart Trojanowski]
+* updated DN for dave [MCR]
+* updated pcapupdate for lp25, was missing [MCR]
+* some sanitizers are using sed -r, others are not, duplicate file for now [MCR]
+* sanitize size of loaded certificates, change DN [MCR]
+* wo#8781 updated symlinks for configuration directories [MCR]
+* wo#8781 resign all certificates [MCR]
+* wo#8781 setup scripts and structure for draft-moskowitz-{rsa}-pki [MCR]
+* wo#8781 added bobCert private key from DrTaylorPlumage [MCR]
+* wo#8897 - avoid assert when handling STF_TOOMUCHCRYPTO on build_ke() [Bart Trojanowski]
+* wo#8451 - unit testing dpddelay/dpdtimeout in cassidy.conf [Bart Trojanowski]
+* wo#8451 - libipsecconf: allow time with no unit suffix; detect more
+  overflows [Bart Trojanowski]
+* wo#8451 - dpddelay and dpdtimeout arguments accept time [Bart Trojanowski]
+* wo#8784 - update unit test results, removing padding [Bart Trojanowski]
+* wo#8784 - IKEv2 will not add padding to INIT exchange [Bart Trojanowski]
+* fix reduce/reduce and shift/reduce conflicts based upon libreswan patch [MCR]
+* Add CONTRIBUTION.md [Samir Hussain]
+* Update VERSION to 2.6.52dev1 [Samir Hussain]
+* update COMPATIBILITY_ISSUES about v2.6.50 interop [Bart Trojanowski]
+* wo#7875 - lp201-lp205 output files [Bart Trojanowski]
+* wo#7875 - lp201-lp205 uses real x509 code, and needs special cert init [Bart Trojanowski]
+* wo#7875 - new config for lp201-lp205 that uses IKEv2 CERTREQ to validate peers [Bart Trojanowski]
+* wo#7875 - clone lp7[12345] to lp20[12345] for new tests [Bart Trojanowski]
+* wo#7875 - output test update [Bart Trojanowski]
+* wo#7875 - do not send cert twice for the same state [Bart Trojanowski]
+* wo#7875 - update test lp25 output [Bart Trojanowski]
+* wo#7875 - remove unique dates from "RSA ... key" line in unit test output [Bart Trojanowski]
+* wo#7875 - split init_fake_secrets() from lp13 main [Bart Trojanowski]
+* wo#7875 - remove seam_x509 from lp13 head.c [Bart Trojanowski]
+* wo#7875 - update test output [Bart Trojanowski]
+* wo#7875 - ikev2_send_cert() using doi_send_ikev2_certreq_thinking() [Bart Trojanowski]
+* wo#7875 - sent CERT after CERTREQ was requested [Bart Trojanowski]
+* wo#7875 - make sure refine_host_connection() uses ikev1_requested_ca_names [Bart Trojanowski]
+* wo#7875 - update test output [Bart Trojanowski]
+* wo#7875 - allow for certs that lack X509v3 estension defining the Auth KeyID [Bart Trojanowski]
+* wo#7875 - update test lp21 output with sends CERTREQ [Bart Trojanowski]
+* wo#7875 - update test output with no validation CA cert [Bart Trojanowski]
+* wo#7875 - update test lp19 output [Bart Trojanowski]
+* wo#7875 - do not send CERTREQ if we have no CA certs for validation [Bart Trojanowski]
+* wo#7875 - update test output [Bart Trojanowski]
+* wo#7875 - add ikev2_send_certreq() which encodes CERTREQ for IKEv2
+  using KEYIDs [Bart Trojanowski]
+* wo#7875 - add doi_send_ikev2_certreq_thinking() which decides when CERTREQ
+  is needed [Bart Trojanowski]
+* wo#7875 - rewrite ikev2_decode_cr() to extract IKEv2 CERTREQ
+  containing KEYIDs [Bart Trojanowski]
+* wo#7875 - add trusted_ca_by_keyid() and match_requested_ca_keyid() for IKEv2 [Bart Trojanowski]
+* wo#7875 - update tests due to trusted_ca_by_name() rename [Bart Trojanowski]
+* wo#7875 - fix up unit tests and expected output after IKEv1 struct and
+  function renames [Bart Trojanowski]
+* wo#7875 - cleanup IKEv1 CERT/CERTREQ code [Bart Trojanowski]
+* wo#7875 - give ikev2_certificate_req_desc its own fields [Bart Trojanowski]
+* wo#7875 - I2 st_firstpacket_him preserves the packet not message [Bart Trojanowski]
+* Revert "wo #5535 . turn off sending cert req in IKEv2: they are not the
+  same as in IKEv1, and it is all a mistake." [Bart Trojanowski]
+* wo#7875 - update test output files after typo fix [Bart Trojanowski]
+* wo#7875 - report if there are multiple reasons to not send certreq [Bart Trojanowski]
+* wo#7875 - test error return from ikev2_send_certreq(), consequently fail
+  ikev2_send_cert() [Bart Trojanowski]
+* wo#7875 - send IKEv2 CR for roadwarriors too [Bart Trojanowski]
+* libpluto unit tests pcapupdate dependencies [Bart Trojanowski]
+* removed references to libmd2 [MCR]
+* removed dead md2.h file [MCR]
+* remove unused libmd2, was referenced by certificate processing only [MCR]
+* remove support from MD5 from certificate processing code [MCR]
+* Bump version to 2.6.52dev [Samir Hussain]
+* DPD: openbsd isakmpd bug workaround for duplicate DPD seqno [Paul Wouters]
+* tests - readwritetest set -x for debugging [Bart Trojanowski]
+* logging - ikev2_validate_key_lengths() reports func:line [Bart Trojanowski]
+* wo#8180 - do not pass MAKEFLAGS explicitly [Bart Trojanowski]
+* include subnetsize(), new routine since rework [MCR]
+* resolve symbolic links into linux/ into regular files [MCR]
+* bring all kernel (linux/) located crypto files used to userspace libraries,
+  adjust many paths [MCR]
+* remove dead code from kernel_netlink [MCR]
+* fix make depend mechanism [MCR]
+* correct how STF_FAIL+x is generated by stf_status_name() [Bart Trojanowski]
+* wo#7347 - validate group in accept_v2_KE() [Bart Trojanowski]
+* wo#7347 - force release of SPIs when moving to next proposal [Bart Trojanowski]
+* wo#7347 - do not send v2N_INVALID_KE_PAYLOAD twice [Bart Trojanowski]
+* wo#7347 - switch from instance to template to evaluate conn fitness [Bart Trojanowski]
+* wo#7347 - retry after v2N_AUTHENTICATION_FAILED for AUTH exchange [Bart Trojanowski]
+* wo#7347 - properly handle peer rejecting our DH group proposal [Bart Trojanowski]
+* wo#7347 - failing auth, send notification on next message ID [Bart Trojanowski]
+* wo#7347 - return STF_FAIL + AUTHENTICATION_FAILED from ikev2_decrypt_msg() [Bart Trojanowski]
+* wo#7347 - easier switching sa_v2_print() output to syslog [Bart Trojanowski]
+* run-unit-tests.sh - fail hard if make pcapupdate fails [Bart Trojanowski]
+* run-unit-tests.sh - avoid looping indefinately when make update fails [Bart Trojanowski]
+* wo#8419 - refactor Travis test matrix, add validate-libpluto test [Bart Trojanowski]
+* wo#8419 - libpluto/run-unit-tests.sh does not rely on figlet [Bart Trojanowski]
+* wo#8419 - libpluto run-unit-tests.sh --make-options [Bart Trojanowski]
+* wo#7818 - updte pcap in lp58 [Bart Trojanowski]
+* Update README for dependencies [Samir Hussain]
+* wo#5579 - updated lp{87,88,89} logs and pcaps [Bart Trojanowski]
+* wo#5579 - lp87 will corrupt CHILD_SA nonce [Bart Trojanowski]
+* wo#5579 - clone lp{46~48} to lp{87~89} to handle invalid nonce notification [Bart Trojanowski]
+* wo#5579 - ntf processor for rekey-childSA-ack [Bart Trojanowski]
+* wo#5579 - encrypted notification processor mechanism [Bart Trojanowski]
+* wo#5579 - encrypt failure v2N response to CHILD_SA [Bart Trojanowski]
+* run-unit-tests.sh -v will set make V=1 flag [Bart Trojanowski]
+* wo#7614 - remove the claim that left=%interface is supported from the
+  man page [Bart Trojanowski]
+* wo#8102 - retain connection policy when calling ipsecdoi_replace() on parent SA [Bart Trojanowski]
+* wo#6996 - update unit test output files with additional log lines [Bart Trojanowski]
+* wo#6996 - keep stale IKE SA up while replacing it [Bart Trojanowski]
+* pluto-log-merge.pl - improve event start/end timestamp calculation [Bart Trojanowski]
+* pluto-log-merge.pl --sync will merge two files with divergent clocks [Bart Trojanowski]
+* pluto-log-merge.pl - add ability to process rsyslog high-def timestamps [Bart Trojanowski]
+* wo#7257 . normalize the creation of the testlists to better enable comparisons [MCR]
+* wo#8100 . updates to test cases as a result of updates to debugging related
+  to how encryption keylength are compared [MCR]
+* wo#8100 . remove long dead arpa/nameser.h [MCR]
+* bring forward some changes to how encryption keylength are compared, remove
+  keylength from PRF and INTEGRITY algorithms [MCR]
+* do not call ip route flush as it fails in containers [MCR]
+* wo#7257 . compilation with full -Werror results in some functions not
+  declared, and some const static that are not used with LIBNSS [MCR]
+* wo#8100 . fixed {} bug in get_my_cpi [MCR]
+* wo#8100 . remove some unused-const-variables [MCR]
+* wo#8100 . some additional include errors detected by Alpine/musl build [MCR]
+* asm/types is not needed if linux/types.h will do [MCR]
+* introduce USE_NOMANINSTALL to avoid installing man pages on embedded systems [MCR]
+* upgrade to proper include file, and sighandler type [MCR]
+* removed MSG_ERRQUEUE from files that do not need it [MCR]
+* use HAVE_ERRQUEUE to avoid compiling check_msg_errqueue on systems/libraries
+  that do not support it [MCR]
+* wo#8100 . removed unneeded asm/types [MCR]
+* wo#8100 . do not insist on GLOB_BRACE being available, turn off NOMAGIC,
+  as file must always exist [MCR]
+* wo#8100 . remove long dead arpa/nameser.h [MCR]
+* wo#8100 . remove incorrect calls to linux/types.h [MCR]
+* wo#7302 - update lp80-h2h-rekeyikev2-R2-msgid0 test case after encryption fix [Bart Trojanowski]
+* wo#7302 - initiating v2_CHILD_SA means we are INITIATOR. [Bart Trojanowski]
+* wo#7302 - use correct role when dealing rekeying child SA [Bart Trojanowski]
+* wo#7302 - pluto-log-merge.pl skips non pluto lines [Bart Trojanowski]
+* wo#8115 - skip transport w/ subnet protection for shunt connections [Bart Trojanowski]
+* protected against pick_matching_interfacebyfamily failing to find port 4500 [MCR]
+* wo#7616 - added lp67-natt-replaceR unit test [Bart Trojanowski]
+* wo#7616 - added lp66-natt-replaceI unit test [Bart Trojanowski]
+* wo#7616 - refactor handle_next_timer_event() so that it can be
+  unit tested [Bart Trojanowski]
+* unit tests: fix descriptions of lp{46,48,50,51,56,58} which are IKEv2 tests,
+  but claimed to be IKEv1 [Bart Trojanowski]
+* wo#7616 - need to defer expiration of SA, when we are waiting for the
+  NATTed remote to rekey [Bart Trojanowski]
+* wo#7616 - do not initiate parent SA rekey from RESPONDER if peer is behind
+  NAT-T [Bart Trojanowski]
+* wo#7616 - generailize original-initiator flag for IKEv1/IKEv2 [Bart Trojanowski]
+* wo#7613 - lp03-whacksemantics refactored and added n2n-transport test [Bart Trojanowski]
+* wo#7613 - 01-confread, new conf for n2n-transport connection [Bart Trojanowski]
+* wo#7613 - transport conn w/ subnet marked as INVALID_CONFIG [Bart Trojanowski]
+* wo#7613 - added POLICY_INVALID_CONFIG bit [Bart Trojanowski]
+* wo#7613 - subnetsize() function [Bart Trojanowski]
+* wo#7613 - refuse to create a v2 transport child SA with subnets [Bart Trojanowski]
+* wo#7615 - unit tests will confirm nat_traversal_new_ka_event() was called
+  for NAT-T test cases [Bart Trojanowski]
+* wo#7615 - enable NAT-T keepalive events for IKEv2 conns [Bart Trojanowski]
+* wo#7615 - set IKEv2 NAT-T flags based on notification correctly [Bart Trojanowski]
+* wo#7710 - tests corrected to capture correct output from
+  ikev2_evaluate_connection_fit() [Bart Trojanowski]
+* wo#7710 - fix IKEv2/rw/rsa conn eval when plutodebug=none [Bart Trojanowski]
+* use consistent build options for install time [MCR]
+* wo#7817 . ignore fips-mode status for testing [MCR]
+* wo#7817 . sanitize the location of secrets and certificate files [MCR]
+* added nss3-tools for certutil [MCR]
+* wo#7817 . additional tweaks to build and test NSS version correctly [MCR]
+* wo#7817 . fixup pathnames for LIBNSS loading, and keyids (which are
+  generated each time) [MCR]
+* wo#7817 . move determination of OBJRIDR= into Makefile.inc, based upon
+  LIBNSS, so that test cases can find correct build [MCR]
+* wo#7817 . ignore output directories [MCR]
+* look for toilet once, rather than spiting out distracting toilet not found error [MCR]
+* wo#7817 . when generating private keys, do it from captured noise, to
+  be deterministic, but also non-interactive (and VMs have terribley
+  entropy anyway) [MCR]
+* wo#7817 . run LIBNSS version of pluto load configuration, with certificates generated [MCR]
+* wo#7817 . clarify role and IKE version when private key is not found [MCR]
+* turn off extra debugging of sha256 routines [MCR]
+* first attempt to build test case for certload from NSS [MCR]
+* wo#6269 . leverage lp13-objectlist.make to reduce clutter in Makefiles [MCR]
+* wo#6269 . reorder tests so that updates to pcap files are easier to propogate [MCR]
+* wo#7290 . put list of object files to link in a common place [MCR]
+* wo#7572 .  ISAKMP_SA_established() should never release the current connection [Bart Trojanowski]
+* wo#7572 . addrcmp() of two undefined addresses should return 0 [Bart Trojanowski]
+* Update .travis.yml to remove libgmp3-dev [Samir Hussain]
+* built test case for orient using private key from certificate [MCR]
+* added test cases that orients based upon private key using certificates [MCR]
+
+v2.6.51.5 (June 14, 2019)
+
+Fix kernel algorithm table and if() block that is missing a {}
+
+* removed dead code that causes warning [MCR]
+* change IKE->kernel mapping table to be correct; likely fixes
+  incorrect mapping for ESP_NULL, which is hardly ever used [MCR]
+* fix for incorrect {} after if statement [MCR]
+
+v2.6.51.4 (June 13, 2019)
+
+Fix for CVE-2019-10155 (IKEv1 information exchange packet's integrity check
+value is not verified)
+
+* cleanup warnings in delete_connection() [Bart Trojanowski]
+* tests: cleanup warnings in libpluto unit tests [Bart Trojanowski]
+* tests: cleanup warnings in libopenswan unit tests [Bart Trojanowski]
+* tests: add quick_mode_hash12() to libpluto seam code [Bart Trojanowski]
+* ikev1: hack to check informational payloads [Andrew Cagney
+  (from Libreswan commit 9391eab9)]
+
 v2.6.51.3 (March 12, 2019)
 
 Fix memory leak bug.

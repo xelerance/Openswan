@@ -14,13 +14,11 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
     char *pcapin[PCAP_INPUT_COUNT];
     int   i;
     char *pcap_out;
-    int  lineno=0;
     int  regression = 0;
     struct connection *c1;
     struct state *st;
@@ -51,10 +49,7 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_parker_interface(TRUE);
     init_seam_kernelalgs();
-    osw_load_preshared_secrets(&pluto_secrets
-			       , TRUE
-			       , "../samples/parker.secrets"
-			       , NULL, NULL);
+    init_fake_secrets();
     enable_debugging();
 
     infile = argv[0];

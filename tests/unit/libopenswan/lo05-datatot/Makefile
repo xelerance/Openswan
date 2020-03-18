@@ -33,7 +33,7 @@ UNITTESTARGS=-r
 check:
 	@mkdir -p OUTPUT
 	@echo CC -DTTODATA_MAIN ${OPENSWANSRCDIR}/lib/libopenswan/ttodata.c -o ${TESTNAME}
-	@${CC} -DTTODATA_MAIN ${OPENSWANSRCDIR}/lib/libopenswan/ttodata.c -o ${TESTNAME} ${EXTRAFLAGS} ${EXTRALIBS} ${EXTRALIBS}
+	@${CC} -DTTODATA_MAIN ${OPENSWANSRCDIR}/lib/libopenswan/ttodata.c -Wno-pointer-sign -o ${TESTNAME} ${EXTRAFLAGS} ${EXTRALIBS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1

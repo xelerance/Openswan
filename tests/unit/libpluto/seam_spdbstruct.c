@@ -14,6 +14,7 @@ out_sa(pb_stream *outs
        , u_int8_t np)
 {
 	fprintf(stderr, "need to allocate SPI#\n");
+	return FALSE;
 }
 #endif
 #endif

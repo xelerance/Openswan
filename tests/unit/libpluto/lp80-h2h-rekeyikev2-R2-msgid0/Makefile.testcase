@@ -9,7 +9,10 @@ TESTNAME=rekeyChildSA-fromR2
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ../lp37-h2hR1/h2hI1.pcap h2hI2.pcap
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp38-h2hI2/OUTPUT/h2hI2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp38-h2hI2/OUTPUT/h2hI2.pcap .
 
 

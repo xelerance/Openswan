@@ -17,12 +17,13 @@
  * for more details.
  */
 
+#define _GNU_SOURCE   /* for sighandler_t */
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -134,7 +135,7 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
          * Any used by library routines (perhaps the resolver or syslog)
          * will remain.
          */
-	__sighandler_t savesig;
+        sighandler_t savesig;
         FILE *f;
 
 	savesig = signal(SIGCHLD, SIG_DFL);

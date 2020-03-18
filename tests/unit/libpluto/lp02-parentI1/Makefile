@@ -19,60 +19,15 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
+include ../lp13-objectlist.make
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/myid.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
-ifeq ($(USE_EXTRACRYPTO),true)
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
-endif
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
-EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
-EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
-
-EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
-EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 
 include Makefile.testcase
 
@@ -90,7 +45,7 @@ programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 
 check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
 	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
 ${TESTNAME}.E:
@@ -106,7 +61,7 @@ ${WHACKFILE}: ${WHACKREFFILE}
 endif
 
 update: OUTPUT
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT

@@ -81,7 +81,7 @@ static void find_cookie_collision(u_int8_t *out_icookie, u_int8_t *out_rcookie,
     in_bucket %= STATE_TABLE_SIZE;
 
     printf("looking for collision for cookies, which has to bucket %d\n",
-           out_bucket);
+           in_bucket);
     output_cookie("st_icookie = ", in_icookie);
     output_cookie("st_rcookie = ", in_rcookie);
 
@@ -116,6 +116,11 @@ int main(int argc, char *argv[])
     struct state *st2 = NULL;
     struct state *st3 = NULL;
     struct state *st4 = NULL;
+
+    (void)st2;
+    (void)st3;
+    (void)st4;
+
     /* these cookies were chosen randomly to hash to the same bucket as those
      * obtained from the "h2hI3-statetable.c" template. */
     u_int8_t st3_icookie[COOKIE_SIZE] = { 0x81, 0x03, 0x3d, 0x77, 0xf9, 0xe9, 0x4d, 0x44 };

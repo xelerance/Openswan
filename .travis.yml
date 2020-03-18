@@ -19,7 +19,6 @@ addons:
       - bison
       - python-minimal
       - libgmp-dev
-      - libgmp3-dev
       - libpcap0.8-dev
       - libpcap0.8
       - electric-fence
@@ -27,6 +26,7 @@ addons:
       - tcpdump
       - libnspr4-dev
       - libnss3-dev
+      - libnss3-tools
 
 cache:
   directories:
@@ -38,8 +38,9 @@ env:
     - IPSECVERSION=0.0.0
     - BUILD_ARCH=amd64
   matrix:
-    - BUILD_HISTORY_REVS=false
-    - BUILD_HISTORY_REVS=true
+    - TEST_JOB=build-and-check
+    - TEST_JOB=build-every-version
+    - TEST_JOB=validate-libpluto
 
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
@@ -64,6 +65,5 @@ script:
   - "cat Makefile.inc.local"
   - "make env | sort -f"
   - git --version
-  - "[ \"$BUILD_HISTORY_REVS\" = true ] || make programs ARCH=${BUILD_ARCH} LIBEFENCE="
-  - "[ \"$BUILD_HISTORY_REVS\" = true ] || make check ARCH=${BUILD_ARCH} LIBEFENCE="
-  - "[ \"$BUILD_HISTORY_REVS\" = false ] || tests/utils/build-every-version"
+  - ./tests/utils/$TEST_JOB
+

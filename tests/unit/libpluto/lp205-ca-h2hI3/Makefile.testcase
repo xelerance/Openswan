@@ -1,0 +1,19 @@
+# -*- makefile -*-
+CONNNAME=home
+ENDNAME=davecert-ca
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/h2hI3.pcap h2hR1.pcap h2hR2.pcap 
+
+TESTNAME=h2hI3
+
+PCAPDEPENDENCIES = ../lp202-ca-h2hR1/OUTPUT/h2hR1.pcap ../lp204-ca-h2hR2/OUTPUT/h2hR2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
+	cp ../lp202-ca-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap
+	cp ../lp204-ca-h2hR2/OUTPUT/h2hR2.pcap h2hR2.pcap
+
+OUTPUT/h2hI3-statetable.c: ${TESTNAME}
+	gdb -q -nh -x extract-statetable.py
+
+

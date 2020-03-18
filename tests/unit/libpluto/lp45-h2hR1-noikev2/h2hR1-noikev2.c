@@ -8,7 +8,7 @@
 
 #define TESTNAME "h2hR1-noikev2"
 
-static void init_local_interface(void)
+static inline void init_local_interface(void)
 {
     init_jamesjohnson_interface();
 }

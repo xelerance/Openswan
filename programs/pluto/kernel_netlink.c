@@ -61,8 +61,10 @@
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
-#include "klips-crypto/aes_cbc.h"
+#include "crypto/aes_cbc.h"
 #include "ike_alg.h"
+#include "oswtime.h"
+#include "timer.h"
 
 /* required for Linux 2.6.26 kernel and later */
 #ifndef XFRM_STATE_AF_UNSPEC
@@ -80,19 +82,6 @@
 extern char *pluto_listen;
 
 extern const struct pfkey_proto_info null_proto_info[2];
-
-static const struct pfkey_proto_info broad_proto_info[2] = {
-        {
-                proto: IPPROTO_ESP,
-                encapsulation: ENCAPSULATION_MODE_TUNNEL,
-                reqid: 0
-        },
-        {
-                proto: 0,
-                encapsulation: 0,
-                reqid: 0
-        }
-};
 
 /* Minimum priority number in SPD used by pluto. */
 #define MIN_SPD_PRIORITY 1024
@@ -648,7 +637,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , const ip_subnet *this_client
 		   , const ip_address *that_host
 		   , const ip_subnet *that_client
-		   , ipsec_spi_t spi
+		   , ipsec_spi_t spi /* network byte order */
 		   , unsigned int proto
 		   , unsigned int transport_proto
 		   , enum eroute_type esatype
@@ -683,7 +672,7 @@ netlink_raw_eroute(const ip_address *this_host
         addrtot(that_host, 0, sa_that, sizeof(sa_that));
 
         DBG_log("creating SPD to %s->spi=%08x@%s proto=%u"
-                , sa_this, htonl(spi), sa_that, proto);
+                , sa_this, ntohl(spi), sa_that, proto);
     }
 
     policy = IPSEC_POLICY_IPSEC;
@@ -693,6 +682,7 @@ netlink_raw_eroute(const ip_address *this_host
         switch (ntohl(spi))
 	    {
 	    case SPI_PASS:
+                DBG(DBG_NETKEY, DBG_log("%s: SPI_PASS", __func__));
                 policy = IPSEC_POLICY_NONE;
                 break;
 	    case SPI_DROP:
@@ -704,17 +694,20 @@ netlink_raw_eroute(const ip_address *this_host
 	    case SPI_TRAPSUBNET:
                 if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 		    {
+                        DBG(DBG_NETKEY, DBG_log("%s: SPI_TRAP INBOUND implemented as no-op", __func__));
                         return TRUE;
 		    }
                 break;
                 /* Do we really need %hold under NETKEY? Seems not so we just ignore. */
 	    case SPI_HOLD:
+		DBG(DBG_NETKEY, DBG_log("%s: SPI_HOLD implemented as no-op", __func__));
                 return TRUE;
 	    }
     }
 
     /* log warning for RFC-breaking implementation in NETKEY/XFRM stack */
-    if( (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL)
+    if( (sadb_op != ERO_DELETE && sadb_op != ERO_DEL_INBOUND)
+	&& (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL)
 	&& (transport_proto != 0)) {
 	   DBG_log("warning: NETKEY/XFRM in transport mode accepts ALL encrypted protoport packets between the hosts in violation of RFC 4301, Section 5.2");
     }
@@ -854,6 +847,7 @@ netlink_raw_eroute(const ip_address *this_host
 	memset(tmpl, 0, sizeof(tmpl));
 	for (i = 0; proto_info[i].proto; i++)
 	{
+            passert(i<4);
 	    tmpl[i].reqid = proto_info[i].reqid;
 	    tmpl[i].id.proto = proto_info[i].proto;
 	    tmpl[i].optional =
@@ -2478,11 +2472,57 @@ netkey_do_command(struct connection *c, const struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
+/* called periodically to cleanup expired bare shunts, like what 
+ * pfkey_scan_proc_shunts() does for KLIPS shunts */
+void
+netlink_scan_bare_shunts(void)
+{
+    struct bare_shunt **bspp;
+    time_t nw = now();
+
+    event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
+
+    DBG(DBG_CONTROL, DBG_log("scanning for expired bare shunts"));
+
+    for(bspp = &bare_shunts;;) {
+        struct bare_shunt *bsp;
+        time_t age;
+	bool success;
+
+        bsp = READ_ONCE(*bspp);
+
+        if (!bsp)
+            break;
+
+        age = nw - bsp->last_activity;
+
+        if (age <= SHUNT_PATIENCE) {
+            DBG_bare_shunt_log("keeping recent", bsp);
+            bspp = &bsp->next;
+            continue;
+        }
+        /* need to expire this entry */
+        DBG_bare_shunt_log("removing expired", bsp);
+
+	success = delete_bare_shunt_ptr(bspp, "delete expired bare shunts");
+
+	if (success) {
+		/* shunt was removed, and the bspp should now point
+		 * to the next entry */
+		passert(bsp != READ_ONCE(*bspp));
+	} else {
+		/* if we failed to remove this shunt, we have to skip
+		 * to the next entry to avoid getting stuck on this entry */
+		if (bsp == READ_ONCE(*bspp))
+			bspp = &bsp->next;
+	}
+    }
+}
+
 const struct kernel_ops netkey_kernel_ops = {
     kern_name: "netkey",
     type: USE_NETKEY,
     inbound_eroute:  TRUE,
-    policy_lifetime: TRUE,
     async_fdp: &netlink_bcast_fd,
     replay_window: 32,
 
@@ -2510,6 +2550,7 @@ const struct kernel_ops netkey_kernel_ops = {
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     overlap_supported: FALSE,
     sha2_truncbug_support: TRUE,
+    scan_shunts: netlink_scan_bare_shunts,
 };
 #endif /* linux && NETKEY_SUPPORT */
 

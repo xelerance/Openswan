@@ -139,6 +139,9 @@ main_outI1(int whack_sock
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     if(newstateno) *newstateno = st->st_serialno;
 
+    /* we are initiating this exchange */
+    st->st_orig_initiator = TRUE;
+
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv1_MAJOR_VERSION;
     st->st_ike_min        = IKEv1_MINOR_VERSION;
@@ -727,6 +730,7 @@ main_inI1_outR1(struct msg_digest *md)
 #endif
     /* Set up state */
     md->st = st = new_state();
+
 #ifdef XAUTH
     passert(st->st_oakley.xauth == 0);
 #endif
@@ -736,6 +740,9 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+
+    /* we are responding to this exchange */
+    st->st_orig_initiator = FALSE;
 
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
@@ -908,7 +915,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -929,6 +936,14 @@ stf_status
 main_inR1_outI2(struct msg_digest *md)
 {
     struct state *const st = md->st;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* verify echoed SA */
     {
@@ -1102,7 +1117,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1122,6 +1137,15 @@ main_inI2_outR2(struct msg_digest *md)
 {
     struct state *const st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi"
 				 , st->st_oakley.group, keyex_pbs));
@@ -1130,9 +1154,9 @@ main_inI2_outR2(struct msg_digest *md)
     RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_ni, "Ni"));
 
     /* decode certificate requests */
-    decode_cr(md, &st->st_connection->requested_ca);
+    ikev1_decode_cr(md, &st->st_connection->ikev1_requested_ca_names);
 
-    if(st->st_connection->requested_ca != NULL)
+    if(st->st_connection->ikev1_requested_ca_names != NULL)
     {
 	st->hidden_variables.st_got_certrequest = TRUE;
     }
@@ -1468,7 +1492,7 @@ main_inR2_outI3_continue(struct msg_digest *md
     }
 
     /* decode certificate requests */
-    decode_cr(md, &requested_ca);
+    ikev1_decode_cr(md, &requested_ca);
 
     if(requested_ca != NULL)
     {
@@ -1615,7 +1639,7 @@ main_inR2_outI3_continue(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 mainmode initiator)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
@@ -1662,7 +1686,7 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -1688,6 +1712,14 @@ main_inR2_outI3(struct msg_digest *md)
     struct dh_continuation *dh;
     pb_stream *const keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
     struct state *const st = md->st;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* KE in */
     RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr"
@@ -1745,6 +1777,14 @@ oakley_id_and_auth(struct msg_digest *md
     u_char hash_val[MAX_DIGEST_LEN];
     size_t hash_len;
     stf_status r = STF_OK;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* ID Payload in.
      * Note: this may switch the connection being used!
@@ -1904,7 +1944,7 @@ key_continue(struct adns_continuation *cr
     {
 	stf_status r;
 
-	passert(st->st_suspended_md == kc->md);
+	assert_suspended(st, kc->md);
 	set_suspended(st,NULL);	/* no longer connected or suspended */
 	cur_state = st;
 
@@ -2097,7 +2137,7 @@ main_inI3_outR3_tail(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 mainmode responder)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 

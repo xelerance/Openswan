@@ -64,26 +64,71 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 CONFBASE=${OPENSWANSRCDIR}/tests/functional/01-confread
 UNITTEST1ARGS=${CONFBASE}/dooku ${CONFBASE}/dooku.conf dooku--cassidy-net
 UNITTEST2ARGS=${CONFBASE}/cassidy ${CONFBASE}/cassidy.conf knothole--cassidy
+UNITTEST3ARGS=${CONFBASE}/dooku ${CONFBASE}/n2n-transport.conf green
 
 TESTNAME=whacksemantics
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-check:
+check: check1 check2 check3
+update: update1 update2 update3
+
+OUTPUT:
 	@mkdir -p OUTPUT
+
+${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
 	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
-	@echo "file ${TESTNAME}"          >.gdbinit
-	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
+
+# --- test 1 ---
+
+.gdb1init:
+	@echo "file ${TESTNAME}"          >$@
+	@echo "set args "${UNITTEST1ARGS} >>$@
+
+check1: OUTPUT ${TESTNAME} .gdb1init
+	@echo "## CHECK 1 :: ${UNITTEST1ARGS}"
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
+	@echo "## 1 OK"
+
+update1:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
+
+# --- test 2 ---
+
+.gdb2init:
+	@echo "file ${TESTNAME}"          >$@
+	@echo "set args "${UNITTEST1ARGS} >>$@
+
+check2: OUTPUT ${TESTNAME} .gdb2init
+	@echo "## CHECK 2 :: ${UNITTEST2ARGS}"
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}2.txt 2>&1
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}2.txt | diff - output2.txt
+	@echo "## 2 OK"
 
-update:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
+update2:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}2.txt >output2.txt
 
+# --- test 3 ---
+
+.gdb3init:
+	@echo "file ${TESTNAME}"          >$@
+	@echo "set args "${UNITTEST1ARGS} >>$@
+
+check3: OUTPUT ${TESTNAME} .gdb3init
+	@echo "## CHECK 3 :: ${UNITTEST3ARGS}"
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST3ARGS} >OUTPUT/${TESTNAME}3.txt 2>&1
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}3.txt | diff - output3.txt
+	@echo "## 3 OK"
+
+update3:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}3.txt >output3.txt
+
+# ---
+
+clean:
+	rm -rf OUTPUT
 
 pcapupdate:
 	@true

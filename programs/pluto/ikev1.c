@@ -645,8 +645,6 @@ informational(struct msg_digest *md)
     {
         pb_stream *const n_pbs = &n_pld->pbs;
         struct isakmp_notification *const n = &n_pld->payload.notification;
-        int disp_len;
-        char disp_buf[200];
 	struct state *st = md->st;            /* may be NULL */
 
         /* Switch on Notification Type (enum) */
@@ -798,6 +796,8 @@ informational(struct msg_digest *md)
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
 		return STF_IGNORE;
            }
+	   loglog(RC_LOG_SERIOUS, "received and ignored informational message with ISAKMP_N_CISCO_LOAD_BALANCE for unestablished state.");
+	   return STF_IGNORE;
 
         default:
 #ifdef DEBUG
@@ -807,12 +807,18 @@ informational(struct msg_digest *md)
 		return STF_FATAL;
 	    }
 #endif
+#if 0
+	    {
+	    int disp_len;
+	    char disp_buf[200];
             if (pbs_left(n_pbs) >= sizeof(disp_buf)-1)
                 disp_len = sizeof(disp_buf)-1;
             else
                 disp_len = pbs_left(n_pbs);
             memcpy(disp_buf, n_pbs->cur, disp_len);
             disp_buf[disp_len] = '\0';
+	    }
+#endif
             break;
         }
     }
@@ -1705,6 +1711,35 @@ void process_packet_tail(struct msg_digest **mdp)
 	}
     }
 
+    /* CVE-2019-10155, a patch by Andrew Cagney <cagney@gnu.org> to libreswan
+     * in commit 9391eab9d57687943b37ea253932e63898e5150f released in v3.29 */
+
+    if (md->hdr.isa_xchg == ISAKMP_XCHG_INFO &&
+        md->hdr.isa_np == ISAKMP_NEXT_HASH) {
+        pb_stream *const hash_pbs = &(md)->chain[ISAKMP_NEXT_HASH]->pbs;
+        u_char hash_val[MAX_DIGEST_LEN];
+        size_t hash_len = quick_mode_hash12(hash_val, hash_pbs->roof,
+                                            md->message_pbs.roof,
+                                            st, &md->hdr.isa_msgid, FALSE);
+        if (pbs_left(hash_pbs) != hash_len) {
+            loglog(RC_LOG_SERIOUS,
+                   "received 'informational' message HASH(1) data is the wrong length (received %zu bytes but expected %zu)",
+                   pbs_left(hash_pbs), hash_len);
+            return;
+        }
+        if (!memeq(hash_pbs->cur, hash_val, hash_len)) {
+            if (DBGP(DBG_CRYPT)) {
+                DBG_dump("received 'informational':",
+                         hash_pbs->cur, pbs_left(hash_pbs));
+            }
+            loglog(RC_LOG_SERIOUS,
+                   "received 'informational' message HASH(1) data does not match computed value");
+            return;
+        } else {
+            DBG(DBG_CRYPT, DBG_log("received 'informational' message HASH(1) data ok"));
+        }
+    }
+
     /* more sanity checking: enforce most ordering constraints */
 
     if (IS_PHASE1(from_state) || IS_PHASE15(from_state))
@@ -2380,7 +2415,8 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* well, this should never happen during a whack, since
 	     * a whack will always force crypto.
 	     */
-	    set_suspended(st, NULL);
+	    if (st->st_suspended_md == md)
+		    set_suspended(st, NULL);
 	    pexpect(st->st_calculating == FALSE);
 	    openswan_log("message in state %s ignored due to cryptographic overload"
 			 , enum_name(&state_names, from_state));

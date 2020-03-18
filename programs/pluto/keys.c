@@ -303,7 +303,7 @@ RSA_check_signature_gen(struct state *st
 
             if (key->alg == PUBKEY_ALG_RSA
                 && same_id(&st->ikev2.st_peer_id, &key->id)
-                && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca(key->issuer, c->spd.that.ca, &pathlen)))
+                && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca_by_name(key->issuer, c->spd.that.ca, &pathlen)))
 	    {
 		time_t tnow;
 
@@ -676,7 +676,7 @@ struct pubkey *osw_get_public_key_by_end(struct end *him)
 
 	    if (key->alg == PUBKEY_ALG_RSA
 		&& same_id(&him->id, &key->id)
-                && trusted_ca(key->issuer, him->ca, &pathlen)) {
+                && trusted_ca_by_name(key->issuer, him->ca, &pathlen)) {
                 return key;
             }
 	    pp = &p->next;

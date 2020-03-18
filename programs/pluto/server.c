@@ -46,8 +46,7 @@
 #include <sys/wait.h>
 #include <resolv.h>
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-#  include <asm/types.h>	/* for __u8, __u32 */
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
 #  include <linux/errqueue.h>
 #  include <sys/uio.h>	/* struct iovec */
 #endif
@@ -360,7 +359,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
     }
 
     /* To improve error reporting.  See ip(7). */
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
     if (setsockopt(fd, SOL_IP, IP_RECVERR
     , (const void *)&on, sizeof(on)) < 0)
     {
@@ -859,7 +858,7 @@ call_server(void)
  *   POLLOUT; this should be benign for POLLIN).
  */
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
 bool
 check_msg_errqueue(const struct iface_port *ifp, short interest)
 {
@@ -1137,7 +1136,7 @@ send_packet(struct state *st, const char *where, bool verbose)
 
     setportof(htons(st->st_remoteport), &st->st_remoteaddr);
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
     (void) check_msg_errqueue(st->st_interface, POLLOUT);
 #endif /* defined(IP_RECVERR) && defined(MSG_ERRQUEUE) */
 

@@ -16,6 +16,14 @@ aggr_outI1(int whack_sock,
 #include "seam_ikev1_main.c"
 #endif
 
+size_t
+quick_mode_hash12(u_char *dest, const u_char *start, const u_char *roof
+, const struct state *st, const msgid_t *msgid, bool hash2)
+{
+	fprintf(stderr, "IKEv1 HASH(%d) requested\n", hash2 ? 2 : 1);
+	osw_abort();
+}
+
 stf_status
 quick_outI1(int whack_sock
 	    , struct state *isakmp_sa

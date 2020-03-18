@@ -46,6 +46,14 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* struct connection *c = st->st_connection; */
     pb_stream *keyex_pbs;
 
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
+
     /* record IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
     st->st_ike_min        = md->min;
@@ -70,6 +78,9 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
         /* switch to port 4500, if necessary */
         ikev2_update_nat_ports(st);
+
+	/* enable NAT-T keepalives, if necessary */
+	ikev2_enable_nat_keepalives(st);
     }
 
 
@@ -121,6 +132,15 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL) {
         openswan_log("No responder SA proposal found");
         return PAYLOAD_MALFORMED;
+    }
+
+    /* process CERTREQ payload */
+    if(md->chain[ISAKMP_NEXT_v2CERTREQ]) {
+        DBG(DBG_CONTROLMORE
+            ,DBG_log("has a v2CERTREQ payload going to decode it"));
+        ikev2_decode_cr(md, &st->st_connection->ikev2_requested_ca_hashes);
+        if(st->st_connection->ikev2_requested_ca_hashes != NULL)
+            st->hidden_variables.st_got_certrequest = TRUE;
     }
 
     /* process and confirm the SA selected */
@@ -188,7 +208,7 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == dh->md);
+    assert_suspended(st, dh->md);
     set_suspended(st,NULL);        /* no longer connected or suspended */
 
     set_cur_state(st);
@@ -259,8 +279,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
 
     /* record first packet for later checking of signature */
-    clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
-                 , pbs_offset(&md->message_pbs), "saved first received packet");
+    clonetochunk(pst->st_firstpacket_him, md->packet_pbs.start
+                 , pbs_offset(&md->packet_pbs), "saved first received packet");
 
     /* beginning of data going out */
     authstart = reply_stream.cur;
@@ -363,7 +383,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
                                                , INITIATOR
                                                , ISAKMP_NEXT_v2AUTH
                                                , &e_pbs_cipher);
-        if(certstat != STF_OK) return certstat;
+        if(certstat != STF_OK)
+            return certstat;
+
+        /* CERTREQ was fulfiled, don't send again */
+        if (st->st_connection->spd.this.sendcert == cert_sendifasked)
+            st->hidden_variables.st_got_certrequest = FALSE;
     }
 
     /* send out the AUTH payload */
@@ -459,14 +484,108 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 }
 
+/* handle a case where we received a failing notification, and we decided
+ * that we can retry with a different proposal */
+static stf_status ikev2parent_retry_next_proposal(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    struct state *pst = md->pst;
+    struct connection *c = st->st_connection;
+    stf_status stf;
+    int whack_sock;
+    so_serial_t created = -1;
+
+    /* move to the next proposal */
+    c->proposal_index ++;
+
+    /* look up the parent */
+    if (!pst && st->st_clonedfrom) {
+        pst = state_with_serialno(st->st_clonedfrom);
+    }
+
+    /* make sure we release all algorithm SPIs */
+
+    if (!st->st_ah.present && st->st_ah.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of AH spi 0x%x",
+				     st->st_ah.our_spi));
+	    st->st_ah.present = 1;
+    }
+
+    if (!st->st_esp.present && st->st_esp.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of ESP spi 0x%x",
+				     st->st_esp.our_spi));
+	    st->st_esp.present = 1;
+    }
+
+    if (!st->st_ipcomp.present && st->st_ipcomp.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of IPCOMP spi 0x%x",
+				     st->st_ipcomp.our_spi));
+	    st->st_ipcomp.present = 1;
+    }
+
+    /* convince whack to wait for the new state, not the old */
+
+    if (pst && pst != st) {
+        /* we have a parent and a child state */
+        whack_sock = pst->st_whack_sock;
+        pst->st_whack_sock = NULL_FD;
+
+        /* we don't care about the child state */
+        release_whack(st);
+
+    } else {
+        /* just have a child */
+        whack_sock = st->st_whack_sock;
+        st->st_whack_sock = NULL_FD;
+    }
+
+    /* delete the old state */
+
+    delete_event(st);
+    change_state(st, STATE_IKESA_DEL);
+    delete_state(st);
+
+    if (pst && pst != st) {
+        delete_event(pst);
+	delete_state(pst);
+    }
+
+    reset_globals();
+
+    /* start a new attempt */
+
+    stf = ikev2parent_outI1(whack_sock
+              , c
+              , NULL
+              , &created
+              , c->policy
+              , 1
+              , pcim_demand_crypto
+              , NULL_POLICY);
+
+    switch (stf) {
+    case STF_OK:
+    case STF_SUSPEND:
+        c->prospective_parent_sa = created;
+        return stf;
+    default:
+        /* something went wrong, we must close whack_sock */
+        close_any(whack_sock);
+        break;
+    }
+
+    return stf;
+}
+
 /*
  * this routine deals with replies that are failures, which do not
  * contain proposal, or which require us to try initiator cookies.
  */
-stf_status ikev2parent_inR1(struct msg_digest *md)
+stf_status ikev2parent_ntf_inR1(struct msg_digest *md)
 {
     struct state *st = md->st;
-    /* struct connection *c = st->st_connection; */
+    struct connection *c = st->st_connection;
+    bool retry = FALSE;
 
     set_cur_state(st);
 
@@ -481,7 +600,12 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
                 action="SA deleted";
                 break;
             case v2N_INVALID_KE_PAYLOAD:
-                action="SA deleted";
+		if (c->proposal_can_retry) {
+			action="will retry";
+			retry = TRUE;
+		} else {
+			action="SA deleted";
+		}
                 break;
             default:
                 break;
@@ -496,12 +620,64 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
 
     }
 
+    if (retry)
+        return ikev2parent_retry_next_proposal(md);
+
     /* now. nuke the state */
-    {
-        delete_state(st);
-        reset_globals();
-        return STF_FAIL;
+    delete_state(st);
+    reset_globals();
+
+    return STF_FAIL;
+}
+
+/*
+ * this routine deals with replies that are failures, which do not
+ * contain proposal, or which require us to try initiator cookies.
+ */
+stf_status ikev2parent_ntf_inR2(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    struct connection *c = st->st_connection;
+    bool retry = FALSE;
+
+    set_cur_state(st);
+
+    /* check if the responder replied with v2N with DOS COOKIE */
+    if( md->chain[ISAKMP_NEXT_v2N] ) {
+        struct payload_digest *notify;
+        const char *action = "ignored";
+
+        for(notify=md->chain[ISAKMP_NEXT_v2N]; notify!=NULL; notify=notify->next) {
+            switch(notify->payload.v2n.isan_type) {
+            case v2N_AUTHENTICATION_FAILED:
+		if (c->proposal_can_retry) {
+			action="will retry";
+			retry = TRUE;
+		} else {
+			action="SA deleted";
+		}
+                break;
+            default:
+                break;
+            }
+
+            loglog(RC_NOTIFICATION + notify->payload.v2n.isan_type
+                      , "received notify: %s %s"
+                      ,enum_name(&ikev2_notify_names
+                                 , notify->payload.v2n.isan_type)
+                      ,action);
+        }
+
     }
+
+    if (retry)
+        return ikev2parent_retry_next_proposal(md);
+
+    /* now. nuke the state */
+    delete_state(st);
+    reset_globals();
+
+    return STF_FAIL;
 }
 
 /*

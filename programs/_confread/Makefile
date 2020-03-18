@@ -22,6 +22,7 @@ SOURCEDIR=_confread
 CONFDSUBDIR=policies
 CONFDFILES=clear clear-or-private private-or-clear private block
 
+srcdir ?= ./
 include ${srcdir}../Makefile.program
 
 ipsec.conf.5: ${srcdir}ipsec.conf.5.xml

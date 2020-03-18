@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# this script builds programs, and runs unit tests.
+
+set -e -x
+
+[ -x /usr/bin/ccache ] && ccache -z
+
+make programs ARCH=${BUILD_ARCH} LIBEFENCE=
+cd tests/unit/libpluto
+./run-unit-tests.sh -o "ARCH=${BUILD_ARCH} LIBEFENCE=" -c -p -a
+git diff --exit-code --stat .
+
+[ -x /usr/bin/ccache ] && ccache -s
+

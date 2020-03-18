@@ -861,7 +861,7 @@ static field_desc ikev2_cert_req_fields[] = {
   { ft_end,  0, NULL, NULL }
 };
 
-struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
+struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", ikev2_cert_req_fields, IKEV2_CERTREQ_SIZE };
 
 /*
  * 3.8.  Authentication Payload

@@ -27,7 +27,7 @@
 # define SHA384_NEEDED  1
 #endif
 
-#if defined(SHA256_NEEDED)
+#if defined(SHA256_NEEDED) && !defined(HAVE_LIBNSS)
 static const u_int32_t sha256_hashInit[8] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
     0x1f83d9ab, 0x5be0cd19
@@ -47,7 +47,7 @@ static const u_int32_t sha256_K[64] = {
 };
 #endif
 
-#if defined(SHA512_NEEDED)
+#if defined(SHA512_NEEDED) && !defined(HAVE_LIBNSS)
 static const u_int64_t sha512_hashInit[8] = {
     0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL, 0x3c6ef372fe94f82bULL,
     0xa54ff53a5f1d36f1ULL, 0x510e527fade682d1ULL, 0x9b05688c2b3e6c1fULL,
@@ -55,7 +55,7 @@ static const u_int64_t sha512_hashInit[8] = {
 };
 #endif
 
-#if defined(SHA384_NEEDED)
+#if defined(SHA384_NEEDED) && !defined(HAVE_LIBNSS)
 static const u_int64_t sha384_hashInit[8] = {
     0xcbbb9d5dc1059ed8ULL, 0x629a292a367cd507ULL, 0x9159015a3070dd17ULL,
     0x152fecd8f70e5939ULL, 0x67332667ffc00b31ULL, 0x8eb44a8768581511ULL,
@@ -63,7 +63,7 @@ static const u_int64_t sha384_hashInit[8] = {
 };
 #endif
 
-#if defined(SHA512_NEEDED) || defined(SHA384_NEEDED)
+#if (defined(SHA512_NEEDED) || defined(SHA384_NEEDED)) && !defined(HAVE_LIBNSS)
 static const u_int64_t sha512_K[80] = {
     0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL, 0xb5c0fbcfec4d3b2fULL,
     0xe9b5dba58189dbbcULL, 0x3956c25bf348b538ULL, 0x59f111f1b605d019ULL,
@@ -103,14 +103,14 @@ static const u_int64_t sha512_K[80] = {
 void sha256_init(sha256_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha256 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA256);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status=PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha256_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -279,14 +279,14 @@ void sha256_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int
 void sha512_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha512 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA512);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status = PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha512 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha512_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -475,14 +475,14 @@ void sha512_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int
 void sha384_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha384 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA384);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status=PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha384_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;

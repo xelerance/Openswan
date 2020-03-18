@@ -44,7 +44,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "packet.h"
-#include "md2.h"
 #include "md5.h"
 #include "sha1.h"
 #include "pkcs.h"
@@ -247,9 +246,12 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 
 /*
  * Checks if CA a is trusted by CA b
+ *
+ * if by_name==TURE lookup a's cert by name,
+ * if by_name==FALSE lookup a's cert by keyid.
  */
-bool
-trusted_ca(chunk_t a, chunk_t b, int *pathlen)
+static bool
+__trusted_ca(const char *caller, chunk_t a, chunk_t b, int *pathlen, bool by_name)
 {
     bool match = FALSE;
     char abuf[ASN1_BUF_LEN], bbuf[ASN1_BUF_LEN];
@@ -258,8 +260,8 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
     dntoa(bbuf, ASN1_BUF_LEN, b);
 
     DBG(DBG_X509 | DBG_CONTROLMORE
-	, DBG_log("  trusted_ca called with a=%s b=%s"
-		  , abuf, bbuf));
+        , DBG_log("  %s called with a=%s b=%s"
+                  , caller, abuf, bbuf));
 
     /* no CA b specified -> any CA a is accepted */
     if (b.ptr == NULL)
@@ -282,11 +284,18 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
 	return TRUE;
 
     /* CA a might be a subordinate CA of b */
-    lock_authcert_list("trusted_ca");
+    lock_authcert_list(caller);
 
     while ((*pathlen)++ < MAX_CA_PATH_LEN)
     {
-	x509cert_t *cacert = get_authcert(a, empty_chunk, empty_chunk, AUTH_CA);
+        x509cert_t *cacert;
+
+        if (by_name)
+            /* lookup by name */
+            cacert = get_authcert(a, empty_chunk, empty_chunk, AUTH_CA);
+        else
+            /* lookup by keyid */
+            cacert = get_authcert(empty_chunk, empty_chunk, a, AUTH_CA);
 
 	/* cacert not found or self-signed root cacert-> exit */
 	if (cacert == NULL || same_dn(cacert->issuer, a))
@@ -301,14 +310,33 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
 
 	/* go one level up in the CA chain */
 	a = cacert->issuer;
+	by_name = TRUE;
+
+        dntoa(abuf, ASN1_BUF_LEN, a);
+        DBG(DBG_X509 | DBG_CONTROLMORE
+            , DBG_log("  %s a->issuer %s"
+                      , caller, abuf));
     }
 
-    unlock_authcert_list("trusted_ca");
+    unlock_authcert_list(caller);
 
     DBG(DBG_X509 | DBG_CONTROLMORE
-	, DBG_log("  trusted_ca returning with %s", match ? "match" : "failed"));
+        , DBG_log("  %s returning with %s"
+                  , caller, match ? "match" : "failed"));
 
     return match;
+}
+
+bool
+trusted_ca_by_name(chunk_t a, chunk_t b, int *pathlen)
+{
+    return __trusted_ca(__func__, a, b, pathlen, TRUE);
+}
+
+bool
+trusted_ca_by_keyid(chunk_t a, chunk_t b, int *pathlen)
+{
+    return __trusted_ca(__func__, a, b, pathlen, FALSE);
 }
 
 /*  Checks if the current certificate is revoked. It goes through the
@@ -553,9 +581,12 @@ check_validity(const x509cert_t *cert, time_t *until)
 
 /*
  * does our CA match one of the requested CAs?
+ *
+ * used for IKEv1 CERTREQ lookup, requested_ca is a list of CA names.
  */
 bool
-match_requested_ca(generalName_t *requested_ca, chunk_t our_ca, int *our_pathlen)
+match_requested_ca_name(const generalName_t *requested_ca, chunk_t our_ca_name,
+			int *our_pathlen)
 {
     /* if no ca is requested than any ca will match */
     if (requested_ca == NULL)
@@ -570,10 +601,60 @@ match_requested_ca(generalName_t *requested_ca, chunk_t our_ca, int *our_pathlen
     {
 	int pathlen;
 
-	if (trusted_ca(our_ca, requested_ca->name, &pathlen)
+	if (trusted_ca_by_name(our_ca_name, requested_ca->name, &pathlen)
 	&& pathlen < *our_pathlen)
 	    *our_pathlen = pathlen;
 	requested_ca = requested_ca->next;
+    }
+
+    return *our_pathlen <= MAX_CA_PATH_LEN;
+}
+
+/*
+ * does our CA match one of the requested CAs?
+ *
+ * used for IKEv2 CERTREQ lookup, requested_keys is a list of CA key IDs.
+ */
+bool
+match_requested_ca_keyid(const generalName_t *requested_keys, chunk_t our_ca_name,
+                         int *our_pathlen)
+{
+    x509cert_t *cacert;
+    const generalName_t *gn;
+
+    /* if no ca is requested then any ca will match */
+    if (!requested_keys) {
+        *our_pathlen = 0;
+        return TRUE;
+    }
+
+    *our_pathlen = MAX_CA_PATH_LEN + 1;
+
+    /* lookup our CA by name */
+    cacert = get_authcert(our_ca_name, empty_chunk, empty_chunk, AUTH_CA);
+
+    /* if we don't have a CA, then nothing will match */
+    if (!cacert) {
+        char name[ASN1_BUF_LEN];
+        dntoa(name, ASN1_BUF_LEN, our_ca_name);
+        DBG_log("  match_requested_ca_keyid passed CA name '%s', which was not found",
+                name);
+        return FALSE;
+    }
+
+    /* bogus input will not match anything */
+    if (cacert->subjectKeyID.len != SHA1_DIGEST_SIZE) {
+        DBG_log("  match_requested_ca_keyid passed CA keyid with len %lu (expected %u)",
+                cacert->subjectKeyID.len, SHA1_DIGEST_SIZE);
+        return FALSE;
+    }
+
+    for (gn = requested_keys; gn; gn = gn->next) {
+        int pathlen;
+
+        if (trusted_ca_by_keyid(cacert->subjectKeyID, gn->name, &pathlen)
+            && pathlen < *our_pathlen)
+            *our_pathlen = pathlen;
     }
 
     return *our_pathlen <= MAX_CA_PATH_LEN;

@@ -31,7 +31,7 @@ processing whack msg time: X size: Y
 |   orient cpe finished with: 1 [192.168.1.1]
 RC=0 "cpe": %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "cpe":     myip=unset; hisip=unset;
-RC=0 "cpe":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "cpe":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "cpe":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 ./kickdns leak: 2 * keep id name, item size: X
 ./kickdns leak: ID host_pair, item size: X

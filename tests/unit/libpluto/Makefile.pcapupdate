@@ -1,0 +1,18 @@
+ifneq (,${PCAPDEPENDENCIES})
+# paths in PCAPDEPENDENCIES are expected to be in the form ../lpXXX*/OUTPUT/*.pcap
+#
+# ideally we'd want to do something like:
+#
+# 	${PCAPDEPENDENCIES}: %.pcap:
+#		${MAKE} -C $(dir $(call dirname,$@)) OUTPUT/$(notdir $@)
+#
+# but that would mean that each test would have to know the name of the
+# output pcap file.  For now, we just call check of the directory, since
+# that always generates the output pcap.
+
+dirname = $(patsubst %/,%,$(dir $1))
+
+${PCAPDEPENDENCIES}: %.pcap:
+	@echo "# refresh $@"
+	${MAKE} -C $(dir $(call dirname,$@)) check
+endif

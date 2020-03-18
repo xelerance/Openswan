@@ -5,7 +5,7 @@
 /* Openswan config file parser (parser.l)
  * Copyright (C) 2001 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008 D. Hugh Redelmeier <hugh@mimosa.com>
+ * Copyright (C) 2008, 2014 D. Hugh Redelmeier <hugh@mimosa.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -54,6 +54,13 @@ extern void yyerror(const char *);
 extern int yylex (void);
 extern int yydebug;
 extern int verbose;
+
+/* if glob() does not support GLOB_BRACE, then
+ * resulting system just does not {a,b}
+ */
+#ifndef GLOB_BRACE
+#define GLOB_BRACE 0
+#endif
 
 struct ic_inputsource {
 	YY_BUFFER_STATE state;
@@ -204,11 +211,11 @@ int parser_y_include (const char *filename)
 			     "%s%s", rootdir2, filename);
 		    try = newname2;
 
-		    globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
+		    globresult = glob(try, GLOB_BRACE, NULL, &globbuf);
 	    }
 	} else {
 		/* try globbing plain name now.. */
-		globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
+		globresult = glob(try, GLOB_BRACE, NULL, &globbuf);
 	}
 
 	if(globresult == GLOB_NOMATCH)
@@ -315,10 +322,19 @@ int parser_y_eof(void)
 
 [\t ]+			/* ignore spaces in line */ ;
 
-<USERDEF>[0-9]+         { /* process a number */
-                           yylval.num = strtoul(yytext, NULL, 10);
+<INITIAL,USERDEF>[0-9]+ { /* process a number */
+                           unsigned long val = (errno = 0, strtoul(yytext, NULL, 10));
+                           if (errno != 0 || val > UINT_MAX) {
+                               char ebuf[128];
+                          
+                               snprintf(ebuf, sizeof(ebuf),
+                                   "number too large: %s",
+                                   yytext);
+                               yyerror(ebuf);
+                           }
+                           yylval.num = val;
                            BEGIN INITIAL;
-			   return INTEGER;
+                           return INTEGER;
                         }
 
 <USERDEF>%forever       { /* a number, really 0 */

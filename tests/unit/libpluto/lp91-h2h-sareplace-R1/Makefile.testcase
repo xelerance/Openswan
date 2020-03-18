@@ -10,7 +10,10 @@ TESTNAME=rekeyParentSA
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap h2hR1.pcap h2hR2rekey.pcap
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp37-h2hR1/OUTPUT/h2hR1.pcap ../lp90-h2h-sareplace-I1/OUTPUT/rekeyParentSA.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp37-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap
 	cp ../lp90-h2h-sareplace-I1/OUTPUT/rekeyParentSA.pcap h2hR2rekey.pcap
 

@@ -54,13 +54,11 @@ int warningsarefatal = 0;
 
 int main(int argc, char *argv[])
 {
-    int   len;
     err_t err = NULL;
-    char *infile;
     char *conn_name;
-    int  lineno=0;
     struct starter_config *cfg = NULL;
     struct starter_conn *conn = NULL;
+    struct connection *c;
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
@@ -86,21 +84,44 @@ int main(int argc, char *argv[])
     argv+=3;
     argc-=3;
 
+    printf("processing requested conn adds\n");
+
     /* load all conns marked as auto=add or better */
-    for(conn = cfg->conns.tqh_first;
-	conn != NULL;
-	conn = conn->link.tqe_next)
-    {
-        for(; argc>0; argc--, argv++) {
-            conn_name = *argv;
-            printf("processing conn: %s\n", conn_name);
-            if(strcasecmp(conn->name, conn_name)==0) {
-                struct whack_message msg1;
-                if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
-                    add_connection(&msg1);
-                }
-            }
-        }
+    for(; argc>0; argc--, argv++) {
+	struct whack_message msg1;
+
+	conn_name = *argv;
+	printf("%s: was requested\n", conn_name);
+
+	for(conn = cfg->conns.tqh_first;
+	    conn != NULL;
+	    conn = conn->link.tqe_next)
+	{
+            if(!strcasecmp(conn->name, conn_name))
+		break;
+	}
+
+	if (!conn) {
+	    printf("%s: was not loaded\n", conn_name);
+	    continue;
+	}
+	printf("%s: was loaded\n", conn_name);
+
+	if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
+	    printf("%s: calling add_connection()\n", conn_name);
+	    add_connection(&msg1);
+	}
+
+	c = con_by_name(conn_name, 0);
+
+	if (!conn) {
+	    printf("%s: was not added\n", conn_name);
+	    continue;
+	}
+	printf("%s: was added\n", conn_name);
+
+	printf("%s: policy %s\n", c->name , prettypolicy(c->policy));
+
     }
 
     confread_free(cfg);

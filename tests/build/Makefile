@@ -16,7 +16,17 @@ srcdir?=${OPENSWANSRCDIR}/tests/build
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-check:
-	@${MAKE} -C b01-install check
-	@${MAKE} -C b02-libnss  check
+UNITTESTS=
+UNITTESTS+=b01-install
+UNITTESTS+=b02-libnss
+
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+
+programs clean check pcapupdate:
+clean check pcapupdate programs:
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}
+
 

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# this script builds programs, and runs unit tests.
+
+set -e -x
+
+[ -x /usr/bin/ccache ] && ccache -z
+
+make programs ARCH=${BUILD_ARCH} LIBEFENCE=
+make check ARCH=${BUILD_ARCH} LIBEFENCE=
+
+[ -x /usr/bin/ccache ] && ccache -s
+
+

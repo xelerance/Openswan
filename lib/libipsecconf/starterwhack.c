@@ -621,6 +621,10 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	}
 #endif
 
+	msg->first_msgid = 0; // default firstmsgid to 0 if not provided
+	if(conn->options_set[KBF_FIRSTMSGID])
+		msg->first_msgid = conn->options[KBF_FIRSTMSGID];
+
 	/*Cisco interop : remote peer type*/
 	if(conn->options_set[KBF_REMOTEPEERTYPE]) {
 		msg->remotepeertype=conn->options[KBF_REMOTEPEERTYPE];

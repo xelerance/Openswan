@@ -144,7 +144,6 @@ win2k_get_spi(const ip_address *src
 const struct kernel_ops win2k_kernel_ops = {
     type: USE_WIN2K,
     inbound_eroute: 1,
-    policy_lifetime: 1,
     async_fdp: &win2k_bcast_fd,
     replay_window: 32,
 
@@ -164,5 +163,7 @@ const struct kernel_ops win2k_kernel_ops = {
     opname: "win2k",
     overlap_supported: FALSE,
     sha2_truncbug_support: FALSE,
+    /* should define scan_shunts() if needed */
+    scan_shunts: NULL,
 };
 #endif /* WIN32_NATIVE */

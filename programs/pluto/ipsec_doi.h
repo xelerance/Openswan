@@ -108,6 +108,11 @@ extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declar
 	} \
     }
 
+extern size_t quick_mode_hash12(u_char *dest, const u_char *start,
+				const u_char *roof,
+				const struct state *st, const msgid_t *msgid,
+				bool hash2);
+
 extern stf_status
 send_isakmp_notification(struct state *st
 			 , u_int16_t type, const void *data, size_t len);

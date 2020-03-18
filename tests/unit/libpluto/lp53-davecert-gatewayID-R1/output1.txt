@@ -3,8 +3,8 @@
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./davecert-R1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecert-R1-id loading secrets from "../samples/gatewaycert.secrets"
-./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (1675 bytes)
-./davecert-R1-id loaded private key for keyid: PPK_RSA:AwEAAcEYl/6A98 ADDF C732 A7EF 2578 9566 C709 D9F8 2DF1 99F1
+./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (CERT bytes)
+./davecert-R1-id loaded private key for keyid: PPK_RSA:AwEAAcb/r/C288 B34C 31FD 460A B1A3 5E0B 36C5 9D2E 8C09 9325
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -13,11 +13,11 @@ processing whack msg time: X size: Y
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection rw-dave with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./davecert-R1-id   loading certificate from moonCert.pem
-./davecert-R1-id   loaded host cert file '../samples/selfsigned/certs/moonCert.pem' (1513 bytes)
+./davecert-R1-id   loaded host cert file '../samples/selfsigned/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 ./davecert-R1-id   loading certificate from daveCert.pem
-./davecert-R1-id   loaded host cert file '../samples/selfsigned/certs/daveCert.pem' (1513 bytes)
+./davecert-R1-id   loaded host cert file '../samples/selfsigned/certs/daveCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for dave@openswan.org is 0
 | orient rw-dave checking against if: eth0 (AF_INET:132.213.238.7:4500)
@@ -35,8 +35,8 @@ processing whack msg time: X size: Y
 |   orient rw-dave finished with: 1 [132.213.238.7]
 RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any[dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=daveCert.pem;
-RC=0 "rw-dave":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'
-RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-dave":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'
+RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file davecertI1-id.pcap ========
 | *received 892 bytes from 93.184.216.35:500 on eth0 (port=500)
@@ -97,7 +97,8 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -107,11 +108,11 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.35:500 policy=IKEv2ALLOW/-
@@ -190,6 +191,7 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -294,6 +296,11 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | Notify data  5b 99 ec 1e  46 90 94 2f  3a df fb bb  b4 da 86 23
 |   e7 d9 0b 8b
 | emitting length of IKEv2 Notify Payload: 28
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   my next payload will not be a certificate request
+| I did not send a certificate request (CERTREQ) because
+|   no CA certs available for validation
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
@@ -400,11 +407,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: pubkey entry, item size: X
 ./davecert-R1-id leak: pubkey, item size: X
 ./davecert-R1-id leak: certificate filename, item size: X
-./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
-./davecert-R1-id leak: issuer dn, item size: X
-./davecert-R1-id leak: keep id name, item size: X
-./davecert-R1-id leak: pubkey entry, item size: X
-./davecert-R1-id leak: pubkey, item size: X
 ./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
 ./davecert-R1-id leak: issuer dn, item size: X
 ./davecert-R1-id leak: keep id name, item size: X

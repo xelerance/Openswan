@@ -77,6 +77,66 @@ ikev2parent_outI1(int whack_sock
                                     , uctx);
 }
 
+static int guess_dhgroup(struct state *st, struct connection *c)
+{
+    int guess = 0;
+    unsigned int groupcnt = 0;
+    unsigned int pc_cnt;
+
+    if(!st->st_sadb->prop_disj)
+        return 0;
+
+    c->proposal_can_retry = FALSE;
+
+    /* look at all the proposals */
+    for(pc_cnt=0; pc_cnt < st->st_sadb->prop_disj_cnt; pc_cnt++) {
+        struct db_v2_prop *vp = &st->st_sadb->prop_disj[pc_cnt];
+        unsigned int pr_cnt;
+
+        if(!vp->props)
+            continue;
+
+        /* look at all the proposals */
+        for(pr_cnt=0; pr_cnt < vp->prop_cnt; pr_cnt++) {
+            unsigned int ts_cnt;
+            struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
+
+            for(ts_cnt=0; ts_cnt < vpc->trans_cnt; ts_cnt++) {
+                struct db_v2_trans *tr = &vpc->trans[ts_cnt];
+                if (!tr || tr->transform_type != IKEv2_TRANS_TYPE_DH)
+                    continue;
+
+                /* this is a policy which has a DH group we could be negotiating * */
+
+                if (groupcnt == c->proposal_index) {
+                    /* select this proposal's DH group, on this iteration */
+                    guess = tr->transid;
+                } else if (guess) {
+                    /* we have selected a guess already, and there is another
+                     * option we can come back for next time */
+                    c->proposal_can_retry = TRUE;
+                    return guess;
+                }
+
+                groupcnt++;
+            }
+        }
+    }
+
+    if (guess) {
+        /* we have selected a guess, but there are no more to come back for */
+        c->proposal_can_retry = FALSE;
+        return guess;
+    }
+
+    openswan_log("DH group retries exhausted after %u attempts",
+                 c->proposal_index);
+    c->proposal_index = 0;
+
+    /* we will not continue to retry */
+    return -1;
+}
+
 stf_status
 ikev2parent_outI1_withstate(struct state *st
                             , int whack_sock
@@ -88,12 +148,16 @@ ikev2parent_outI1_withstate(struct state *st
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
                             )
 {
-    struct db_sa *sadb;
     int    groupnum;
     int    need_to_add_pending = 0;
     int    policy_index = POLICY_ISAKMP(policy
                                         , c->spd.this.xauth_server
                                         , c->spd.this.xauth_client);
+    stf_status e;
+
+    /* assumption is that we are starting with a new state,
+     * so there should never be a suspended MD here */
+    assert (!is_suspended(st));
 
     /* set up new state */
     st->st_ikev2 = TRUE;
@@ -104,7 +168,13 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
-    st->st_ikev2_orig_initiator = TRUE;
+    st->st_orig_initiator = TRUE;
+
+    if (c->first_msgid == 0) {
+	    e = allocate_msgid_from_parent(st, &st->st_msgid);
+	    if(e != STF_OK)
+		    return e;
+    }
 
     if (HAS_IPSEC_POLICY(policy))
         need_to_add_pending = 1;
@@ -161,48 +231,23 @@ ikev2parent_outI1_withstate(struct state *st
      * now, we need to initialize st->st_oakley, specifically, the group
      * number needs to be initialized.
      */
-    groupnum = 0;
 
-    st->st_sadb = &oakley_sadb[policy_index];
-    sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
-                             , st->st_sadb, 0);
-    if(sadb != NULL) {
-        st->st_sadb = sadb;
-    }
-    sadb = st->st_sadb = sa_v2_convert(st->st_sadb);
-    {
-        unsigned int  pc_cnt;
+    st->st_sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
+                             , &oakley_sadb[policy_index], 0);
+    if (!st->st_sadb)
+        st->st_sadb = &oakley_sadb[policy_index];
+    st->st_sadb = sa_v2_convert(st->st_sadb);
 
-        /* look at all the proposals */
-        if(st->st_sadb->prop_disj!=NULL) {
-            for(pc_cnt=0; pc_cnt < st->st_sadb->prop_disj_cnt && groupnum==0;
-                pc_cnt++)
-                {
-                    struct db_v2_prop *vp = &st->st_sadb->prop_disj[pc_cnt];
-                    unsigned int pr_cnt;
+    groupnum = guess_dhgroup(st, c);
+    if (groupnum < 0) {
+        /* we had groups, but we tried them all already */
+        return STF_FATAL;
 
-                    /* look at all the proposals */
-                    if(vp->props!=NULL) {
-                        for(pr_cnt=0; pr_cnt < vp->prop_cnt && groupnum==0; pr_cnt++)
-                            {
-                                unsigned int ts_cnt;
-                                struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
-
-                                for(ts_cnt=0; ts_cnt < vpc->trans_cnt && groupnum==0; ts_cnt++) {
-                                    struct db_v2_trans *tr = &vpc->trans[ts_cnt];
-                                    if(tr!=NULL
-                                       && tr->transform_type == IKEv2_TRANS_TYPE_DH) {
-                                        groupnum = tr->transid;
-                                    }
-                                }
-                            }
-                    }
-                }
-        }
-    }
-    if(groupnum == 0) {
+    } else if (groupnum == 0) {
+        /* we didn't have any group specified */
         groupnum = OAKLEY_GROUP_MODP2048;
     }
+
     st->st_oakley.group=lookup_group(groupnum);
     st->st_oakley.groupnum=groupnum;
 
@@ -264,7 +309,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    passert(st->st_suspended_md == ke->md);
+    assert_suspended(st, ke->md);
     set_suspended(st,NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -404,7 +449,10 @@ ikev2_parent_outI1_common(struct msg_digest *md
             return STF_INTERNAL_ERROR;
     }
 
-    close_message(&md->rbody);
+    /* IKEv2 should not add additional padding after the last payload; we used
+     * to call close_message(&md->rbody) here, but that added additional
+     * padding bytes after the last payload, and would mess up auth hashing */
+    close_output_pbs(&md->rbody);
     close_output_pbs(&reply_stream);
 
     /* let TCL hack it before we mark the length and copy it */

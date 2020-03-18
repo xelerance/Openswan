@@ -8,6 +8,7 @@
 #include "openswan/passert.h"
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
 #include "oswlog.h"
 #include "secrets.h"
 #include "id.h"
@@ -45,10 +46,10 @@ void load_secrets(const char *rootdir)
     assert(count == 2);
 }
 
+extern void load_oswcrypto(void);
+
 int main(int argc, char *argv[])
 {
-    int i;
-    struct id one;
     const char *rootdir=get_current_dir_name();
 
     load_oswcrypto();

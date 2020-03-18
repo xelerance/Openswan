@@ -129,7 +129,7 @@ aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -176,7 +176,7 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == ke->md);
+  assert_suspended(st, ke->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -275,6 +275,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 
     /* Set up state */
     cur_state = md->st = st = new_state();	/* (caller will reset cur_state) */
+    st->st_orig_initiator = FALSE; /* we are responding to this exchange */
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
@@ -506,7 +507,7 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature (IKEv1 aggressive responder)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
@@ -579,6 +580,14 @@ aggr_inR1_outI2(struct msg_digest *md)
      */
     struct state *st = md->st;
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     st->st_policy |= POLICY_AGGRESSIVE;
 
@@ -684,7 +693,7 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == dh->md);
+  assert_suspended(st, dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -798,7 +807,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 aggressive initiator)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
@@ -988,7 +997,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  passert(st->st_suspended_md == ke->md);
+  assert_suspended(st, ke->md);
   set_suspended(st,NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -1024,6 +1033,7 @@ aggr_outI1(int whack_sock,
     cur_state = st = new_state();
     if(newstateno) *newstateno = st->st_serialno;
 
+    st->st_orig_initiator = TRUE; /* we are initiating this exchange */
     st->st_connection = c;
 #ifdef HAVE_LABELED_IPSEC
     st->sec_ctx = NULL;

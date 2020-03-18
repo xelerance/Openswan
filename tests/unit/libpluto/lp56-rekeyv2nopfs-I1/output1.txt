@@ -35,7 +35,7 @@ RC=0 "parker1--jj2--nopfs": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.em
 RC=0 "parker1--jj2--nopfs":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2--nopfs":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
 RC=0 "parker1--jj2--nopfs":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
-RC=0 "parker1--jj2--nopfs":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2--nopfs":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2--nopfs":   policy: RSASIG+ENCRYPT+TUNNEL+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'parker1--jj2--nopfs'
 | creating state object #1 at Z
@@ -142,7 +142,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -170,6 +175,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
@@ -521,7 +527,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
 |   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -846,6 +853,7 @@ RC=0 #1: "parker1--jj2--nopfs":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA establishe
 ./rekeyv2nopfs-I1 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete request
+| preparing to delete #2, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -892,6 +900,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./rekeyv2nopfs-I1 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

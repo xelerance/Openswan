@@ -456,6 +456,9 @@ HAVE_BROKEN_POPEN?=false
 # For systems with no fork (uclibc nommu)
 HAVE_NO_FORK?=false
 
+# Set to skip man pages on embedded systems
+USE_NOMANINSTALL?=false
+
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
@@ -494,6 +497,8 @@ BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
 endif
 export BUILDENV
 export OSDEP
+export USE_LIBNSS
+
 include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
 -include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
 
@@ -506,7 +511,11 @@ INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 endif
 
 ifeq ($(USE_OBJDIR),true)
+ifeq ($(USE_LIBNSS),true)
+OBJDIR?=OBJ.libnss.${BUILDENV}.${ARCH}
+else
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
+endif
 OBJDIRTOP?=${OPENSWANSRCDIR}/${OBJDIR}
 else
 # where to place the object files which are built
@@ -556,7 +565,6 @@ LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
 LIBOSWCRYPTO=${OBJDIRTOP}/lib/libcrypto/liboswcrypto/liboswcrypto.a
 LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
 LIBMD5=${OBJDIRTOP}/lib/libcrypto/libmd5/libmd5.a
-LIBMD2=${OBJDIRTOP}/lib/libcrypto/libmd2/libmd2.a
 LIBSHA1=${OBJDIRTOP}/lib/libcrypto/libsha1/libsha1.a
 LIBBLOWFISH=${OBJDIRTOP}/lib/libcrypto/libblowfish/libblowfish.a
 LIBTWOFISH=${OBJDIRTOP}/lib/libcrypto/libtwofish/libtwofish.a

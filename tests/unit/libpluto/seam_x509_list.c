@@ -35,10 +35,12 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
 	    char buf[ASN1_BUF_LEN];
 	    char tbuf[TIMETOA_BUF];
 
+#if 0
 	    cert_t c;
 
 	    c.type = CERT_X509_SIGNATURE;
 	    c.u.x509 = cert;
+#endif
 
 	    if (first)
 	    {

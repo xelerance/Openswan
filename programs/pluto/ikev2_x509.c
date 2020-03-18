@@ -60,10 +60,73 @@
 #include "keys.h"
 #include "ipsec_doi.h"
 
-static stf_status
-ikev2_send_certreq( struct state *st, struct msg_digest *md
-		    , enum phase1_role role
-		    , unsigned int np, pb_stream *outpbs);
+/* figure out if we should request a cert for the peer */
+bool
+doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
+{
+    bool send_certreq = FALSE;
+    bool unknown = TRUE;
+    struct connection *c  = st->st_connection;
+
+    /* decide the next payload;
+     * send a CERTREQ no preloaded public key exists
+     */
+    send_certreq = (c->policy & POLICY_RSASIG)
+        && !has_preloaded_public_key(st)
+        && !st->hidden_variables.st_got_cert_from_peer
+        && (st->st_connection->spd.that.ca.ptr != NULL)
+	&& x509_get_authcerts_chain();
+
+    DBG(DBG_CONTROL
+        , DBG_log("Thinking about sending a certificate request (CERTREQ)");
+        DBG_log("  my policy is : %s", prettypolicy(c->policy));
+        DBG_log("  my next payload will %sbe a certificate request"
+                , send_certreq ? "" : "not "));
+
+    if (send_certreq)
+        return TRUE;
+
+    /* report why we are not sending a certreq */
+
+    DBG(DBG_CONTROL
+        ,DBG_log("I did not send a certificate request (CERTREQ) because"));
+    if(!(c->policy & POLICY_RSASIG)) {
+        DBG(DBG_CONTROL
+            ,DBG_log("  RSA digital signatures are not being used. (PSK)"));
+        unknown = FALSE;
+    }
+    if(has_preloaded_public_key(st)) {
+        DBG(DBG_CONTROL
+            , DBG_log(" has a preloaded a public for that end in st"));
+        unknown = FALSE;
+    }
+    if(st->hidden_variables.st_got_cert_from_peer) {
+        DBG(DBG_CONTROL
+            , DBG_log("  already received a CERT from peer"));
+        unknown = FALSE;
+    }
+    if(!(st->st_connection->spd.that.ca.ptr != NULL)) {
+        DBG(DBG_CONTROL
+            , DBG_log("  no known CA for the other end"));
+        unknown = FALSE;
+    }
+    if(!(x509_get_authcerts_chain())) {
+        DBG(DBG_CONTROL
+            , DBG_log("  no CA certs available for validation"));
+        unknown = FALSE;
+    }
+
+    /* no reason we are aware of */
+
+    if (unknown) {
+        DBG(DBG_CONTROL,
+            DBG_log(" we reached an unexpected state - a bad day? "
+                    "I don't feel like sending a certificate request (CERTREQ)"));
+    }
+
+    return FALSE;
+}
+
 
 /* Send v2CERT and v2 CERT */
 stf_status
@@ -71,64 +134,29 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 		, enum phase1_role role
 		, unsigned int np, pb_stream *outpbs)
 {
+    stf_status stf;
     struct ikev2_cert cert;
-    /*  flag : to send a certificate request aka CERTREQ */
-    bool send_certreq = FALSE;
 
-    struct connection *c  = st->st_connection;
+    /*  flag : to send a certificate request aka CERTREQ */
+    bool send_certreq = doi_send_ikev2_certreq_thinking(st, role);
+
     cert_t mycert = st->st_connection->spd.this.cert;
-    {
-	/* decide the next payload;
-	 * send a CERTREQ no preloaded public key exists
-	 */
-	send_certreq = (c->policy & POLICY_RSASIG)
-		       && !has_preloaded_public_key(st)
-	               && (role == INITIATOR)
-		       && (st->st_connection->spd.that.ca.ptr != NULL);
-    }
-    DBG(DBG_CONTROL
-	, DBG_log("Thinking about sending a certificate request (CERTREQ)");
-   	DBG_log("  my policy is : %s", prettypolicy(c->policy));
-	DBG_log(" my next payload will %sbe a certificate request"
-		  , send_certreq ? "" : "not "));
-        if(!send_certreq)
-	{
-	   DBG(DBG_CONTROL
-		,DBG_log("I did not send a certificate request (CERTREQ) because"));
-	   if(!(c->policy & POLICY_RSASIG))
-	    	{ DBG(DBG_CONTROL
-			,DBG_log("  RSA digital signatures are not being used. (PSK)"));}
-	    else if(has_preloaded_public_key(st))
-	    	{ DBG(DBG_CONTROL
-			, DBG_log(" has a preloaded a public for that end in st"));}
-	     else if(!(role == INITIATOR))
-	        { DBG(DBG_CONTROL
-		     ,DBG_log("  my role is not INITIATORi"));}
-	     else if(!(st->st_connection->spd.that.ca.ptr != NULL))
-	         { DBG(DBG_CONTROL
-		 	, DBG_log("  no known CA for the other end"));}
-	     else
-		{ DBG(DBG_CONTROL,
-	    	      DBG_log(" we reached an unexpected state - a bad day? I don't feel like sending a certificate request (CERTREQ)"));}
-        }
+
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+        openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+        cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
     }
 
     cert.isac_enc = mycert.type;
 
-    /* XXX SENDING of CERT REQ in IKEv2 is broken. TURN IT OFF FOR NOW */
-    send_certreq = 0;
-
     if(send_certreq){
         cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
-	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;
+        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+            cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+        }
+        cert.isac_np = ISAKMP_NEXT_v2CERTREQ;
     }
     else {
 	cert.isac_np = np;
@@ -166,55 +194,110 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     if(send_certreq) {
 	DBG(DBG_CONTROL
 	    , DBG_log("going to send a certreq"));
-	ikev2_send_certreq(st, md, role, np, outpbs);
+	stf = ikev2_send_certreq(st, md, role, np, outpbs);
+	if (stf != STF_OK) {
+            DBG(DBG_CONTROL
+                , DBG_log("sending CERTREQ failed with %s",
+                          stf_status_name(stf)));
+            return stf;
+        }
     }
     return STF_OK;
 }
-static stf_status
-ikev2_send_certreq( struct state *st, struct msg_digest *md
+
+stf_status
+ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
 		    , enum phase1_role role UNUSED
 		    , unsigned int np, pb_stream *outpbs)
 {
-    if (st->st_connection->kind == CK_PERMANENT)
-	{
-	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is CK_PERMANENT so send CERTREQ"));
+    struct end *that = &st->st_connection->spd.that;
+    chunk_t *that_ca = &that->ca;
+    const x509cert_t *cacert;
+    chunk_t allCAs = { NULL, 0 };
+    size_t newlen;
+    unsigned CAcnt = 0;
+    bool success;
 
-	    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
-				   , st->st_connection->spd.that.ca
-				   , outpbs, np))
-		return STF_INTERNAL_ERROR;
-	}
-    else
-	{
-	    generalName_t *ca = NULL;
-	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is not CK_PERMANENT (instance), so collect CAs"));
+    /* if there is a "rightcert=..." then I send CERTREQ with that cert's Authority keyid */
 
-	    if (collect_rw_ca_candidates(md, &ca))
-		{
-		    generalName_t *gn;
-	            DBG(DBG_CONTROL
-	                , DBG_log("connection is RW, lookup CA candidates"));
+    if (that->cert_filename && that->cert.type == CERT_X509_SIGNATURE) {
+        if (that->cert.u.x509->authKeyID.ptr) {
+            DBG(DBG_CONTROL,
+                DBG_log("have cert '%s', send CERTREQ with Auth Key ID",
+                        that->cert_filename));
 
-		    for (gn = ca; gn != NULL; gn = gn->next)
-			{
-			    if (!build_and_ship_CR(CERT_X509_SIGNATURE,
-						   gn->name, outpbs
-		       ,gn->next == NULL ? np : ISAKMP_NEXT_CR))
-				return STF_INTERNAL_ERROR;
-			}
-		    free_generalNames(ca, FALSE);
-		}
-	    else
-		{
-	            DBG(DBG_CONTROL
-	                , DBG_log("Not a roadwarrior instance, sending empty CA in CERTREQ"));
-		    if (!build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
-					   , outpbs, np))
-			return STF_INTERNAL_ERROR;
-		}
-	}
+
+            pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+            if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         that->cert.u.x509->authKeyID,
+                                         outpbs, np))
+                return STF_INTERNAL_ERROR;
+
+            return STF_OK;
+
+        } else {
+            DBG(DBG_CONTROL,
+                DBG_log("have cert '%s' without Auth Key ID, will use CA by name",
+                        that->cert_filename));
+            that_ca = &st->st_connection->spd.that.ca;
+        }
+    }
+
+    /* if there is a "rightca=..." then I send CERTREQ with the CA's keyid */
+
+    if (that_ca->ptr) {
+        cacert = get_authcert(*that_ca, empty_chunk, empty_chunk, AUTH_CA);
+        if (cacert) {
+            char buf[256];
+            dntoa(buf, sizeof(buf), cacert->subject);
+            DBG(DBG_CONTROL,
+                DBG_log("have CA '%s', send CERTREQ with CA's Key ID", buf));
+
+            pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+            if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         cacert->subjectKeyID,
+                                         outpbs, np))
+                return STF_INTERNAL_ERROR;
+
+            return STF_OK;
+        }
+    }
+
+    /* if neither is given then I send CERTREQ with the keyid(s) of all known CA's (/etc/ipsec.d/cacerts/...) */
+
+    for(cacert = x509_get_authcerts_chain(); cacert; cacert = cacert->next) {
+
+        if (!cacert->authority_flags & AUTH_CA)
+            continue;
+
+        newlen = allCAs.len + cacert->subjectKeyID.len;
+
+        allCAs.ptr = realloc(allCAs.ptr, newlen);
+
+        memcpy(allCAs.ptr + allCAs.len, cacert->subjectKeyID.ptr,
+               cacert->subjectKeyID.len);
+
+        allCAs.len = newlen;
+
+        CAcnt ++;
+    }
+
+    DBG(DBG_CONTROL,
+        DBG_log("send CERTREQ with all %d known CA's KeyID", CAcnt));
+
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+    success = ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         allCAs,
+                                         outpbs, np);
+
+    if (allCAs.ptr) {
+        free(allCAs.ptr);
+        allCAs.ptr = NULL;
+    }
+
+    if (!success)
+        return STF_INTERNAL_ERROR;
+
     return STF_OK;
 }
 
@@ -239,18 +322,18 @@ doi_send_ikev2_cert_thinking(struct state *st)
 {
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;
-    enum certpolicy policy = st->st_connection->spd.this.sendcert;
+    enum certpolicy certpolicy = st->st_connection->spd.this.sendcert;
     bool send_cert	 = FALSE;
 
     struct connection *c  = st->st_connection;
 
     /* decide to send_cert or not */
     send_cert = (c->policy & POLICY_RSASIG)
-	&& mycert.type != CERT_NONE
-	&& ((st->st_connection->spd.this.sendcert == cert_sendifasked
-	     && st->hidden_variables.st_got_certrequest)
-	    || st->st_connection->spd.this.sendcert==cert_alwayssend
-	    || st->st_connection->spd.this.sendcert==cert_forcedtype);
+        && mycert.type != CERT_NONE
+        && ((certpolicy == cert_sendifasked
+             && st->hidden_variables.st_got_certrequest)
+            || certpolicy==cert_alwayssend
+            || certpolicy==cert_forcedtype);
 
     /* log the steps led to the decision */
 
@@ -265,7 +348,7 @@ doi_send_ikev2_cert_thinking(struct state *st)
     DBG(DBG_CONTROL,
 	bool gotcertrequest = st->hidden_variables.st_got_certrequest;
 	DBG_log(" sendcert: %s and I did%s get a certificate request "
-		  , enum_show(&certpolicy_type_names, policy)
+		  , enum_show(&certpolicy_type_names, certpolicy)
 		  , gotcertrequest ? "" : " not")
        );
 
@@ -276,7 +359,7 @@ doi_send_ikev2_cert_thinking(struct state *st)
 	    { DBG(DBG_CONTROL, DBG_log("I did not send a certificate because digital signatures are not being used. (PSK)"));
 	} else if(certtype == CERT_NONE) {
 	    DBG(DBG_CONTROL, DBG_log("I did not send a certificate because I do not have one."));
-	} else if(policy == cert_sendifasked) {
+	} else if(certpolicy == cert_sendifasked) {
 	    DBG(DBG_CONTROL, DBG_log("I did not send my certificate because I was not asked to."));
 	}
     }

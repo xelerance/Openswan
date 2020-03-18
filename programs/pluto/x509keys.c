@@ -49,7 +49,6 @@
 #include "pluto/connections.h"
 #include "hostpair.h"
 #include "state.h"
-#include "md2.h"
 #include "md5.h"
 #include "sha1.h"
 #include "whack.h"
@@ -187,7 +186,7 @@ ikev2_decode_cert(struct msg_digest *md)
  * Decode the CR payload of Phase 1.
  */
 void
-decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+ikev1_decode_cr(struct msg_digest *md, generalName_t **requested_ca_names)
 {
     struct payload_digest *p;
 
@@ -215,8 +214,8 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 		clonetochunk(ca_name, ca_name.ptr,ca_name.len, "ca name");
 		gn->kind = GN_DIRECTORY_NAME;
 		gn->name = ca_name;
-		gn->next = *requested_ca;
-		*requested_ca = gn;
+		gn->next = *requested_ca_names;
+		*requested_ca_names = gn;
 	    }
 
 	    DBG(DBG_PARSING | DBG_CONTROL,
@@ -235,47 +234,57 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
  * Decode the IKEv2 CR payload of Phase 1.
  */
 void
-ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca_hashes)
 {
     struct payload_digest *p;
 
     for (p = md->chain[ISAKMP_NEXT_v2CERTREQ]; p != NULL; p = p->next)
     {
-	struct ikev2_certreq *const cr = &p->payload.v2certreq;
-	chunk_t ca_name;
+        struct ikev2_certreq *const cr = &p->payload.v2certreq;
+        chunk_t all_keys, key;
+        u_char *end_keys;
 
-	ca_name.len = pbs_left(&p->pbs);
-	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
+        all_keys.len = pbs_left(&p->pbs);
+        all_keys.ptr = (all_keys.len > 0)? p->pbs.cur : NULL;
 
-	DBG_cond_dump_chunk(DBG_PARSING, "CR", ca_name);
+        DBG_cond_dump_chunk(DBG_PARSING, "CR", all_keys);
 
-	if (cr->isacertreq_enc == CERT_X509_SIGNATURE)
-	{
+        if (cr->isacertreq_enc != CERT_X509_SIGNATURE) {
+            loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
+                   enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            DBG_log("ignoring %s certificate request payload",
+                    enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            continue;
+        }
 
-	    if (ca_name.len > 0)
-	    {
-		generalName_t *gn;
+        if (!all_keys.len)
+            continue;
 
-		if (!is_asn1(ca_name))
-		    continue;
+        /* chop it up into SHA1 key IDs */
 
-		gn = alloc_thing(generalName_t, "generalName");
-		clonetochunk(ca_name, ca_name.ptr,ca_name.len, "ca name");
-		gn->kind = GN_DIRECTORY_NAME;
-		gn->name = ca_name;
-		gn->next = *requested_ca;
-		*requested_ca = gn;
-	    }
+        end_keys = all_keys.ptr + all_keys.len;
+        key.len = SHA1_DIGEST_SIZE;
+        for (key.ptr = all_keys.ptr; key.ptr < end_keys; key.ptr += key.len) {
+            size_t remaining;
+            generalName_t *gn;
 
-	    DBG(DBG_PARSING | DBG_CONTROL,
-		char buf[IDTOA_BUF];
-		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
-		DBG_log("requested CA: '%s'", buf);
-	    )
-	}
-	else
-	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
-		   enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            remaining = end_keys - key.ptr;
+            if (key.len > remaining)
+                continue;
+
+            gn = alloc_thing(generalName_t, "generalName");
+            clonetochunk(gn->name, key.ptr, key.len, "ca keyid");
+            /* NOTE: this is an abuse of the generalName structure since we are
+             * actually storing key IDs not names, maybe a new type or a
+             * completely new structure is needed */
+            gn->kind = GN_OTHER_NAME;
+            gn->next = *requested_ca_hashes;
+            *requested_ca_hashes = gn;
+
+            DBG(DBG_PARSING | DBG_CONTROL,
+                DBG_dump_chunk("requested CA keyID", key);
+            )
+        }
     }
 }
 
@@ -302,7 +311,7 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 }
 
 bool
-ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
+ikev2_build_and_ship_CR(u_int8_t type, chunk_t keyIDs, pb_stream *outs, u_int8_t np)
 {
     pb_stream cr_pbs;
     struct ikev2_certreq  cr_hd;
@@ -310,16 +319,25 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
     cr_hd.isacertreq_np= np;
     cr_hd.isacertreq_enc = type;
 
-    /* build CR header */
-    if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs))
-	return FALSE;
+    /* locate the CA */
 
-    if (ca.ptr != NULL)
-    {
-	/* build CR body containing the distinguished name of the CA */
-	if (!out_chunk(ca, &cr_pbs, "CA"))
-	    return FALSE;
+    if (keyIDs.ptr == NULL) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, no CA keyIDs specified"));
+        return FALSE;
     }
+
+    /* build CR header */
+    if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs)) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, out_struct() failed"));
+	return FALSE;
+    }
+
+    /* build CR body containing the SHA1 hashes of the CA keys */
+    if (!out_chunk(keyIDs, &cr_pbs, "CA")) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, out_chunk() failed"));
+        return FALSE;
+    }
+
     close_output_pbs(&cr_pbs);
     return TRUE;
 }

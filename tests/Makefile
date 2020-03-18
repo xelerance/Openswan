@@ -26,6 +26,11 @@ clean:
 	@${MAKE} -C unit       clean
 	@${MAKE} -C build      clean
 
+testlist:
+	@${MAKE} -C functional testlist
+	@${MAKE} -C unit       testlist
+	@${MAKE} -C build      testlist
+
 programs:
 	@true
 

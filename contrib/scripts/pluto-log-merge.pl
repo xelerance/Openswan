@@ -13,6 +13,8 @@ $Data::Dumper::Quotekeys = 0;
 my $show_debug=0;
 my $show_events=0;
 my $output_width=0;
+my $sync_sides=0;
+my $rdelta=0;
 
 # argument parsing is a bit crude
 while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
@@ -29,6 +31,7 @@ while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
             " -D --debug            - show debug of parsed event data\n",
             " -E --events           - show events that don't lead to messages\n",
             " -w --width <char>     - set output width (default terminal width)\n",
+            " -s --syncronize       - synchronize clocks by finding first exchange\n",
             "\n",
             "This program reads two log files output by OpenSWAN pluto daemon and converts them\n",
             "into a chronologically ordered packet diagram.\n",
@@ -48,6 +51,9 @@ while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
         die "$arg needs a number; found '$val'" if not looks_like_number($val);
         die "$arg needs to be greater than 20; found '$val'" if $val < 20;
         $output_width = $val;
+
+    } elsif ($arg eq "-s" or $arg eq "--sync" or $arg eq "--synchronize") {
+        $sync_sides = 1;
 
     } else {
         die "don't know how to handle $arg";
@@ -115,17 +121,24 @@ sub dprint {
 }
 
 sub create_file_reader {
-    my ($filename) = @_;
+    my ($filename, $tsdelta) = @_;
+
+    die if not defined $filename;
+    die if not defined $tsdelta;
 
     my $self = {
         filename => $filename,
+        tsdelta => $tsdelta,
         line => 0,
     };
+    
 
     open($self->{fh},"<",$filename) || die "$filename $!\n";
 
     $self->{read} = sub {
         my $fh = $self->{fh};
+
+        READ_A_LINE:
         my $line = <$fh>;
         return if not defined $line;
 
@@ -137,7 +150,7 @@ sub create_file_reader {
             return {
                 full => $line,
                 line => $self->{line},
-                ts => str2time("$1 $2"),
+                ts => str2time("$1 $2") + $self->{tsdelta},
                 date => $1,
                 time => $2,
                 host => $3,
@@ -146,31 +159,104 @@ sub create_file_reader {
                 text => $6,
             }
         }
+        # 2019-02-06T18:09:00.292254+00:00 alice pluto[1868]: Starting Pluto (Openswan Version 2.6.51.2-65-gb22f20b; Vendor ID OSWgYooxnKAh) pid:1868
+        elsif ($line =~ m/^(\d+-\d+-\d+)T(\d+:\d+:[0-9.]+)(Z|\+[0-9:]*) (\S+) (\S+)\[(\d+)\]: (.*)/) {
+            return {
+                full => $line,
+                line => $self->{line},
+                ts => str2time("$1 $2") + $self->{tsdelta},
+                date => $1,
+                time => $2,
+                host => $4,
+                proc => $5,
+                pid => $6,
+                text => $7,
+            }
+        }
+
+        die "skip\n$line\n" if not $line =~ m/Starting Pluto subsystem/;
+
+        goto READ_A_LINE;
     };
 
     return $self;
 }
 
-my $ev_count = 0;
-sub create_event_reader {
+sub create_simple_event_reader {
     my ($filename) = @_;
 
     my $self = {};
 
     $self->{filename} = $filename;
-    $self->{lines} = create_file_reader($filename);
+    $self->{reader} = create_file_reader($filename, 0);
+
+    $self->{next} = sub {
+        while ( 1 ) {
+            my $line = $self->{reader}->{read}();
+            return if not defined $line;
+            return if not $line;
+
+            # {text} removes the syslog prefix
+            my $txt = $line->{text};
+
+            if ($txt =~ m/sending \d+ bytes for \S+ through \S+ to \S+ \(using #\d+\)/) {
+                $line->{ev} = 'sending';
+                return $line;
+            }
+            elsif ($txt =~ m/received \d+ bytes from \S+ on \S+ \(port=\d+\) at .*/) {
+                $line->{ev} = 'received';
+                return $line;
+            }
+        }
+    };
+
+    return $self;
+}
+
+sub find_rdelta {
+    my ($L, $R) = @_;
+
+    my $l = $L->{next}();
+    my $r = $R->{next}();
+
+    #print "L: $l->{ts} $l->{text}\n";
+    #print "R: $r->{ts} $r->{text}\n";
+
+    my $fudge = 0.003; # 3 milliseconds
+    my $delta = ($l->{ts} - $r->{ts}) + $fudge;
+
+    return $delta
+}
+
+
+my $ev_count = 0;
+sub create_event_reader {
+    my ($filename, $tsdelta) = @_;
+
+    my $self = {};
+
+    $self->{filename} = $filename;
+    $self->{lines} = create_file_reader($filename, $tsdelta);
     $self->{queue} = [];
 
     sub complete_current_ev {
         my ($self, $line, $why_end) = @_;
-        $self->{ev}->{why_end} = $why_end;
-        $self->{ev}->{full} = $line->{full};
-        $self->{ev}->{line} = $line->{line};
-        $self->{ev}->{text} = $line->{text};
-        $self->{ev}->{ts_end} = $line->{ts};
-        $self->{ev}->{raw} = $line;
-        push @{$self->{queue}}, $self->{ev};
-        $self->{ev} = { };
+
+        my $ev = $self->{ev};
+        $self->{ev} = {};
+
+        $ev->{why_end} = $why_end;
+        $ev->{full} = $line->{full};
+        $ev->{line} = $line->{line};
+        $ev->{text} = $line->{text};
+        $ev->{ts_end} = $line->{ts};
+        $ev->{raw} = $line;
+
+        $ev->{ts} = $ev->{ts_end};
+        $ev->{ts} = ($self->{ev}->{ts_sending}  - 0.000) if defined $self->{ev}->{ts_sending};
+        $ev->{ts} = ($self->{ev}->{ts_received} + 0.000) if defined $self->{ev}->{ts_received};
+
+        push @{$self->{queue}}, $ev;
     }
 
     sub start_new_ev {
@@ -281,6 +367,7 @@ sub create_event_reader {
 
             # {text} removes the syslog prefix
             my $txt = $line->{text};
+            chomp $txt;
 
             # rememember the SA number from the event count down
             if ($txt =~ m/next event (\S+) in \d seconds for #(\d+)/) {
@@ -356,7 +443,7 @@ sub create_event_reader {
                     push @{$self->{ev}->{emit}}, $short;
                 }
             }
-            elsif ($txt =~ m/flags: (ISAKMP_FLAG_.*)$/) {
+            elsif ($txt =~ m/flags: (ISAKMP_FLAG_\S*)/) {
                 my $flags = $1;
                 $flags =~ s/ISAKMP_FLAG_//g;
                 push @{$self->{ev}->{flags}}, $flags;
@@ -364,16 +451,21 @@ sub create_event_reader {
             elsif ($txt =~ m/exchange type: (\S+)/) {
                 $self->{ev}->{exchange} = $1;
             }
-            elsif ($txt =~ m/message ID: (.*)/) {
+            elsif ($txt =~ m/message ID:\s+(\S+)/) {
                 my $id = $1;
                 $id =~ s/ //g;
                 $self->{ev}->{msg_id} = hex($id);
+            }
+            elsif ($txt =~ m/processing version=(\S+)\s+packet.*msgid:\s+(\S+)/) {
+                $self->{ev}->{version} = $1;
+                $self->{ev}->{msg_id} = hex($2);
             }
             elsif ($txt =~ m/next-payload: ISAKMP_NEXT_(\S+) /) {
                 push @{$self->{ev}->{payloads}}, "$1";
                 #push @{$self->{ev}->{payloads_debug}}, "$1".'  @'.$line->{time}.'  '.$line->{line} if $show_debug;
             }
             elsif ($txt =~ m/sending \d+ bytes for \S+ through \S+ to \S+ \(using #\d+\)/) {
+                $self->{ev}->{ts_sending} = $line->{ts};
             #   append_debug_line($self, $line);
             #   complete_current_ev($self,$line,'sent',0);
             }
@@ -382,6 +474,7 @@ sub create_event_reader {
                 $self->{ev}->{SA_trans} = [ $2, $3 ];
             }
             elsif ($txt =~ m/received \d+ bytes from \S+ on \S+ \(port=\d+\) at .*/) {
+                $self->{ev}->{ts_received} = $line->{ts};
                 if (defined $self->{ev}->{why_start}) {
                     complete_current_ev($self, $line, 'incoming');
                 }
@@ -430,12 +523,12 @@ sub create_event_reader {
 
 
 sub create_peer {
-    my ($justify, $filename) = @_;
+    my ($justify, $filename, $tsdelta) = @_;
 
     my $self = {};
 
     $self->{filename} = $filename;
-    $self->{events} = create_event_reader($filename);
+    $self->{events} = create_event_reader($filename, $tsdelta);
 
     #fh => $fh
     #};
@@ -540,12 +633,12 @@ sub create_peer {
             die "ERROR: no why_start\n";
         }
 
-        if (not defined $ev->{ts_start}) {
+        if (not defined $ev->{ts}) {
             print Dumper($ev);
             die "ERROR: no ts_start\n";
         }
 
-        if (!looks_like_number($ev->{ts_start})) {
+        if (!looks_like_number($ev->{ts})) {
             print Dumper($ev);
             die "ERROR: ts_start not a number\n";
         }
@@ -592,12 +685,12 @@ sub create_peer {
         }
     };
     $self->{go} = sub {
-        my $lastts = 0;
+        my $last_hms = '';
         while (my $ev = $self->{next}()) {
-            if ($lastts != $ev->{ts_start}) {
-                my $time = strftime '%T', localtime($ev->{ts_start});
-                jprint('=', "--==[ ".$time." ]==--");
-                $lastts = $ev->{ts_start}
+            my $this_hms = strftime '%T', localtime($ev->{ts});
+            if ($last_hms ne $this_hms) {
+                jprint('=', "--==[ ".$this_hms." ]==--");
+                $last_hms = $this_hms;
             }
 
             $self->{printev}($ev)
@@ -611,7 +704,7 @@ sub create_peer {
 sub shuffle {
     my ($pr_l, $pr_r) = @_;
     my ($ev_l, $ev_r);
-    my $lastts = 0;
+    my $last_hms = '';
     my $header = 0;
 
     while (1) {
@@ -651,11 +744,11 @@ sub shuffle {
 
             # did the timestamp chagne?
 
-            if ($lastts != $ev->{ts_start}) {
+            my $this_hms = strftime '%T', localtime($ev->{ts});
+            if ($last_hms ne $this_hms) {
                 print "\n";
-                my $time = strftime '%T', localtime($ev->{ts_start});
-                jprint('=', "--==[ ".$time." ]==--");
-                $lastts = $ev->{ts_start}
+                jprint('=', "--==[ ".$this_hms." ]==--");
+                $last_hms = $this_hms;
             }
 
             # show it
@@ -679,11 +772,11 @@ sub shuffle {
             # left is done; use right
             $consume_right->();
         }
-        elsif ($ev_l->{ts_start} < $ev_r->{ts_start}) {
+        elsif ($ev_l->{ts} < $ev_r->{ts}) {
             # left timestamp is first; consume the left event
             $consume_left->();
         }
-        elsif ($ev_r->{ts_start} < $ev_l->{ts_start}) {
+        elsif ($ev_r->{ts} < $ev_l->{ts}) {
             # right timestamp is first; consume the right event
             $consume_right->();
         }
@@ -727,6 +820,15 @@ sub shuffle {
 }
 
 
-my $l = create_peer('<',$left);
-my $r = create_peer('>',$right);
+if ($sync_sides) {
+    my $L = create_simple_event_reader($left);
+    my $R = create_simple_event_reader($right);
+    $rdelta = find_rdelta($L, $R);
+    undef $L;
+    undef $R;
+}
+
+my $l = create_peer('<', $left, 0);
+my $r = create_peer('>', $right, $rdelta);
+
 shuffle($l, $r);

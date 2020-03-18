@@ -40,6 +40,7 @@
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
 #undef KEYWORD_PARSE_DEBUG
 
+#ifdef KEYWORD_PARSE_DEBUG
 /*
  * values for keyword types  (used for debugging)
  */
@@ -65,6 +66,7 @@ static const struct keyword_enum_value kt_values[]={
     KEV_LITERAL(kt_comment),
 };
 static const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
+#endif
 
 /*
  * Values for failureshunt={passthrough, drop, reject, none}
@@ -102,6 +104,8 @@ static const struct keyword_enum_value kw_fourvalued_values[]={
 
 static const struct keyword_enum_values kw_fourvalued_list = VALUES_INITIALIZER(kw_fourvalued_values);
 
+#if 0
+/* No longer used */
 /*
  * Values for yes/no/force, used by ike_frag
  */
@@ -113,6 +117,7 @@ static const struct keyword_enum_value kw_ynf_values[] = {
 	{ "force",     ynf_force },
 };
 static const struct keyword_enum_values kw_ynf_list = VALUES_INITIALIZER(kw_ynf_values);
+#endif
 
 /*
  * Values for authby={rsasig, secret}
@@ -231,12 +236,15 @@ static const struct keyword_enum_value kw_remote_peer_type_list[]={
 };
 static const struct keyword_enum_values kw_remote_peer_type = VALUES_INITIALIZER(kw_remote_peer_type_list);
 
+#if 0
+/* no longer used */
 static const struct keyword_enum_value kw_xauthby_list[] = {
 	{ "file",        XAUTHBY_FILE },
 	{ "pam",         XAUTHBY_PAM },
 	{ "alwaysok",    XAUTHBY_ALWAYSOK },
 };
 static const struct keyword_enum_values kw_xauthby = VALUES_INITIALIZER(kw_xauthby_list);
+#endif
 
 /*
  * Values for right= and left=
@@ -436,9 +444,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"metric",         kv_conn|kv_auto, kt_number, KBF_METRIC, NOT_ENUM},
 
     /* DPD */
-    {"dpddelay",       kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},
-    {"dpdtimeout",     kv_conn|kv_auto,kt_number,KBF_DPDTIMEOUT , NOT_ENUM},
-    {"dpdaction",      kv_conn|kv_auto,kt_enum, KBF_DPDACTION , &kw_dpdaction_list},
+    {"dpddelay",       kv_conn|kv_auto, kt_time, KBF_DPDDELAY,   NOT_ENUM},
+    {"dpdtimeout",     kv_conn|kv_auto, kt_time, KBF_DPDTIMEOUT, NOT_ENUM},
+    {"dpdaction",      kv_conn|kv_auto, kt_enum, KBF_DPDACTION,  &kw_dpdaction_list},
+
+    {"firstmsgid",     kv_conn|kv_auto, kt_number, KBF_FIRSTMSGID, NOT_ENUM},
 
     {"mtu",            kv_conn|kv_auto,kt_number, KBF_CONNMTU, NOT_ENUM},
 

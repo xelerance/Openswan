@@ -1,0 +1,10 @@
+# -*- makefile -*-
+CONNNAME=home
+ENDNAME=davecert-ca
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=h2hI1
+
+pcapupdate:
+	@true

@@ -639,7 +639,7 @@ check_net_id(struct isakmp_ipsec_id *id
  * Used by: quick_outI1, quick_inI1_outR1 (twice), quick_inR1_outI2
  * (see RFC 2409 "IKE" 5.5, pg. 18 or draft-ietf-ipsec-ike-01.txt 6.2 pg 25)
  */
-static size_t
+size_t
 quick_mode_hash12(u_char *dest, const u_char *start, const u_char *roof
 , const struct state *st, const msgid_t *msgid, bool hash2)
 {
@@ -746,9 +746,10 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(ugh == NULL);
     passert(cur_state == NULL);
     passert(st != NULL);
+    passert(qke->md == NULL);	// there is no md, because we are initiating
 
     set_cur_state(st);	/* we must reset before exit */
-    set_suspended(st, NULL);
+    //set_suspended(st, NULL);
     e = quick_outI1_tail(pcrc, r, st);
     if (e == STF_INTERNAL_ERROR)
 	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
@@ -1187,6 +1188,14 @@ quick_inI1_outR1(struct msg_digest *md)
     struct payload_digest *const id_pd = md->chain[ISAKMP_NEXT_ID];
     struct verify_oppo_bundle b;
 
+    /* we are responding to this exchange */
+    if (p1st->st_orig_initiator) {
+	loglog(RC_LOG_SERIOUS,
+	       "Unexpected quick mode R1 state for INITIATOR of #%ld",
+	       p1st->st_serialno);
+	return STF_FAIL + SITUATION_NOT_SUPPORTED;
+    }
+
     /* HASH(1) in */
     CHECK_QUICK_HASH(md
 	, quick_mode_hash12(hash_val, hash_pbs->roof, md->message_pbs.roof
@@ -1345,7 +1354,7 @@ quick_inI1_outR1_continue(struct adns_continuation *cr, err_t ugh)
     /* if st == NULL, our state has been deleted -- just clean up */
     if (st != NULL)
     {
-	passert(st->st_suspended_md == b->md);
+	assert_suspended(st, b->md);
 	set_suspended(st, NULL);	/* no longer connected or suspended */
 	cur_state = st;
 	if (!b->failure_ok && ugh != NULL)
@@ -1378,6 +1387,14 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 	, our_id_space;	/* ephemeral: no need for unshare_id_content */
     ip_address client;
     err_t ugh;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(p1st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* Record that state is used by a suspended md */
     b->step = next_step;    /* not just vc->b.step */
@@ -1689,6 +1706,14 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	, *his_net = &b->his.net;
     struct end our, peer;
     struct hidden_variables hv;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(p1st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     zero(&our); zero(&peer);
     our.host_type  = KH_IPADDR;
@@ -2019,6 +2044,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    if(ci < st->st_import) ci = st->st_import;
 
 	    qke->md = md;
+	    set_suspended(st, md);
 	    pcrc_init(&qke->qke_pcrc);
 	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue1;
 
@@ -2362,6 +2388,14 @@ stf_status
 quick_inR1_outI2(struct msg_digest *md)
 {
     struct state *const st = md->st;
+
+    /* if we are already processing a packet on this st, we will be unable
+     * to start another crypto operation below */
+    if (is_suspended(st)) {
+        openswan_log("%s: already processing a suspended cyrpto operation "
+                     "on this SA, duplicate will be dropped.", __func__);
+	return STF_TOOMUCHCRYPTO;
+    }
 
     /* HASH(2) in */
     CHECK_QUICK_HASH(md

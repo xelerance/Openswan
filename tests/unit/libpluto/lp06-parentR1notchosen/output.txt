@@ -29,7 +29,7 @@ processing whack msg time: X size: Y
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
@@ -168,7 +168,8 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    message ID:  00 00 00 00
 |    length: 836
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 6
@@ -196,7 +197,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | now proceed with state specific processing using state #3 responder-V2_init
 | no connection with matching policy found
-| #0 complete v2 state transition with STF_FAIL+32
+| #0 complete v2 state transition with STF_FAIL+24
 ./parentI1R1 no-state: AUTHENTICATION_FAILED
 ./parentI1R1 sending notification ISAKMP_v2_SA_INIT/v2N_AUTHENTICATION_FAILED to 10.10.5.4:500
 sending 36 bytes for send_v2_notification through eth0:500 [192.168.1.1:500] to 10.10.5.4:500 (using #0)

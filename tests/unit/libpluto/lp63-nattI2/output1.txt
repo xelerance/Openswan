@@ -34,7 +34,7 @@ processing whack msg time: X size: Y
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
@@ -150,7 +150,12 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    message ID:  00 00 00 00
 |    length: 432
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -224,6 +229,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   considering eth0 192.168.1.1 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/40 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
+./nattI2 nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
@@ -250,6 +256,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
@@ -579,6 +586,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to
 ./nattI2 deleting state #1 (STATE_PARENT_I2)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

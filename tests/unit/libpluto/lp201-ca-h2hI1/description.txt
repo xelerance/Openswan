@@ -1,0 +1,5 @@
+Test cases lp201-lp204 work together to test a setup where the parent SA and
+child SA have different algorithms.
+
+This test case, a clone of lp36-h2hI1, is an IKEv2 initiator -- this one tests
+a host to host policy.

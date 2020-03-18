@@ -47,7 +47,6 @@
 #include "pgp.h"
 #include "certs.h"
 #include "secrets.h"
-#include "md2.h"
 #include "md5.h"
 #include "sha1.h"
 #ifdef USE_SHA2

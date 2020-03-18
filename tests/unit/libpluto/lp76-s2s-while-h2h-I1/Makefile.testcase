@@ -6,7 +6,8 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=s2sI1
 
-pcapupdate: h2hI3-statetable.c
+PCAPDEPENDENCIES = h2hI3-statetable.c
+pcapupdate: ${PCAPDEPENDENCIES}
 
 h2hI3-statetable.c:
 	cp ../lp75-alg-h2hI3/OUTPUT/h2hI3-statetable.c h2hI3-statetable.c

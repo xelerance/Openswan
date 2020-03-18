@@ -6,5 +6,5 @@ UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 TESTNAME=certificateselfI1
 
 
-pcapupdate:
+pcapupdate::
 	@true

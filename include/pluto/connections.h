@@ -108,13 +108,13 @@
  *   as the original policy, even though its subnets might be smaller.
  * - display format: n,m
  */
-typedef unsigned long policy_prio_t;
+typedef uint32_t policy_prio_t;
 #define BOTTOM_PRIO   ((policy_prio_t)0)	/* smaller than any real prio */
 #define set_policy_prio(c) { (c)->prio = \
 	((policy_prio_t)(c)->spd.this.client.maskbits << 16) \
 	| ((policy_prio_t)(c)->spd.that.client.maskbits << 8) \
 	| (policy_prio_t)1; }
-#define POLICY_PRIO_BUF	(3+1+3+1)
+#define POLICY_PRIO_BUF	(3+1+3+1+10) 
 extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 
 /* Note that we include this even if not X509, because we do not want the
@@ -245,6 +245,8 @@ struct connection {
 
     struct spd_route spd;
 
+    unsigned int first_msgid;		/* what is the first msgid of this conn [0|1] */
+
     /* internal fields: */
 
     unsigned long instance_serial;
@@ -256,6 +258,9 @@ struct connection {
 
     bool initiated;
     bool failed_ikev2;                  /* tried ikev2, but failed */
+
+    bool proposal_can_retry;		/* we will retry if current proposal fails */
+    unsigned int proposal_index;	/* incremented on retry */
 
     /* state object serial number: weak pointers */
     so_serial_t	prospective_parent_sa;  /* state we are still negotiating */
@@ -282,7 +287,8 @@ struct connection {
 
     struct connection *ac_next;	/* all connections list link */
 
-    generalName_t *requested_ca;	/* collected certificate requests */
+    generalName_t *ikev1_requested_ca_names;  /* ikev1 collected certificate requests */
+    generalName_t *ikev2_requested_ca_hashes; /* concatenated SHA1 hashes acceptable CA keys */
 #ifdef XAUTH_USEPAM
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif

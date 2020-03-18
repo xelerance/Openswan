@@ -7,6 +7,9 @@ TESTNAME=rekeyv2nopfs-R1
 
 all: check
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp56-rekeyv2nopfs-I1/OUTPUT/rekeyv2nopfs-I1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp56-rekeyv2nopfs-I1/OUTPUT/rekeyv2nopfs-I1.pcap rekeyCI1.pcap
 

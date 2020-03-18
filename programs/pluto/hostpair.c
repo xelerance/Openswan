@@ -119,7 +119,7 @@ void host_pair_enqueue_pending(const struct connection *c
 
 struct pending **host_pair_first_pending(const struct connection *c)
 {
-    if(c->IPhost_pair == NULL) return NULL;
+    if(c == NULL || c->IPhost_pair == NULL) return NULL;
 
     return &c->IPhost_pair->pending;
 }

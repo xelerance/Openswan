@@ -18,14 +18,24 @@ buildtmp?=$(shell mkdir -p ../OUTPUTS/01-build; cd ../OUTPUTS/01-build; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 # run the make install twice: the second time .old files get produced.
+# note that unsets are required because this Makefile exported some variables to environment, and the Makefile.inc
+# will not override environment variables.
 check:
 	@mkdir -p ../OUTPUTS
 	@rm -rf ${OPENSWANSRCDIR}/OBJ.libnss.${BUILDENV}.${ARCH}
 	@rm -rf ${OPENSWANSRCDIR}/OBJ.nolibnss.${BUILDENV}.${ARCH}
 	@mkdir -p ${buildtmp}
-	(cd ${OPENSWANSRCDIR} && DESTDIR=${buildtmp} ./build-nss )
+	${MAKE} --no-print-directory n1
+	${MAKE} --no-print-directory n2
+	${MAKE} --no-print-directory n3
+
+n1:
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} OBJDIR=OBJ.nolibnss.${BUILDENV}.${ARCH} USE_LIBNSS=false programs install
 
+n2:
+	(cd ${OPENSWANSRCDIR} && unset OBJDIRTOP OBJDIR && ${MAKE} --no-print-directory USE_LIBNSS=true  DESTDIR=${buildtmp} programs install )
 
+n3:
+	unset OBJDIRTOP OBJDIR && ${MAKE} -C ${OPENSWANSRCDIR}/tests/functional/18-certloadorient USE_LIBNSS=true clean vars check
 
 

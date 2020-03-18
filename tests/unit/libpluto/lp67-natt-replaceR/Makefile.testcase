@@ -1,0 +1,18 @@
+# this it the policy file that will be loaded
+ENDNAME=jamesjohnson
+
+# this is the policy that will be load
+CONNNAME=parker
+
+TESTNAME=rekeyParentSA
+
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap nattI1.pcap nattI2.pcap
+
+PCAPDEPENDENCIES = ../lp61-nattI1/OUTPUT/nattI1.pcap ../lp63-nattI2/OUTPUT/nattI2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
+	cp ../lp61-nattI1/OUTPUT/nattI1.pcap nattI1.pcap
+	cp ../lp63-nattI2/OUTPUT/nattI2.pcap nattI2.pcap
+

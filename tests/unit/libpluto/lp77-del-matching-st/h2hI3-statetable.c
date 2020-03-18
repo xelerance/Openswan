@@ -9,7 +9,7 @@ struct state h2h_sa_1001 = {
   .st_replaced = 0, 
   .st_usage = 0, 
   .st_ikev2 = 1, 
-  .st_ikev2_orig_initiator = 1, 
+  .st_orig_initiator = 1, 
   .st_ike_maj = 2, 
   .st_ike_min = 0, 
   .st_rekeytov2 = 0, 
@@ -604,7 +604,7 @@ struct state h2h_sa_1002 = {
   .st_replaced = 0, 
   .st_usage = 0, 
   .st_ikev2 = 1, 
-  .st_ikev2_orig_initiator = 1, 
+  .st_orig_initiator = 1, 
   .st_ike_maj = 2, 
   .st_ike_min = 0, 
   .st_rekeytov2 = 0, 
@@ -1664,7 +1664,8 @@ struct connection h2h_conn_0 = {
   .IPhp_next = 0x0, 
   .IDhp_next = 0x0, 
   .ac_next = 0x0, 
-  .requested_ca = 0x0, 
+  .ikev1_requested_ca_names = 0x0, 
+  .ikev2_requested_ca_hashes = 0x0, 
   .modecfg_dns1 = {
     .u = {
       .v4 = {
@@ -1772,7 +1773,6 @@ struct connection h2h_conn_0 = {
   .connmtu = 0
 };
 void h2h_insert_states(void) {
-    struct state *st;
     /* force h2h_sa_1001 into the statetable */
     h2h_sa_1001.st_hashchain_prev = NULL;
     h2h_sa_1001.st_hashchain_next = NULL;

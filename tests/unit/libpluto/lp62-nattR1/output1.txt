@@ -43,7 +43,7 @@ processing whack msg time: X size: Y
 |   orient parker finished with: 1 [132.213.238.7]
 RC=0 "parker": fd68:c9f9:4157::/64===%any[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker":     myip=unset; hisip=unset;
-RC=0 "parker":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 96,64; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file nattI1.pcap ========
 | *received 892 bytes from 93.184.216.34:55044 on eth0 (port=500)
@@ -104,7 +104,8 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Responder
+| I am the IKE SA Responder
+| I am this exchange's Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -114,11 +115,11 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 | state hash entry 4
 | v2 state object not found
 | considering state entry: 0
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 1
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 2
-|   reject:state needed and state unavailable
+|   reject: received request, needs response message
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:55044 policy=IKEv2ALLOW/-
@@ -202,6 +203,7 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -306,6 +308,12 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 | Notify data  c4 00 10 99  12 11 34 5e  78 ab 84 55  96 7a 2b 38
 |   63 63 32 03
 | emitting length of IKEv2 Notify Payload: 28
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+|   my next payload will not be a certificate request
+| I did not send a certificate request (CERTREQ) because
+|   no known CA for the other end
+|   no CA certs available for validation
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload

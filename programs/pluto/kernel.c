@@ -105,7 +105,7 @@ const struct pfkey_proto_info null_proto_info[2] = {
         }
 };
 
-static struct bare_shunt *bare_shunts = NULL;
+struct bare_shunt *bare_shunts = NULL;
 #ifdef IPSEC_CONNECTION_LIMIT
 static int num_ipsec_eroute = 0;
 #endif
@@ -116,7 +116,7 @@ static void free_bare_shunt(struct bare_shunt **pp);
 void
 DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
 {
-    DBG(DBG_KLIPS,
+    DBG(DBG_KLIPS|DBG_OPPOINFO,
         {
             int ourport = ntohs(portof(&(bs)->ours.addr));
             int hisport = ntohs(portof(&(bs)->his.addr));
@@ -124,14 +124,15 @@ DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
             char hist[SUBNETTOT_BUF];
             char sat[SATOT_BUF];
             char prio[POLICY_PRIO_BUF];
+            time_t age = now() - bs->last_activity;
 
             subnettot(&(bs)->ours, 0, ourst, sizeof(ourst));
             subnettot(&(bs)->his, 0, hist, sizeof(hist));
             satot(&(bs)->said, 0, sat, sizeof(sat));
             fmt_policy_prio(bs->policy_prio, prio);
-            DBG_log("%s bare shunt %p %s:%d --%d--> %s:%d => %s %s    %s"
+            DBG_log("%s bare shunt %p %s:%d --%d--> %s:%d => %s %s    %s    (%lds)"
                 , op, (const void *)(bs), ourst, ourport, (bs)->transport_proto, hist, hisport
-                , sat, prio, (bs)->why);
+                , sat, prio, (bs)->why, age);
         });
 }
 #endif
@@ -143,14 +144,44 @@ record_and_initiate_opportunistic(const ip_subnet *ours
                                   , struct xfrm_user_sec_ctx_ike *uctx
                                   , const char *why)
 {
+    ip_address af_any;
+    struct bare_shunt *bs;
+
     passert(samesubnettype(ours, his));
+    af_any = *aftoinfo(subnettypeof(ours))->any;
+
+    /* check if this shunt already exists */
+
+    for(bs = bare_shunts; bs; bs = bs->next) {
+        /* skip this entry if it does not match what we are adding */
+
+        if ( bs->said.proto != SA_INT || bs->said.spi != htonl(SPI_HOLD) )
+            continue;
+
+        if ( bs->transport_proto != transport_proto )
+            continue;
+
+        if ( ! samesubnet(&bs->ours, ours) )
+            continue;
+
+        if ( ! samesubnet(&bs->his, his) )
+            continue;
+
+        if ( ! sameaddr(&bs->said.dst, &af_any) )
+            continue;
+
+        /* found a matching entry -- update the time */
+        DBG_bare_shunt("dup", bs);
+        bs->last_activity = now();
+        return;
+    }
 
     /* Add the kernel shunt to the pluto bare shunt list.
      * We need to do this because the shunt was installed by KLIPS
      * which can't do this itself.
      */
     {
-        struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
+        bs = alloc_thing(struct bare_shunt, "bare shunt");
 
         bs->why = clone_str(why, "story for bare shunt");
         bs->ours = *ours;
@@ -160,7 +191,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
 
         bs->said.proto = SA_INT;
         bs->said.spi = htonl(SPI_HOLD);
-        bs->said.dst = *aftoinfo(subnettypeof(ours))->any;
+        bs->said.dst = af_any;
 
         bs->count = 0;
         bs->last_activity = now();
@@ -282,13 +313,14 @@ get_my_cpi(struct state *st, bool tunnel)
 
     set_text_said(text_said, &st->st_localaddr, 0, IPPROTO_COMP);
 
-    if (kernel_ops->get_spi)
+    if (kernel_ops->get_spi) {
 	st->st_ipcomp.our_spi_in_kernel = TRUE;
         return kernel_ops->get_spi(&st->st_remoteaddr
 				   , &st->st_localaddr, IPPROTO_COMP, tunnel
 				   , get_proto_reqid()
 				   , IPCOMP_FIRST_NEGOTIATED, IPCOMP_LAST_NEGOTIATED
 				   , text_said);
+    }
 
     while (!(IPCOMP_FIRST_NEGOTIATED <= first_busy_cpi && first_busy_cpi < IPCOMP_LAST_NEGOTIATED))
     {
@@ -323,7 +355,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
-	connmtu_str[sizeof("PLUTO_MTU")+5],
+	connmtu_str[sizeof("PLUTO_MTU")+5+1],  
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -410,7 +442,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	    int pathlen;
 
 	    if (key->alg == PUBKEY_ALG_RSA && same_id(&sr->that.id, &key->id)
-		&& trusted_ca(key->issuer, sr->that.ca, &pathlen))
+		&& trusted_ca_by_name(key->issuer, sr->that.ca, &pathlen))
 	    {
 		dntoa_or_null(peerca_str, IDTOA_BUF, key->issuer, "");
 		escape_metachar(peerca_str, secure_peerca_str, sizeof(secure_peerca_str));
@@ -791,7 +823,7 @@ static bool shunt_eroute(struct connection *c
 }
 
 static bool sag_eroute(struct state *st
-		  , const const struct spd_route *sr
+		  , const struct spd_route *sr
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
 {
@@ -911,15 +943,16 @@ show_shunt_status(void)
         char hist[SUBNETTOT_BUF];
         char sat[SATOT_BUF];
         char prio[POLICY_PRIO_BUF];
+	time_t age = now() - bs->last_activity;
 
         subnettot(&(bs)->ours, 0, ourst, sizeof(ourst));
         subnettot(&(bs)->his, 0, hist, sizeof(hist));
         satot(&(bs)->said, 0, sat, sizeof(sat));
         fmt_policy_prio(bs->policy_prio, prio);
 
-        whack_log(RC_COMMENT, "%s:%d -%d-> %s:%d => %s %s    %s"
+        whack_log(RC_COMMENT, "%s:%d -%d-> %s:%d => %s %s    %s    (%lds)"
             , ourst, ourport, bs->transport_proto, hist, hisport, sat
-            , prio, bs->why);
+            , prio, bs->why, age);
     }
 }
 
@@ -1176,6 +1209,41 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 
 }
 
+/* Delete a bare shunt whose location is known. */
+bool
+delete_bare_shunt_ptr(struct bare_shunt **bs_pp, const char *why)
+{
+    struct bare_shunt *bs = *bs_pp;
+    ip_subnet this_client, that_client;
+    int af;
+    const ip_address *null_host;
+    ipsec_spi_t spi;
+    unsigned int proto, transport_proto;
+
+    passert(subnettypeof(&bs->ours) == subnettypeof(&bs->his));
+    af = subnettypeof(&bs->ours);
+    null_host = aftoinfo(af)->any;
+    this_client = bs->ours;
+    that_client = bs->his;
+
+    proto = bs->said.proto;
+    spi = bs->said.spi; // htonl(SPI_HOLD) or htonl(SPI_PASS)
+    transport_proto = bs->transport_proto;
+
+    DBG(DBG_KLIPS|DBG_OPPOINFO, DBG_log("removing specific host-to-host bare shunt"));
+    if (raw_eroute(null_host, &this_client,
+                   null_host, &that_client
+                   , spi, proto, transport_proto
+                   , ET_INT, null_proto_info
+                   , SHUNT_PATIENCE, ERO_DELETE, why, NULL_POLICY)) {
+        /* delete bare eroute */
+        free_bare_shunt(bs_pp);
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
 bool eroute_connection(struct state *st
                        , const struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
@@ -1387,43 +1455,52 @@ static err_t setup_esp_sa(struct connection *c
     IPsecSAref_t refhim = st->st_refhim;
 
     /* this maps IKE/IETF values into kernel identifiers */
+    /* this maps IKE/IETF values into kernel identifiers */
     static const struct esp_info esp_info[] = {
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
-          0, HMAC_MD5_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
-          0, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_NULL,              .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .authkeylen = HMAC_MD5_KEY_LEN,
 
-        { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE, 0,
-          SADB_EALG_DESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE,
-          HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
+          .encryptalg = SADB_EALG_NULL, .authalg = SADB_AALG_MD5HMAC },
 
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE * 3, 0,
-          SADB_EALG_3DESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_NULL,              .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_EALG_NULL, .authalg = SADB_AALG_SHA1HMAC },
 
-        { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
-          AES_CBC_BLOCK_SIZE, 0,
-          SADB_X_EALG_AESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
-              AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
-          AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = DES_CBC_BLOCK_SIZE,
+          .encryptalg = SADB_EALG_DESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = DES_CBC_BLOCK_SIZE,  .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_EALG_DESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = DES_CBC_BLOCK_SIZE,  .authkeylen = HMAC_SHA1_KEY_LEN, .encryptalg = SADB_EALG_DESCBC,
+          .authalg = SADB_AALG_SHA1HMAC },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3, .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3, .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_SHA1HMAC },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = AES_CBC_BLOCK_SIZE,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = AES_CBC_BLOCK_SIZE,   .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = AES_CBC_BLOCK_SIZE,   .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_SHA1HMAC },
     };
 
     /* static const int esp_max = elemsof(esp_info); */
@@ -2386,8 +2463,7 @@ init_kernel(void)
 	kernel_ops->pfkey_register();
     }
 
-    if (!kernel_ops->policy_lifetime)
-    {
+    if (kernel_ops->scan_shunts) {
         event_schedule(EVENT_SHUNT_SCAN, SHUNT_SCAN_INTERVAL, NULL);
     }
 }
