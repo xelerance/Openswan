@@ -5,8 +5,8 @@
 ./xf13-parentI3 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./xf13-parentI3 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
 ./xf13-parentI3 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
-./xf13-parentI3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./xf13-parentI3 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./xf13-parentI3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./xf13-parentI3 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./xf13-parentI3 registed kernel encr algorithm 3des [3, 192<=key<=192]
 ./xf13-parentI3 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
@@ -29,7 +29,6 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./xf13-parentI3 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| orient parker1--jj2 reference sr#1 this: addr:132.213.238.7 that: addr:192.168.1.1
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
@@ -48,7 +47,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 | installing kernel algorithm none (0)
 | installing kernel algorithm hmac_md5_96 (1)
@@ -62,7 +61,6 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | installing kernel algorithm aes_cbc (12)
 | find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
-| orient parker1--jj2 reference sr#1 this: addr:192.168.1.1 that: addr:132.213.238.7
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
@@ -72,26 +70,19 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 ./xf13-parentI3 initiating v2 parent SA
 ./xf13-parentI3 STATE_PARENT_I1: initiate
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
@@ -134,7 +125,6 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
-| inserting event EVENT_v2_RETRANSMIT, timeout in 10 seconds for #1
 | #1 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -171,7 +161,12 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -189,7 +184,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #1 bucket: 28
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
@@ -230,8 +224,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #2 bucket: 28
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
-| inserting event EVENT_SA_REPLACE, timeout in 3600 seconds for #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -324,8 +316,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | pidhash len: 32
 | idhash  5e b3 b0 23  4a ae f7 20  6a 65 24 eb  73 1f 7c 1a
 |   dd 85 9d 42  dd 8f e2 1a  f9 35 f1 43  b4 12 11 ee
-| v2rsa octets (with ASN1):
-|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 49
+| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 49
 |   26 de 42 fb  3d 8e a0 17  22 af 95 f1  b5 37 0f 24
 |   9f 87 b2
 | signing hash with RSA Key *AQN7wUerV
@@ -523,11 +514,10 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   01 87 cb 58  a3 6e 69 0d  33 83 11 db  3d 37 98 2e
 | out calculated auth:
 |   fa ae bc 43  46 25 4b 70  fc 2c fd fa  0d 55 e3 53
-| inserting event EVENT_v2_RETRANSMIT, timeout in 10 seconds for #2
 | #2 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./xf13-parentI3 STATE_PARENT_I2: sent v2I2, expected v2R2 (msgid: 00000000/4294967295)
+./xf13-parentI3 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=AQN7wUerV theirsig= cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000000/4294967295)
 | sending reply packet to 132.213.238.7:500 (from port 500)
 sending 528 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #2)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -602,7 +592,8 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   55 f0 57 4c  69 37 bf fe  2a aa 92 f1  0c 19 da dd
 |   bb f8 8f 66  ff d0 97 a2  c1 a1 74 b2  94 aa ee b2
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
-| I am IKE SA Initiator
+| I am the IKE SA Initiator
+| I am this exchange's Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -615,6 +606,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
+| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
 | data before decryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
@@ -914,12 +906,11 @@ writing netlink policy for tun.0@132.213.238.7
 | #2 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
-./xf13-parentI3 STATE_CHILD_C1_KEYED: PARENT SA established {auth=IKEv2 oursig=AQN7wUerV theirsig=AQOg5H7A4 cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/4294967295)
+./xf13-parentI3 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/4294967295)
 ./xf13-parentI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
 ./xf13-parentI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc_128-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
-| inserting event EVENT_SA_REPLACE, timeout in 27807 seconds for #2
 now look at the resulting SAs produced.
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; eroute owner; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
@@ -929,7 +920,8 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | pass 0: considering CHILD SAs to delete
 ./xf13-parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
+| preparing to delete #2, we are the original INITIATOR of parent #1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -973,6 +965,50 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 |   7b d8 5e ac  9b eb 77 f7  2d b0 8d 06  f2 50 dc 56
 | pass 1: considering PARENT SAs to delete
+./xf13-parentI3 deleting state #1 (STATE_PARENT_I3)
+| considering request to delete IKE parent state
+| sending IKE SA delete request
+| preparing to delete #1, we are the original INITIATOR of parent #1
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_INFORMATIONAL
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 03
+| ***emit IKEv2 Encryption Payload:
+|    critical bit: none
+| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
+| *****emit IKEv2 Delete Payload:
+|    critical bit: none
+|    protocol ID: 1
+|    SPI size: 0
+|    number of SPIs: 0
+| emitting length of IKEv2 Delete Payload: 8
+| emitting 8 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07
+| emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 52
+| emitting length of ISAKMP Message: 80
+| encrypting as INITIATOR, parent SA #1
+| data before encryption:
+|   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
+| data after encryption:
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 03  00 00 00 50  2a 00 00 34
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   6c 2a 18 16  d2 e3 dc 72  82 d8 e3 8f  79 92 65 53
+sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 03  00 00 00 50  2a 00 00 34
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+|   6c 2a 18 16  d2 e3 dc 72  82 d8 e3 8f  79 92 65 53
 | route owner of "parker1--jj2" unrouted: NULL
 | command executing unroute-client
 | executing unroute
