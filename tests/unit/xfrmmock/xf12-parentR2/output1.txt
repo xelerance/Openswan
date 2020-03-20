@@ -278,12 +278,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |    critical bit: none
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
-| ikev2 g^x  3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+| ikev2 g^x  bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
 |   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
 |   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
 |   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
@@ -294,6 +289,11 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
 | emitting length of IKEv2 Key Exchange Payload: 264
 |    next-payload: ISAKMP_NEXT_v2Ni [@76=0x28]
 | ***emit IKEv2 Nonce Payload:
@@ -351,12 +351,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [93.184.216.34:55044] t
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
-|   00 0e 00 00  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
-|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
-|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
-|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
-|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
-|   e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
+|   00 0e 00 00  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
 |   9f c7 c9 48  43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3
 |   06 43 f0 0a  e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e
 |   f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17
@@ -367,7 +362,12 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [93.184.216.34:55044] t
 |   a9 81 7f f7  37 4d 7c 41  38 62 a6 39  00 81 ca 3d
 |   1d fc f7 b5  08 38 d4 34  70 22 6c 21  d2 5b 20 a1
 |   d2 ba 2a d1  89 f3 20 79  ce ac 1e c2  ec 7d ae 76
-|   94 40 39 a0  29 00 00 14  20 98 9d 37  a8 14 a6 4d
+|   94 40 39 a0  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
+|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
+|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
+|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
+|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
+|   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
 |   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
@@ -383,34 +383,34 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
-|   56 a4 5b a2  33 71 02 5b  39 76 bd 99  39 3c 46 8a
-|   cf db c1 f5  c0 e0 10 2f  cb 87 a9 54  5a 8f d0 94
-|   f6 55 a2 71  28 da 4f 10  68 1b 69 cf  35 71 60 8a
-|   b2 3a 64 6b  3f 67 96 f3  17 c5 3f 36  c3 fd 1c 56
-|   2a 72 b3 c6  68 ba 66 86  61 0c 6e c2  3a 3f 07 b5
-|   23 fd 25 54  16 2d 41 a4  db e0 1b f6  74 d4 0e 7b
-|   aa aa a5 2c  ec 6f 00 68  96 3e 66 54  fb bc 62 26
-|   7b fd 41 73  7c 8c dc de  34 26 78 9d  34 c6 cc d7
-|   d1 1d 28 ce  f9 25 b1 86  cd 7e aa 81  60 25 1a e2
-|   5c 16 32 cb  c8 c7 cc 7c  c0 98 36 95  3f f1 0f e1
-|   d1 34 55 18  c7 bc 2d eb  bc b6 f2 7e  5f 29 04 e8
-|   f1 3b ed d5  3c 2d 85 ca  d9 0d b5 a7  4e 39 20 47
-|   ab 57 c0 0c  74 85 96 48  64 e4 d1 e9  4d 93 7f c5
-|   e5 f0 da ab  56 f0 54 e3  97 6b 11 cc  e4 93 b7 5a
-|   59 ee 43 f6  4b 0e ff 72  df c9 9b 88  31 52 c5 7a
-|   4c af f9 a4  80 69 d1 ef  5f 42 d9 47  d9 06 4d a7
-|   12 06 b7 eb  24 d1 9f 73  06 a1 96 73  91 55 10 b4
-|   cf d9 f2 24  71 a6 33 9b  49 b9 c7 cc  fe e5 2a 6a
-|   e0 b0 af a9  23 9f 92 4f  25 13 65 8f  3d c5 47 f1
-|   d9 4c 41 3d  3c 5e b9 5d  fa c9 dc c1  09 59 56 17
-|   77 3c fa 31  83 c6 ba c3  20 ed c8 9c  d6 4e 3d 42
-|   c3 dc af f6  27 07 f7 ac  8d cd 50 6a  98 e2 83 9e
-|   bf 29 07 7a  3e 30 1d 9a  97 7f 24 07  d6 8c 5c c6
-|   76 4e 83 bd  82 83 9d 7e  4f 68 17 98  41 42 d7 53
-|   08 a0 09 43  66 95 17 26  8d 4d b4 ca  22 9d 87 68
-|   55 4e 92 50  7a 1e b9 64  bc 32 22 22  71 a4 d0 7f
-|   79 ea 33 7c  02 c7 dd 66  04 8c 6a 4d  b0 64 de f7
-|   e0 c2 f6 9e  49 7d f3 97  7e 41 65 24  a8 f3 d5 80
+|   2e 1e aa 9a  0a cb 62 f8  81 4a 2c 1d  e2 a7 17 78
+|   aa 25 4e d7  ae 63 b7 bd  ca ed f2 49  c4 f7 f6 03
+|   69 5e 8d 4b  86 e9 48 0b  88 03 d8 24  b6 4e e9 42
+|   43 5c 6c 32  79 5e f8 e4  1b ce 99 19  fc b4 48 9b
+|   fb 78 af db  a2 69 4f b6  9e 27 4f a5  95 33 a0 11
+|   63 9e 5f 13  07 b8 7e 02  9a 2a 1d 78  0b 8e ed 47
+|   45 45 ac 50  63 96 aa e9  93 10 fc fd  45 f0 57 80
+|   a0 d2 9b 41  7f c8 43 a4  a5 2e 8a 23  29 59 d3 a9
+|   23 e7 8a 27  c4 10 6e 86  e9 06 cf aa  c2 72 03 09
+|   44 7a c8 5c  83 4f f1 79  40 ee f4 b1  9c e6 5a 50
+|   5b fe fe 11  d7 2a a0 97  7b 6f 46 58  af 68 f7 f9
+|   55 1b 0d 1c  96 3f f0 46  0f ca 53 14  13 17 d5 45
+|   39 c5 83 3c  5e c5 80 87  59 7c e1 c7  57 25 46 95
+|   4d 35 bd 06  c7 be b4 3f  d6 3d ba 56  a5 ff b9 7b
+|   4a 42 fc 24  74 34 3b f6  69 91 1a a7  f3 78 fd 95
+|   16 f3 b1 6f  53 50 dd 13  ce 4c 05 0c  19 3a 82 4b
+|   ce f6 c5 de  0f a8 ad a0  1c 1a d7 4f  07 21 31 b1
+|   1f 65 70 b6  f9 e8 c3 37  c1 41 0f 6f  5c ff 4c 45
+|   e4 0f 86 86  42 68 3e f5  5c 06 fa 46  95 2f 17 6e
+|   5e 0e 50 14  48 bb a2 61  a0 ba 47 a2  3c c7 93 6b
+|   19 07 3c 72  39 ae 5d 1f  9c 8d 9b f2  37 b6 a4 51
+|   5c 34 a7 6f  d7 76 5b 26  80 01 f9 42  04 25 eb a9
+|   d1 45 c6 46  5c 5d 43 f3  81 e6 39 67  21 5d 58 ad
+|   cc fb 4f 10  22 d3 7c d7  60 08 00 e1  1a 22 4f 46
+|   e9 d6 db fb  3f 29 11 9a  a8 09 be 80  dd 18 46 53
+|   87 d4 e6 66  00 0c 2d e4  39 b1 0d 62  3f ba 27 39
+|   01 87 cb 58  a3 6e 69 0d  33 83 11 db  3d 37 98 2e
+|   fa ae bc 43  46 25 4b 70  fc 2c fd fa  0d 55 e3 53
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -447,85 +447,85 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
-|   56 a4 5b a2  33 71 02 5b  39 76 bd 99  39 3c 46 8a
-|   cf db c1 f5  c0 e0 10 2f  cb 87 a9 54  5a 8f d0 94
-|   f6 55 a2 71  28 da 4f 10  68 1b 69 cf  35 71 60 8a
-|   b2 3a 64 6b  3f 67 96 f3  17 c5 3f 36  c3 fd 1c 56
-|   2a 72 b3 c6  68 ba 66 86  61 0c 6e c2  3a 3f 07 b5
-|   23 fd 25 54  16 2d 41 a4  db e0 1b f6  74 d4 0e 7b
-|   aa aa a5 2c  ec 6f 00 68  96 3e 66 54  fb bc 62 26
-|   7b fd 41 73  7c 8c dc de  34 26 78 9d  34 c6 cc d7
-|   d1 1d 28 ce  f9 25 b1 86  cd 7e aa 81  60 25 1a e2
-|   5c 16 32 cb  c8 c7 cc 7c  c0 98 36 95  3f f1 0f e1
-|   d1 34 55 18  c7 bc 2d eb  bc b6 f2 7e  5f 29 04 e8
-|   f1 3b ed d5  3c 2d 85 ca  d9 0d b5 a7  4e 39 20 47
-|   ab 57 c0 0c  74 85 96 48  64 e4 d1 e9  4d 93 7f c5
-|   e5 f0 da ab  56 f0 54 e3  97 6b 11 cc  e4 93 b7 5a
-|   59 ee 43 f6  4b 0e ff 72  df c9 9b 88  31 52 c5 7a
-|   4c af f9 a4  80 69 d1 ef  5f 42 d9 47  d9 06 4d a7
-|   12 06 b7 eb  24 d1 9f 73  06 a1 96 73  91 55 10 b4
-|   cf d9 f2 24  71 a6 33 9b  49 b9 c7 cc  fe e5 2a 6a
-|   e0 b0 af a9  23 9f 92 4f  25 13 65 8f  3d c5 47 f1
-|   d9 4c 41 3d  3c 5e b9 5d  fa c9 dc c1  09 59 56 17
-|   77 3c fa 31  83 c6 ba c3  20 ed c8 9c  d6 4e 3d 42
-|   c3 dc af f6  27 07 f7 ac  8d cd 50 6a  98 e2 83 9e
-|   bf 29 07 7a  3e 30 1d 9a  97 7f 24 07  d6 8c 5c c6
-|   76 4e 83 bd  82 83 9d 7e  4f 68 17 98  41 42 d7 53
-|   08 a0 09 43  66 95 17 26  8d 4d b4 ca  22 9d 87 68
-|   55 4e 92 50  7a 1e b9 64  bc 32 22 22  71 a4 d0 7f
-|   79 ea 33 7c  02 c7 dd 66  04 8c 6a 4d  b0 64 de f7
-| R2 calculated auth:  e0 c2 f6 9e  49 7d f3 97  7e 41 65 24  a8 f3 d5 80
-| R2  provided  auth:  e0 c2 f6 9e  49 7d f3 97  7e 41 65 24  a8 f3 d5 80
+|   2e 1e aa 9a  0a cb 62 f8  81 4a 2c 1d  e2 a7 17 78
+|   aa 25 4e d7  ae 63 b7 bd  ca ed f2 49  c4 f7 f6 03
+|   69 5e 8d 4b  86 e9 48 0b  88 03 d8 24  b6 4e e9 42
+|   43 5c 6c 32  79 5e f8 e4  1b ce 99 19  fc b4 48 9b
+|   fb 78 af db  a2 69 4f b6  9e 27 4f a5  95 33 a0 11
+|   63 9e 5f 13  07 b8 7e 02  9a 2a 1d 78  0b 8e ed 47
+|   45 45 ac 50  63 96 aa e9  93 10 fc fd  45 f0 57 80
+|   a0 d2 9b 41  7f c8 43 a4  a5 2e 8a 23  29 59 d3 a9
+|   23 e7 8a 27  c4 10 6e 86  e9 06 cf aa  c2 72 03 09
+|   44 7a c8 5c  83 4f f1 79  40 ee f4 b1  9c e6 5a 50
+|   5b fe fe 11  d7 2a a0 97  7b 6f 46 58  af 68 f7 f9
+|   55 1b 0d 1c  96 3f f0 46  0f ca 53 14  13 17 d5 45
+|   39 c5 83 3c  5e c5 80 87  59 7c e1 c7  57 25 46 95
+|   4d 35 bd 06  c7 be b4 3f  d6 3d ba 56  a5 ff b9 7b
+|   4a 42 fc 24  74 34 3b f6  69 91 1a a7  f3 78 fd 95
+|   16 f3 b1 6f  53 50 dd 13  ce 4c 05 0c  19 3a 82 4b
+|   ce f6 c5 de  0f a8 ad a0  1c 1a d7 4f  07 21 31 b1
+|   1f 65 70 b6  f9 e8 c3 37  c1 41 0f 6f  5c ff 4c 45
+|   e4 0f 86 86  42 68 3e f5  5c 06 fa 46  95 2f 17 6e
+|   5e 0e 50 14  48 bb a2 61  a0 ba 47 a2  3c c7 93 6b
+|   19 07 3c 72  39 ae 5d 1f  9c 8d 9b f2  37 b6 a4 51
+|   5c 34 a7 6f  d7 76 5b 26  80 01 f9 42  04 25 eb a9
+|   d1 45 c6 46  5c 5d 43 f3  81 e6 39 67  21 5d 58 ad
+|   cc fb 4f 10  22 d3 7c d7  60 08 00 e1  1a 22 4f 46
+|   e9 d6 db fb  3f 29 11 9a  a8 09 be 80  dd 18 46 53
+|   87 d4 e6 66  00 0c 2d e4  39 b1 0d 62  3f ba 27 39
+|   01 87 cb 58  a3 6e 69 0d  33 83 11 db  3d 37 98 2e
+| R2 calculated auth:  fa ae bc 43  46 25 4b 70  fc 2c fd fa  0d 55 e3 53
+| R2  provided  auth:  fa ae bc 43  46 25 4b 70  fc 2c fd fa  0d 55 e3 53
 | authenticator matched, np=35
 | data before decryption:
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
-|   56 a4 5b a2  33 71 02 5b  39 76 bd 99  39 3c 46 8a
-|   cf db c1 f5  c0 e0 10 2f  cb 87 a9 54  5a 8f d0 94
-|   f6 55 a2 71  28 da 4f 10  68 1b 69 cf  35 71 60 8a
-|   b2 3a 64 6b  3f 67 96 f3  17 c5 3f 36  c3 fd 1c 56
-|   2a 72 b3 c6  68 ba 66 86  61 0c 6e c2  3a 3f 07 b5
-|   23 fd 25 54  16 2d 41 a4  db e0 1b f6  74 d4 0e 7b
-|   aa aa a5 2c  ec 6f 00 68  96 3e 66 54  fb bc 62 26
-|   7b fd 41 73  7c 8c dc de  34 26 78 9d  34 c6 cc d7
-|   d1 1d 28 ce  f9 25 b1 86  cd 7e aa 81  60 25 1a e2
-|   5c 16 32 cb  c8 c7 cc 7c  c0 98 36 95  3f f1 0f e1
-|   d1 34 55 18  c7 bc 2d eb  bc b6 f2 7e  5f 29 04 e8
-|   f1 3b ed d5  3c 2d 85 ca  d9 0d b5 a7  4e 39 20 47
-|   ab 57 c0 0c  74 85 96 48  64 e4 d1 e9  4d 93 7f c5
-|   e5 f0 da ab  56 f0 54 e3  97 6b 11 cc  e4 93 b7 5a
-|   59 ee 43 f6  4b 0e ff 72  df c9 9b 88  31 52 c5 7a
-|   4c af f9 a4  80 69 d1 ef  5f 42 d9 47  d9 06 4d a7
-|   12 06 b7 eb  24 d1 9f 73  06 a1 96 73  91 55 10 b4
-|   cf d9 f2 24  71 a6 33 9b  49 b9 c7 cc  fe e5 2a 6a
-|   e0 b0 af a9  23 9f 92 4f  25 13 65 8f  3d c5 47 f1
-|   d9 4c 41 3d  3c 5e b9 5d  fa c9 dc c1  09 59 56 17
-|   77 3c fa 31  83 c6 ba c3  20 ed c8 9c  d6 4e 3d 42
-|   c3 dc af f6  27 07 f7 ac  8d cd 50 6a  98 e2 83 9e
-|   bf 29 07 7a  3e 30 1d 9a  97 7f 24 07  d6 8c 5c c6
-|   76 4e 83 bd  82 83 9d 7e  4f 68 17 98  41 42 d7 53
-|   08 a0 09 43  66 95 17 26  8d 4d b4 ca  22 9d 87 68
-|   55 4e 92 50  7a 1e b9 64  bc 32 22 22  71 a4 d0 7f
-|   79 ea 33 7c  02 c7 dd 66  04 8c 6a 4d  b0 64 de f7
+|   2e 1e aa 9a  0a cb 62 f8  81 4a 2c 1d  e2 a7 17 78
+|   aa 25 4e d7  ae 63 b7 bd  ca ed f2 49  c4 f7 f6 03
+|   69 5e 8d 4b  86 e9 48 0b  88 03 d8 24  b6 4e e9 42
+|   43 5c 6c 32  79 5e f8 e4  1b ce 99 19  fc b4 48 9b
+|   fb 78 af db  a2 69 4f b6  9e 27 4f a5  95 33 a0 11
+|   63 9e 5f 13  07 b8 7e 02  9a 2a 1d 78  0b 8e ed 47
+|   45 45 ac 50  63 96 aa e9  93 10 fc fd  45 f0 57 80
+|   a0 d2 9b 41  7f c8 43 a4  a5 2e 8a 23  29 59 d3 a9
+|   23 e7 8a 27  c4 10 6e 86  e9 06 cf aa  c2 72 03 09
+|   44 7a c8 5c  83 4f f1 79  40 ee f4 b1  9c e6 5a 50
+|   5b fe fe 11  d7 2a a0 97  7b 6f 46 58  af 68 f7 f9
+|   55 1b 0d 1c  96 3f f0 46  0f ca 53 14  13 17 d5 45
+|   39 c5 83 3c  5e c5 80 87  59 7c e1 c7  57 25 46 95
+|   4d 35 bd 06  c7 be b4 3f  d6 3d ba 56  a5 ff b9 7b
+|   4a 42 fc 24  74 34 3b f6  69 91 1a a7  f3 78 fd 95
+|   16 f3 b1 6f  53 50 dd 13  ce 4c 05 0c  19 3a 82 4b
+|   ce f6 c5 de  0f a8 ad a0  1c 1a d7 4f  07 21 31 b1
+|   1f 65 70 b6  f9 e8 c3 37  c1 41 0f 6f  5c ff 4c 45
+|   e4 0f 86 86  42 68 3e f5  5c 06 fa 46  95 2f 17 6e
+|   5e 0e 50 14  48 bb a2 61  a0 ba 47 a2  3c c7 93 6b
+|   19 07 3c 72  39 ae 5d 1f  9c 8d 9b f2  37 b6 a4 51
+|   5c 34 a7 6f  d7 76 5b 26  80 01 f9 42  04 25 eb a9
+|   d1 45 c6 46  5c 5d 43 f3  81 e6 39 67  21 5d 58 ad
+|   cc fb 4f 10  22 d3 7c d7  60 08 00 e1  1a 22 4f 46
+|   e9 d6 db fb  3f 29 11 9a  a8 09 be 80  dd 18 46 53
+|   87 d4 e6 66  00 0c 2d e4  39 b1 0d 62  3f ba 27 39
+|   01 87 cb 58  a3 6e 69 0d  33 83 11 db  3d 37 98 2e
 | decrypted payload:  27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
 |   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
-|   72 67 21 00  01 08 01 00  00 00 62 e8  51 0b 16 76
-|   bf c9 90 0b  b0 7f 92 88  ac a0 17 b3  7f cb 10 e3
-|   68 a5 44 4a  2e fa a4 28  39 03 b5 06  fc 1b f6 cf
-|   ad 21 69 eb  5e 7a 94 6e  7e 3e 1d ae  6c 15 67 e0
-|   8f 0b e4 8b  e5 fd ed 52  bb 0e 21 e8  8e 3d 48 1d
-|   38 92 ed 64  7e 86 89 af  9d 5d 38 ac  53 a5 08 17
-|   c3 ff bc df  39 8d 75 36  76 fe 4b 1e  42 4d 1e b1
-|   2a ab 6d a4  8b 88 10 d8  24 92 af d1  b7 32 41 b2
-|   df 45 ab fd  d4 50 51 44  e3 62 cd 2f  12 14 b7 4a
-|   22 99 c1 b3  db e7 78 cf  af da 7f 12  0b 93 e4 10
-|   7c e2 9b ad  76 37 c0 ca  41 9b 8b 9c  c8 2f 3b b3
-|   38 c9 a7 be  b2 77 d4 4e  2f b6 87 5f  37 26 d3 42
-|   01 80 b2 f9  3a dc 2a bc  e2 73 54 33  d0 44 6e eb
-|   59 18 a8 b9  8f f4 8f df  67 e8 fc 9c  fa d2 bf 32
-|   ad 6d 4c 3e  67 0e a7 45  be b4 67 ec  98 d6 f6 bf
-|   cd 74 24 20  62 31 c7 3c  6a 2a c2 fc  aa e2 1d 6b
-|   a3 3b ca 86  62 b2 e9 ab  52 46 2c 00  00 44 02 00
+|   72 67 21 00  01 08 01 00  00 00 1c 12  c8 e8 dd c0
+|   b7 a9 c6 91  b3 5f 15 b7  37 ee f7 5a  18 3f ab 9b
+|   1a 73 bb 01  b5 22 d9 e5  58 08 87 c6  04 4e ba db
+|   c6 dc d5 a5  96 24 2d 7d  e3 bb c8 85  04 1f 99 8c
+|   a6 7f 2a 11  b9 86 03 16  73 a8 03 26  1f 15 f3 7c
+|   92 d1 ad 62  de d0 1d 8e  b1 d8 56 17  81 67 2d 67
+|   91 90 45 9c  ae 7b bf f0  a7 41 00 15  82 0f ff 26
+|   7b 42 0c 51  df 73 c6 8f  ed fd b2 69  6c 21 c0 97
+|   d0 24 df 90  43 11 67 67  25 24 85 e4  4b 14 36 cc
+|   e9 df 88 1d  7a cd 2e 17  77 45 82 c9  14 13 b3 95
+|   ce 08 7c 53  ab 1c d6 3d  86 66 45 40  bd 32 49 2f
+|   49 86 f7 50  05 20 6f 6a  ba 39 90 6a  34 ec 1d 18
+|   fd ad 9a bc  ec aa 0e c8  d8 4c 25 db  80 16 11 5f
+|   da df 5e 48  e2 7a cd 00  be 03 c1 01  5d 31 b6 e1
+|   aa b4 c0 90  c1 19 b5 7a  e4 3f 94 20  9c 39 7a 09
+|   1e 6d 19 53  84 ff 4c 73  9d 33 45 36  3b db 2a 39
+|   a2 81 1c 4f  91 51 75 00  52 c2 2c 00  00 44 02 00
 |   00 20 01 03  04 02 12 34  56 78 03 00  00 08 01 00
 |   00 0c 00 00  00 0c 03 00  00 0c 80 0e  00 80 00 00
 |   00 20 02 03  04 02 12 34  56 78 03 00  00 08 01 00
@@ -639,18 +639,17 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  00 30 21 30
-|   09 06 05 2b  0e 03 02 1a  05 00 04 14  12 f9 83 9a
-|   6c 94 1d ad  cf d8 89 ae  26 04 d1 9d  a1 80 3e 57
+|   09 06 05 2b  0e 03 02 1a  05 00 04 14  49 26 de 42
+|   fb 3d 8e a0  17 22 af 95  f1 b5 37 0f  24 9f 87 b2
 | pad_len calculated: 218 hash_len: 35
 | v2rsa decrypted SIG:
-|   12 f9 83 9a  6c 94 1d ad  cf d8 89 ae  26 04 d1 9d
-|   a1 80 3e 57
+|   49 26 de 42  fb 3d 8e a0  17 22 af 95  f1 b5 37 0f
+|   24 9f 87 b2
 | v2rsa computed hash:
 |   49 26 de 42  fb 3d 8e a0  17 22 af 95  f1 b5 37 0f
 |   24 9f 87 b2
 | an RSA Sig check passed with *AQN7wUerV [preloaded key]
-./xf12-parentR2 PARENT SA now authenticated. Send R2 and considering Child-SA
-| inserting event EVENT_SA_REPLACE, timeout in 3600 seconds for #1
+| PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -705,12 +704,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
-|   00 0e 00 00  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
-|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
-|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
-|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
-|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
-|   e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
+|   00 0e 00 00  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
 |   9f c7 c9 48  43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3
 |   06 43 f0 0a  e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e
 |   f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17
@@ -721,41 +715,45 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   a9 81 7f f7  37 4d 7c 41  38 62 a6 39  00 81 ca 3d
 |   1d fc f7 b5  08 38 d4 34  70 22 6c 21  d2 5b 20 a1
 |   d2 ba 2a d1  89 f3 20 79  ce ac 1e c2  ec 7d ae 76
-|   94 40 39 a0  29 00 00 14  20 98 9d 37  a8 14 a6 4d
+|   94 40 39 a0  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
+|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
+|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
+|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
+|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
+|   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
 |   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | inputs to hash2 (initiator nonce)
 |   20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | pidhash len: 32
 | idhash  a1 dc 6a 30  a9 8b a7 50  c4 03 5c f8  fc 24 19 cb
 |   08 6a 96 6b  dd b4 2f c1  f1 ac 92 fc  57 ae 21 24
-| v2rsa octets (with ASN1):
-|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 56
-|   e3 ed 4b 7a  33 cf 69 05  97 77 bf 14  26 27 c2 86
-|   7f e8 ca
+| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 1a
+|   57 a3 3f 60  7a d5 73 a8  62 87 23 3e  2b 11 ae e7
+|   3c 10 4d
 | signing hash with RSA Key *AQOg5H7A4
 | emitting 274 raw bytes of rsa signature into IKEv2 Authentication Payload
-| rsa signature  98 03 d0 5b  98 38 59 cf  ec 01 bb ff  76 a7 47 e7
-|   3c 3d 87 df  37 dc cf ae  80 10 bb 06  8a 18 a3 b8
-|   92 35 45 da  e7 09 76 8f  a1 0a f8 a8  0d f6 a7 04
-|   d1 92 14 28  b6 bf cd b2  cb 28 05 d5  cd 2f 80 26
-|   79 cb 30 4f  1c 68 bc ce  46 e5 a4 53  da 38 08 be
-|   6e 40 63 b8  c4 78 fb df  35 4b 5c db  d3 65 8e 93
-|   4b 94 98 4b  05 ea 10 ae  0d 14 02 ca  c9 4c 62 7a
-|   39 1c e6 f2  1a 1b 4c b5  7f 25 3d f3  b8 b3 06 fe
-|   b0 f7 4d 2b  b8 ea 36 1a  51 c3 59 62  8a 63 8a c0
-|   f6 a2 e1 37  a5 ef fb 8e  4e 40 ac b7  7b 05 b6 0c
-|   76 c8 61 1a  c5 3e 80 3e  1d 72 bd 16  56 8d fd 8f
-|   0d bd 0b e1  9a 26 c0 8b  cd 58 7d 95  73 d4 30 71
-|   d5 53 d3 3c  ad 46 54 b4  61 aa f1 d7  96 ce 42 e5
-|   58 e4 08 14  2b ac 8b 48  60 c2 e1 8e  94 23 d4 21
-|   1c 87 d2 b4  73 d5 45 ea  1e 33 45 ad  3b 56 9d 97
-|   b7 5f 08 59  5a 12 e7 53  5a 53 ac f8  3d 23 22 58
-|   4b cf 03 c3  53 fe 2d c6  81 5a cb 5a  1b ae cb 00
-|   81 4a
+| rsa signature  11 3b dd 21  2c 35 8a 02  c3 f5 30 d8  3d e9 bd cc
+|   f4 69 e0 aa  8f 39 e1 a2  5e 27 8f b5  5c 83 6b e9
+|   c4 63 0f 9f  0d b6 bb 44  e1 2e 74 de  a0 75 18 10
+|   3d 1b 01 1a  96 96 b3 56  62 cd 3d 47  25 d0 fc 0a
+|   27 d2 0c 94  f8 2e 04 db  b0 e3 9c e6  56 d0 eb 1e
+|   2e 40 ec e6  99 f2 49 35  27 16 2d 6f  9c ff 2f 88
+|   a5 3a f1 8e  56 b5 36 d6  fa 8a 8b 54  80 3d d6 54
+|   52 ac 53 31  5c 19 1c 1e  05 1e fd 3c  6e 06 e8 05
+|   b7 42 bc c2  7f d0 87 56  d7 ef c7 05  55 24 54 3d
+|   d2 47 9c c3  a7 ef 51 da  e3 8f 90 b3  16 48 c9 e8
+|   99 cf 4c 06  71 c8 03 fe  70 b6 51 96  9c 4f 03 14
+|   ed 99 c4 0d  ce 55 ef dc  4c 21 67 5c  82 39 85 ff
+|   90 a6 0a 3c  f7 ff c4 d6  17 2e 7c 73  f4 f2 65 8d
+|   0b 99 17 e3  7b fc 66 c7  0d 3f b1 53  6f 46 12 a3
+|   e7 eb c2 18  0d d8 65 d8  08 a3 24 ba  9d a2 8b ab
+|   5c e2 b5 9d  24 e0 47 be  88 00 e5 79  96 9e e7 0a
+|   47 87 c3 6d  79 cf 8d 82  75 d9 47 14  97 86 01 37
+|   ff aa
 | emitting length of IKEv2 Authentication Payload: 282
 | ***parse IKEv2 Traffic Selector:
 |    TS type: IKEv2_TS_IPV6_ADDR_RANGE
@@ -799,7 +797,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #2 bucket: 28
-| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
 | printing contents struct traffic_selector
 |   ts_type: IKEv2_TS_IPV6_ADDR_RANGE
 |   ipprotoid: 0
@@ -1021,24 +1018,24 @@ writing netlink policy for tun.0@192.168.1.1
 | data before encryption:
 |   27 00 00 26  02 00 00 00  6a 61 6d 65  73 6a 6f 68
 |   6e 73 6f 6e  2e 65 6d 6d  6a 61 79 2e  63 72 65 64
-|   69 6c 2e 6f  72 67 21 00  01 1a 01 00  00 00 98 03
-|   d0 5b 98 38  59 cf ec 01  bb ff 76 a7  47 e7 3c 3d
-|   87 df 37 dc  cf ae 80 10  bb 06 8a 18  a3 b8 92 35
-|   45 da e7 09  76 8f a1 0a  f8 a8 0d f6  a7 04 d1 92
-|   14 28 b6 bf  cd b2 cb 28  05 d5 cd 2f  80 26 79 cb
-|   30 4f 1c 68  bc ce 46 e5  a4 53 da 38  08 be 6e 40
-|   63 b8 c4 78  fb df 35 4b  5c db d3 65  8e 93 4b 94
-|   98 4b 05 ea  10 ae 0d 14  02 ca c9 4c  62 7a 39 1c
-|   e6 f2 1a 1b  4c b5 7f 25  3d f3 b8 b3  06 fe b0 f7
-|   4d 2b b8 ea  36 1a 51 c3  59 62 8a 63  8a c0 f6 a2
-|   e1 37 a5 ef  fb 8e 4e 40  ac b7 7b 05  b6 0c 76 c8
-|   61 1a c5 3e  80 3e 1d 72  bd 16 56 8d  fd 8f 0d bd
-|   0b e1 9a 26  c0 8b cd 58  7d 95 73 d4  30 71 d5 53
-|   d3 3c ad 46  54 b4 61 aa  f1 d7 96 ce  42 e5 58 e4
-|   08 14 2b ac  8b 48 60 c2  e1 8e 94 23  d4 21 1c 87
-|   d2 b4 73 d5  45 ea 1e 33  45 ad 3b 56  9d 97 b7 5f
-|   08 59 5a 12  e7 53 5a 53  ac f8 3d 23  22 58 4b cf
-|   03 c3 53 fe  2d c6 81 5a  cb 5a 1b ae  cb 00 81 4a
+|   69 6c 2e 6f  72 67 21 00  01 1a 01 00  00 00 11 3b
+|   dd 21 2c 35  8a 02 c3 f5  30 d8 3d e9  bd cc f4 69
+|   e0 aa 8f 39  e1 a2 5e 27  8f b5 5c 83  6b e9 c4 63
+|   0f 9f 0d b6  bb 44 e1 2e  74 de a0 75  18 10 3d 1b
+|   01 1a 96 96  b3 56 62 cd  3d 47 25 d0  fc 0a 27 d2
+|   0c 94 f8 2e  04 db b0 e3  9c e6 56 d0  eb 1e 2e 40
+|   ec e6 99 f2  49 35 27 16  2d 6f 9c ff  2f 88 a5 3a
+|   f1 8e 56 b5  36 d6 fa 8a  8b 54 80 3d  d6 54 52 ac
+|   53 31 5c 19  1c 1e 05 1e  fd 3c 6e 06  e8 05 b7 42
+|   bc c2 7f d0  87 56 d7 ef  c7 05 55 24  54 3d d2 47
+|   9c c3 a7 ef  51 da e3 8f  90 b3 16 48  c9 e8 99 cf
+|   4c 06 71 c8  03 fe 70 b6  51 96 9c 4f  03 14 ed 99
+|   c4 0d ce 55  ef dc 4c 21  67 5c 82 39  85 ff 90 a6
+|   0a 3c f7 ff  c4 d6 17 2e  7c 73 f4 f2  65 8d 0b 99
+|   17 e3 7b fc  66 c7 0d 3f  b1 53 6f 46  12 a3 e7 eb
+|   c2 18 0d d8  65 d8 08 a3  24 ba 9d a2  8b ab 5c e2
+|   b5 9d 24 e0  47 be 88 00  e5 79 96 9e  e7 0a 47 87
+|   c3 6d 79 cf  8d 82 75 d9  47 14 97 86  01 37 ff aa
 |   2c 00 00 2c  00 00 00 28  01 03 04 03  12 34 56 78
 |   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
 |   03 00 00 0c  00 00 00 08  05 00 00 00  2d 00 00 30
@@ -1051,67 +1048,67 @@ writing netlink policy for tun.0@192.168.1.1
 | data after encryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
-|   0d 39 ca f1  4a 9a 6d 17  11 40 8c 28  ed 28 b0 52
-|   c6 b7 88 4f  9e c2 6d 06  17 a7 d2 c3  fb 8d 36 26
-|   bb d9 05 2b  d8 8c dc 9c  81 23 e1 b0  ee e0 3b 5c
-|   ca 68 f8 dd  09 e8 1f ea  12 54 74 fd  fd 4b b0 37
-|   db ec 30 5f  c2 ce 82 a6  ce 2a 97 3c  4e 03 25 0c
-|   b8 25 dd 9b  2a 5b 1f ad  04 69 a2 58  a9 81 12 7c
-|   15 04 69 96  7d 54 67 74  d8 a9 50 c4  3d a9 56 0e
-|   25 60 18 dc  e6 93 43 f2  a3 ac 53 a7  88 c3 d8 16
-|   13 fc 52 f9  ea 6a 62 35  6f 16 e0 8a  7a a1 1b 63
-|   7a 55 b1 23  04 fc 8b fd  e1 b9 6f 13  bc b9 92 19
-|   e8 e8 d6 bb  bb 5e 50 99  4b 7a b2 52  95 b6 9f a2
-|   3f 54 f5 91  a4 25 ce 3d  4e 66 52 9d  36 9d a6 79
-|   80 db df 1f  94 69 5d 1d  2d fc d7 06  70 2b c0 e6
-|   90 e3 69 0b  6a 75 0e cf  a0 7e ad 0d  82 f1 73 f7
-|   f1 54 1a ee  83 33 e8 0a  92 78 56 c0  51 24 ea 29
-|   c3 f6 df 06  42 2c 35 e1  80 d2 13 80  68 c6 ff 74
-|   c9 07 9e 29  0e 99 65 6f  dc d1 1c 9f  8c b4 47 27
-|   58 4b e7 9c  c5 d0 01 0b  34 71 3f 28  08 c0 b6 fd
-|   96 69 d7 f4  94 57 ff 18  e5 16 9b 2e  85 fe d6 e9
-|   4f e6 95 30  67 1a 7c af  b6 1b 88 78  9f 76 33 f3
-|   a2 c9 50 1d  69 42 24 65  ce b0 c8 b2  91 e9 09 cb
-|   a8 d2 57 19  ad a1 fb 0d  fe 8f f9 f3  59 c9 6e 79
-|   97 f2 03 21  b6 b9 e2 15  15 2e ca b6  a4 51 dd f3
-|   e9 db 36 4f  89 6f c2 eb  8b 3f 7a ee  48 69 2f f6
-|   09 fc c5 1d  79 14 c1 95  7b 3b 14 32  80 2a ba 17
-|   a6 74 85 6d  06 19 89 76  cc 7a c3 27  3e ee af e0
-|   12 ba 80 3e  66 5b f3 1a  14 d1 60 33  b6 f1 79 28
+|   5c b8 b4 d8  99 3f 75 d1  1d df cf 7a  f0 91 fd 25
+|   0c 2d 59 0f  b6 0b d5 02  88 9e 6d bc  0b 31 e8 93
+|   d8 70 3f d1  ea d9 7c e3  a7 31 01 d7  a7 29 ca ea
+|   2c 83 20 a3  47 fd cd af  b5 d6 cd 77  b7 b7 05 a5
+|   4a 1f 9a 4d  b2 a2 74 9c  1c c5 97 aa  b2 c5 33 4b
+|   f1 19 d8 c0  8b 33 b3 9b  17 c3 d6 81  59 15 a4 6f
+|   32 f3 b9 65  12 3d 66 e8  67 e7 67 2f  61 40 2c 94
+|   7a 8a 88 56  af 32 cb d2  c4 69 86 72  c1 ea 17 72
+|   02 9e d4 9b  8f e2 a7 af  22 51 f4 1f  72 9f 58 80
+|   10 a5 f2 c8  f3 b5 c3 f2  a6 1d 90 e4  b0 af c3 4c
+|   a5 2c e9 59  cf f4 45 f1  cf 0c bc 0a  4f 69 6e bc
+|   70 ab 13 a3  bb a4 5d 6f  b2 54 e0 8e  9b 85 a8 f9
+|   62 a7 d1 a4  b8 14 63 16  bf b3 a1 6c  1f bf 48 e3
+|   3b b3 6f 13  8a 87 48 9c  e7 ec d0 fc  62 65 4d 55
+|   c1 bc 88 34  9d 04 df 9b  4c a4 10 04  ce 52 a4 15
+|   31 87 1f b5  bc c2 cb 61  90 6b 51 28  0e 64 1d 37
+|   8d 41 0f 8b  36 14 0c 8c  7d d1 51 e7  9b ac 5e 18
+|   e7 3c be 7a  9d 73 93 50  80 05 68 64  04 0b dc e0
+|   21 7c 33 bc  a8 aa d8 79  1a 77 da f1  71 84 76 8a
+|   76 e3 10 e4  49 91 ce 1d  7a 70 82 dd  86 c2 81 83
+|   08 dd b8 e8  ce 9a 4e ed  ff de 62 ee  42 91 a4 c9
+|   b2 ef 28 3d  0d 4c 7f 95  f9 24 a3 bc  d8 46 09 39
+|   05 0e 82 08  36 2f 83 7a  1a c7 97 6a  0a c6 b2 f4
+|   31 73 cc 06  d4 db e3 0a  6e 18 da 47  f7 9c 5c 63
+|   81 72 60 09  38 6a 9c b3  90 3b 7e e6  d9 8a f0 36
+|   5d ce 9f 50  02 da 55 10  0c 4d 27 1c  d3 55 15 20
+|   55 f0 57 4c  69 37 bf fe  2a aa 92 f1  0c 19 da dd
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 02 10  24 00 01 f4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
-|   0d 39 ca f1  4a 9a 6d 17  11 40 8c 28  ed 28 b0 52
-|   c6 b7 88 4f  9e c2 6d 06  17 a7 d2 c3  fb 8d 36 26
-|   bb d9 05 2b  d8 8c dc 9c  81 23 e1 b0  ee e0 3b 5c
-|   ca 68 f8 dd  09 e8 1f ea  12 54 74 fd  fd 4b b0 37
-|   db ec 30 5f  c2 ce 82 a6  ce 2a 97 3c  4e 03 25 0c
-|   b8 25 dd 9b  2a 5b 1f ad  04 69 a2 58  a9 81 12 7c
-|   15 04 69 96  7d 54 67 74  d8 a9 50 c4  3d a9 56 0e
-|   25 60 18 dc  e6 93 43 f2  a3 ac 53 a7  88 c3 d8 16
-|   13 fc 52 f9  ea 6a 62 35  6f 16 e0 8a  7a a1 1b 63
-|   7a 55 b1 23  04 fc 8b fd  e1 b9 6f 13  bc b9 92 19
-|   e8 e8 d6 bb  bb 5e 50 99  4b 7a b2 52  95 b6 9f a2
-|   3f 54 f5 91  a4 25 ce 3d  4e 66 52 9d  36 9d a6 79
-|   80 db df 1f  94 69 5d 1d  2d fc d7 06  70 2b c0 e6
-|   90 e3 69 0b  6a 75 0e cf  a0 7e ad 0d  82 f1 73 f7
-|   f1 54 1a ee  83 33 e8 0a  92 78 56 c0  51 24 ea 29
-|   c3 f6 df 06  42 2c 35 e1  80 d2 13 80  68 c6 ff 74
-|   c9 07 9e 29  0e 99 65 6f  dc d1 1c 9f  8c b4 47 27
-|   58 4b e7 9c  c5 d0 01 0b  34 71 3f 28  08 c0 b6 fd
-|   96 69 d7 f4  94 57 ff 18  e5 16 9b 2e  85 fe d6 e9
-|   4f e6 95 30  67 1a 7c af  b6 1b 88 78  9f 76 33 f3
-|   a2 c9 50 1d  69 42 24 65  ce b0 c8 b2  91 e9 09 cb
-|   a8 d2 57 19  ad a1 fb 0d  fe 8f f9 f3  59 c9 6e 79
-|   97 f2 03 21  b6 b9 e2 15  15 2e ca b6  a4 51 dd f3
-|   e9 db 36 4f  89 6f c2 eb  8b 3f 7a ee  48 69 2f f6
-|   09 fc c5 1d  79 14 c1 95  7b 3b 14 32  80 2a ba 17
-|   a6 74 85 6d  06 19 89 76  cc 7a c3 27  3e ee af e0
-|   12 ba 80 3e  66 5b f3 1a  14 d1 60 33  b6 f1 79 28
+|   5c b8 b4 d8  99 3f 75 d1  1d df cf 7a  f0 91 fd 25
+|   0c 2d 59 0f  b6 0b d5 02  88 9e 6d bc  0b 31 e8 93
+|   d8 70 3f d1  ea d9 7c e3  a7 31 01 d7  a7 29 ca ea
+|   2c 83 20 a3  47 fd cd af  b5 d6 cd 77  b7 b7 05 a5
+|   4a 1f 9a 4d  b2 a2 74 9c  1c c5 97 aa  b2 c5 33 4b
+|   f1 19 d8 c0  8b 33 b3 9b  17 c3 d6 81  59 15 a4 6f
+|   32 f3 b9 65  12 3d 66 e8  67 e7 67 2f  61 40 2c 94
+|   7a 8a 88 56  af 32 cb d2  c4 69 86 72  c1 ea 17 72
+|   02 9e d4 9b  8f e2 a7 af  22 51 f4 1f  72 9f 58 80
+|   10 a5 f2 c8  f3 b5 c3 f2  a6 1d 90 e4  b0 af c3 4c
+|   a5 2c e9 59  cf f4 45 f1  cf 0c bc 0a  4f 69 6e bc
+|   70 ab 13 a3  bb a4 5d 6f  b2 54 e0 8e  9b 85 a8 f9
+|   62 a7 d1 a4  b8 14 63 16  bf b3 a1 6c  1f bf 48 e3
+|   3b b3 6f 13  8a 87 48 9c  e7 ec d0 fc  62 65 4d 55
+|   c1 bc 88 34  9d 04 df 9b  4c a4 10 04  ce 52 a4 15
+|   31 87 1f b5  bc c2 cb 61  90 6b 51 28  0e 64 1d 37
+|   8d 41 0f 8b  36 14 0c 8c  7d d1 51 e7  9b ac 5e 18
+|   e7 3c be 7a  9d 73 93 50  80 05 68 64  04 0b dc e0
+|   21 7c 33 bc  a8 aa d8 79  1a 77 da f1  71 84 76 8a
+|   76 e3 10 e4  49 91 ce 1d  7a 70 82 dd  86 c2 81 83
+|   08 dd b8 e8  ce 9a 4e ed  ff de 62 ee  42 91 a4 c9
+|   b2 ef 28 3d  0d 4c 7f 95  f9 24 a3 bc  d8 46 09 39
+|   05 0e 82 08  36 2f 83 7a  1a c7 97 6a  0a c6 b2 f4
+|   31 73 cc 06  d4 db e3 0a  6e 18 da 47  f7 9c 5c 63
+|   81 72 60 09  38 6a 9c b3  90 3b 7e e6  d9 8a f0 36
+|   5d ce 9f 50  02 da 55 10  0c 4d 27 1c  d3 55 15 20
+|   55 f0 57 4c  69 37 bf fe  2a aa 92 f1  0c 19 da dd
 | out calculated auth:
-|   b7 e8 df a2  ba b3 45 62  d5 f5 fc 63  4f 39 61 81
+|   bb f8 8f 66  ff d0 97 a2  c1 a1 74 b2  94 aa ee b2
 | #2 complete v2 state transition with STF_OK
 ./xf12-parentR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -1125,40 +1122,36 @@ sending 528 bytes for STATE_PARENT_R1 through eth0:500 [93.184.216.34:55044] to 
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
-|   0d 39 ca f1  4a 9a 6d 17  11 40 8c 28  ed 28 b0 52
-|   c6 b7 88 4f  9e c2 6d 06  17 a7 d2 c3  fb 8d 36 26
-|   bb d9 05 2b  d8 8c dc 9c  81 23 e1 b0  ee e0 3b 5c
-|   ca 68 f8 dd  09 e8 1f ea  12 54 74 fd  fd 4b b0 37
-|   db ec 30 5f  c2 ce 82 a6  ce 2a 97 3c  4e 03 25 0c
-|   b8 25 dd 9b  2a 5b 1f ad  04 69 a2 58  a9 81 12 7c
-|   15 04 69 96  7d 54 67 74  d8 a9 50 c4  3d a9 56 0e
-|   25 60 18 dc  e6 93 43 f2  a3 ac 53 a7  88 c3 d8 16
-|   13 fc 52 f9  ea 6a 62 35  6f 16 e0 8a  7a a1 1b 63
-|   7a 55 b1 23  04 fc 8b fd  e1 b9 6f 13  bc b9 92 19
-|   e8 e8 d6 bb  bb 5e 50 99  4b 7a b2 52  95 b6 9f a2
-|   3f 54 f5 91  a4 25 ce 3d  4e 66 52 9d  36 9d a6 79
-|   80 db df 1f  94 69 5d 1d  2d fc d7 06  70 2b c0 e6
-|   90 e3 69 0b  6a 75 0e cf  a0 7e ad 0d  82 f1 73 f7
-|   f1 54 1a ee  83 33 e8 0a  92 78 56 c0  51 24 ea 29
-|   c3 f6 df 06  42 2c 35 e1  80 d2 13 80  68 c6 ff 74
-|   c9 07 9e 29  0e 99 65 6f  dc d1 1c 9f  8c b4 47 27
-|   58 4b e7 9c  c5 d0 01 0b  34 71 3f 28  08 c0 b6 fd
-|   96 69 d7 f4  94 57 ff 18  e5 16 9b 2e  85 fe d6 e9
-|   4f e6 95 30  67 1a 7c af  b6 1b 88 78  9f 76 33 f3
-|   a2 c9 50 1d  69 42 24 65  ce b0 c8 b2  91 e9 09 cb
-|   a8 d2 57 19  ad a1 fb 0d  fe 8f f9 f3  59 c9 6e 79
-|   97 f2 03 21  b6 b9 e2 15  15 2e ca b6  a4 51 dd f3
-|   e9 db 36 4f  89 6f c2 eb  8b 3f 7a ee  48 69 2f f6
-|   09 fc c5 1d  79 14 c1 95  7b 3b 14 32  80 2a ba 17
-|   a6 74 85 6d  06 19 89 76  cc 7a c3 27  3e ee af e0
-|   12 ba 80 3e  66 5b f3 1a  14 d1 60 33  b6 f1 79 28
-|   b7 e8 df a2  ba b3 45 62  d5 f5 fc 63  4f 39 61 81
+|   5c b8 b4 d8  99 3f 75 d1  1d df cf 7a  f0 91 fd 25
+|   0c 2d 59 0f  b6 0b d5 02  88 9e 6d bc  0b 31 e8 93
+|   d8 70 3f d1  ea d9 7c e3  a7 31 01 d7  a7 29 ca ea
+|   2c 83 20 a3  47 fd cd af  b5 d6 cd 77  b7 b7 05 a5
+|   4a 1f 9a 4d  b2 a2 74 9c  1c c5 97 aa  b2 c5 33 4b
+|   f1 19 d8 c0  8b 33 b3 9b  17 c3 d6 81  59 15 a4 6f
+|   32 f3 b9 65  12 3d 66 e8  67 e7 67 2f  61 40 2c 94
+|   7a 8a 88 56  af 32 cb d2  c4 69 86 72  c1 ea 17 72
+|   02 9e d4 9b  8f e2 a7 af  22 51 f4 1f  72 9f 58 80
+|   10 a5 f2 c8  f3 b5 c3 f2  a6 1d 90 e4  b0 af c3 4c
+|   a5 2c e9 59  cf f4 45 f1  cf 0c bc 0a  4f 69 6e bc
+|   70 ab 13 a3  bb a4 5d 6f  b2 54 e0 8e  9b 85 a8 f9
+|   62 a7 d1 a4  b8 14 63 16  bf b3 a1 6c  1f bf 48 e3
+|   3b b3 6f 13  8a 87 48 9c  e7 ec d0 fc  62 65 4d 55
+|   c1 bc 88 34  9d 04 df 9b  4c a4 10 04  ce 52 a4 15
+|   31 87 1f b5  bc c2 cb 61  90 6b 51 28  0e 64 1d 37
+|   8d 41 0f 8b  36 14 0c 8c  7d d1 51 e7  9b ac 5e 18
+|   e7 3c be 7a  9d 73 93 50  80 05 68 64  04 0b dc e0
+|   21 7c 33 bc  a8 aa d8 79  1a 77 da f1  71 84 76 8a
+|   76 e3 10 e4  49 91 ce 1d  7a 70 82 dd  86 c2 81 83
+|   08 dd b8 e8  ce 9a 4e ed  ff de 62 ee  42 91 a4 c9
+|   b2 ef 28 3d  0d 4c 7f 95  f9 24 a3 bc  d8 46 09 39
+|   05 0e 82 08  36 2f 83 7a  1a c7 97 6a  0a c6 b2 f4
+|   31 73 cc 06  d4 db e3 0a  6e 18 da 47  f7 9c 5c 63
+|   81 72 60 09  38 6a 9c b3  90 3b 7e e6  d9 8a f0 36
+|   5d ce 9f 50  02 da 55 10  0c 4d 27 1c  d3 55 15 20
+|   55 f0 57 4c  69 37 bf fe  2a aa 92 f1  0c 19 da dd
+|   bb f8 8f 66  ff d0 97 a2  c1 a1 74 b2  94 aa ee b2
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
-| inserting event EVENT_SA_REPLACE, timeout in 28530 seconds for #2
-now look at the resulting SAs produced.
-RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; eroute owner; nodpd; msgid=0; idle; import:respond to friend
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
 | freeing state object #1
 ./xf12-parentR2 leak: reply packet, item size: X
 ./xf12-parentR2 leak: skeyseed_t1, item size: X
