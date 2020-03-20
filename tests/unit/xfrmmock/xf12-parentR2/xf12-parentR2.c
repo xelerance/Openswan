@@ -26,6 +26,7 @@ static void init_loaded(void)
     xfrm_init_base_algorithms();
 
     passert(esp_aalg[IKEv2_AUTH_HMAC_SHA2_256_128].kernel_alg_info != NULL);
+
 }
 
 static void init_local_interface(void)
@@ -41,53 +42,16 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 
-/* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
-void recv_pcap_packet(u_char *user
-		      , const struct pcap_pkthdr *h
-		      , const u_char *bytes)
-{
-    struct state *st;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+#define EXTRA_PACKET2 do { \
+/* create a socket for a possible whack process that is doing --up */; \
+int fake_whack_fd = open("/dev/null", O_RDWR); \
+    passert(fake_whack_fd != -1);\
+\
+    fprintf(stderr, "now look at the resulting SAs produced.\n");\
+    show_states_status();\
+} while(0)
 
-    recv_pcap_packet_gen(user, h, bytes);
-
-    st = state_with_serialno(1);
-    if(st) {
-        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
-
-        /* now fill in the KE values from a constant.. not calculated */
-        clonetowirechunk(&kn->thespace, kn->space, &kn->n,      SS(ni.ptr), SS(ni.len));
-        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,     SS(gi.ptr), SS(gi.len));
-    }
-
-    run_continuation(crypto_req);
-}
-
-void recv_pcap_packet2(u_char *user
-                      , const struct pcap_pkthdr *h
-                      , const u_char *bytes)
-{
-    struct state *st;
-
-    /* create a socket for a possible whack process that is doing --up */
-    int fake_whack_fd = open("/dev/null", O_RDWR);
-    passert(fake_whack_fd != -1);
-
-    cur_debugging |= DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
-    recv_pcap_packet_gen(user, h, bytes);
-
-    run_continuation(crypto_req);
-
-    fprintf(stderr, "now look at the resulting SAs produced.\n");
-    show_states_status();
-}
-
-#define PCAP_INPUT_COUNT 2
-recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
-};
-
+#include "seam_parentR2.c"
 #include "../../libpluto/lp12-parentR2/parentR2_main.c"
 
  /*
