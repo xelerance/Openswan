@@ -24,7 +24,12 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 
-static void init_loaded(void) {}
+#define INIT_LOADED init_loaded
+static void init_loaded(void) {
+    init_crypto();
+}
+
+#define MORE_DEBUGGING DBG_EMITTING|DBG_CONTROLMORE
 
 #include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
