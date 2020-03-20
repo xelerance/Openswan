@@ -25,7 +25,8 @@ include ../../libpluto/lp13-objectlist.make
 OUTPUTS=OUTPUT
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-SAMPLEDIR=../samples
+SAMPLEDIR?=../samples
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
 include Makefile.testcase
 
