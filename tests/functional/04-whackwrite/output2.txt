@@ -2,6 +2,9 @@ debugging mode enabled
 end of file ../../unit/libpluto/samples/parker.conf
 Loading conn ikev2:parker--jj
 Loading conn parker1--jj2
+Loading conn parker1--jj2--wrong
+# conn parker1--jj2--wrong processing alsos
+	while loading conn 'parker1--jj2--wrong' also including 'parker1--jj2'
 Loading conn any1--jj2
 Loading conn maryjane1--jj2
 Loading conn parker1--jj0
@@ -24,6 +27,7 @@ failed to load conn: parker1--jj0
 opening file: ../../unit/libpluto/samples/parker.conf
 processing conn: parker1--jj0 vs ikev2:parker--jj
 processing conn: parker1--jj0 vs parker1--jj2
+processing conn: parker1--jj0 vs parker1--jj2--wrong
 processing conn: parker1--jj0 vs any1--jj2
 processing conn: parker1--jj0 vs maryjane1--jj2
 processing conn: parker1--jj0 vs parker1--jj0

@@ -1,5 +1,8 @@
 opening file: ../../unit/libpluto/samples/moon.conf
 #conn net-net loaded
+#conn rw-base loaded
+#conn rw loaded
+#conn rw512 loaded
 
 version 2.0
 
@@ -34,5 +37,88 @@ conn net-net
 	endaddrfamily=ipv4
 	tunneladdrfamily=ipv6
 # end conn net-net
+
+# begin conn rw-base
+conn rw-base
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=%any
+	rightca="C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com"
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	ikev1=yes
+	authby=rsasig
+	phase2=esp
+	ikev2=never
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
+# end conn rw-base
+
+# begin conn rw
+conn rw
+	#also = rw-base
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=%any
+	rightca="C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com"
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	ike=3des-md5;modp1536
+	phase2alg=3des-md5;modp1536
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	ikev1=yes
+	authby=rsasig
+	phase2=esp
+	ikev2=never
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
+# end conn rw
+
+# begin conn rw512
+conn rw512
+	#also = rw-base
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=%any
+	rightca="C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com"
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	ike=aes256-sha2_512;modp4096
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	ikev1=yes
+	authby=rsasig
+	phase2=esp
+	ikev2=never
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
+# end conn rw512
 
 # end of config
