@@ -1,3 +1,4 @@
+#define NO_SEAM_RSASIG
 #include "../../libpluto/lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_kernel.c"
@@ -5,6 +6,8 @@
 #include "seam_gi_sha256_group14.c"
 #include "seam_natt.c"
 #include "seam_finish.c"
+#include "seam_dh_v2.c"
+#include "seam_ke.c"
 
 #define TESTNAME "cryptoR2"
 
