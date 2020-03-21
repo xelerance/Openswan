@@ -62,10 +62,10 @@ loaded private key for keyid: RANDOM
 000  
 000 "green": 2620:120:9000:81::/64===%any[@peel]...%any[@berri.testing.xelerance.com]===2620:120:9000:82::/64; unrouted; eroute owner: #0
 000 "green":     myip=2620:120:9000:81::1; hisip=2620:120:9000:82::1; mycert=peel1.pem; hiscert=berri1.pem;
-000 "green":   keys: 1:FC4E 26C3 8211 80F6 08EE FD97 214E A279 A890 C72C 2:none...
-000 "green":        ....1:C44B B527 8A4E 49ED 74E5 BC03 2FC9 71B0 4796 167E 2:none 
+000 "green":   keys: 1:KEYID 2:none...
+000 "green":        ....1:KEYID 2:none 
 000 "green":   ike_life: 3600s; ipsec_life: 600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0 
-000 "green":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 64,64; interface: ; kind=CK_GROUP
+000 "green":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 64,64; interface: ; kind=CK_PERMANENT
 000 "green":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  
