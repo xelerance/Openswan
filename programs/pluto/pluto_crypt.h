@@ -80,7 +80,7 @@ struct pcr_skeyid_q {
   wire_chunk_t secret;
 #ifdef HAVE_LIBNSS
   /* u_int16_t encrypt_algo; */
-  const struct encrypt_desc *encrypter;
+  const struct ike_encr_desc *encrypter;
   wire_chunk_t   pubk;
 #endif
 };
