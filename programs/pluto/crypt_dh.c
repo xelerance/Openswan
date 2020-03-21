@@ -92,7 +92,7 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 }
 */
 
-static CK_MECHANISM_TYPE nss_encryption_mech(const struct encrypt_desc *encrypter)
+static CK_MECHANISM_TYPE nss_encryption_mech(const struct ike_encr_desc *encrypter)
 {
 CK_MECHANISM_TYPE mechanism=0x80000000;
 
@@ -515,7 +515,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 #ifdef HAVE_LIBNSS
     PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key;
     /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
 #endif
 
     /* this doesn't take any memory */
@@ -1248,11 +1248,11 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct hash_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
+    const struct ike_integ_desc *hasher = (struct ike_integ_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_INTEG, skq->prf_hash, 0);
     passert(hasher);
 
 
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
     passert(encrypter);
 
 
