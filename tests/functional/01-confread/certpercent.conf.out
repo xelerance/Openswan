@@ -22,6 +22,7 @@ conn berri--strongswan
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	ikev2=propose

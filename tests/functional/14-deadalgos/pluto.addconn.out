@@ -43,4 +43,3 @@ adding connection: "gateway--rfc7321bis"
 "gateway--rfc7321bis": deleting connection
 "gateway--rfc7321": deleting connection
 "gateway--1des": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally

@@ -4,7 +4,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -21,14 +20,14 @@ ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
-  loading certificate from moonCert.pem
+  loading certificate from moonCert.pem 
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/moonCert.pem' (1468 bytes)
-  loading certificate from daveCert.pem
+  loading certificate from daveCert.pem 
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/daveCert.pem' (1468 bytes)
 adding connection: "net-net-works"
-  loading certificate from moonCert.pem
+  loading certificate from moonCert.pem 
   loaded host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/moonCert.pem' (1468 bytes)
-  loading certificate from missingCert.pem
+  loading certificate from missingCert.pem 
   could not open host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/missingCert.pem'
 adding connection: "net-net-fails"
 Makefile:41: recipe for target 'step2b' failed
@@ -36,16 +35,16 @@ Makefile:41: recipe for target 'step2b' failed
 000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
 000 debug none
-000
+000  
 000 virtual_private (%priv):
-000 - allowed 0 subnets:
-000 - disallowed 0 subnets:
-000 WARNING: Either virtual_private= is not specified, or there is a syntax
+000 - allowed 0 subnets: 
+000 - disallowed 0 subnets: 
+000 WARNING: Either virtual_private= is not specified, or there is a syntax 
 000          error in that line. 'left/rightsubnet=vhost:%priv' will not work!
-000 WARNING: Disallowed subnets in virtual_private= is empty. If you have
+000 WARNING: Disallowed subnets in virtual_private= is empty. If you have 
 000          private address space in internal use, it should be excluded!
-000
-000
+000  
+000  
 000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
 000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
 000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
@@ -62,22 +61,21 @@ Makefile:41: recipe for target 'step2b' failed
 000 algorithm IKE dh group: id=22, name=OAKLEY_GROUP_DH22, bits=1024
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
-000
+000  
 000 "net-net-fails": fec1::/16===192.168.0.1[moon@openswan.org]...192.168.0.2[@missing.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-fails":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=missingCert.pem;
 000 "net-net-fails":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-000 "net-net-fails":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+000 "net-net-fails":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
 000 "net-net-fails":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-fails":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000 "net-net-works": fec1::/16===192.168.0.1[moon@openswan.org]...192.168.0.2[dave@openswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-works":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=daveCert.pem;
 000 "net-net-works":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
-000 "net-net-works":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
-000 "net-net-works":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+000 "net-net-works":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none 
+000 "net-net-works":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
 000 "net-net-works":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-works":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
-000
-000
+000  
+000  
 "net-net-fails": deleting connection
 "net-net-works": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally
