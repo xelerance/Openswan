@@ -10,6 +10,7 @@
 #include "id.h"
 #include "pluto/keys.h"
 #include "hexdump.c"
+#include "pluto/ike_alg.h"
 
 const char *progname;
 
