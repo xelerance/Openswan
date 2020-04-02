@@ -24,8 +24,6 @@ EXTRAFLAGS+=-I..
 EXTRAFLAGS+=-I../../libpluto
 
 include ../../libpluto/lp13-objectlist.make
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 OUTPUTS=OUTPUT
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
