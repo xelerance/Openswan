@@ -27,7 +27,7 @@ EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
-EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS} -lgmp
+EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
 TESTNUMBER=lo06-datatot
 TESTNAME=alginfo-test
@@ -36,7 +36,7 @@ UNITTESTARGS=-r
 programs ${TESTNAME}:
 	@mkdir -p OUTPUT
 	@echo CC alginfo_test.c -o ${TESTNAME}
-	@${CC} alginfo_test.c   -o ${TESTNAME} ${EXTRAFLAGS} ${EXTRALIBS} ${EXTRALIBS}
+	@${CC} alginfo_test.c   -o ${TESTNAME} ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
@@ -49,7 +49,7 @@ update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
 clean:
-	-rm -f ${TESTNAME}
+	-@rm -f ${TESTNAME}
 
 
 # Local Variables:

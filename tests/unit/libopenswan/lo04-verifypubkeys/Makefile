@@ -50,5 +50,7 @@ setup:
 		${OBJDIRTOP}/programs/showhostkey/showhostkey --left --file ../lo02-verifysigs/key-$${n}.secrets | sed -n -e /leftrsa/s/^.*leftrsasigkey=//p >pubkey-$${n}.pubkey; \
         done
 
+clean:
+	@rm -f ${TESTNAME}
 
 
