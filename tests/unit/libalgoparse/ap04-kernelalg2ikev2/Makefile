@@ -44,5 +44,8 @@ check: ${TESTNAME}
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
+clean:
+	-@rm -f ${TESTNAME}
+
 
 

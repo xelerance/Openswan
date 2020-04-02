@@ -61,4 +61,6 @@ update:
 
 initiate:
 
+clean:
+	@rm -f ${TESTNAME}
 
