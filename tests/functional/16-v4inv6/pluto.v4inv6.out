@@ -5,7 +5,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -25,9 +24,9 @@ Could not change to directory 'moon/cacerts': No such file or directory
 Could not change to directory 'moon/aacerts': No such file or directory
 Could not change to directory 'moon/ocspcerts': No such file or directory
 Could not change to directory 'moon/crls': 2 No such file or directory
-  loading certificate from moonCert.pem
+  loading certificate from moonCert.pem 
   loaded host cert file 'moon/certs/moonCert.pem' (1468 bytes)
-  loading certificate from daveCert.pem
+  loading certificate from daveCert.pem 
   loaded host cert file 'moon/certs/daveCert.pem' (1468 bytes)
 adding connection: "net-net"
 no secrets filename matched "moon.secrets"

@@ -27,6 +27,7 @@ conn dooku--cassidy-net
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 # end conn dooku--cassidy-net
@@ -43,6 +44,7 @@ conn dooku-base
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 # end conn dooku-base
@@ -59,6 +61,7 @@ conn cassidy-base
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 # end conn cassidy-base
