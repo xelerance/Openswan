@@ -787,8 +787,9 @@ sending 256 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | Rekeying #3 from existing state #2, will inherit tunnel encapsulation (1)
-| empty esp_info, returning defaults
-| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| ikev2_derive_child_keys: using prf-hmac-sha2-256 for prf+ (SA #3 cloned from #1)
 | childsacalc.ni  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | childsacalc.nr  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | ikev2_derive_child_keys: my role is INITIATOR
