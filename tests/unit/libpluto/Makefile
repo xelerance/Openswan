@@ -37,7 +37,7 @@ UNITTESTS_0+=lp50-rekey-no-reply-rekey
 UNITTESTS_0+=lp60-bestif
 UNITTESTS_0+=lp66-db2ops
 UNITTESTS_0+=lp67-ike2ops
-UNITTESTS_0+=lp68-badproposal
+# GONE UNITTESTS_0+=lp68-badproposal
 UNITTESTS_0+=lp70-invalid-init-msg
 
 UNITTESTS_I1+=lp02-parentI1
