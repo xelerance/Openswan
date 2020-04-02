@@ -15,9 +15,11 @@
 #include "defs.h"
 #include "state.h"
 #include "packet.h"
+#include "hostpair.h"
 
 struct spd_route;
 struct payload_digest;
+
 #include "ikev2.h"
 
 const char *progname;
