@@ -58,4 +58,5 @@ initiate:
 	(echo ': RSA	{'; ${OBJDIRTOP}/programs/rsasigkey/rsasigkey --random /dev/urandom 4096 --hostname fivetwelve; echo '  }') >key-4096.secrets
 	(echo ': RSA	{'; ${OBJDIRTOP}/programs/rsasigkey/rsasigkey --random /dev/urandom 8192 --hostname fivetwelve; echo '  }') >key-8192.secrets
 
-
+clean:
+	@rm -f ${TESTNAME}
