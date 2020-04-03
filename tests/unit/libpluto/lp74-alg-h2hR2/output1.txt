@@ -62,7 +62,7 @@ RC=0 "alttunnel":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 01 ac  22 00 00 2c
 |   00 00 00 28  01 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   03 00 00 08  02 00 00 01  03 00 00 08  03 00 00 01
 |   00 00 00 08  04 00 00 0e  28 00 01 08  00 0e 00 00
 |   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
 |   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
@@ -169,12 +169,12 @@ RC=0 "alttunnel":   ESP algorithms loaded: aes_cbc(12)_128-hmac_sha1_96(2)_160
 | collect encr: 3<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 3
+|    transform type: 2
 |    transform ID: 1
-| collect encr: 3<=1 integ: 1<=1 prf: 0<=0 dh: 0<=0
+| collect encr: 3<=1 integ: 0<=0 prf: 1<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
-|    transform type: 2
+|    transform type: 3
 |    transform ID: 1
 | collect encr: 3<=1 integ: 1<=1 prf: 1<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
