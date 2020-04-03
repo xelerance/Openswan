@@ -150,7 +150,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  c4 00 10 99
 |   12 11 34 5e  78 ab 84 55  96 7a 2b 38  63 63 32 03
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | **parse ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -1122,7 +1122,7 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 |    next-payload: ISAKMP_NEXT_v2V [@584=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 628
 sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #3)
