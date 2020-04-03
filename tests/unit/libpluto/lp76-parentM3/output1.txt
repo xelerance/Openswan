@@ -300,7 +300,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | emitting length of ISAKMP Security Association Payload: 180
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -322,7 +322,7 @@ sending 244 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.2
 |   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
 |   00 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00
 RC=105 STATE_MAIN_I1: initiate
@@ -335,7 +335,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -349,7 +349,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | state hash entry 4
 | v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
 | v1 state object #1 found, in STATE_MAIN_I1
-./parentM3 received Vendor ID payload [Openswan (this version) 2.6.52-306-g47c3ffffd ]
 ./parentM3 received Vendor ID payload [Dead Peer Detection]
 ./parentM3 received Vendor ID payload [RFC 3947] meth=115, but port floating is off
 | complete state transition with STF_SUSPEND
