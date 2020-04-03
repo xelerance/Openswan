@@ -149,7 +149,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
 |   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | **parse ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -1232,7 +1232,7 @@ sending 80 bytes for process_informational_ikev2 through eth0:500 [192.168.1.1:5
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 432
 | #3 complete v2 state transition with STF_OK
@@ -1267,7 +1267,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [192.168.1.1:500] to 13
 |   65 a0 03 f5  04 f4 9a a4  09 4f fa b5  f1 48 e1 23
 |   5a 97 cf 15  2b 00 00 1c  00 00 40 05  e2 07 d0 cb
 |   e3 d1 67 2c  3b c2 f8 74  90 88 b9 c1  61 b8 65 1f
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | recv_pcap_packet2() call 3: exit
 RC=0 #3: "mytunnel":500 IKEv2.0 STATE_PARENT_R1 (received v2I1, sent v2R1); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=0,recv=0; msgid=0; idle; import:respond to stranger
 ./rekeyParentSA deleting connection
