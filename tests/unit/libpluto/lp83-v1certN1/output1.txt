@@ -170,7 +170,7 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
 |   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
@@ -224,7 +224,7 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    transform ID: KEY_IKE
 | emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
 | attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 05
-|   80 02 00 01  80 04 00 05
+|   80 02 00 01  80 04 00 0e
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -252,7 +252,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 192.16
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
 |   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45

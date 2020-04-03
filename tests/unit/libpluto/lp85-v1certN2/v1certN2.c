@@ -3,10 +3,10 @@
 #define NAT_TRAVERSAL
 #define SEAM_CRYPTO
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_gi_3des_md5.c"
 #include "seam_pending.c"
 #include "seam_ikev1.c"
 #include "seam_ikev1_aggr.c"
-#include "seam_gi_sha1.c"
 #include "seam_finish.c"
 #include "nat_traversal.h"
 #include "seam_dpd.c"
@@ -51,8 +51,6 @@ static void init_loaded(void)
 
 
 #define PCAP_INPUT_COUNT 2
-
-#include "seam_gi_sha1.c"
 
 static void update_ngi_tc3(struct pcr_kenonce *kn)
 {
