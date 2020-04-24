@@ -81,8 +81,8 @@ extern bool kernel_alg_esp_info(struct esp_info *ei  /* fill this in, or NULL */
                                       , enum ikev2_trans_type_integ sadb_aalg);
 
 /* indexed by kernel algorithm number */
-extern struct pluto_sadb_alg esp_aalg[];
-extern struct pluto_sadb_alg esp_ealg[];
+extern struct pluto_sadb_alg esp_aalg[]; /* use enum sadb_aalg */
+extern struct pluto_sadb_alg esp_ealg[]; /* use enum sadb_ealg */
 extern int esp_ealg_num;
 extern int esp_aalg_num;
 
