@@ -21,7 +21,7 @@ understanding of what the test hopes to accomplish.
 Each directory compiles a program against libraries and pluto object files,
 producing a executable.  It is often the case that a configuration file must
 be loaded to make this work, and the program _readwriteconf_ is used in the
-mode where it writes the "whack" data to disk for loading my the program.
+mode where it writes the "whack" data to disk for loading by the program.
 This simulates the process of running pluto, then running "whack" or
 "addconn" to load the configuration.
 
@@ -34,7 +34,7 @@ regretfully, use object directories (yet?)
 In order to make the tests repeatable a number of things need to be made
 deterministic.  This unfortunately includes a lot of the crypto!  So a series
 of files are provided called "seam_xxx.c" which are #include by the test
-driver in order to mock or remote major subsystems.
+driver in order to mock or remove major subsystems.
 
 These are a combination of preprocessor and #include seams.
 See: https://www.goodreads.com/book/show/44919.Working_Effectively_with_Legacy_Code
@@ -50,17 +50,24 @@ SEAM #define LIST
 This section begins the documentation of the various #define which the seam
 system uses to enable certain mocks.
 
-NO\_SEAM\_RSASIG - used by seam_rsasig.c to mock: ikev2_calculate_rsa_sha1,
-              ikev2_calculate_psk_auth, ikev2_verify_psk_auth,
-              ikev2_check_key_seam, and ikev2_verify_rsa_sha1
+`NO_SEAM_RSASIG`
 
-              This is used by most libpluto test cases to remove processing
-              and generation of RSA signatures for IKEv1 and IKEv2.
-              The test cases ikev2crypto do not mock these.
+- used by seam_rsasig.c to mock: ikev2_calculate_rsa_sha1,
+  ikev2_calculate_psk_auth, ikev2_verify_psk_auth,
+  ikev2_check_key_seam, and ikev2_verify_rsa_sha1
 
-NAPT_ENABLED  if set 1, then code to perform IPv4 NAPT transition of incoming
-              packets will be done.  This should be enabled on the "public"
-              machine to indicate that the initiator is behind a NAT.
-              (Not related NO_SEAM_NATT though)
+- This is used by most libpluto test cases to remove processing
+  and generation of RSA signatures for IKEv1 and IKEv2.
+  The test cases ikev2crypto do not mock these.
 
-NO\_SEAM\_NATT if set, then do not include seams for nat_traversal.c
+`NAPT_ENABLED`
+
+- if set 1, then code to perform IPv4 NAPT transition of incoming
+  packets will be done.  This should be enabled on the "public"
+  machine to indicate that the initiator is behind a NAT.
+  (Not related NO_SEAM_NATT though)
+
+`NO_SEAM_NATT`
+
+- if set, then do not include seams for nat_traversal.c
+
