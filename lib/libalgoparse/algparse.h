@@ -26,24 +26,25 @@ struct parser_context {
 };
 
 enum parser_state_esp {
-        ST_INI,         /* parse esp= string */
-	ST_INI_AA,      /* parse ah= string */
-	ST_EA,		/* encrypt algo   */
-	ST_EA_END,
-	ST_EK,		/* enc. key length */
-	ST_EK_END,
-	ST_AA,		/* auth algo */
-	ST_AA_END,
-	ST_AK,		/* auth. key length */
-	ST_AK_END,
-        ST_PRF,
-        ST_PRF_END,
-	ST_MODP,	/* modp spec */
-	ST_FLAG_STRICT,
-	ST_END,
-	ST_EOF,
-	ST_ERR
+  ST_INI,         /* parse esp= string */
+  ST_INI_AA,      /* parse ah= string */
+  ST_EA,          /* encrypt algo   */
+  ST_EA_END,
+  ST_EK,          /* enc. key length */
+  ST_EK_END,
+  ST_AA,          /* auth algo */
+  ST_AA_END,
+  ST_AK,          /* auth. key length */
+  ST_AK_END,
+  ST_PRF,
+  ST_PRF_END,
+  ST_MODP,        /* modp spec */
+  ST_FLAG_STRICT,
+  ST_END,
+  ST_EOF,
+  ST_ERR
 };
+#define PARSER_STATE_ESP_MAX (ST_ERR+1)
 
 /* exported for unit tests only */
 extern enum ikev2_trans_type_encr  ealg_getbyname(const char *const str, int len, unsigned int *auxp);
