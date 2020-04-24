@@ -89,37 +89,33 @@ db2_prop_init(struct db2_context *ctx
               , int max_trans
               , int max_attrs)
 {
-  int ret=-1;
+  if (ctx == NULL)
+    goto err_input;
 
   db2_destroy(ctx);  /* free up any conj0/trans0/attrs0 from before */
-  ctx->conj0  = NULL;
-  ctx->trans0 = NULL;
-  ctx->attrs0 = NULL;
 
-  if (max_conj > 0) { /* quite silly if not */
-    ctx->conj0 = ALLOC_BYTES_ST (sizeof(struct db_v2_prop_conj)*max_conj,
-                                  "db_context->conj", db_conj_st);
-    if (!ctx->conj0) goto out;
-  }
+  if (max_conj <= 0)
+    goto err_input;
+  if (max_trans <= 0)
+    goto err_input;
+  if (max_attrs <= 0)
+    goto err_input;
 
-  if (max_trans > 0) { /* quite silly if not */
-    ctx->trans0 = ALLOC_BYTES_ST (sizeof(struct db_v2_trans)*max_trans,
-                                  "db_context->trans", db_trans_st);
-    if (!ctx->trans0) goto out;
-  }
+  ctx->conj0 = ALLOC_BYTES_ST (sizeof(struct db_v2_prop_conj)*max_conj,
+			       "db_context->conj", db_conj_st);
+  if (!ctx->conj0)
+    goto err_alloc;
 
-  if (max_attrs > 0) { /* quite silly if not */
-    ctx->attrs0 = ALLOC_BYTES_ST (sizeof (struct db_v2_attr) * max_attrs,
-                                  "db_context->attrs", db_attrs_st);
-    if (!ctx->attrs0) goto out;
-  }
-  ret = 0;
+  ctx->trans0 = ALLOC_BYTES_ST (sizeof(struct db_v2_trans)*max_trans,
+				"db_context->trans", db_trans_st);
+  if (!ctx->trans0)
+    goto err_alloc;
 
-out:
-  if(ret <0) {
-    db2_destroy(ctx);
-    return ret;
-  }
+  ctx->attrs0 = ALLOC_BYTES_ST (sizeof (struct db_v2_attr) * max_attrs,
+				"db_context->attrs", db_attrs_st);
+  if (!ctx->attrs0)
+    goto err_alloc;
+
   ctx->max_trans = max_trans;
   ctx->max_attrs = max_attrs;
   ctx->max_conj  = max_conj;
@@ -129,7 +125,12 @@ out:
   ctx->prop.props = ctx->conj0;
   ctx->prop.prop_cnt = 0;
   ctx->prop.conjnum   = 1;
-  return ret;
+  return 0;
+
+err_alloc:
+  db2_destroy(ctx);
+err_input:
+  return -1;
 }
 
 struct db2_context *db2_prop_new(int max_conj
