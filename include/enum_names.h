@@ -1,3 +1,8 @@
+#ifndef _ENUM_NAMES_H_
+#define _ENUM_NAMES_H_
+
+#include "constants.h" // for struct keyword_enum_values
+
 /* structure for use by constant->name array. This is private to constants.c and friends. */
 struct enum_names {
     unsigned long en_first;  /* first value in range */
@@ -7,6 +12,8 @@ struct enum_names {
 };
 
 struct enum_and_keyword_names {
-  enum_names                 *official_names;
+  const struct enum_names     *official_names;
   struct keyword_enum_values  aliases;
 };
+
+#endif /* _ENUM_NAMES_H_ */

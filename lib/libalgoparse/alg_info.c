@@ -268,7 +268,7 @@ alg_info_free(struct alg_info *alg_info) {
 	pfreeany(alg_info);
 }
 
-static const char *parser_state_names[] = {
+static const char *parser_state_names[PARSER_STATE_ESP_MAX] = {
     "ST_INI",            /* start here for IKE and ESP */
     "ST_INI_AA",         /* start here for AH */
     "ST_EA",             /* Encryption Algorithm start */
@@ -289,7 +289,9 @@ static const char *parser_state_names[] = {
 };
 
 static const char *parser_state_name(enum parser_state_esp state) {
-	return parser_state_names[state];
+	if ((unsigned)state < PARSER_STATE_ESP_MAX)
+		return parser_state_names[state];
+	return "ST_???";
 }
 
 static inline void parser_set_state(struct parser_context *p_ctx, enum parser_state_esp state) {
