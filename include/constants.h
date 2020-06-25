@@ -19,7 +19,8 @@
  *
  */
 
-#ifndef _CONSTANTS_H_
+#ifndef _CONSTANTS_H
+#define _CONSTANTS_H
 
 /*
  * This file was split into internal contants (Openswan/pluto related),
@@ -181,7 +182,6 @@ extern void init_constants(void);
 #include "pluto_constants.h"
 #include "names_constant.h"
 
-#define _CONSTANTS_H_
-#endif /* _CONSTANTS_H_ */
+#endif /* _CONSTANTS_H */
 
 

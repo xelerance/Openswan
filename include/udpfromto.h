@@ -19,4 +19,5 @@ int sendfromto(int s, void *buf, size_t len, int flags,
 	       struct sockaddr *from, socklen_t fromlen,
 	       struct sockaddr *to, socklen_t tolen);
 
-#endif
+#endif /* UDPFROMTO_H */
+

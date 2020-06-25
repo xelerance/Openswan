@@ -1,3 +1,6 @@
+#ifndef _MPZFUNCS_H
+#define _MPZFUNCS_H
+
 /* some MP utilities */
 #include <gmp.h>
 
@@ -16,4 +19,6 @@ extern chunk_t mpz_to_n_autosize(const MP_INT *mp);
     (flag) = TRUE; \
     mpz_powm(&(var), &(base), &(exp), (mod)); \
     }
+
+#endif /* _MPZFUNCS_H */
 
