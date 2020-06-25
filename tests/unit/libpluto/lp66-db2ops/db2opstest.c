@@ -21,7 +21,7 @@ void exit_tool(int stat)
 int main(int argc, char *argv[])
 {
     int i;
-    struct db2_context *dc2;
+    struct db_v2_context *dc2;
     struct db_sa *sa1 = NULL;
     struct db_sa *sa2 = NULL;
     struct alg_info *defaults;

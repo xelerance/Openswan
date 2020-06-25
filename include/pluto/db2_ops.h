@@ -52,7 +52,7 @@
 /*
  * 	Main db object, (quite proposal "oriented")
  */
-struct db2_context {
+struct db_v2_context {
   struct db_v2_prop prop;	/* proposal buffer (not pointer) */
   struct db_v2_prop_conj *conj0;
   int                     max_conj;	/* size of conj  list */
@@ -70,50 +70,50 @@ struct db2_context {
 /*
  * 	Allocate a new db object
  */
-struct db2_context * db2_prop_new(int max_conj
+struct db_v2_context * db2_prop_new(int max_conj
                                   , int max_trans
                                   , int max_attrs);
 
 /* (re-)initialize object for proposal building, returns 1 if everything okay
  * not needed if just called db2_prop_new.
  */
-int db2_prop_init(struct db2_context *ctx
+int db2_prop_init(struct db_v2_context *ctx
                   , int max_conj
                   , int max_trans
                   , int max_attrs);
 
 /*	Clear out a db object */
-void db2_destroy(struct db2_context *ctx);
+void db2_destroy(struct db_v2_context *ctx);
 
 
 /*	Free a db object itself, and things contained in it */
-void db2_free(struct db2_context *ctx);
+void db2_free(struct db_v2_context *ctx);
 
 /*      Start with a new proposal */
-int db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize);
+int db2_prop_add(struct db_v2_context *ctx, u_int8_t protoid, u_int8_t spisize);
 
 /*      Then add an alternative to a propsal */
-int db2_prop_alternative(struct db2_context *ctx, u_int8_t protoid);
+int db2_prop_alternative(struct db_v2_context *ctx, u_int8_t protoid);
 
 /*	Start a new transform */
-int db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value);
+int db2_trans_add(struct db_v2_context *ctx, u_int8_t transid, u_int8_t value);
 
 /*	Add a new attribute by value */
-int db2_attr_add(struct db2_context *ctx
+int db2_attr_add(struct db_v2_context *ctx
                  , u_int16_t type
                  , u_int16_t val);
 
 /*	Start a new transform */
-void db2_prop_close(struct db2_context *ctx);
+void db2_prop_close(struct db_v2_context *ctx);
 
 /*	Get proposal from db object */
-static __inline__ struct db_v2_prop *db2_prop_get(struct db2_context *ctx) {
+static __inline__ struct db_v2_prop *db2_prop_get(struct db_v2_context *ctx) {
 	return &ctx->prop;
 }
 /*	Show stats (allocation, etc) */
 int db2_ops_show_status(void);
 
-extern void db2_print(struct db2_context *ctx);
+extern void db2_print(struct db_v2_context *ctx);
 extern void sa_v2_print(struct db_sa *sa);
 
 struct alg_info_ike;  /* forward reference */

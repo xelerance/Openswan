@@ -84,7 +84,7 @@
  *	as a result of "add" operations
  */
 int
-db2_prop_init(struct db2_context *ctx
+db2_prop_init(struct db_v2_context *ctx
               , int max_conj
               , int max_trans
               , int max_attrs)
@@ -133,16 +133,16 @@ err_input:
   return -1;
 }
 
-struct db2_context *db2_prop_new(int max_conj
+struct db_v2_context *db2_prop_new(int max_conj
                                  , int max_trans
                                  , int max_attrs)
 {
-  struct db2_context *new_db2;
-  new_db2 = ALLOC_BYTES_ST(sizeof(struct db2_context),
-                            "db_context->conj", db2_context);
+  struct db_v2_context *new_db2;
+  new_db2 = ALLOC_BYTES_ST(sizeof(struct db_v2_context),
+                            "db_context->conj", db_v2_context);
 
   if(new_db2 && db2_prop_init(new_db2, max_conj, max_trans, max_attrs) < 0) {
-    if(new_db2) PFREE_ST(new_db2, db2_context);
+    if(new_db2) PFREE_ST(new_db2, db_v2_context);
     return NULL;
   }
   return new_db2;
@@ -150,7 +150,7 @@ struct db2_context *db2_prop_new(int max_conj
 
 /*	Clear out a db object */
 void
-db2_destroy(struct db2_context *ctx)
+db2_destroy(struct db_v2_context *ctx)
 {
   if(ctx == NULL) return;
   if (ctx->conj0)  PFREE_ST(ctx->conj0,  db_conj_st);
@@ -163,7 +163,7 @@ db2_destroy(struct db2_context *ctx)
 
 /*	Free a db object itself, and things contained in it */
 void
-db2_free(struct db2_context *ctx)
+db2_free(struct db_v2_context *ctx)
 {
   db2_destroy(ctx);
   PFREE_ST(ctx, db_context_st);
@@ -171,7 +171,7 @@ db2_free(struct db2_context *ctx)
 
 /*	Expand storage for transforms by number delta_trans */
 static int
-db2_prop_expand(struct db2_context *ctx, int delta_conj)
+db2_prop_expand(struct db_v2_context *ctx, int delta_conj)
 {
   /*	Start a new proposal, expand conj0 is needed */
   int ret = -1;
@@ -210,7 +210,7 @@ out:
 
 /*	Find space for a new transform */
 static void
-db2_trans_increment(struct db2_context *ctx)
+db2_trans_increment(struct db_v2_context *ctx)
 {
   /*	skip incrementing current trans pointer the 1st time*/
   if (ctx->trans_cur && ctx->trans_cur->transform_type)
@@ -218,7 +218,7 @@ db2_trans_increment(struct db2_context *ctx)
 }
 
 int
-db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
+db2_prop_add(struct db_v2_context *ctx, u_int8_t protoid, u_int8_t spisize)
 {
   /*	skip incrementing current conj pointer the 1st time*/
   if (ctx->conj_cur && ctx->conj_cur->trans_cnt)
@@ -247,7 +247,7 @@ db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
 
 /*	Expand storage for transforms by number delta_trans */
 static int
-db2_trans_expand(struct db2_context *ctx, int delta_trans)
+db2_trans_expand(struct db_v2_context *ctx, int delta_trans)
 {
   int ret = -1;
   struct db_v2_trans *new_trans, *old_trans;
@@ -295,7 +295,7 @@ db2_trans_expand(struct db2_context *ctx, int delta_trans)
 
 /*	Start a new transform, expand trans0 is needed */
 int
-db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
+db2_trans_add(struct db_v2_context *ctx, u_int8_t transid, u_int8_t value)
 {
   db2_trans_increment(ctx);
 
@@ -326,7 +326,7 @@ db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
  *	rewrite trans->attr pointers
  */
 static int
-db2_attrs_expand(struct db2_context *ctx, int delta_attrs)
+db2_attrs_expand(struct db_v2_context *ctx, int delta_attrs)
 {
   int ret = -1;
   struct db_v2_attr *new_attrs, *old_attrs;
@@ -376,7 +376,7 @@ db2_attrs_expand(struct db2_context *ctx, int delta_attrs)
 
 /*	Add attr copy to current transform, expanding attrs0 if needed */
 int
-db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val)
+db2_attr_add(struct db_v2_context *ctx, u_int16_t type, u_int16_t val)
 {
   /*
    *	Strategy: if more space is needed, expand by
@@ -394,7 +394,7 @@ db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val)
 }
 
 /*	Start a new proposal, an alternative to current one */
-void db2_prop_close(struct db2_context *ctx)
+void db2_prop_close(struct db_v2_context *ctx)
 {
   ctx->prop.conjnum++;
 }
@@ -432,7 +432,7 @@ static void db2_prop_print(struct db_v2_prop_conj *p)
 
 }
 
-void db2_print(struct db2_context *ctx)
+void db2_print(struct db_v2_context *ctx)
 {
   int i;
   if(ctx == NULL) return;
