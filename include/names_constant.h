@@ -1,3 +1,6 @@
+#ifndef _NAMES_CONSTANTS_H
+#define _NAMES_CONSTANTS_H
+
 extern enum kernel_interface kern_interface;
 extern enum_names kern_interface_names;
 extern enum_names timer_event_names;
@@ -128,4 +131,6 @@ extern enum_names ppk_names;
 
 /* natt traversal types */
 extern const char *const natt_type_bitnames[];
+
+#endif /* _NAMES_CONSTANTS_H */
 

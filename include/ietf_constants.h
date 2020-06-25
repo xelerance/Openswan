@@ -18,7 +18,8 @@
  *
  */
 
-#ifndef _IETF_CONSTANTS
+#ifndef _IETF_CONSTANTS_H
+#define _IETF_CONSTANTS_H 1
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
 
 #define MODP_GENERATOR "2"
@@ -1223,5 +1224,4 @@ enum pubkey_alg
  * AND: enum_names ident_names is in constants.c
  */
 
-#define _IETF_CONSTANTS 1
-#endif /* _IETF_CONSTANTS */
+#endif /* _IETF_CONSTANTS_H */

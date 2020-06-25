@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2004-2008  Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2004-2009  Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
@@ -50,9 +50,10 @@ typedef u_int32_t UINT4;
 #define PROTO_LIST(list) ()
 #endif
 
-#endif
+#endif /* _GLOBAL_H */
 
 #ifndef _MD5_H_
+#define _MD5_H_
 
 /* MD5.H - header file for MD5C.C
  */
@@ -100,5 +101,4 @@ void osMD5Update PROTO_LIST
   ((MD5_CTX *, const unsigned char *, UINT4));
 void osMD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
 
-#define _MD5_H_
 #endif /* _MD5_H_ */

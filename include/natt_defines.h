@@ -13,7 +13,9 @@
  * for more details.
  */
 
-#ifndef NATT_DEFINES_H
+#ifndef _NATT_DEFINES_H
+#define _NATT_DEFINES_H
+
 #ifndef SOL_UDP
 #define SOL_UDP 17
 #endif
@@ -22,5 +24,5 @@
 #define UDP_ESPINUDP    100
 #endif
 
-#define NATT_DEFINES_H
-#endif
+#endif /* _NATT_DEFINES_H */
+
