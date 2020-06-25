@@ -11,6 +11,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  */
+#ifndef _LEX_H
+#define _LEX_H
 
 struct file_lex_position
 {
@@ -38,6 +40,8 @@ extern void lexclose(void);
 
 extern bool shift(void);
 extern bool flushline(const char *m);
+
+#endif /* _LEX_H */
 
 /*
  * Local Variables:

@@ -16,6 +16,9 @@
  *
  */
 
+#ifndef _PEM_H
+#define _PEM_H
+
 #include "certs.h"
 
 extern err_t pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label
@@ -25,3 +28,5 @@ extern err_t pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label
 extern void do_3des_nss(u_int8_t *buf, size_t buf_len, u_int8_t *key
     , size_t key_size, u_int8_t *iv, bool enc);
 #endif
+
+#endif /* _PEM_H */

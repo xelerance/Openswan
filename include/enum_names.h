@@ -1,5 +1,5 @@
-#ifndef _ENUM_NAMES_H_
-#define _ENUM_NAMES_H_
+#ifndef _ENUM_NAMES_H
+#define _ENUM_NAMES_H
 
 #include "constants.h" // for struct keyword_enum_values
 
@@ -16,4 +16,4 @@ struct enum_and_keyword_names {
   struct keyword_enum_values  aliases;
 };
 
-#endif /* _ENUM_NAMES_H_ */
+#endif /* _ENUM_NAMES_H */
