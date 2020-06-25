@@ -37,7 +37,7 @@
 
 struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 {
-    struct db2_context *dc;
+    struct db_v2_context *dc;
     struct db_sa *sadb;
     struct ike_info *ike_info;
     int cnt;
@@ -102,7 +102,7 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 
 struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
 {
-    struct db2_context *dc;
+    struct db_v2_context *dc;
     struct db_sa *sadb;
     struct esp_info *esp_info;
     int cnt;
