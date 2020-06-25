@@ -270,7 +270,7 @@ ike_alg_ikev1_find(enum ikev2_trans_type algo_type
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {
-		if (e->algo_id==algo_id)
+		if (e->ikev1_algo_id==algo_id)
 			break;
 	}
 	return e;
@@ -316,7 +316,7 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 	}
 return_out:
 	if (ret && !quiet) {
-            openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
+            openswan_log("ike_alg_add(): ERROR: algo_type '%d', ikev1_algo_id '%d', %s", a->algo_type, a->ikev1_algo_id, ugh);
         }
 	return ret;
 }
@@ -330,15 +330,15 @@ ike_alg_register_integ(struct ike_integ_desc *hash_desc)
 	const char *alg_name = "<none>";
 	int ret=0;
 
-	if (hash_desc->common.algo_id > IKEv2_AUTH_INVALID) {
+	if (hash_desc->common.ikev1_algo_id > IKEv2_AUTH_INVALID) {
 		plog ("ike_alg_register_hash(): hash alg=%d < max=%d",
-				hash_desc->common.algo_id, OAKLEY_HASH_MAX);
+				hash_desc->common.ikev1_algo_id, OAKLEY_HASH_MAX);
 		return_on(ret,-EINVAL);
 	}
 	if (hash_desc->hash_ctx_size > sizeof (union hash_ctx)) {
 		plog ("ike_alg_register_hash(): hash alg=%d has "
 				"ctx_size=%d > hash_ctx=%d",
-				hash_desc->common.algo_id,
+				hash_desc->common.ikev1_algo_id,
 				(int)hash_desc->hash_ctx_size,
 				(int)sizeof (union hash_ctx));
 		return_on(ret,-EOVERFLOW);
@@ -346,16 +346,16 @@ ike_alg_register_integ(struct ike_integ_desc *hash_desc)
 	if (!(hash_desc->hash_init&&hash_desc->hash_update&&hash_desc->hash_final)) {
 		plog ("ike_alg_register_hash(): hash alg=%d needs  "
 				"hash_init(), hash_update() and hash_final()",
-				hash_desc->common.algo_id);
+				hash_desc->common.ikev1_algo_id);
 		return_on(ret,-EINVAL);
 	}
 
-	alg_name=enum_name(&oakley_hash_names, hash_desc->common.algo_id);
+	alg_name=enum_name(&oakley_hash_names, hash_desc->common.ikev1_algo_id);
 
 	if (!alg_name) {
 		plog ("ike_alg_register_hash(): WARNING: hash alg=%d not found in "
 				"constants.c:oakley_hash_names  ",
-				hash_desc->common.algo_id);
+				hash_desc->common.ikev1_algo_id);
 		alg_name="<NULL>";
 	}
 
@@ -380,15 +380,15 @@ ike_alg_register_prf(struct ike_prf_desc *prf_desc)
 	const char *alg_name = "<none>";
 	int ret=0;
 
-	if (prf_desc->common.algo_id > IKEv2_AUTH_INVALID) {
+	if (prf_desc->common.ikev1_algo_id > IKEv2_AUTH_INVALID) {
 		plog ("ike_alg_register_hash(): hash alg=%d < max=%d",
-				prf_desc->common.algo_id, OAKLEY_HASH_MAX);
+				prf_desc->common.ikev1_algo_id, OAKLEY_HASH_MAX);
 		return_on(ret,-EINVAL);
 	}
 	if (prf_desc->hash_ctx_size > sizeof (union hash_ctx)) {
 		plog ("ike_alg_register_hash(): hash alg=%d has "
 				"ctx_size=%d > hash_ctx=%d",
-				prf_desc->common.algo_id,
+				prf_desc->common.ikev1_algo_id,
 				(int)prf_desc->hash_ctx_size,
 				(int)sizeof (union hash_ctx));
 		return_on(ret,-EOVERFLOW);
@@ -396,7 +396,7 @@ ike_alg_register_prf(struct ike_prf_desc *prf_desc)
 	if (!(prf_desc->hash_init&&prf_desc->hash_update&&prf_desc->hash_final)) {
 		plog ("ike_alg_register_hash(): hash alg=%d needs  "
 				"hash_init(), hash_update() and hash_final()",
-				prf_desc->common.algo_id);
+				prf_desc->common.ikev1_algo_id);
 		return_on(ret,-EINVAL);
 	}
 
@@ -405,7 +405,7 @@ ike_alg_register_prf(struct ike_prf_desc *prf_desc)
 	if (!alg_name) {
 		plog ("ike_alg_register_hash(): WARNING: hash alg=%d not found in "
 				"constants.c:oakley_hash_names  ",
-				prf_desc->common.algo_id);
+				prf_desc->common.ikev1_algo_id);
 		alg_name="<NULL>";
 	}
 
@@ -430,24 +430,24 @@ ike_alg_register_enc(struct ike_encr_desc *enc_desc)
 	const char *alg_name;
 	int ret=0;
 
-	if (enc_desc->common.algo_id > IKEv2_ENCR_INVALID) {
+	if (enc_desc->common.ikev1_algo_id > IKEv2_ENCR_INVALID) {
 		plog ("ike_alg_register_enc(): enc alg=%d < max=%d\n",
-				enc_desc->common.algo_id, IKEv2_ENCR_INVALID);
+				enc_desc->common.ikev1_algo_id, IKEv2_ENCR_INVALID);
 		return_on(ret, -EINVAL);
 	}
 
 	/* XXX struct algo_aes_ccm_8 up to algo_aes_gcm_16, where
-	 * "commin.algo_id" is not defined need this officename fallback.
+	 * "commin.ikev1_algo_id" is not defined need this officename fallback.
 	 * These are defined in kernel_netlink.c and need to move to
 	 * the proper place - even if klips does not support these
 	 */
-	alg_name=enum_name(&oakley_enc_names, enc_desc->common.algo_id);
+	alg_name=enum_name(&oakley_enc_names, enc_desc->common.ikev1_algo_id);
 	if (!alg_name) {
 		alg_name = enc_desc->common.officname;
 		if (!alg_name) {
 			plog ("ike_alg_register_enc(): WARNING: enc alg=%d not found in "
 				"constants.c:oakley_enc_names  ",
-				enc_desc->common.algo_id);
+				enc_desc->common.ikev1_algo_id);
 			alg_name="<NULL>";
 		}
 	}

@@ -58,7 +58,7 @@ ike_alg_show_status(void)
 	struct ike_alg *algo;
 	IKE_EALG_FOR_EACH(algo) {
 		passert(algo != NULL);
-		alg=algo->algo_id;
+		alg=algo->ikev1_algo_id;
 		whack_log(RC_COMMENT, "algorithm IKE encrypt: id=%d, name=%s, blocksize=%d, keydeflen=%d"
 			, alg
 			, enum_name(&oakley_enc_names, alg)
@@ -69,8 +69,8 @@ ike_alg_show_status(void)
 	}
 	IKE_HALG_FOR_EACH(algo) {
 		whack_log(RC_COMMENT, "algorithm IKE hash: id=%d, name=%s, hashsize=%d"
-			, algo->algo_id
-			, enum_name(&oakley_hash_names, algo->algo_id)
+			, algo->ikev1_algo_id
+			, enum_name(&oakley_hash_names, algo->ikev1_algo_id)
 			, (int)((struct ike_integ_desc *)algo)->hash_digest_len
 			);
 	}

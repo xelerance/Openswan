@@ -47,7 +47,7 @@ struct encrypt_desc encrypt_desc_serpent =
 {
 	common:{officname: "serpent",
 		algo_type: 	IKE_ALG_ENCRYPT,
-		algo_id:   	OAKLEY_SERPENT_CBC,
+		ikev1_algo_id:   	OAKLEY_SERPENT_CBC,
 		algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(struct serpent_context),
 	enc_blocksize: 	SERPENT_CBC_BLOCK_SIZE,

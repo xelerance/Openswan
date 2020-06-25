@@ -49,9 +49,9 @@ RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
-./cryptoI2 ike_alg_add(): ERROR: algo_type '1', algo_id '7', Algorithm type already exists
+./cryptoI2 ike_alg_add(): ERROR: algo_type '1', ikev1_algo_id '7', Algorithm type already exists
 ./cryptoI2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: FAILED (ret=-17)
-./cryptoI2 ike_alg_add(): ERROR: algo_type '1', algo_id '5', Algorithm type already exists
+./cryptoI2 ike_alg_add(): ERROR: algo_type '1', ikev1_algo_id '5', Algorithm type already exists
 ./cryptoI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: FAILED (ret=-17)
 ./cryptoI2 ike_alg_register_hash(): Activating OAKLEY_SHA1: FAILED (ret=-17)
 ./cryptoI2 ike_alg_register_prf(): Activating prf-hmac-sha1: FAILED (ret=-17)

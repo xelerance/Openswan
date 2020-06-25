@@ -526,7 +526,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
     DBG(DBG_CRYPT
 	, DBG_log("encrypting %d using %s"
 		  , (unsigned int)enc_len
-                  , enum_show(&oakley_enc_names, st->st_oakley.encrypter->common.algo_id)));
+                  , enum_show(&oakley_enc_names, st->st_oakley.encrypter->common.ikev1_algo_id)));
 
     TCLCALLOUT_crypt("preEncrypt", st, pbs,sizeof(struct isakmp_hdr),enc_len);
 
