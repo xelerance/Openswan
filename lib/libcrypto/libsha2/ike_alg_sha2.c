@@ -65,7 +65,7 @@ static void sha512_hash_final(u_char *hash, sha512_context *ctx)
 struct ike_prf_desc hash_desc_sha2_256 = {
 	common:{officname:  "prfsha256",
 		algo_type: IKEv2_TRANS_TYPE_PRF,
-		algo_id:   OAKLEY_SHA2_256,
+		ikev1_algo_id:   OAKLEY_SHA2_256,
 		algo_v2id: IKEv2_PRF_HMAC_SHA2_256,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha256_context),
@@ -80,7 +80,7 @@ struct ike_prf_desc hash_desc_sha2_256 = {
 struct ike_prf_desc hash_desc_sha2_512 = {
 	common:{officname:  "prfsha512",
 		algo_type: IKEv2_TRANS_TYPE_PRF,
-		algo_id:   OAKLEY_SHA2_512,
+		ikev1_algo_id:   OAKLEY_SHA2_512,
 		algo_v2id: IKEv2_PRF_HMAC_SHA2_512,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha512_context),
@@ -95,7 +95,7 @@ struct ike_prf_desc hash_desc_sha2_512 = {
 struct ike_integ_desc integ_desc_sha2_256 = {
         common:{officname:  "sha256",
 		algo_type: IKEv2_TRANS_TYPE_INTEG,
-                algo_id:   OAKLEY_SHA2_256,
+                ikev1_algo_id:   OAKLEY_SHA2_256,
                 algo_v2id: IKEv2_AUTH_HMAC_SHA2_256_128,
                 algo_next: NULL, },
         hash_ctx_size: sizeof(sha256_context),
@@ -110,7 +110,7 @@ struct ike_integ_desc integ_desc_sha2_256 = {
 struct ike_integ_desc integ_desc_sha2_512 = {
 	common:{officname: "sha512",
 		algo_type: IKEv2_TRANS_TYPE_INTEG,
-		algo_id:   OAKLEY_SHA2_512,
+		ikev1_algo_id:   OAKLEY_SHA2_512,
                 algo_v2id: IKEv2_AUTH_HMAC_SHA2_512_256,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha512_context),

@@ -80,7 +80,7 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism;
 
-    switch(hasher->common.algo_id) {
+    switch(hasher->common.ikev1_algo_id) {
 	case OAKLEY_MD5:   mechanism = CKM_MD5_HMAC; break;
 	case OAKLEY_SHA1:  mechanism = CKM_SHA_1_HMAC; break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256_HMAC; break;
@@ -96,7 +96,7 @@ static CK_MECHANISM_TYPE nss_encryption_mech(const struct ike_encr_desc *encrypt
 {
 CK_MECHANISM_TYPE mechanism=0x80000000;
 
-    switch(encrypter->common.algo_id){
+    switch(encrypter->common.ikev1_algo_id){
     case OAKLEY_3DES_CBC:   mechanism = CKM_DES3_CBC; break;
     case OAKLEY_AES_CBC:  mechanism = CKM_AES_CBC; break;
     default: loglog(RC_LOG_SERIOUS,"NSS: Unsupported encryption mechanism"); break; /*should not reach here*/
