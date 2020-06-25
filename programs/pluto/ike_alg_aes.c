@@ -136,7 +136,7 @@ struct ike_encr_desc algo_aes =
 	  name: "aes",
 	  officname: "aes",
 	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
-	  algo_id:   	OAKLEY_AES_CBC,
+	  ikev1_algo_id:   	OAKLEY_AES_CBC,
 	  algo_v2id:    IKEv2_ENCR_AES_CBC,
 	  algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(aes_context),

@@ -46,7 +46,7 @@ struct encrypt_desc encrypt_desc_twofish =
 {
 	common:{officname:      "twofish",
 		algo_type:      IKE_ALG_ENCRYPT,
-		algo_id:   	OAKLEY_TWOFISH_CBC,
+		ikev1_algo_id:   	OAKLEY_TWOFISH_CBC,
 		algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(twofish_context),
         enc_blocksize: 	TWOFISH_CBC_BLOCK_SIZE,
@@ -59,7 +59,7 @@ struct encrypt_desc encrypt_desc_twofish =
 struct encrypt_desc encrypt_desc_twofish_ssh =
 {
 	common:{algo_type:      IKE_ALG_ENCRYPT,
-		algo_id:   	OAKLEY_TWOFISH_CBC_SSH,
+		ikev1_algo_id:   	OAKLEY_TWOFISH_CBC_SSH,
 		algo_next: 	NULL, },
 	enc_ctxsize: 	sizeof(twofish_context),
         enc_blocksize: 	TWOFISH_CBC_BLOCK_SIZE,

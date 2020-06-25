@@ -10,7 +10,7 @@ struct ike_alg {
     const char *name;
     const char *officname;
     enum ikev2_trans_type algo_type;
-    u_int16_t algo_id;                     /* IKEv1 number */
+    u_int16_t                  ikev1_algo_id;  /* IKEv1 number */
     enum ikev2_trans_type_encr algo_v2id;
     struct ike_alg *algo_next;
 };

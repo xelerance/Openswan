@@ -94,7 +94,7 @@ bool ike_alg_register_group(enum ikev2_trans_type_dh modpid,
   newgroup = alloc_thing(struct ike_dh_desc, "group description");
 
   newgroup->common.algo_type = IKEv2_TRANS_TYPE_DH;
-  newgroup->common.algo_id   = modpid;
+  newgroup->common.ikev1_algo_id   = modpid;
   newgroup->common.algo_v2id = modpid;
   newgroup->common.officname = enum_name(&oakley_group_names,modpid);
 
