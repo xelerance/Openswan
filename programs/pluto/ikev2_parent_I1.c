@@ -181,8 +181,18 @@ ikev2parent_outI1_withstate(struct state *st
 
     if (predecessor == NULL)
         openswan_log("initiating v2 parent SA");
-    else
+    else {
         openswan_log("initiating v2 parent SA to replace #%lu", predecessor->st_serialno);
+
+        /* If no st_remoteaddr/st_remoteport, use info from predecessor */
+        if (ip_address_isany(&st->st_remoteaddr)) {
+            st->st_remoteaddr = predecessor->st_remoteaddr;
+            st->st_remoteport = predecessor->st_remoteport;
+            DBG(DBG_CONTROL,
+                DBG_log("no st_remoteaddr/st_remoteport, using %s:%u from predecessor state",
+                        ip_str(&st->st_remoteaddr), st->st_remoteport));
+        }
+    }
 
     if (predecessor != NULL) {
         /* replace the existing pending SA */

@@ -161,8 +161,18 @@ main_outI1(int whack_sock
 
     if (predecessor == NULL)
 	openswan_log("initiating Main Mode");
-    else
+    else {
 	openswan_log("initiating Main Mode to replace #%lu", predecessor->st_serialno);
+
+	/* If no st_remoteaddr/st_remoteport, use info from predecessor */
+	if (ip_address_isany(&st->st_remoteaddr)) {
+	    st->st_remoteaddr = predecessor->st_remoteaddr;
+	    st->st_remoteport = predecessor->st_remoteport;
+	    DBG(DBG_CONTROL,
+		DBG_log("no st_remoteaddr/st_remoteport, using %s:%u from predecessor state",
+			ip_str(&st->st_remoteaddr), st->st_remoteport));
+	}
+    }
 
     /* set up reply */
     zero(reply_buffer);

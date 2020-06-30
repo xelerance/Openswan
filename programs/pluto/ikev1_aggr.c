@@ -1096,6 +1096,15 @@ aggr_outI1(int whack_sock,
 	openswan_log("initiating Aggressive Mode #%lu to replace #%lu, connection \"%s\""
 		     , st->st_serialno, predecessor->st_serialno
 		     , st->st_connection->name);
+
+	/* If no st_remoteaddr/st_remoteport, use info from predecessor */
+	if (ip_address_isany(&st->st_remoteaddr)) {
+	    st->st_remoteaddr = predecessor->st_remoteaddr;
+	    st->st_remoteport = predecessor->st_remoteport;
+	    DBG(DBG_CONTROL,
+		DBG_log("no st_remoteaddr/st_remoteport, using %s:%u from predecessor state",
+			ip_str(&st->st_remoteaddr), st->st_remoteport));
+	}
     }
 
     {
