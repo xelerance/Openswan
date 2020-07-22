@@ -5,6 +5,13 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 
+v2.6.52.2dev1 (July 22, 2020)
+
+Fixing "road warrior" bug related to SA replacement.
+
+* wo#10083 - Fix gateway rekey with roadwarrior peer [Martin Hicks]
+* Move source package lintian overrides to debian/source. [Samuel Thibault]
+
 v2.6.52.1 (March 17, 2020)
 
 Fixing compiler warning and working with musl.
