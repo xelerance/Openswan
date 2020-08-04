@@ -244,10 +244,6 @@ kernel_alg_esp_enc_ok(int alg_id, unsigned int key_len,
     struct pluto_sadb_alg *alg_p=NULL;
     err_t ugh = NULL;
 
-    if(alg_info == NULL) {
-        alg_info=alg_info_esp_defaults();
-    }
-
     /*
      * test #1: encrypt algo must be present
      */
