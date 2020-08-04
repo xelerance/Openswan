@@ -30,7 +30,6 @@ adding connection: "net-net-works"
   loading certificate from missingCert.pem 
   could not open host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/missingCert.pem'
 adding connection: "net-net-fails"
-Makefile:41: recipe for target 'step2b' failed
 000 using kernel interface: noklips
 000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
