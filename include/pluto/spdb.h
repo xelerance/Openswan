@@ -27,7 +27,6 @@ struct db_attr {
 	enum ikev1_oakley_attr oakley;	/* ISAKMP_ATTR_AF_TV is implied;
 					   0 for end */
 	enum ikev1_ipsec_attr  ipsec;
-	unsigned int ikev2;          /* one of: ikev2_trans_type_{prf,encr,dh,esn,integ} */
     } type;
     u_int16_t val;
 };
