@@ -95,9 +95,9 @@ static struct ike_integ_desc crypto_hasher_md5 =
     hash_key_size:   MD5_DIGEST_SIZE,
     hash_digest_len: MD5_DIGEST_SIZE,
     hash_integ_len: 0,				/*Not applicable*/
-    hash_init: (void (*)(void *)) osMD5Init,
-    hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
-    hash_final: (void (*)(u_char *, void *)) osMD5Final,
+    hash_init:   osMD5Init,
+    hash_update: osMD5Update,
+    hash_final:  osMD5Final,
 };
 
 static struct ike_integ_desc crypto_integ_md5 =
@@ -112,9 +112,9 @@ static struct ike_integ_desc crypto_integ_md5 =
     hash_key_size:   MD5_DIGEST_SIZE,
     hash_digest_len: MD5_DIGEST_SIZE,
     hash_integ_len: MD5_DIGEST_SIZE_96,
-    hash_init: (void (*)(void *)) osMD5Init,
-    hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
-    hash_final: (void (*)(u_char *, void *)) osMD5Final,
+    hash_init:   osMD5Init,
+    hash_update: osMD5Update,
+    hash_final:  osMD5Final,
 };
 
 static struct ike_integ_desc crypto_hasher_sha1 =

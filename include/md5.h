@@ -96,9 +96,9 @@ typedef struct {
 #endif
 } MD5_CTX;
 
-void osMD5Init PROTO_LIST ((MD5_CTX *));
+void osMD5Init PROTO_LIST ((void *));
 void osMD5Update PROTO_LIST
-  ((MD5_CTX *, const unsigned char *, UINT4));
-void osMD5Final PROTO_LIST ((unsigned char [16], MD5_CTX *));
+  ((void *, const unsigned char *, long unsigned int));
+void osMD5Final PROTO_LIST ((unsigned char [16], void *));
 
 #endif /* _MD5_H_ */

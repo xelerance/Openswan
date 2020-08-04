@@ -147,9 +147,9 @@ Rotation is separate from addition to prevent recomputation.
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-void osMD5Init (context)
-MD5_CTX *context;                                        /* context */
+void osMD5Init (void *vcontext)
 {
+  MD5_CTX *context = vcontext;
 #ifdef HAVE_LIBNSS
   SECStatus status;
   context->ctx_nss=NULL;
@@ -172,11 +172,12 @@ MD5_CTX *context;                                        /* context */
   operation, processing another message block, and updating the
   context.
  */
-void osMD5Update (context, input, inputLen)
-MD5_CTX *context;                                        /* context */
+void osMD5Update (vcontext, input, inputLen)
+     void *vcontext;
 const unsigned char *input;                          /* input block */
-UINT4 inputLen;                            /* length of input block */
+long unsigned int inputLen;                          /* length of input block */
 {
+  MD5_CTX *context = vcontext;
 #ifdef HAVE_LIBNSS
   SECStatus status=PK11_DigestOp(context->ctx_nss, input, inputLen);
   PR_ASSERT(status==SECSuccess);
@@ -215,10 +216,11 @@ UINT4 inputLen;                            /* length of input block */
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
   the message digest and zeroizing the context.
  */
-void osMD5Final (digest, context)
+void osMD5Final (digest, vcontext)
+     void *vcontext;
 unsigned char digest[16];                         /* message digest */
-MD5_CTX *context;                                       /* context */
 {
+  MD5_CTX *context = vcontext;                                       /* context */
 #ifdef HAVE_LIBNSS
   unsigned int length;
   SECStatus status;
