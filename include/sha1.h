@@ -30,8 +30,8 @@ typedef struct {
 } SHA1_CTX;
 
 void SHA1Transform(u_int32_t state[5], const unsigned char buffer[64]);
-void SHA1Init(SHA1_CTX* context);
-void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len);
-void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], SHA1_CTX* context);
+void SHA1Init(void * context);
+void SHA1Update(void* context, const unsigned char* data, long unsigned len);
+void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], void* context);
 
 #endif /* _SHA1_H_ */

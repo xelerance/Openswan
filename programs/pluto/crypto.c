@@ -129,9 +129,9 @@ static struct ike_integ_desc crypto_hasher_sha1 =
     hash_key_size:   SHA1_DIGEST_SIZE,
     hash_digest_len: SHA1_DIGEST_SIZE,
     hash_integ_len: 0,                          /*Not applicable*/
-    hash_init: (void (*)(void *)) SHA1Init,
-    hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
-    hash_final: (void (*)(u_char *, void *)) SHA1Final,
+    hash_init:   SHA1Init,
+    hash_update: SHA1Update,
+    hash_final:  SHA1Final,
 };
 
 static struct ike_integ_desc crypto_integ_sha1 =
@@ -146,9 +146,9 @@ static struct ike_integ_desc crypto_integ_sha1 =
     hash_key_size:   SHA1_DIGEST_SIZE,
     hash_digest_len: SHA1_DIGEST_SIZE,
     hash_integ_len: SHA1_DIGEST_SIZE_96,
-    hash_init: (void (*)(void *)) SHA1Init,
-    hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
-    hash_final: (void (*)(u_char *, void *)) SHA1Final,
+    hash_init:   SHA1Init,
+    hash_update: SHA1Update,
+    hash_final:  SHA1Final,
 };
 
 void
