@@ -741,6 +741,7 @@ add_x509_altnames_to_list(struct pubkey_list **pl
     gntoid(&id, gn);
     if (id.kind != ID_NONE)  {
         pk = allocate_RSA_public_key(c);
+        passert(pk != NULL);
         pk->id = id;
         pk->dns_auth_level = dns_auth_level;
         pk->until_time = until;
