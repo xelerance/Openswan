@@ -104,9 +104,9 @@ enum ikev2_trans_type_integ kernelalg2ikev2(enum ipsec_authentication_algo kerne
 
 static struct pluto_sadb_alg *
 sadb_alg_ptr (int satype UNUSED, int exttype, int alg_id, int rw
-              ,const char **extname   /* if NON-NULL, return name of extype */
+              ,char ** const extname                /* if NON-NULL, return name of extype */
               ,const struct enum_names **alg_names /* if NON-NULL, return enum_names */
-              ,unsigned int *p_ikev2_id       /* if NON-NULL, pass back IKEv2 value */
+              ,unsigned int *p_ikev2_id            /* if NON-NULL, pass back IKEv2 value */
               )
 {
     struct pluto_sadb_alg *wanted_structure = NULL;
