@@ -1172,6 +1172,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
                       , oakley_sa, st
                       , /* oakley mode */TRUE, INITIATOR, /*aggr */TRUE, ISAKMP_NEXT_KE)) {
             reset_cur_state();
+            if(oakley_sa) free_sa(oakley_sa);
 	    return STF_INTERNAL_ERROR;
 	}
 
