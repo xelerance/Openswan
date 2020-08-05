@@ -89,7 +89,7 @@ ikev2_verify_rsa_sha1(struct state *st
 
   pp = &pluto_pubkeys;
 
-  snprintf(st->st_their_keyid, sizeof(st->st_their_keyid), "fakecheck%u", fakecheck++);
+  snprintf(st->st_their_keyid, sizeof(st->st_their_keyid), "fc%u", fakecheck++);
 
   {
 
