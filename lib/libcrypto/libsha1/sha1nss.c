@@ -113,8 +113,9 @@ CHAR64LONG16* block = (const CHAR64LONG16*)buffer;
 
 /* SHA1Init - Initialize new context */
 
-void SHA1Init(SHA1_CTX* context)
+void SHA1Init(void *vcontext)
 {
+    SHA1_CTX* context = vcontext;
     SECStatus status;
     context->ctx_nss=NULL;
     context->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA1);
@@ -126,8 +127,9 @@ void SHA1Init(SHA1_CTX* context)
 
 /* Run your data through this. */
 
-void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
+void SHA1Update(void * vcontext, const unsigned char* data, long unsigned len)
 {
+    SHA1_CTX* context = vcontext;
 	SECStatus status=PK11_DigestOp(context->ctx_nss, data, len);
 	PR_ASSERT(status==SECSuccess);
         /*loglog(RC_LOG_SERIOUS, "enter sha1 ctx update end");*/
@@ -136,8 +138,9 @@ void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
 
 /* Add padding and return the message digest. */
 
-void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], SHA1_CTX* context)
+void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], void * vcontext)
 {
+    SHA1_CTX* context = vcontext;
 	unsigned int length;
 	SECStatus status;
 	status=PK11_DigestFinal(context->ctx_nss, digest, &length, SHA1_DIGEST_SIZE);
