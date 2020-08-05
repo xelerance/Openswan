@@ -101,17 +101,13 @@ int
 modp_getbyname_ike(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
-	if (!str||!*str)
-		goto out;
+	if (!str||!*str) return ret;
 	ret=alg_enum_search_prefix(ikev2_group_names.official_names,
                                    "OAKLEY_GROUP_",str,len);
-	if (ret>=0) goto out;
+	if (ret>=0) return ret;
 
         /* finally, look for aliases. */
         ret = keyword_search(&ikev2_group_names.aliases, str);
-	if (ret>=0) goto out;
-
-out:
 	return ret;
 }
 
