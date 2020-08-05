@@ -44,6 +44,7 @@
 #include "pluto/kernel.h"
 #include "pluto/plutoalg.h"
 
+/* XXX many do not like this macro */
 #define return_on(var, val) { (var) = (val); goto return_out; }
 
 /*==========================================================
@@ -300,7 +301,7 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 {
 	int ret=0;
 	const char *ugh="No error";
-	if (a->algo_type > IKEv2_TRANS_TYPE_COUNT)
+	if (a->algo_type > IKEv2_TRANS_TYPE_COUNT && a->algo_type < 0)
 	{
 		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_COUNT";
 		return_on(ret,-EINVAL);
