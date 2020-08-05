@@ -115,8 +115,9 @@ CHAR64LONG16* block = (const CHAR64LONG16*)buffer;
 
 /* SHA1Init - Initialize new context */
 
-void SHA1Init(SHA1_CTX* context)
+void SHA1Init(void* vcontext)
 {
+  SHA1_CTX* context = vcontext;
     /* SHA1 initialization constants */
     context->state[0] = 0x67452301;
     context->state[1] = 0xEFCDAB89;
@@ -129,8 +130,9 @@ void SHA1Init(SHA1_CTX* context)
 
 /* Run your data through this. */
 
-void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
+void SHA1Update(void * vcontext, const unsigned char* data, long unsigned len)
 {
+  SHA1_CTX* context = vcontext;
 u_int32_t i;
 u_int32_t j;
 #if 0
@@ -158,8 +160,9 @@ u_int32_t j;
 
 /* Add padding and return the message digest. */
 
-void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], SHA1_CTX* context)
+void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], void* vcontext)
 {
+  SHA1_CTX* context = vcontext;
 unsigned i;
 unsigned char finalcount[8];
 unsigned char c;
