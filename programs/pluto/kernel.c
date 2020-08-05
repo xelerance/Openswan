@@ -145,11 +145,14 @@ record_and_initiate_opportunistic(const ip_subnet *ours
                                   , struct xfrm_user_sec_ctx_ike *uctx
                                   , const char *why)
 {
+    const ip_address *paf_any;
     ip_address af_any;
     struct bare_shunt *bs;
 
     passert(samesubnettype(ours, his));
-    af_any = *aftoinfo(subnettypeof(ours))->any;
+    paf_any= aftoinfo(subnettypeof(ours))->any;
+    if(paf_any == NULL) return;
+    af_any = *paf_any;
 
     /* check if this shunt already exists */
 
