@@ -46,7 +46,7 @@ struct alg_info_esp;
 extern void kernel_alg_init(void);
 /* ESP interface */
 extern struct pluto_sadb_alg *kernel_alg_esp_sadb_alg(int alg_id);
-extern struct pluto_sadb_alg *kernel_alg_esp_sadb_aalg(int alg_id);
+extern struct pluto_sadb_alg *kernel_alg_esp_auth_byikev2(enum ikev2_trans_type_integ authnum);
 extern int kernel_alg_esp_ivlen(int alg_id);
 /* returns bool success if esp encrypt alg is present  */
 extern err_t kernel_alg_esp_enc_ok(int alg_id, unsigned int key_len, struct alg_info_esp *nfo);

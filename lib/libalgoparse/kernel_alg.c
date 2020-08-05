@@ -355,24 +355,6 @@ kernel_alg_esp_sadb_alg(int alg_id)
 }
 
 struct pluto_sadb_alg *
-kernel_alg_esp_sadb_aalg(int alg_id)
-{
-    struct pluto_sadb_alg *sadb_alg=NULL;
-
-    if(ESP_AALG_VALID(alg_id)) {
-        sadb_alg=&esp_aalg[alg_id];
-    }
-
-#if 0
-    /* disabled because dumps core addresses, very verbose */
-    DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_aalg():"
-                           "alg_id=%d, sadb_alg=%p",
-                           alg_id, sadb_alg));
-#endif
-    return sadb_alg;
-}
-
-struct pluto_sadb_alg *
 kernel_alg_esp_auth_byikev2(enum ikev2_trans_type_integ authnum)
 {
     if(ESP_AALG_VALID(authnum)) {
@@ -428,7 +410,7 @@ bool kernel_alg_esp_info(struct esp_info *ei
               ei->auth    = sadb_aalg;
 
               ei->encr_info = kernel_alg_esp_sadb_alg(sadb_ealg);
-              ei->auth_info = kernel_alg_esp_sadb_aalg(sadb_aalg);
+              ei->auth_info = kernel_alg_esp_auth_byikev2(sadb_aalg);
           }
 
           /* don't return "default" keylen because this value is used from
