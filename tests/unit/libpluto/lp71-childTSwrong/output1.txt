@@ -714,7 +714,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | #1 complete v2 state transition with STF_OK
 ./childTSwrong transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #1; pst is #1; transition_st is #1
-./childTSwrong STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
+./childTSwrong STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fc1 cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
 | sending reply packet to 93.184.216.34:55045 (from port 4500)
 sending 320 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31

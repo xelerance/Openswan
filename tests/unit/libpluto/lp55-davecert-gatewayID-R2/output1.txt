@@ -1393,7 +1393,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | #2 complete v2 state transition with STF_OK
 ./davecertR2-id transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./davecertR2-id STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
+./davecertR2-id STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fc1 cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
 ./davecertR2-id negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.35,93.184.216.35 proto:0 port:0-65535]
 ./davecertR2-id STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc_128-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
 | sending reply packet to 93.184.216.35:500 (from port 500)
