@@ -136,8 +136,12 @@ extern const char *bitnamesofb(const char *const table[]
 #define LOOSE_ENUM_OTHER 255
 #define KEV_LITERAL(X) { #X, X }
 
+/* this is used to make the ipsecconf parser table driven */
+/* the valueaux is used in some places where a particular string implies another
+ *     enum, with a particular key size, such as "AES", implies AES-128.
+ */
 struct keyword_enum_value {
-    const char *name;
+    const char  *name;
     unsigned int value;
     int          valueaux;
 };

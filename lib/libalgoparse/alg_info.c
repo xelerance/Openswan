@@ -170,6 +170,7 @@ alg_enum_search_ppfix (enum_names *ed, const char *prefix
  * @param str String containing ALG name (eg: AES, 3DES)
  * @param len Length of ALG (eg: 256,512)
  * @return int Registered # of ALG if loaded.
+ * @auxp  if non-NULL, return the valueaux, which is the default key size for that algo.
  */
 enum ikev2_trans_type_encr ealg_getbyname(const char *const str, int len, unsigned int *auxp)
 {
