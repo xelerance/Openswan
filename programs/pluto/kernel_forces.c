@@ -113,7 +113,7 @@ void xfrm_kernel_alg_add(struct kernel_alg_info *kai)
         break;
 
     case IKEv2_TRANS_TYPE_INTEG:
-        psa = kernel_alg_esp_sadb_aalg(kai->trans.integ);
+        psa = kernel_alg_esp_auth_byikev2(kai->trans.integ);
         en  = &trans_type_integ_names;
         alg_id = kai->trans.integ;
         break;
