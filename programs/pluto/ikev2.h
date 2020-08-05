@@ -1,4 +1,21 @@
 /*
+ * Copyright (C) 2002  D. Hugh Redelmeier.
+ * Copyright (C) 2020  Michael Richardson <mcr@xelerance.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ */
+#ifndef _IKEV2_H
+#define _IKEv2_H
+
+/*
  * IKEv2 functions: that ikev2_parent.c/ikev2_child.c needs.
  *
  */
@@ -329,4 +346,5 @@ extern void ikev2_calculate_sighash(struct state *st
                                     , unsigned char *idhash
                                     , chunk_t firstpacket
                                     , unsigned char *sig_octets);
-extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);
+
+#endif /* IKEV2H */
