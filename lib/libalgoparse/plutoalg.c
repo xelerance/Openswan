@@ -57,28 +57,26 @@ prfalg_getbyname_ike(const char *const str, const int len, unsigned int *auxp)
     enum ikev2_trans_type_prf ret=IKEv2_PRF_INVALID;
     int algo=0;
     unsigned num;
-    if (!str||!*str)
-        goto out;
+    if (!str||!*str) return ret;
 
     /* look for the name by literal name, upcasing first */
     search_ret = enum_search_nocase(&ikev2_prf_names, str, len);
-    if (search_ret>=0) goto out;
+    if (search_ret>=0) return search_ret;
 
     search_ret = keyword_search(&ikev2_prf_alg_names.aliases, str);
-    if (search_ret>=0) goto out;
+    if (search_ret>=0) return search_ret;
+
     if(strncasecmp(str, "prf", 3)==0) {
         search_ret = keyword_search(&ikev2_prf_alg_names.aliases, str+3);
-        if (search_ret>=0) goto out;
-    }
-
-    /* finally, try the name again with "prf" pre-pended to it */
-    {
+        if (search_ret>=0) return search_ret;
+    } else {
+        /* try the name again with "prf" pre-pended to it */
         char *prfname = alloca(len + 4);
         if(prfname) {
             strcpy(prfname, "prf");
             strncat(prfname, str, len);
             search_ret = enum_search_nocase(&ikev2_prf_names, prfname, strlen(prfname));
-            if (search_ret>=0) goto out;
+            if (search_ret>=0) return search_ret;
         }
     }
 
@@ -89,10 +87,6 @@ prfalg_getbyname_ike(const char *const str, const int len, unsigned int *auxp)
         search_ret = algo;
     }
 
-out:
-    if (search_ret>=0) {
-        ret = search_ret;
-    }
     return ret;
 }
 
