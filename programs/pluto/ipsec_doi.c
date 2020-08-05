@@ -605,6 +605,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     peer.kind = id->isaid_idtype;
 
     if(!extract_peer_id(&peer, id_pbs)) {
+        openswan_log("Failed to decode peer ID from certificate");
 	return FALSE;
     }
 
