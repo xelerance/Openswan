@@ -890,7 +890,6 @@ RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); no
 | recv_pcap_packet2() call 1: start IKE SA replace
 ./rekeyParentSA SA REPLACE: #1 parent=Y orig_init=Y nat_bhnd_{me=Y peer=N} (40000010)
 ./rekeyParentSA replacing stale IPsec PARENT SA
-./rekeyParentSA parent SA, adding connection policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | creating state object #3 at Z
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
