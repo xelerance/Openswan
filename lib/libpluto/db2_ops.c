@@ -522,6 +522,7 @@ free_sa_prop_conj(struct db_prop_conj *pc)
     }
     if(pc->props) {
 	pfree(pc->props);
+        pc->props=NULL;
     }
 }
 
@@ -534,6 +535,7 @@ free_sa_v2_prop_disj(struct db_v2_prop *pc)
     }
     if(pc->props) {
 	pfree(pc->props);
+        pc->props = NULL;
     }
 }
 
