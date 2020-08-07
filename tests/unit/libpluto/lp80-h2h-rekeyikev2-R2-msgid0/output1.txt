@@ -863,6 +863,8 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | recv_pcap_packet2_and_rekey() call 1: #1 st_state=38
 | recv_pcap_packet2_and_rekey() call 1: #2 st_state=40
 | recv_pcap_packet2_and_rekey() call 1: start child rekey
+| find_phase1_state: found SA #1 for conn 'mytunnel' in state STATE_PARENT_R2
+| Using existing parent SA #1 for rekey
 | duplicating state object #1
 | creating state object #3 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
