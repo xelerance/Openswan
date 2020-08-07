@@ -49,23 +49,7 @@
  *
  */
 
-/*
- * 	Main db object, (quite proposal "oriented")
- */
-struct db_v2_context {
-  struct db_v2_prop prop;	/* proposal buffer (not pointer) */
-  struct db_v2_prop_conj *conj0;
-  int                     max_conj;	/* size of conj  list */
-  struct db_v2_prop_conj *conj_cur;
-
-  struct db_v2_trans     *trans0;  /* transf. list, dynamically sized */
-  int                     max_trans;    /* size of trans list */
-  struct db_v2_trans *trans_cur;  /* current transform ptr */
-
-  struct db_v2_attr *attrs0;	  /* attr. list, dynamically sized */
-  struct db_v2_attr *attrs_cur;	  /* current attribute ptr */
-  int max_attrs;	          /* size of attrs list */
-};
+struct db_v2_context; /* moved to spdb.h */
 
 /*
  * 	Allocate a new db object
