@@ -594,6 +594,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 now pretend that the keylife timer is up, and rekey the connection
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
+| find_phase1_state: found SA #1 for conn 'parker1--jj2' in state STATE_PARENT_I3
+| Using existing parent SA #1 for rekey
 | duplicating state object #1
 | creating state object #3 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07

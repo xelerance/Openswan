@@ -463,19 +463,14 @@ ipsecdoi_replace(struct state *st
 		 , lset_t policy_add, lset_t policy_del
 		 , unsigned long try)
 {
-	initiator_function *initiator;
+    initiator_function *initiator;
+    struct connection *c = st->st_connection;
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
     so_serial_t  newstateno;
 
-    struct state *old_parent_state = state_with_serialno(st->st_clonedfrom);
-    if(old_parent_state == NULL) {
-        old_parent_state = st;
-    }
-
     if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state))
     {
-	struct connection *c = st->st_connection;
 	policy = c->policy & ~POLICY_IPSEC_MASK;
 	policy = policy & ~policy_del;
 	policy = policy | policy_add;
@@ -490,10 +485,22 @@ ipsecdoi_replace(struct state *st
     }
     else
     {
+	/* Use the newest Parent SA */
+	struct state *parent = find_phase1_state(c
+				, ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
+
+	if (parent->st_serialno != st->st_clonedfrom) {
+	    DBG(DBG_CONTROL, DBG_log("Switched parent SA from #%lu to #%lu for rekey",
+				     st->st_clonedfrom, parent->st_serialno));
+	} else {
+	    DBG(DBG_CONTROL, DBG_log("Using existing parent SA #%lu for rekey",
+				     parent->st_serialno));
+	}
+
         policy = update_policy_from_state(st, policy);
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock
-                          , old_parent_state
+                          , parent
                           , st
                           , st->st_connection, policy, try
 			  , st->st_serialno, st->st_import
