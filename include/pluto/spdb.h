@@ -69,17 +69,35 @@ struct db_v2_trans {
 /* transforms are OR of each unique prop */
 struct db_v2_prop_conj {
     u_int8_t            propnum;        /* OR with other propnum== */
-	u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
+    u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
     u_int8_t            spisize;        /* for proposal */
     struct db_v2_trans *trans;	     /* array (disjunction-OR when transform_type==) */
-	unsigned int        trans_cnt;	/* number of elements */
+    unsigned int        trans_cnt;	/* number of elements */
 };
 
 /* top-level list of proposals */
 struct db_v2_prop {
-	struct db_v2_prop_conj  *props;	/* array */
+    struct db_v2_prop_conj  *props;	/* array */
     u_int8_t     conjnum;               /* number of next conjunction */
     unsigned int prop_cnt;	        /* number of elements in props*/
+};
+
+/*
+ * 	Main IKEv2 db object, (quite proposal "oriented")
+ */
+struct db_v2_context {
+  struct db_v2_prop prop;	/* proposal buffer (not pointer) */
+  struct db_v2_prop_conj *conj0;
+  int                     max_conj;	/* size of conj  list */
+  struct db_v2_prop_conj *conj_cur;
+
+  struct db_v2_trans     *trans0;  /* transf. list, dynamically sized */
+  int                     max_trans;    /* size of trans list */
+  struct db_v2_trans *trans_cur;  /* current transform ptr */
+
+  struct db_v2_attr *attrs0;	  /* attr. list, dynamically sized */
+  struct db_v2_attr *attrs_cur;	  /* current attribute ptr */
+  int max_attrs;	          /* size of attrs list */
 };
 
 /* security association */
