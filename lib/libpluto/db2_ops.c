@@ -166,7 +166,7 @@ void
 db2_free(struct db_v2_context *ctx)
 {
   db2_destroy(ctx);
-  PFREE_ST(ctx, db_context_st);
+  pfree(ctx);
 }
 
 /*	Expand storage for transforms by number delta_trans */
