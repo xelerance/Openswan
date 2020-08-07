@@ -121,6 +121,40 @@ static __inline__ void * alloc_bytes_st (size_t size, const char *str, struct db
 #define PFREE_ST(p,n)         pfree(p);
 
 #endif /* NO_DB_OPS_STATS */
+
+void free_sa_trans(struct db_trans *tr)
+{
+  /* attributes point into the context, so do not need to be freed on their own */
+  tr->attrs=NULL;
+}
+
+void free_sa_prop(struct db_prop *dp)
+{
+    unsigned int i;
+    for(i=0; i<dp->trans_cnt; i++) {
+	free_sa_trans(&dp->trans[i]);
+    }
+    if(dp->trans) {
+	pfree(dp->trans);
+	dp->trans=NULL;
+    }
+}
+
+void free_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
+{
+    unsigned int i;
+    for(i=0; i<pc->prop_cnt; i++) {
+	free_sa_prop(&pc->props[i]);
+    }
+    /* special case when there there only one props */
+    if(pc->props && pc->props != &f->prop_v1_ctx->prop) {
+	pfree(pc->props);
+        pc->props=NULL;
+    }
+}
+
+extern void db_destroy(struct db_context *ctx);
+
 /*	Initialize db object
  *	max_trans and max_attrs can be 0, will be dynamically expanded
  *	as a result of "add" operations
@@ -272,7 +306,6 @@ db_destroy(struct db_context *ctx)
     if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
     if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
     PFREE_ST(ctx, db_context_st);
-    DBG_log("salad 1: %p", ctx);
 }
 
 /*	Start a new transform, expand trans0 is needed */

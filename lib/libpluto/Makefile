@@ -28,6 +28,7 @@ srcdir?=${OPENSWANSRCDIR}/lib/libpluto/
 LIBRARY=pluto
 LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
+CFLAGS+=-DLEAK_DETECTIVE
 
 ONEFILE=pluto_constants.c
 SRCS=defs.c db_ops.c db2_ops.c ai2db.c spdb_print.c

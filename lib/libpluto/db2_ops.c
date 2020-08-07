@@ -72,12 +72,10 @@
 #include "pluto/defs.h"
 #include "packet.h"
 #include "pluto/db2_ops.h"
+#include "pluto/db_ops.h"
 #include "oswlog.h"
 
 #include <assert.h>
-
-#define ALLOC_BYTES_ST(z,s,n) alloc_bytes(z, s);
-#define PFREE_ST(p,n)         pfree(p);
 
 /*	Initialize db object
  *	max_trans and max_attrs can be 0, will be dynamically expanded
@@ -101,18 +99,18 @@ db2_prop_init(struct db_v2_context *ctx
   if (max_attrs <= 0)
     goto err_input;
 
-  ctx->conj0 = ALLOC_BYTES_ST (sizeof(struct db_v2_prop_conj)*max_conj,
-			       "db_context->conj", db_conj_st);
+  ctx->conj0 = alloc_bytes(sizeof(struct db_v2_prop_conj)*max_conj,
+                           "db_context->conj");
   if (!ctx->conj0)
     goto err_alloc;
 
-  ctx->trans0 = ALLOC_BYTES_ST (sizeof(struct db_v2_trans)*max_trans,
-				"db_context->trans", db_trans_st);
+  ctx->trans0 = alloc_bytes(sizeof(struct db_v2_trans)*max_trans,
+                            "db_context->trans");
   if (!ctx->trans0)
     goto err_alloc;
 
-  ctx->attrs0 = ALLOC_BYTES_ST (sizeof (struct db_v2_attr) * max_attrs,
-				"db_context->attrs", db_attrs_st);
+  ctx->attrs0 = alloc_bytes(sizeof (struct db_v2_attr) * max_attrs,
+                            "db_context->attrs");
   if (!ctx->attrs0)
     goto err_alloc;
 
@@ -138,11 +136,11 @@ struct db_v2_context *db2_prop_new(int max_conj
                                  , int max_attrs)
 {
   struct db_v2_context *new_db2;
-  new_db2 = ALLOC_BYTES_ST(sizeof(struct db_v2_context),
-                            "db_context->conj", db_v2_context);
+  new_db2 = alloc_bytes(sizeof(struct db_v2_context),
+                        "db_context");
 
   if(new_db2 && db2_prop_init(new_db2, max_conj, max_trans, max_attrs) < 0) {
-    if(new_db2) PFREE_ST(new_db2, db_v2_context);
+    if(new_db2) pfree(new_db2);
     return NULL;
   }
   return new_db2;
@@ -153,9 +151,9 @@ void
 db2_destroy(struct db_v2_context *ctx)
 {
   if(ctx == NULL) return;
-  if (ctx->conj0)  PFREE_ST(ctx->conj0,  db_conj_st);
-  if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
-  if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
+  if (ctx->conj0)  pfree(ctx->conj0);
+  if (ctx->trans0) pfree(ctx->trans0);
+  if (ctx->attrs0) pfree(ctx->attrs0);
   ctx->conj0  = NULL;
   ctx->trans0 = NULL;
   ctx->attrs0 = NULL;
@@ -180,8 +178,9 @@ db2_prop_expand(struct db_v2_context *ctx, int delta_conj)
   ptrdiff_t offset;
 
   old_conj = ctx->conj0;
-  new_conj = ALLOC_BYTES_ST ( sizeof (struct db_v2_prop_conj) * max_conj,
-                              "db_context->conj (expand)", db_conj_st);
+  new_conj = alloc_bytes( sizeof (struct db_v2_prop_conj) * max_conj,
+                          "db2_expand->conj");
+  //DBG_log("expanding[%u] conj0 %p -> %p [%u]", delta_conj, old_conj, new_conj, max_conj);
   if (!new_conj)
     goto out;
   memcpy(new_conj, old_conj, ctx->max_conj * sizeof(struct db_v2_prop_conj));
@@ -201,7 +200,7 @@ db2_prop_expand(struct db_v2_context *ctx, int delta_conj)
   /* update elem count */
   ctx->max_conj = max_conj;
   if(old_conj) {
-    PFREE_ST(old_conj, db_conj_st);
+    pfree(old_conj);
   }
   ret = 0;
 out:
@@ -257,8 +256,8 @@ db2_trans_expand(struct db_v2_context *ctx, int delta_trans)
   int                     pi;
 
   old_trans = ctx->trans0;
-  new_trans = ALLOC_BYTES_ST ( sizeof (struct db_v2_trans) * max_trans,
-                               "db_context->trans (expand)", db_trans_st);
+  new_trans = alloc_bytes( sizeof (struct db_v2_trans) * max_trans,
+                           "db2_expand->trans");
   if (!new_trans)
     goto out;
   memcpy(new_trans, old_trans, ctx->max_trans * sizeof(struct db_v2_trans));
@@ -286,7 +285,7 @@ db2_trans_expand(struct db_v2_context *ctx, int delta_trans)
   /* update elem count */
   ctx->max_trans = max_trans;
   if(old_trans) {
-    PFREE_ST(old_trans, db_trans_st);
+    pfree(old_trans);
   }
   ret = 0;
  out:
@@ -335,8 +334,8 @@ db2_attrs_expand(struct db_v2_context *ctx, int delta_attrs)
   ptrdiff_t offset;
 
   old_attrs = ctx->attrs0;
-  new_attrs = ALLOC_BYTES_ST ( sizeof (struct db_v2_attr) * max_attrs,
-                               "db_context->attrs (expand)", db_attrs_st);
+  new_attrs = alloc_bytes( sizeof (struct db_v2_attr) * max_attrs,
+                           "db2_expand->attrs");
   if (!new_attrs)
     goto out;
 
@@ -368,7 +367,7 @@ db2_attrs_expand(struct db_v2_context *ctx, int delta_attrs)
 
   /* update elem count */
   ctx->max_attrs = max_attrs;
-  if(old_attrs) PFREE_ST(old_attrs, db_attrs_st);
+  if(old_attrs) pfree(old_attrs);
   ret = 0;
  out:
   return ret;
@@ -469,35 +468,13 @@ void sa_v2_print(struct db_sa *sa)
   }
 }
 
-void
-free_sa_trans(struct db_trans *tr)
-{
-    if(tr->attrs) {
-	pfree(tr->attrs);
-	tr->attrs=NULL;
-    }
-}
-
 static void
 free_sa_v2_trans(struct db_v2_trans *tr)
 {
-    if(tr->attrs) {
-	pfree(tr->attrs);
-	tr->attrs=NULL;
-    }
-}
-
-void
-free_sa_prop(struct db_prop *dp)
-{
-    unsigned int i;
-    for(i=0; i<dp->trans_cnt; i++) {
-	free_sa_trans(&dp->trans[i]);
-    }
-    if(dp->trans) {
-	pfree(dp->trans);
-	dp->trans=NULL;
-    }
+  if(tr->attrs) {
+    pfree(tr->attrs);
+    tr->attrs=NULL;
+  }
 }
 
 static void
@@ -510,19 +487,6 @@ free_sa_v2_prop(struct db_v2_prop_conj *dp)
     if(dp->trans) {
 	pfree(dp->trans);
 	dp->trans=NULL;
-    }
-}
-
-void
-free_sa_prop_conj(struct db_prop_conj *pc)
-{
-    unsigned int i;
-    for(i=0; i<pc->prop_cnt; i++) {
-	free_sa_prop(&pc->props[i]);
-    }
-    if(pc->props) {
-	pfree(pc->props);
-        pc->props=NULL;
     }
 }
 
@@ -539,9 +503,7 @@ free_sa_v2_prop_disj(struct db_v2_prop *pc)
     }
 }
 
-extern void db_destroy(struct db_context *ctx);
-void
-free_sa(struct db_sa *f)
+void free_sa(struct db_sa *f)
 {
     unsigned int i;
     if(f == NULL) return;
@@ -549,34 +511,36 @@ free_sa(struct db_sa *f)
     if(f->prop_v1_ctx) {
         db_destroy(f->prop_v1_ctx);
         f->prop_v1_ctx = NULL;
-    } else {
-        for(i=0; i<f->prop_conj_cnt; i++) {
-            free_sa_prop_conj(&f->prop_conjs[i]);
-        }
     }
+
     if(f->prop_conjs) {
 	pfree(f->prop_conjs);
 	f->prop_conjs=NULL;
 	f->prop_conj_cnt=0;
     }
 
+    /*
+     * if prop_ctx is non-null, then all the prop/prop_conj/attrs
+     * were allocated within it, and we can just free block.
+     */
     if(f->prop_ctx) {
         db2_free(f->prop_ctx);
         f->prop_ctx = NULL;
+        f->prop_disj= NULL;
+        f->prop_disj_cnt=0;
     } else {
-        for(i=0; i<f->prop_disj_cnt; i++) {
-            free_sa_v2_prop_disj(&f->prop_disj[i]);
-        }
-        if(f->prop_disj) {
-            pfree(f->prop_disj);
-            f->prop_disj=NULL;
-            f->prop_disj_cnt=0;
-        }
+      /* else, they were allocated individually */
+      for(i=0; i<f->prop_disj_cnt; i++) {
+        free_sa_v2_prop_disj(&f->prop_disj[i]);
+      }
+      if(f->prop_disj) {
+        pfree(f->prop_disj);
+        f->prop_disj=NULL;
+        f->prop_disj_cnt=0;
+      }
     }
 
-    if(f) {
-	pfree(f);
-    }
+    pfree(f);
 }
 
 void clone_trans(struct db_trans *tr)
