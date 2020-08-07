@@ -93,7 +93,8 @@ init_kernel(void)
 	}
 #endif
 	openswan_log("Kernel interface auto-pick");
-	/* FALL THROUGH */
+         /* FALL THROUGH */
+	 __attribute__ ((fallthrough));
 
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
@@ -106,6 +107,7 @@ init_kernel(void)
 	} else
 	    openswan_log("No Kernel XFRM/NETKEY interface detected");
 	/* FALL THROUGH */
+	 __attribute__ ((fallthrough));
 #endif
 
 #if defined(KLIPS)
@@ -119,6 +121,7 @@ init_kernel(void)
 	} else
 	    openswan_log("No Kernel KLIPS interface detected");
 	/* FALL THROUGH */
+	 __attribute__ ((fallthrough));
 #endif
 
 #if defined(KLIPS_MAST)
@@ -132,6 +135,7 @@ init_kernel(void)
 	} else
 	    openswan_log("No Kernel MASTKLIPS interface detected");
 	/* FALL THROUGH */
+	 __attribute__ ((fallthrough));
 #endif
 
 #if defined(BSD_KAME)
