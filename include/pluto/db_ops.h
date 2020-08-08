@@ -5,6 +5,17 @@
 #include "spdb.h"
 
 /*
+ * .-------------------.
+   |    prop.trans     |
+   |                   |
+   |  trans0   -alloc  |
+   |  attrs0   -alloc  |
+   |                   |
+   '-------------------'
+
+*/
+
+/*
  * 	Main db object, (quite proposal "oriented")
  */
 struct db_context {

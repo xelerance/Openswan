@@ -394,10 +394,12 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
         /* Let's hope we have at least one ethernet device */
         strcpy(ifr.ifr_name, "eth0");
         break;
+
     case USE_BSDKAME:
         /* Let's hope we have at least one ethernet device */
         strcpy(ifr.ifr_name, "en0");
         break;
+
     default:
         /* We have nothing , really prob just abort and return -1 */
         strcpy(ifr.ifr_name, "eth0");
