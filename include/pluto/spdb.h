@@ -103,10 +103,13 @@ struct db_v2_context {
 /* security association */
 struct db_sa {
     bool                    parentSA;   /* set if this is a parent/oakley */
+
+    /* IKEv1 policy */
     struct db_context      *prop_v1_ctx;
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
 
+    /* IKEv2 policy */
     struct db_v2_context   *prop_ctx;   /* if non-null, then attr/etc. are from it */
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
@@ -145,7 +148,7 @@ extern struct db_sa ipsec_sadb[1 << 3];
 extern void free_sa_attr(struct db_attr *attr);
 extern void free_sa_trans(struct db_trans *tr);
 extern void free_sa_prop(struct db_prop *dp);
-extern void free_sa_prop_conj(struct db_prop_conj *pc);
+extern void free_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
 extern void free_sa(struct db_sa *f);
 extern void clone_trans(struct db_trans *tr);
 extern void clone_prop(struct db_prop *p, int extra);

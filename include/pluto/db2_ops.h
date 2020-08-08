@@ -5,6 +5,8 @@
 #include "pluto/spdb.h"
 
 /*
+ * ALSO SEE explanation of structure in db2_ops.c.
+ *
  * from RFC7296, section 3.3:
  *
  * SA Payload

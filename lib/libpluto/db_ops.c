@@ -269,9 +269,10 @@ out:
 void
 db_destroy(struct db_context *ctx)
 {
-	if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
-	if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
-	PFREE_ST(ctx, db_context_st);
+    if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
+    if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
+    PFREE_ST(ctx, db_context_st);
+    DBG_log("salad 1: %p", ctx);
 }
 
 /*	Start a new transform, expand trans0 is needed */
@@ -374,3 +375,10 @@ int main(void) {
 	return 0;
 }
 #endif
+
+/*
+ * Local Variables:
+ * c-style: pluto
+ * c-basic-offset: 4
+ * End:
+ */
