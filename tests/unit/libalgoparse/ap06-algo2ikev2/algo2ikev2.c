@@ -56,6 +56,9 @@ int main(int argc, char *argv[])
     DBG_log("IKEv1 outsa is now ");
     sa_print(sadb);
 
+    DBG_log("free now");
+    free_sa(sadb);
+
     report_leaks();
     tool_close_log();
     exit(0);
