@@ -35,6 +35,8 @@ int main(int argc, char *argv[])
     struct db_sa *sadb = NULL;
     char info_buf[1024];
 
+    leak_detective = 1;
+
     tool_init_log();
     init_crypto();
     load_oswcrypto();
