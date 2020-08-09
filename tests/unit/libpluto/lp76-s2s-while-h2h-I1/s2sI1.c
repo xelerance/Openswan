@@ -32,9 +32,10 @@ static void init_fake_secrets(void)
     h2h_insert_states();
 }
 
-static void init_loaded(struct connection *c)
+static struct connection *init_loaded(struct connection *c)
 {
     h2h_conn_0.IPhost_pair = c->IPhost_pair;
+    return c;
 }
 #define INIT_LOADED init_loaded
 
