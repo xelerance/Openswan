@@ -351,7 +351,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./dnscpeI1 leak: db_context->conj (expand), item size: X
 ./dnscpeI1 leak: alg_info_ike, item size: X
 ./dnscpeI1 leak: db_context->attrs, item size: X
-./dnscpeI1 leak: db_context->conj, item size: X
+./dnscpeI1 leak: db_context, item size: X
 ./dnscpeI1 leak: v2 policy database, item size: X
 ./dnscpeI1 leak: struct state in new_state(), item size: X
 ./dnscpeI1 leak: 2 * id list, item size: X

@@ -438,7 +438,8 @@ sending 68 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 leak: reply packet, item size: X
 ./h2hI2 leak: db_context->attrs, item size: X
 ./h2hI2 leak: db_context->trans, item size: X
-./h2hI2 leak: 2 * db_context->conj, item size: X
+./h2hI2 leak: db_context->conj, item size: X
+./h2hI2 leak: db_context, item size: X
 ./h2hI2 leak: v2 policy database, item size: X
 ./h2hI2 leak: saved first received packet, item size: X
 ./h2hI2 leak: st_nr in duplicate_state, item size: X
@@ -473,7 +474,8 @@ sending 68 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 leak: ikev2_outI1 KE, item size: X
 ./h2hI2 leak: db_context->trans (expand), item size: X
 ./h2hI2 leak: db_context->attrs, item size: X
-./h2hI2 leak: 2 * db_context->conj, item size: X
+./h2hI2 leak: db_context->conj, item size: X
+./h2hI2 leak: db_context, item size: X
 ./h2hI2 leak: v2 policy database, item size: X
 ./h2hI2 leak: struct state in new_state(), item size: X
 ./h2hI2 leak: pubkey entry, item size: X

@@ -490,7 +490,8 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI2duplicate leak: alg_info_esp, item size: X
 ./parentI2duplicate leak: db_context->attrs, item size: X
 ./parentI2duplicate leak: db_context->trans, item size: X
-./parentI2duplicate leak: 2 * db_context->conj, item size: X
+./parentI2duplicate leak: db_context->conj, item size: X
+./parentI2duplicate leak: db_context, item size: X
 ./parentI2duplicate leak: v2 policy database, item size: X
 ./parentI2duplicate leak: saved first received packet, item size: X
 ./parentI2duplicate leak: st_nr in duplicate_state, item size: X
@@ -527,7 +528,7 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI2duplicate leak: db_context->conj (expand), item size: X
 ./parentI2duplicate leak: alg_info_ike, item size: X
 ./parentI2duplicate leak: db_context->attrs, item size: X
-./parentI2duplicate leak: db_context->conj, item size: X
+./parentI2duplicate leak: db_context, item size: X
 ./parentI2duplicate leak: v2 policy database, item size: X
 ./parentI2duplicate leak: struct state in new_state(), item size: X
 ./parentI2duplicate leak: keep id name, item size: X

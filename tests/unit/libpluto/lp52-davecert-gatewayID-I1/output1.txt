@@ -349,7 +349,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: db_context->conj (expand), item size: X
 ./davecertI1-id leak: alg_info_ike, item size: X
 ./davecertI1-id leak: db_context->attrs, item size: X
-./davecertI1-id leak: db_context->conj, item size: X
+./davecertI1-id leak: db_context, item size: X
 ./davecertI1-id leak: v2 policy database, item size: X
 ./davecertI1-id leak: struct state in new_state(), item size: X
 ./davecertI1-id leak: rfc3110 format of public key [created], item size: X

@@ -519,7 +519,8 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI2 leak: alg_info_esp, item size: X
 ./nattI2 leak: db_context->attrs, item size: X
 ./nattI2 leak: db_context->trans, item size: X
-./nattI2 leak: 2 * db_context->conj, item size: X
+./nattI2 leak: db_context->conj, item size: X
+./nattI2 leak: db_context, item size: X
 ./nattI2 leak: v2 policy database, item size: X
 ./nattI2 leak: saved first received packet, item size: X
 ./nattI2 leak: st_nr in duplicate_state, item size: X
@@ -556,7 +557,7 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI2 leak: db_context->conj (expand), item size: X
 ./nattI2 leak: alg_info_ike, item size: X
 ./nattI2 leak: db_context->attrs, item size: X
-./nattI2 leak: db_context->conj, item size: X
+./nattI2 leak: db_context, item size: X
 ./nattI2 leak: v2 policy database, item size: X
 ./nattI2 leak: struct state in new_state(), item size: X
 ./nattI2 leak: keep id name, item size: X
