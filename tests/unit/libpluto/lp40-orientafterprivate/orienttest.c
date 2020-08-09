@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 
     argc--;
     argv++;
+    pluto_shared_secrets_file = "/dev/null";
 
     for(i=0; i < argc; i++) {
         conn_name = argv[i];

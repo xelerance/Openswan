@@ -23,7 +23,7 @@ RC=2   IDpair: @jamesjohnson.emmjay.credil.org/@parker01.emmjay.credil.org
 RC=2      parker1--jj2
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
-./orienttest no secrets filename matched "/etc/ipsec.secrets"
+./orienttest loading secrets from "/dev/null"
 RC=2 IP hostpairs:
 RC=2   IPpair: 192.168.1.1:500 - 132.213.238.7:500
 RC=2      parker1--jj2
