@@ -79,9 +79,6 @@ RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
-| IKEv1 outsa starts
-| proposals: cnt=1
-|  disj: cnt=0 [next=1]
 ./v1emptyM1 can not extrapolate IKEv1 policy from empty IKEv2 policy
 ./v1emptyM1 can not derive IKEv1 policy from IKEv2 settings, failed
 ./v1emptyM1 outsa fail
@@ -97,6 +94,13 @@ RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
+./v1emptyM1 leak: db_context->attrs, item size: X
+./v1emptyM1 leak: db_context, item size: X
+./v1emptyM1 leak: db_context->attrs, item size: X
+./v1emptyM1 leak: db_context->trans, item size: X
+./v1emptyM1 leak: db_context->conj, item size: X
+./v1emptyM1 leak: db_context, item size: X
+./v1emptyM1 leak: v2 policy database, item size: X
 ./v1emptyM1 leak: struct state in new_state(), item size: X
 ./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
 ./v1emptyM1 leak: issuer dn, item size: X

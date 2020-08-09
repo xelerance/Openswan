@@ -2051,7 +2051,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: db_context->conj (expand), item size: X
 ./certreplydaveR1 leak: alg_info_ike, item size: X
 ./certreplydaveR1 leak: db_context->attrs, item size: X
-./certreplydaveR1 leak: db_context->conj, item size: X
+./certreplydaveR1 leak: db_context, item size: X
 ./certreplydaveR1 leak: v2 policy database, item size: X
 ./certreplydaveR1 leak: saved first received packet, item size: X
 ./certreplydaveR1 leak: ikev2_inI1outR1 KE, item size: X
@@ -2063,7 +2063,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: alg_info_esp, item size: X
 ./certreplydaveR1 leak: db_context->attrs, item size: X
 ./certreplydaveR1 leak: db_context->trans, item size: X
-./certreplydaveR1 leak: 2 * db_context->conj, item size: X
+./certreplydaveR1 leak: db_context->conj, item size: X
+./certreplydaveR1 leak: db_context, item size: X
 ./certreplydaveR1 leak: v2 policy database, item size: X
 ./certreplydaveR1 leak: st_nr in duplicate_state, item size: X
 ./certreplydaveR1 leak: st_ni in duplicate_state, item size: X

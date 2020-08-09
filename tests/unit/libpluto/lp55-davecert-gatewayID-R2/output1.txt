@@ -1500,7 +1500,8 @@ sending 1472 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./davecertR2-id leak: alg_info_esp, item size: X
 ./davecertR2-id leak: db_context->attrs, item size: X
 ./davecertR2-id leak: db_context->trans, item size: X
-./davecertR2-id leak: 2 * db_context->conj, item size: X
+./davecertR2-id leak: db_context->conj, item size: X
+./davecertR2-id leak: db_context, item size: X
 ./davecertR2-id leak: v2 policy database, item size: X
 ./davecertR2-id leak: st_nr in duplicate_state, item size: X
 ./davecertR2-id leak: st_ni in duplicate_state, item size: X

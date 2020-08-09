@@ -29,5 +29,6 @@
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 ./lp66-db2ops leak: db_context->attrs, item size: 88
 ./lp66-db2ops leak: db_context->trans, item size: 240
-./lp66-db2ops leak: 2 * db_context->conj, item size: 88
-./lp66-db2ops leak detective found 4 leaks, total size 416
+./lp66-db2ops leak: db_context->conj, item size: 240
+./lp66-db2ops leak: db_context, item size: 88
+./lp66-db2ops leak detective found 4 leaks, total size 656

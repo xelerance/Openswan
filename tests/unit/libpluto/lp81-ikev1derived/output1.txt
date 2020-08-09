@@ -102,14 +102,6 @@ RC=0 "t4901-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
-| IKEv1 outsa starts
-| proposals: cnt=1
-|  disj: cnt=1 [next=2]
-| 1:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="3des" [attrs: 0]
-|     trans-type-prf value="prf-hmac-md5" [attrs: 0]
-|     trans-type-integ value="hmac_md5_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | pass: 0 noticed combo 0/0: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
 | pass: 1 noticed combo 0/2: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
 | new combo 0: dh:5 encr:3 integ:1
@@ -227,6 +219,15 @@ RC=105 STATE_MAIN_I1: initiate
 ./ikev1derived leak: 23 * VendorID MD5, item size: X
 ./ikev1derived leak: vid->data, item size: X
 ./ikev1derived leak: sa in main_outI1, item size: X
+./ikev1derived leak: v1 policy proposal conj, item size: X
+./ikev1derived leak: db_context->attrs, item size: X
+./ikev1derived leak: db_context->trans, item size: X
+./ikev1derived leak: db_context, item size: X
+./ikev1derived leak: db_context->trans (expand), item size: X
+./ikev1derived leak: db_context->attrs, item size: X
+./ikev1derived leak: db_context->conj, item size: X
+./ikev1derived leak: db_context, item size: X
+./ikev1derived leak: v2 policy database, item size: X
 ./ikev1derived leak: struct state in new_state(), item size: X
 ./ikev1derived leak: pubkey entry, item size: X
 ./ikev1derived leak: rfc3110 format of public key, item size: X

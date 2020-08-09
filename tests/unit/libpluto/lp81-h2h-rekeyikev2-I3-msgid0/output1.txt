@@ -1483,7 +1483,8 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./rekeyChildSA-msgInI3 leak: alg_info_esp, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->attrs, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->trans, item size: X
-./rekeyChildSA-msgInI3 leak: 2 * db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context, item size: X
 ./rekeyChildSA-msgInI3 leak: v2 policy database, item size: X
 ./rekeyChildSA-msgInI3 leak: calculated skey_prshared secret, item size: X
 ./rekeyChildSA-msgInI3 leak: calculated skey_pishared secret, item size: X
@@ -1516,13 +1517,15 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./rekeyChildSA-msgInI3 leak: alg_info_esp, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->attrs, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->trans, item size: X
-./rekeyChildSA-msgInI3 leak: 2 * db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context, item size: X
 ./rekeyChildSA-msgInI3 leak: v2 policy database, item size: X
 ./rekeyChildSA-msgInI3 leak: reply packet, item size: X
 ./rekeyChildSA-msgInI3 leak: alg_info_esp, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->attrs, item size: X
 ./rekeyChildSA-msgInI3 leak: db_context->trans, item size: X
-./rekeyChildSA-msgInI3 leak: 2 * db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context->conj, item size: X
+./rekeyChildSA-msgInI3 leak: db_context, item size: X
 ./rekeyChildSA-msgInI3 leak: v2 policy database, item size: X
 ./rekeyChildSA-msgInI3 leak: st_nr in duplicate_state, item size: X
 ./rekeyChildSA-msgInI3 leak: st_ni in duplicate_state, item size: X

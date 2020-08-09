@@ -1247,7 +1247,8 @@ should have found a continuation, but none was found
 ./rekeyv2nopfs-R1 leak: alg_info_esp, item size: X
 ./rekeyv2nopfs-R1 leak: db_context->attrs, item size: X
 ./rekeyv2nopfs-R1 leak: db_context->trans, item size: X
-./rekeyv2nopfs-R1 leak: 2 * db_context->conj, item size: X
+./rekeyv2nopfs-R1 leak: db_context->conj, item size: X
+./rekeyv2nopfs-R1 leak: db_context, item size: X
 ./rekeyv2nopfs-R1 leak: v2 policy database, item size: X
 ./rekeyv2nopfs-R1 leak: rnd chunk, item size: X
 ./rekeyv2nopfs-R1 leak: nonce, item size: X
@@ -1268,7 +1269,8 @@ should have found a continuation, but none was found
 ./rekeyv2nopfs-R1 leak: alg_info_esp, item size: X
 ./rekeyv2nopfs-R1 leak: db_context->attrs, item size: X
 ./rekeyv2nopfs-R1 leak: db_context->trans, item size: X
-./rekeyv2nopfs-R1 leak: 2 * db_context->conj, item size: X
+./rekeyv2nopfs-R1 leak: db_context->conj, item size: X
+./rekeyv2nopfs-R1 leak: db_context, item size: X
 ./rekeyv2nopfs-R1 leak: v2 policy database, item size: X
 ./rekeyv2nopfs-R1 leak: st_nr in duplicate_state, item size: X
 ./rekeyv2nopfs-R1 leak: st_ni in duplicate_state, item size: X
