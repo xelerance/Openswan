@@ -853,7 +853,8 @@ sending 400 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 93
 ./respondselfR2 leak: alg_info_esp, item size: X
 ./respondselfR2 leak: db_context->attrs, item size: X
 ./respondselfR2 leak: db_context->trans, item size: X
-./respondselfR2 leak: 2 * db_context->conj, item size: X
+./respondselfR2 leak: db_context->conj, item size: X
+./respondselfR2 leak: db_context, item size: X
 ./respondselfR2 leak: v2 policy database, item size: X
 ./respondselfR2 leak: st_nr in duplicate_state, item size: X
 ./respondselfR2 leak: st_ni in duplicate_state, item size: X

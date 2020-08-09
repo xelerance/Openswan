@@ -356,7 +356,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI1 leak: db_context->conj (expand), item size: X
 ./h2hI1 leak: alg_info_ike, item size: X
 ./h2hI1 leak: db_context->attrs, item size: X
-./h2hI1 leak: db_context->conj, item size: X
+./h2hI1 leak: db_context, item size: X
 ./h2hI1 leak: v2 policy database, item size: X
 ./h2hI1 leak: struct state in new_state(), item size: X
 ./h2hI1 leak: rfc3110 format of public key [created], item size: X

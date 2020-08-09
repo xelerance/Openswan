@@ -101,39 +101,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
-| IKEv1 outsa starts
-| proposals: cnt=1
-|  disj: cnt=6 [next=7]
-| 1:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
-| 2:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
-| 3:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
-| 4:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
-| 5:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
-| 6:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
-|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
-|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
 | pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
@@ -693,7 +660,16 @@ RC=0 #1: "t4901":500 IKEv1.0 STATE_MAIN_I3 (sent MI3, expecting MR3); none in -1
 ./parentM3 leak: 23 * VendorID MD5, item size: X
 ./parentM3 leak: vid->data, item size: X
 ./parentM3 leak: sa in main_outI1, item size: X
+./parentM3 leak: v1 policy proposal conj, item size: X
+./parentM3 leak: db_context->attrs (expand), item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->conj (expand), item size: X
 ./parentM3 leak: alg_info_ike, item size: X
+./parentM3 leak: db_context->attrs, item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: v2 policy database, item size: X
 ./parentM3 leak: struct state in new_state(), item size: X
 ./parentM3 leak: pubkey entry, item size: X
 ./parentM3 leak: rfc3110 format of public key, item size: X

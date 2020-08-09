@@ -1290,7 +1290,7 @@ RC=0 #3: "mytunnel":500 IKEv2.0 STATE_PARENT_R1 (received v2I1, sent v2R1); none
 ./rekeyParentSA leak: db_context->conj (expand), item size: X
 ./rekeyParentSA leak: alg_info_ike, item size: X
 ./rekeyParentSA leak: db_context->attrs, item size: X
-./rekeyParentSA leak: db_context->conj, item size: X
+./rekeyParentSA leak: db_context, item size: X
 ./rekeyParentSA leak: v2 policy database, item size: X
 ./rekeyParentSA leak: saved first received packet, item size: X
 ./rekeyParentSA leak: ikev2_inI1outR1 KE, item size: X
@@ -1302,13 +1302,15 @@ RC=0 #3: "mytunnel":500 IKEv2.0 STATE_PARENT_R1 (received v2I1, sent v2R1); none
 ./rekeyParentSA leak: alg_info_esp, item size: X
 ./rekeyParentSA leak: db_context->attrs, item size: X
 ./rekeyParentSA leak: db_context->trans, item size: X
-./rekeyParentSA leak: 2 * db_context->conj, item size: X
+./rekeyParentSA leak: db_context->conj, item size: X
+./rekeyParentSA leak: db_context, item size: X
 ./rekeyParentSA leak: v2 policy database, item size: X
 ./rekeyParentSA leak: reply packet, item size: X
 ./rekeyParentSA leak: alg_info_esp, item size: X
 ./rekeyParentSA leak: db_context->attrs, item size: X
 ./rekeyParentSA leak: db_context->trans, item size: X
-./rekeyParentSA leak: 2 * db_context->conj, item size: X
+./rekeyParentSA leak: db_context->conj, item size: X
+./rekeyParentSA leak: db_context, item size: X
 ./rekeyParentSA leak: v2 policy database, item size: X
 ./rekeyParentSA leak: saved first received packet, item size: X
 ./rekeyParentSA leak: st_nr in duplicate_state, item size: X
@@ -1345,7 +1347,7 @@ RC=0 #3: "mytunnel":500 IKEv2.0 STATE_PARENT_R1 (received v2I1, sent v2R1); none
 ./rekeyParentSA leak: db_context->conj (expand), item size: X
 ./rekeyParentSA leak: alg_info_ike, item size: X
 ./rekeyParentSA leak: db_context->attrs, item size: X
-./rekeyParentSA leak: db_context->conj, item size: X
+./rekeyParentSA leak: db_context, item size: X
 ./rekeyParentSA leak: v2 policy database, item size: X
 ./rekeyParentSA leak: struct state in new_state(), item size: X
 ./rekeyParentSA leak: pubkey entry, item size: X

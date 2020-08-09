@@ -179,7 +179,7 @@ db2_prop_expand(struct db_v2_context *ctx, int delta_conj)
 
   old_conj = ctx->conj0;
   new_conj = alloc_bytes( sizeof (struct db_v2_prop_conj) * max_conj,
-                          "db2_expand->conj");
+                          "db_context->conj (expand)");
   //DBG_log("expanding[%u] conj0 %p -> %p [%u]", delta_conj, old_conj, new_conj, max_conj);
   if (!new_conj)
     goto out;
@@ -257,7 +257,7 @@ db2_trans_expand(struct db_v2_context *ctx, int delta_trans)
 
   old_trans = ctx->trans0;
   new_trans = alloc_bytes( sizeof (struct db_v2_trans) * max_trans,
-                           "db2_expand->trans");
+                           "db_context->trans (expand)");
   if (!new_trans)
     goto out;
   memcpy(new_trans, old_trans, ctx->max_trans * sizeof(struct db_v2_trans));

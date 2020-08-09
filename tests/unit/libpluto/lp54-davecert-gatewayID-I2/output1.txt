@@ -850,7 +850,8 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id leak: alg_info_esp, item size: X
 ./davecertI2-id leak: db_context->attrs, item size: X
 ./davecertI2-id leak: db_context->trans, item size: X
-./davecertI2-id leak: 2 * db_context->conj, item size: X
+./davecertI2-id leak: db_context->conj, item size: X
+./davecertI2-id leak: db_context, item size: X
 ./davecertI2-id leak: v2 policy database, item size: X
 ./davecertI2-id leak: saved first received packet, item size: X
 ./davecertI2-id leak: st_nr in duplicate_state, item size: X
@@ -887,7 +888,7 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id leak: db_context->conj (expand), item size: X
 ./davecertI2-id leak: alg_info_ike, item size: X
 ./davecertI2-id leak: db_context->attrs, item size: X
-./davecertI2-id leak: db_context->conj, item size: X
+./davecertI2-id leak: db_context, item size: X
 ./davecertI2-id leak: v2 policy database, item size: X
 ./davecertI2-id leak: struct state in new_state(), item size: X
 ./davecertI2-id leak: rfc3110 format of public key [created], item size: X

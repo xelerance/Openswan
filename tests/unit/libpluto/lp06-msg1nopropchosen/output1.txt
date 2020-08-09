@@ -471,7 +471,8 @@ should have found a continuation, but none was found
 ./parentR2 leak: notification packet, item size: X
 ./parentR2 leak: db_context->trans (expand), item size: X
 ./parentR2 leak: db_context->attrs, item size: X
-./parentR2 leak: 2 * db_context->conj, item size: X
+./parentR2 leak: db_context->conj, item size: X
+./parentR2 leak: db_context, item size: X
 ./parentR2 leak: v2 policy database, item size: X
 ./parentR2 leak: saved first received packet, item size: X
 ./parentR2 leak: ikev2_inI1outR1 KE, item size: X
