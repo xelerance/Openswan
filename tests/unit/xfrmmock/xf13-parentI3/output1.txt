@@ -1019,13 +1019,15 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 
 ./xf13-parentI3 leak: alg_info_esp, item size: X
 ./xf13-parentI3 leak: db_context->attrs, item size: X
 ./xf13-parentI3 leak: db_context->trans, item size: X
-./xf13-parentI3 leak: 2 * db_context->conj, item size: X
+./xf13-parentI3 leak: db_context->conj, item size: X
+./xf13-parentI3 leak: db_context, item size: X
 ./xf13-parentI3 leak: v2 policy database, item size: X
 ./xf13-parentI3 leak: reply packet, item size: X
 ./xf13-parentI3 leak: alg_info_esp, item size: X
 ./xf13-parentI3 leak: db_context->attrs, item size: X
 ./xf13-parentI3 leak: db_context->trans, item size: X
-./xf13-parentI3 leak: 2 * db_context->conj, item size: X
+./xf13-parentI3 leak: db_context->conj, item size: X
+./xf13-parentI3 leak: db_context, item size: X
 ./xf13-parentI3 leak: v2 policy database, item size: X
 ./xf13-parentI3 leak: st_nr in duplicate_state, item size: X
 ./xf13-parentI3 leak: st_ni in duplicate_state, item size: X
