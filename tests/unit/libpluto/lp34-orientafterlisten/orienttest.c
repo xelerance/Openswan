@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
+    pluto_shared_secrets_file = "/dev/null";
 
     if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
