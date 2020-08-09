@@ -974,9 +974,6 @@ out_sa(pb_stream *outs
     ret = TRUE;
 
 return_out:
-
-    if (sadb)
-          free_sa(sadb);
     return ret;
 }
 
