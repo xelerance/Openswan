@@ -1,0 +1,5 @@
+This is a test case of a policy to initiate with IKEv1.
+The policy is derived from ikev2 policy, but the conn is added, initiated,
+then removed, and then added again.
+This is about testing the alloc/free cycle for the derived IKEv1 policy.
+
