@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     progname = argv[0];
     leak_detective=1;
     tool_init_log();
+    init_crypto();
 
     printf("plaintext input:\n");
     hexdump(stdout, inbuf, 0, sizeof(outbuf));
@@ -61,9 +62,9 @@ int main(int argc, char *argv[])
     dhq = &r.pcr_d.dhq;
     /* convert appropriate data to dhq */
     dhq->auth         = 1; //st->st_oakley.auth;
-    dhq->prf_hash     = 1; //st->st_oakley.prf_hash;
-    dhq->integ_hash   = 1; //st->st_oakley.integ_hash;
-    dhq->oakley_group = 1; //oakley_group2;
+    dhq->v2_prf       = SS(prf);
+    dhq->v2_integ     = SS(integ);
+    dhq->oakley_group = SS(oakleygroup);
     dhq->init         = TRUE;  /* initiator/ responder */
     dhq->keysize      = 16;    /* AES128 */
 
