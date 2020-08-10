@@ -197,6 +197,8 @@ SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(tc3_secrets,
 					 AUTH_ALGORITHM_HMAC_SHA1,
 					 OAKLEY_SHA1,
 					 INITIATOR,
+                                         IKEv2_PRF_HMAC_SHA1,
+                                         IKEv2_AUTH_HMAC_SHA1_96,
 					 __tc3);
 #undef SECRETS
 #define SECRETS (&tc3_secrets)

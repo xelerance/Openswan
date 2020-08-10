@@ -14,6 +14,8 @@ struct seam_secrets {
 	oakley_auth_t    auth;
 	enum oakley_hash_t hash;
 	enum phase1_role role;
+        enum ikev2_trans_type_prf   prf;
+        enum ikev2_trans_type_integ integ;
 
 	/* intermediate */
 
@@ -65,12 +67,14 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 	seam_chunk_set(&(ss)->chunk_name, \
 		     array, sizeof(array))
 
-#define SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role,...) \
+#define SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role,_prf,_integ,...) \
 	struct seam_secrets SS = { \
           .secrets_name = #SS, \
 		.oakleygroup = _oakleygroup, \
 		.auth = _auth, \
 		.hash = _hash, \
+		.prf  = _prf, \
+		.integ= _integ, \
 		.role = _role, \
 		##__VA_ARGS__ \
 	}
@@ -78,8 +82,8 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 #define __SS_SET(prefix,part) \
 	.part = { .ptr = prefix##_##part, .len = sizeof(prefix##_##part) }
 
-#define SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(SS,_oakleygroup,_auth,_hash,_role,prefix,...) \
-	SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role, \
+#define SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(SS,_oakleygroup,_auth,_hash,_role,_prf,_integ,prefix,...) \
+  SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role, _prf, _integ, \
 		\
 		__SS_SET(prefix,gi), \
 		__SS_SET(prefix,gr), \
