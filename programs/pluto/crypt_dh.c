@@ -39,6 +39,7 @@
 
 #include "sysdep.h"
 #include "constants.h"
+#include "enum_names.h"
 #include "defs.h"
 #include "packet.h"
 #include "demux.h"
@@ -503,7 +504,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     )
 {
     oakley_auth_t auth = skq->auth;
-    oakley_hash_t hash = skq->prf_hash;
+    oakley_hash_t hash = skq->v1_prf_hash;
     const struct ike_prf_desc *hasher = crypto_get_hasher(hash);
     chunk_t pss;
     chunk_t ni;
@@ -1243,8 +1244,8 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%lu"
-		  , enum_name(&trans_type_prf_names, skq->prf_hash)
-		  , enum_name(&trans_type_integ_names, skq->integ_hash)
+		  , enum_name(&ikev2_prf_names,   skq->v2_prf)
+		  , enum_name(ikev2_integ_names.official_names, skq->v2_integ)
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
@@ -1269,7 +1270,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(skeyseed_k);
 
 #else
-    vpss.prf_hasher = ikev1_crypto_get_hasher(skq->prf_hash);
+    vpss.prf_hasher = ike_alg_get_prf(skq->v2_prf);
     passert(vpss.prf_hasher);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
@@ -1312,7 +1313,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_p needs PRF hasher*2 key bits */
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
-	const struct ike_integ_desc *integ_hasher = ikev1_crypto_get_hasher(skq->integ_hash);
+	const struct ike_integ_desc *integ_hasher = ike_alg_get_integ(skq->v2_integ);
 #ifdef HAVE_LIBNSS
        int skd_bytes = hasher->hash_key_size;
        int skp_bytes = hasher->hash_key_size;
@@ -1566,9 +1567,9 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 void calc_dh_v2(struct pluto_crypto_req *r)
 {
-    struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;
-    struct pcr_skeycalc_v2 *skr = &r->pcr_d.dhv2;
-    struct pcr_skeyid_q dhq;
+    struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;  // request
+    struct pcr_skeycalc_v2 *skr = &r->pcr_d.dhv2; // response
+    struct pcr_skeyid_q dhq;                      // copy of request
     const struct oakley_group_desc *group;
     chunk_t  shared, g, ltsecret;
     chunk_t  skeyseed;

@@ -66,8 +66,10 @@ struct pcr_skeyid_q {
   /* inputs */
   u_int16_t     oakley_group;
   oakley_auth_t auth;
-  oakley_hash_t integ_hash;
-  oakley_hash_t prf_hash;
+    oakley_hash_t v1_integ_hash;  /* IKEv1 */
+    oakley_hash_t v1_prf_hash;
+    enum ikev2_trans_type_prf   v2_prf;  /* IKEv2 */
+    enum ikev2_trans_type_integ v2_integ;
   enum phase1_role init;
   size_t        keysize;     /* of encryptor */
   wire_chunk_t gi;
