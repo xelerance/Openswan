@@ -43,10 +43,6 @@ int main(int argc, char *argv[])
     int i;
     err_t e = NULL;
     const struct ike_integ_desc *sha256;
-    char  inbuf[256];
-    char  outbuf[256];
-    char *hash;
-    union hash_ctx hc;
     struct pluto_crypto_req r;
     struct pcr_skeyid_q *dhq;
 
@@ -54,9 +50,6 @@ int main(int argc, char *argv[])
     leak_detective=1;
     tool_init_log();
     init_crypto();
-
-    printf("plaintext input:\n");
-    hexdump(stdout, inbuf, 0, sizeof(outbuf));
 
     pcr_init(&r, pcr_compute_dh_v2, pcim_known_crypto);
     dhq = &r.pcr_d.dhq;
