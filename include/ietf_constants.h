@@ -611,7 +611,7 @@ enum ikev2_trans_type_prf {
 	IKEv2_PRF_INVALID	= 65536
 };
 
-/* enum_names: trans_type_integ_names */
+/* enum_names: ikev2_integ_names */
 enum ikev2_trans_type_integ {
 	IKEv2_AUTH_NONE              = 0,  /* RFC4306 */
 	IKEv2_AUTH_HMAC_MD5_96       = 1,  /* RFC2403 */
