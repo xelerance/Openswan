@@ -1,0 +1,3 @@
+TESTNAME=cr05-async-skeyseed
+TESTSRC=skeyseed.c
+
