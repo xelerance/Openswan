@@ -158,6 +158,8 @@ SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(tc102_secrets,
 					 AUTH_ALGORITHM_HMAC_MD5,
 					 OAKLEY_MD5,
 					 INITIATOR,
+                                         IKEv2_PRF_HMAC_MD5,
+                                         IKEv2_AUTH_HMAC_MD5_96,
 					 __tc102);
 #undef SECRETS
 #define SECRETS (&tc102_secrets)
