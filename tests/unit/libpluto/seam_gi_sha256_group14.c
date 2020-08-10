@@ -7,10 +7,10 @@
  * debug lines, and transforming them to C data files
  */
 
-/* test case 4 - DH operation, SHA256 + AES */
+/* test case 4 - DH operation, SHA256 + AES, PRF=SHA256 */
 u_int16_t     __tc14B_oakleygroup  = OAKLEY_GROUP_MODP2048;
 oakley_auth_t __tc14B_auth         = AUTH_ALGORITHM_HMAC_SHA2_256;
-enum oakley_hash_t __tc14B_hash         = OAKLEY_SHA2_256;
+enum oakley_hash_t __tc14B_hash    = OAKLEY_SHA2_256;
 enum phase1_role __tc14B_init      = INITIATOR;
 
 /* secret value */
@@ -175,6 +175,8 @@ SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(tc14B_secrets,
 					 AUTH_ALGORITHM_HMAC_SHA2_256,
 					 OAKLEY_SHA2_256,
 					 INITIATOR,
+                                         IKEv2_PRF_HMAC_SHA2_256,
+                                         IKEv2_AUTH_HMAC_SHA2_256_128,
 					 __tc14B);
 #undef SECRETS
 #define SECRETS (&tc14B_secrets)
