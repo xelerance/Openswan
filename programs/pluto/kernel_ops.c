@@ -38,6 +38,7 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "fallthrough.h"
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
@@ -93,8 +94,8 @@ init_kernel(void)
 	}
 #endif
 	openswan_log("Kernel interface auto-pick");
-         /* FALL THROUGH */
-	 __attribute__ ((fallthrough));
+        FALL_THROUGH;   /* FALL THROUGH */
+
 
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
@@ -106,8 +107,7 @@ init_kernel(void)
 	    break;
 	} else
 	    openswan_log("No Kernel XFRM/NETKEY interface detected");
-	/* FALL THROUGH */
-	 __attribute__ ((fallthrough));
+        FALL_THROUGH;   /* FALL THROUGH */
 #endif
 
 #if defined(KLIPS)
@@ -120,8 +120,7 @@ init_kernel(void)
 	    break;
 	} else
 	    openswan_log("No Kernel KLIPS interface detected");
-	/* FALL THROUGH */
-	 __attribute__ ((fallthrough));
+        FALL_THROUGH;   /* FALL THROUGH */
 #endif
 
 #if defined(KLIPS_MAST)
@@ -134,8 +133,7 @@ init_kernel(void)
 	    break;
 	} else
 	    openswan_log("No Kernel MASTKLIPS interface detected");
-	/* FALL THROUGH */
-	 __attribute__ ((fallthrough));
+        FALL_THROUGH;   /* FALL THROUGH */
 #endif
 
 #if defined(BSD_KAME)
