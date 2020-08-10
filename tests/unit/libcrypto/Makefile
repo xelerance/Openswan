@@ -21,6 +21,7 @@ UNITTESTS+=cr01-aes128
 UNITTESTS+=cr02-aes256
 UNITTESTS+=cr03-cryptoinit
 UNITTESTS+=cr04-sha2
+UNITTESTS+=cr05-async-skeyseed
 
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
 programs clean check pcapupdate:
