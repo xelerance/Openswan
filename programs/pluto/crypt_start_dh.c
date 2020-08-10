@@ -50,6 +50,7 @@
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
+#include "pluto/spdb.h"
 
 /*
  * invoke helper to do DH work.
@@ -74,7 +75,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->v1_prf_hash = st->st_oakley.prf_hash;
+    dhq->v1_prf_hash  = v2tov1_integ(st->st_oakley.prf_hash);
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
@@ -182,7 +183,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->v1_prf_hash = st->st_oakley.prf_hash;
+    dhq->v1_prf_hash  = v2tov1_integ(st->st_oakley.prf_hash);
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
@@ -272,9 +273,9 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 		  , enum_name(&trans_type_encr_names,  st->st_oakley.encrypt)));
 
     /* convert appropriate data to dhq */
-    dhq->auth = st->st_oakley.auth;
-    dhq->v1_prf_hash   = st->st_oakley.prf_hash;
-    dhq->v1_integ_hash = st->st_oakley.integ_hash;
+    dhq->auth     = st->st_oakley.auth;
+    dhq->v2_prf   = st->st_oakley.prf_hash;
+    dhq->v2_integ = st->st_oakley.integ_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
