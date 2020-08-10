@@ -1,0 +1,29 @@
+./cr05-async-skeyseed ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./cr05-async-skeyseed ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./cr05-async-skeyseed leak: skeyseed_t1, item size: 32
+./cr05-async-skeyseed leak: 4 * hasher name, item size: 16
+./cr05-async-skeyseed leak: 10 * group description, item size: 56
+./cr05-async-skeyseed leak detective found 15 leaks, total size 104
+plaintext input:
+0000: 40 00 00 00  00 00 00 00  a0 02 00 00  00 00 00 00 
+0010: a0 02 00 00  00 00 00 00  08 00 00 00  00 00 00 00 
+0020: 03 00 00 00  04 00 00 00  30 b3 18 00  00 00 00 00 
+0030: 30 b3 18 00  00 00 00 00  30 b3 18 00  00 00 00 00 
+0040: 1c 00 00 00  00 00 00 00  1c 00 00 00  00 00 00 00 
+0050: 10 00 00 00  00 00 00 00  01 00 00 00  04 00 00 00 
+0070: 00 00 00 00  00 00 00 00  d8 13 02 00  00 00 00 00 
+0080: d8 13 02 00  00 00 00 00  00 10 00 00  00 00 00 00 
+0090: 01 00 00 00  05 00 00 00  00 20 02 00  00 00 00 00 
+00a0: 00 20 02 00  00 00 00 00  00 20 02 00  00 00 00 00 
+00b0: d8 71 14 00  00 00 00 00  d8 71 14 00  00 00 00 00 
+00c0: 00 10 00 00  00 00 00 00  01 00 00 00  04 00 00 00 
+00d0: 00 a0 16 00  00 00 00 00  00 a0 16 00  00 00 00 00 
+00e0: 00 a0 16 00  00 00 00 00  08 ba 04 00  00 00 00 00 
+00f0: 08 ba 04 00  00 00 00 00  00 10 00 00  00 00 00 00 
