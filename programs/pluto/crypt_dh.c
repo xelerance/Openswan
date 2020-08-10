@@ -1249,7 +1249,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct ike_integ_desc *hasher = (struct ike_integ_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_INTEG, skq->prf_hash, 0);
+    const struct ike_integ_desc *hasher = ike_alg_get_prf(skq->v2_prf);
     passert(hasher);
 
 
