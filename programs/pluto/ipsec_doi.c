@@ -393,7 +393,7 @@ ipsecdoi_initiate(int whack_sock
 
       if (!IS_ISAKMP_SA_ESTABLISHED(old_parent_state->st_state)) {
 	/* leave our Phase 2 negotiation pending */
-	add_pending(whack_sock, old_child_state, c, policy, try
+	add_pending(whack_sock, old_parent_state, c, policy, try
 		    , replacing
 		    , uctx
 		   );
