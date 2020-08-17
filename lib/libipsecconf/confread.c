@@ -1041,6 +1041,15 @@ static int validate_family_consistency(const char *connname,
         nfamily = right = left = family;
     }
 
+    /* If family is set, and left and right are either unset or agree
+     * with family, then use it.
+     */
+    if(family != 0 &&
+       (left  == 0 || left  == family) &&
+       (right == 0 || right == family)) {
+        nfamily = left = right = family;
+    }
+
     /* if family is blank, and left and right are set to the same value,
      * then set family to that value.
      */

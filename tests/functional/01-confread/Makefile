@@ -29,6 +29,7 @@ check: OUTPUT
 	../readwritetest ${READWRITE} dooku certpercent.conf berri-strongswan.conf
 	../readwritetest ${READWRITE} dooku n2n-transport.conf n2n-transport.conf
 	: ../readwritetest ${READWRITE} dooku brokenspace.conf brokenspace.conf
+	../readwritetest ${READWRITE} ipv6-inconsistent ipv6-inconsistent.conf ipv6-inconsistent.conf
 	[ ! -f core ]
 
 OUTPUT:

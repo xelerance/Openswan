@@ -1,0 +1,19 @@
+#
+# This used to give an error of
+# 'inconsistent left/right tunnel address family: policy=ipv6 left=ipv6 right=value:0'
+#
+# Adding rightsubnet=<IP>/128 fixed the problem.
+
+conn test-conn
+	ikev2=no
+	ike=aes128-sha2_256;modp8192!
+	phase2alg=aes128-sha1;modp8192
+	ikelifetime=3600s
+	salifetime=1200s
+	authby=secret
+	connaddrfamily=ipv6
+	left=2001:db8::2
+	leftsubnet=2001:db8:1:2::/60
+	right=2001:db8:2::af83
+	#rightsubnet=2001:db8:2::af83/128
+	auto=ignore
