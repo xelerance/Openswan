@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
         delete_state(st);
     }
 
-    delete_connection(c1, TRUE);
+    delete_connection(c1, TRUE, FALSE);
 
     report_leaks();
 

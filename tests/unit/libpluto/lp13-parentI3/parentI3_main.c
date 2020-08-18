@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 
     /* dump the delete message that comes out */
     send_packet_setup_pcap("/dev/null");
-    delete_connection(c1, TRUE);
+    delete_connection(c1, TRUE, FALSE);
 
     st = state_with_serialno(1);
     if(st!=NULL) {

@@ -776,7 +776,7 @@ delete_states_by_connection(struct connection *c, bool relations)
     if (ck == CK_INSTANCE)
     {
 	c->kind = ck;
-	delete_connection(c, relations);
+	delete_connection(c, relations, FALSE);
     }
 }
 
@@ -819,7 +819,7 @@ delete_p2states_by_connection(struct connection *c)
     if (ck == CK_INSTANCE)
     {
 	c->kind = ck;
-	delete_connection(c, TRUE);
+	delete_connection(c, TRUE, FALSE);
     }
 }
 
@@ -866,7 +866,7 @@ rekey_p2states_by_connection(struct connection *c)
     if (ck == CK_INSTANCE)
     {
 	c->kind = ck;
-	delete_connection(c, TRUE);
+	delete_connection(c, TRUE, FALSE);
     }
 }
 
