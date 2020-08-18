@@ -350,7 +350,7 @@ extern int initiate_ondemand(const ip_address *our_client
                               , err_t why);
 extern void terminate_connection(const char *nm);
 extern void release_connection(struct connection *c, bool relations);
-extern void delete_connection(struct connection *c, bool relations);
+extern void delete_connection(struct connection *c, bool relations, bool force);
 extern void delete_connections_by_name(const char *name, bool strict);
 extern void delete_every_connection(void);
 extern void delete_sr(struct connection *c, struct spd_route *sr);

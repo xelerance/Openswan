@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     for(i=0; i < argc; i++) {
         conn_name = argv[i];
         c1 = con_by_name(conn_name, TRUE);
-        delete_connection(c1, TRUE);
+        delete_connection(c1, TRUE, FALSE);
     }
 
     report_leaks();

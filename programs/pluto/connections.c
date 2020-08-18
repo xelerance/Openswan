@@ -125,7 +125,7 @@ release_connection(struct connection *c, bool relations)
 	 * Note that we will be called recursively by delete_connection,
 	 * but kind will be CK_GOING_AWAY.
 	 */
-	delete_connection(c, relations);
+	delete_connection(c, relations, FALSE);
     }
     else
     {
@@ -211,11 +211,12 @@ delete_sr(struct connection *c, struct spd_route *sr)
  *
  * @c - the connection pointer
  * @relations - whether to delete any instances as well.
+ * @force - force connections to delete. Don't allow any state to live on.
  *
  */
 
 void
-delete_connection(struct connection *c, bool relations)
+delete_connection(struct connection *c, bool relations, bool force)
 {
     struct spd_route *sr;
     struct connection *old_cur_connection
@@ -261,6 +262,8 @@ delete_connection(struct connection *c, bool relations)
 	openswan_log("deleting connection");
     }
     release_connection(c, relations);	/* won't delete c */
+    if (force)
+        release_connection(c, relations);    /* Second time to force away ikeV2 delayed delete */
 
     if (c->kind == CK_GROUP)
 	delete_group(c);
@@ -334,7 +337,7 @@ delete_connection_wrap(struct connection *c, void *arg)
 {
     bool *barg = (bool *)arg;
 
-    delete_connection(c, *barg);
+    delete_connection(c, *barg, FALSE);
     return 1;
 }
 
@@ -349,7 +352,7 @@ delete_connections_by_name(const char *name, bool strict)
 	(void)foreach_connection_by_alias(name, delete_connection_wrap, &f);
     } else {
 	for (; c != NULL; c = con_by_name(name, FALSE))
-	    delete_connection(c, FALSE);
+	    delete_connection(c, FALSE, FALSE);
     }
 }
 
@@ -357,7 +360,7 @@ void
 delete_every_connection(void)
 {
     while (connections != NULL)
-	delete_connection(connections, TRUE);
+	delete_connection(connections, TRUE, TRUE);
 }
 
 /* adjust orientations of connections to reflect newly added interfaces */
@@ -3441,7 +3444,7 @@ connection_discard(struct connection *c)
 	}
 
 	if (!states_use_connection(c))
-	    delete_connection(c, FALSE);
+	    delete_connection(c, FALSE, FALSE);
     }
 }
 
