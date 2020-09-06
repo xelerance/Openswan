@@ -5,8 +5,9 @@ OBJ.*
 *.rej
 *.orig
 *.bak
-*.swp
+*.sw?
 TAGS
+tags
 UMLPOOL
 modobj26
 testing/*/OUTPUT/*
