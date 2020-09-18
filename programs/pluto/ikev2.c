@@ -61,6 +61,7 @@
 #include "ikev2_microcode.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "timer.h"
+#include "replace.h"
 #include "whack.h"	/* requires connections.h */
 #include "pluto/server.h"
 #ifdef XAUTH
@@ -1354,27 +1355,14 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	     */
 	    if (kind != EVENT_SA_EXPIRE)
 	    {
-		unsigned long marg = c->sa_rekey_margin;
-
-		if (svm->flags & SMF2_INITIATOR)
-		    marg += marg
-			* c->sa_rekey_fuzz / 100.E0
-			* (rand() / (RAND_MAX + 1.E0));
-		else
-		    marg /= 2;
-
-		if ((unsigned long)delay > marg)
-		{
-			    delay -= marg;
-			    st->st_margin = marg;
-		}
-		else
-		{
-		    kind = EVENT_SA_EXPIRE;
-		}
+		schedule_sa_replace_event(svm->flags & SMF2_INITIATOR,
+					  delay, c, st);
 	    }
-	    delete_event(st);
-	    event_schedule(kind, delay, st);
+	    else
+	    {
+		delete_event(st);
+		event_schedule(kind, delay, st);
+	    }
 	    break;
 
 	case EVENT_NULL:
