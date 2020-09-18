@@ -145,6 +145,7 @@
 #include "ikev1.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "timer.h"
+#include "replace.h"
 #include "whack.h"	/* requires connections.h */
 #include "pluto/server.h"
 #ifdef XAUTH
@@ -2113,6 +2114,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		{
 		case EVENT_RETRANSMIT:	/* Retransmit packet */
 		    delay = EVENT_RETRANSMIT_DELAY_0;
+		    event_schedule(kind, delay, st);
 		    break;
 
 		case EVENT_SA_REPLACE:	/* SA replacement event */
@@ -2191,24 +2193,12 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		    }
 		    if (kind != EVENT_SA_EXPIRE)
 		    {
-			unsigned long marg = c->sa_rekey_margin;
-
-			if (smc->flags & SMF_INITIATOR)
-			    marg += marg
-				* c->sa_rekey_fuzz / 100.E0
-				* (rand() / (RAND_MAX + 1.E0));
-			else
-			    marg /= 2;
-
-			if ((unsigned long)delay > marg)
-			{
-			    delay -= marg;
-			    st->st_margin = marg;
-			}
-			else
-			{
-			    kind = EVENT_SA_EXPIRE;
-			}
+			schedule_sa_replace_event(smc->flags & SMF_INITIATOR,
+						  delay, c, st);
+		    }
+		    else
+		    {
+			event_schedule(kind, delay, st);
 		    }
 		    break;
 
@@ -2217,7 +2207,6 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		default:
 		    bad_case(kind);
 		}
-		event_schedule(kind, delay, st);
 	    }
 
 	    /* tell whack and log of progress */

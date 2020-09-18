@@ -20,6 +20,8 @@ struct state;
 
 extern void sa_replace(struct state *st, int type);
 extern void sa_expire(struct state *st);
+extern void schedule_sa_replace_event(bool is_initiator, unsigned long delay,
+                                      struct connection *c, struct state *st);
 
 #endif /* _TIMER_H */
 

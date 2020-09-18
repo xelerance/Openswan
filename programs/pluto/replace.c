@@ -176,3 +176,27 @@ sa_expire(struct state *st)
     }
     delete_state(st);
 }
+
+void
+schedule_sa_replace_event(bool is_initiator, unsigned long delay,
+		          struct connection *c, struct state *st)
+{
+    unsigned long marg = c->sa_rekey_margin;
+    enum event_type ev = EVENT_SA_REPLACE;
+
+    if(is_initiator)
+        marg += marg
+                * c->sa_rekey_fuzz / 100.E0
+                * (rand() / (RAND_MAX + 1.E0));
+    else
+        marg /= 2;
+
+    delete_event(st);
+    if(delay > marg) {
+        delay -= marg;
+        st->st_margin = marg;
+    } else {
+        ev = EVENT_SA_EXPIRE;
+    }
+    event_schedule(ev, delay, st);
+}
