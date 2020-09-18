@@ -302,8 +302,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     c->newest_isakmp_sa = st->st_serialno;
     md->pst = st;
 
-    delete_event(st);
-    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
+    schedule_sa_replace_event(FALSE, c->sa_ike_life_seconds, c, st);
 
     /* switch to port 4500, if necessary */
     ikev2_update_nat_ports(st);

@@ -275,8 +275,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     md->pst= pst;
 
     /* parent had crypto failed, replace it with rekey! */
-    delete_event(pst);
-    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
+    schedule_sa_replace_event(TRUE, c->sa_ike_life_seconds, c, pst);
 
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->packet_pbs.start
