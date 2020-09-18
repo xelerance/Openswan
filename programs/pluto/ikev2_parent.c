@@ -53,6 +53,7 @@
 #include "ipsec_doi.h"
 #include "vendor.h"
 #include "timer.h"
+#include "replace.h"
 #include "ike_continuations.h"
 #include "cookie.h"
 #include "rnd.h"
