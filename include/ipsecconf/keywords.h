@@ -314,7 +314,7 @@ struct config_parsed {
     bool                got_default;
 };
 
-const struct keyword_enum_values kw_connaddrfamily_list;
+extern const struct keyword_enum_values kw_connaddrfamily_list;
 
 extern struct keyword_def ipsec_conf_keywords_v2[];
 extern const int ipsec_conf_keywords_v2_count;
