@@ -33,6 +33,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/replace.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o

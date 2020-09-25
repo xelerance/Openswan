@@ -4,14 +4,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
+#include "../../programs/pluto/replace.h"
 #include "seam_x509.c"
 #include "seam_gi_sha1.c"
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_debug.c"
-
-#include "../../programs/pluto/replace.c"
 
 #define TESTNAME "rekeyParentSA"
 
