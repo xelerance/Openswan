@@ -34,6 +34,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/replace.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
