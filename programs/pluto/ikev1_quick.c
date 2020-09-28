@@ -542,7 +542,12 @@ check_net_id(struct isakmp_ipsec_id *id
     } else if(!end->has_client && !subnetisaddr(&net_temp, endip)) {
         loglog(RC_LOG_SERIOUS, "%s subnet returned does not match my self-proposal - us:%s vs them:%s",
                which,subxmt,subrec);
-        bad_proposal = TRUE;
+#ifdef ALLOW_MICROSOFT_BAD_PROPOSAL
+	loglog(RC_LOG_SERIOUS, "Allowing questionable self-proposal anyway [ALLOW_MICROSOFT_BAD_PROPOSAL]");
+	bad_proposal = FALSE;
+#else
+	bad_proposal = TRUE;
+#endif
     }
 
     if(*protoid != id->isaiid_protoid) {
