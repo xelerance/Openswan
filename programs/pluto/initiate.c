@@ -1723,11 +1723,11 @@ void connection_check_phase2(void)
 	    struct state *p1st;
             bool kicknow = kick_adns_connection(c, NULL);
 
-	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
+            if(kicknow) {
+                openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
 
-            if(kicknow) {
                 /*
                  * look for a phase 1 to kill, but not point in doing that until we
                  * actually have something new to try.
