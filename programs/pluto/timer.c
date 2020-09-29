@@ -95,8 +95,16 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
                     passert(st->st_dpd_event == NULL);
                     st->st_dpd_event = ev;
             } else {
-		passert(st->st_event == NULL);
-		st->st_event = ev;
+                    if (st->st_event != NULL) {
+                            /* Try replacing this event with the new one, but log a message
+                             * for debugging purposes.  This shouldn't happen
+                             */
+                            DBG_log("Scheduling %s event, but %s event already scheduled",
+                                    enum_show(&timer_event_names, ev->ev_type),
+                                    enum_show(&timer_event_names, st->st_event->ev_type));
+                            delete_event(st);
+                    }
+                    st->st_event = ev;
 	    }
     }
 
