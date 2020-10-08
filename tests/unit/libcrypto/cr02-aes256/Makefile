@@ -11,44 +11,4 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../../../..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
-
-EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE}
-EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
-EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
-EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRALIBS+=${LIBPLUTO}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS} ${LIBGMP}
-EXTRALIBS+=${CRYPTOLIBS} ${LIBOSWLOG} ${LIBOPENSWAN}
-EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
-
-EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
-EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
-
-include Makefile.testcase
-
-Q=$(if ${V},,@)
-${TESTNAME} programs: ${TESTSRC} ${LIBPLUTO}
-	@mkdir -p OUTPUT
-	@echo CC ${TESTNAME}.c
-	${Q}${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRALIBS}
-	@echo "file ${TESTNAME}"       >.gdbinit
-	@echo "set args "${UNITTESTARGS} >>.gdbinit
-
-check: ${TESTNAME}
-	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
-	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
-
-clean:
-	rm -f ${TESTNAME}
-
-update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
-
-pcapupdate:
-	@true
-
-
-
+include ../cr01-aes128/Makefile
