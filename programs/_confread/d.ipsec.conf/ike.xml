@@ -3,33 +3,40 @@
   <listitem>
 <para>IKE encryption/authentication algorithm to be used
 for the connection (phase 1 aka for IKEv1, PARENT SA for IKEv2).
+</para>
 
 <para>
 The format is
 <emphasis remap='I'>"cipher-integ-prf-modpgroup, cipher-integ-prf-modpgroup, ..."</emphasis>
+</para>
 
 <para>
 Any left out option will be filled in with all allowed default options.
 For IKEv1, the PRF is ignored, and if it is not specified, it will be made identical to the integrity algorithm, if that is reasonable.
 The thing previous called the "hash", was an integrity check, and it is now called that.
+</para>
 
 <para>
 Previously, the syntax used a semicolon before the modpgroup, but now both dash and semicolon are accepted.
 Multiple proposals are separated by a comma. If an
 <emphasis remap='B'>ike=</emphasis>
 line is specified, no other received proposals will be accepted.
+</para>
 
 <para>
 Formerly there was a distinction (by using a <emphasis remap='B'>"!"</emphasis> symbol) between
 "strict mode" or not. That mode has been obsoleted. If an <emphasis remap='B'>ike=</emphasis> option is
 specified, the mode is always strict, meaning no other received proposals will be accepted.
+</para>
 
 <para>
 When an algorithm comes in a variety of strengths (i.e. AES-128 and AES-256), then the specification without the value will result in whatever is considered an appropriate strength.
 At this point, that is AES-128, and SHA2-256.
+</para>
 
 <para>
 The algorithm "sha256" is an alias for "sha2_256". Stronger versions can be specified as "sha2_512", for instance.
+</para>
 
 <para>
 Some examples are
@@ -40,10 +47,12 @@ Some examples are
 <emphasis remap='B'>ike=aes128-md5-modp2048</emphasis>,
 <emphasis remap='B'>ike=3des-md5;modp1024,aes-sha1;modp1536</emphasis> or
 <emphasis remap='B'>ike=modp1536</emphasis>.
+</para>
 
 <para>
 The 1DES algorithm can not be included at all.
 Openswan does includes sensible defaults, but they change over time.
+</para>
 
 <para>If openswan was compiled with USE_MODP_RFC5114 support, then Diffie-Hellman
 groups 22, 23 and 24 are also implemented as per RFC-5114. Instead of the modp
