@@ -25,6 +25,7 @@ conn test-conn
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=secret
 	phase2=esp
 	ikev2=never
