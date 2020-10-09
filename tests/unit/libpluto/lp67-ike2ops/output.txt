@@ -97,7 +97,7 @@ default RSA:
 | __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
 | __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14
+| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
@@ -105,7 +105,7 @@ default RSA:
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15
+| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | proposals: cnt=1
@@ -267,7 +267,7 @@ default v1 (RSA):| sa disjunct cnt: 1
 | __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
 | __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14
+| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
@@ -275,7 +275,7 @@ default v1 (RSA):| sa disjunct cnt: 1
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
 | found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15
+| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
 | found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | proposals: cnt=1
@@ -347,7 +347,7 @@ default v1 (RSA):| sa disjunct cnt: 1
 | enum_search_prefix ("OAKLEY_GROUP_MODP2048")
 | parser_alg_info_add() modp_getbyname("modp2048")=14
 | __alg_info_ike_add() ealg=12 aalg=14 prfalg_id=7 modp_id=14, cnt=1
-| found algorithm: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP2048(
+| found algorithm: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP2048(14)
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]

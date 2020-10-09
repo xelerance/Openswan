@@ -68,7 +68,7 @@ RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| not including aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096( in policy, as algorithm missing(enc:1,integ:0,prf:0,group:1)
+| not including aes_cbc(12)_256-hmac_sha2_384_192(13)-prfsha2_384(6)-MODP4096(16) in policy, as algorithm missing(enc:1,integ:0,prf:0,group:1)
 ./v1emptyM1 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:

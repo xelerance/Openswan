@@ -50,7 +50,7 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
-        char missing_alg_buf[64];
+        char missing_alg_buf[96];
         char *ptr = missing_alg_buf;
         int ret = -1;
 

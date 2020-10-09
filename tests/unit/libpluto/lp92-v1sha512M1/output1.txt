@@ -68,7 +68,7 @@ RC=0 "home512":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| found algorithm: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(
+| found algorithm: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(16)
 ./v1sha512M1 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
