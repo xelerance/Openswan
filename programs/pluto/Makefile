@@ -252,9 +252,13 @@ check:
 
 checkprograms:
 
-.c.o:
+%.o: %.c
+ifeq ($(V),1)
+	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+else
 	@echo CC $(notdir $<)
 	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+endif
 
 %.E: %.c
 	@echo CPP $(notdir $<)

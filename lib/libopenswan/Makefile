@@ -172,8 +172,12 @@ $(LIBA): $(OBJS)
 $(OBJS):	$(HDRS)
 
 %.o: %.c
+ifeq ($(V),1)
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+else
 	@echo CC $(notdir $<)
 	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+endif
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
