@@ -122,6 +122,10 @@ ikev2_decode_cert(struct msg_digest *md)
     struct state *st = md->st;
     unsigned certnum = 0;
 
+    if (st->st_clonedfrom != 0) {
+        st = state_with_serialno(st->st_clonedfrom);
+    }
+
     for (p = md->chain[ISAKMP_NEXT_v2CERT]; p != NULL; p = p->next)
     {
 	struct ikev2_cert *const v2cert = &p->payload.v2cert;
