@@ -36,6 +36,7 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 RC=0 "nat-t": 10.1.0.0/16===%any...%any[bob@strongswan.org]; unrouted; eroute owner: #0
 RC=0 "nat-t":     myip=unset; hisip=unset; hiscert=bobCert.pem;
+RC=0 "nat-t":   CAs: '%any'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "nat-t":        ....1:A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE 2:none
 RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT

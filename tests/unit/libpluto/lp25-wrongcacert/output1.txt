@@ -46,6 +46,7 @@ processing whack msg time: X size: Y
 |   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-any":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
@@ -320,7 +321,6 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
-|   no known CA for the other end
 |   no CA certs available for validation
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
@@ -923,7 +923,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | L1 - signatureValue:
 ./wrongcacert issuer cacert not found
 ./wrongcacert X.509 certificate rejected
-| ikev2 verify required CA is '%any'
+| ikev2 verify required CA is 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 |
 | List of X.509 End Certificates:
 |
@@ -1043,7 +1043,9 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: keep id name, item size: X
 ./wrongcacert leak: ID host_pair, item size: X
 ./wrongcacert leak: host_pair, item size: X
+./wrongcacert leak: ca string, item size: X
 ./wrongcacert leak: host ip, item size: X
+./wrongcacert leak: ca string, item size: X
 ./wrongcacert leak: keep id name, item size: X
 ./wrongcacert leak: connection name, item size: X
 ./wrongcacert leak: rfc3110 format of public key [created], item size: X

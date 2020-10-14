@@ -95,6 +95,7 @@ processing whack msg time: X size: Y
 |   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-any":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
@@ -383,23 +384,30 @@ RC=2      rw-any
 | emitting length of IKEv2 Notify Payload: 28
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   my next payload will not be a certificate request
-| I did not send a certificate request (CERTREQ) because
-|   no known CA for the other end
-|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+|   my next payload will be a certificate request
+| have cert 'carolCert.pem', send CERTREQ with Auth Key ID
+|    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
+| ***emit IKEv2 Certificate Request Payload:
+|    critical bit: none
+|    ikev2 cert encoding: CERT_X509_SIGNATURE
+| emitting 20 raw bytes of CA into IKEv2 Certificate Request Payload
+| CA  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
+|   3a ed cd aa
+| emitting length of IKEv2 Certificate Request Payload: 25
+|    next-payload: ISAKMP_NEXT_v2V [@416=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 432
+| emitting length of ISAKMP Message: 457
 | #1 complete v2 state transition with STF_OK
 ./certreplyR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./certreplyR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
+sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -422,9 +430,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
-|   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
+|   76 d4 bc 8f  26 00 00 1c  00 00 40 05  e0 69 e5 73
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
-|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
+|   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30
 1: output to OUTPUT/certreplyR2.pcap
 |   =========== input from pcap file parentI2.pcap ========
 | *received 1520 bytes from 93.184.216.34:500 on eth0 (port=500)
@@ -1033,7 +1043,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | reached self-signed root ca
 ./certreplyR2 0: validated X509 certificate: 'C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org', added to trusted database
 | Public key validated
-| ikev2 verify required CA is '%any'
+| ikev2 verify required CA is 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 |
 | List of X.509 End Certificates:
 |
@@ -1095,7 +1105,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
 |   already received a CERT from peer
-|   no known CA for the other end
 | I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
@@ -1756,8 +1765,10 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplyR2 leak: ID host_pair, item size: X
 ./certreplyR2 leak: host_pair, item size: X
 ./certreplyR2 leak: host ip, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: host ip, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: connection name, item size: X
 ./certreplyR2 leak: rfc3110 format of public key [created], item size: X
@@ -1797,8 +1808,10 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplyR2 leak: ID host_pair, item size: X
 ./certreplyR2 leak: host_pair, item size: X
 ./certreplyR2 leak: host ip, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: host ip, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: connection name, item size: X
 ./certreplyR2 leak: issuer, item size: X
@@ -1811,7 +1824,9 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: ID host_pair, item size: X
 ./certreplyR2 leak: host_pair, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: host ip, item size: X
+./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: connection name, item size: X
 ./certreplyR2 leak: issuer, item size: X

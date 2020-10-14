@@ -95,6 +95,7 @@ processing whack msg time: X size: Y
 |   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-any":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
@@ -102,12 +103,14 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 ./certreplydaveR1   loaded CA cert file 'rootCA.pem' (CERT bytes)
 RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...93.184.216.34[@carol.testing.openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=carolCert.pem;
+RC=0 "rw-carol":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-carol":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-carol":        ....1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none
 RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...192.168.0.200[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-dave":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "rw-dave":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
@@ -395,23 +398,30 @@ RC=2      rw-any
 | emitting length of IKEv2 Notify Payload: 28
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   my next payload will not be a certificate request
-| I did not send a certificate request (CERTREQ) because
-|   no known CA for the other end
-|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+|   my next payload will be a certificate request
+| have cert 'carolCert.pem', send CERTREQ with Auth Key ID
+|    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
+| ***emit IKEv2 Certificate Request Payload:
+|    critical bit: none
+|    ikev2 cert encoding: CERT_X509_SIGNATURE
+| emitting 20 raw bytes of CA into IKEv2 Certificate Request Payload
+| CA  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
+|   3a ed cd aa
+| emitting length of IKEv2 Certificate Request Payload: 25
+|    next-payload: ISAKMP_NEXT_v2V [@416=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 432
+| emitting length of ISAKMP Message: 457
 | #1 complete v2 state transition with STF_OK
 ./certreplydaveR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./certreplydaveR1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
+sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -434,9 +444,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
-|   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
+|   76 d4 bc 8f  26 00 00 1c  00 00 40 05  e0 69 e5 73
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
-|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
+|   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30
 |   =========== input from pcap file carolI2.pcap ========
 | *received 1520 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -1044,7 +1056,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | reached self-signed root ca
 ./certreplydaveR1 0: validated X509 certificate: 'C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org', added to trusted database
 | Public key validated
-| ikev2 verify required CA is '%any'
+| ikev2 verify required CA is 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 |
 | List of X.509 End Certificates:
 |
@@ -1109,7 +1121,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
 |   already received a CERT from peer
-|   no known CA for the other end
 | I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
@@ -1997,23 +2008,30 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 | emitting length of IKEv2 Notify Payload: 28
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   my next payload will not be a certificate request
-| I did not send a certificate request (CERTREQ) because
-|   no known CA for the other end
-|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+|   my next payload will be a certificate request
+| have CA 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA', send CERTREQ with CA's Key ID
+|    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
+| ***emit IKEv2 Certificate Request Payload:
+|    critical bit: none
+|    ikev2 cert encoding: CERT_X509_SIGNATURE
+| emitting 20 raw bytes of CA into IKEv2 Certificate Request Payload
+| CA  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
+|   3a ed cd aa
+| emitting length of IKEv2 Certificate Request Payload: 25
+|    next-payload: ISAKMP_NEXT_v2V [@416=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 432
+| emitting length of ISAKMP Message: 457
 | #3 complete v2 state transition with STF_OK
 ./certreplydaveR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
 ./certreplydaveR1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.35:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.35:500 (using #3)
+sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.35:500 (using #3)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -2036,9 +2054,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   f3 71 b6 36  19 32 87 fc  7f b2 9b 73  de 8a d0 75
-|   d9 71 fc c6  2b 00 00 1c  00 00 40 05  64 2a d2 2a
+|   d9 71 fc c6  26 00 00 1c  00 00 40 05  64 2a d2 2a
 |   dc 2f fc 41  eb 93 5f 7b  44 d8 3f 95  fd c3 8c 0f
-|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
+|   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30
 | freeing state object #1
 ./certreplydaveR1 leak: reply packet, item size: X
 ./certreplydaveR1 leak: saved first packet, item size: X
@@ -2100,8 +2120,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: ID host_pair, item size: X
 ./certreplydaveR1 leak: host_pair, item size: X
 ./certreplydaveR1 leak: host ip, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: host ip, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: connection name, item size: X
 ./certreplydaveR1 leak: rfc3110 format of public key [created], item size: X
@@ -2126,8 +2148,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: ID host_pair, item size: X
 ./certreplydaveR1 leak: host_pair, item size: X
 ./certreplydaveR1 leak: host ip, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: host ip, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: connection name, item size: X
 ./certreplydaveR1 leak: rfc3110 format of public key [created], item size: X
@@ -2155,7 +2179,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: ID host_pair, item size: X
 ./certreplydaveR1 leak: host_pair, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: host ip, item size: X
+./certreplydaveR1 leak: ca string, item size: X
 ./certreplydaveR1 leak: keep id name, item size: X
 ./certreplydaveR1 leak: connection name, item size: X
 ./certreplydaveR1 leak: issuer, item size: X

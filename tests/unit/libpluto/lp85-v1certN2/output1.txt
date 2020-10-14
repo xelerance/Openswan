@@ -51,7 +51,7 @@ processing whack msg time: X size: Y
 |   orient rw finished with: 1 [0.0.0.0]
 RC=0 "rw": 10.1.0.0/16===192.168.0.1[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw":   CAs: '%any'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+RC=0 "rw":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 RC=0 "rw":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
@@ -312,6 +312,7 @@ sending 348 bytes for STATE_MAIN_R1 through eth0:500 [192.168.0.1:500] to 93.184
 ./v1certN2 leak: host_pair, item size: X
 ./v1certN2 leak: ca string, item size: X
 ./v1certN2 leak: host ip, item size: X
+./v1certN2 leak: ca string, item size: X
 ./v1certN2 leak: keep id name, item size: X
 ./v1certN2 leak: connection name, item size: X
 ./v1certN2 leak: rfc3110 format of public key [created], item size: X

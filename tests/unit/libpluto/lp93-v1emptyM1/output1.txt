@@ -51,6 +51,7 @@ processing whack msg time: X size: Y
 |   orient homeV1empty finished with: 1 [0.0.0.0]
 RC=0 "homeV1empty": 192.168.0.100[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16; unrouted; eroute owner: #0
 RC=0 "homeV1empty":     myip=unset; hisip=unset; mycert=carolCert.pem; hiscert=moonCert.pem;
+RC=0 "homeV1empty":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
 RC=0 "homeV1empty":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
 RC=0 "homeV1empty":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
 RC=0 "homeV1empty":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0

@@ -577,8 +577,12 @@ load_end_certificate(const char *filename, struct end *dst)
         }
 
         add_x509_public_key_to_list(&pluto_pubkeys, &dst->id, cert.u.x509, valid_until, DAL_LOCAL, key);
-	    dst->cert.type = cert.type;
-	    dst->cert.u.x509 = add_x509cert(cert.u.x509);
+        dst->cert.type = cert.type;
+        dst->cert.u.x509 = add_x509cert(cert.u.x509);
+
+        /* if no CA is defined, use issuer as default */
+        if (dst->ca.ptr == NULL)
+            dst->ca = dst->cert.u.x509->issuer;
 	break;
 
     default:
