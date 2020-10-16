@@ -5,10 +5,23 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 
-v2.6.52.2dev1 (July 22, 2020)
+v2.6.52.2rc1 (October 16, 2020)
 
 Fixing "road warrior" bug related to SA replacement.
 
+* wo#10380: Unit test updates for rekey fuzzing changes [Martin Hicks]
+* wo#10380: Apply rekey fuzzing to IKEv2 Parent SA_REPLACE event [Martin Hicks]
+* wo#10380: Refactor code that does the rekey fuzzing [Martin Hicks]
+* fix build with gcc 10 [Fabrice Fontaine]
+* wo#10213: Don't prevent responder peer from initiating SA rekey [Martin Hicks]
+* wo#10254: Add force mode to delete_connection() [Martin Hicks]
+* ipsecdoi_replace(): Pass Parent SA state into add_pending() [Martin Hicks]
+* wo#10220: Use latest Parent SA during Child SA rekey [Martin Hicks]
+* Revert "wo#8102 - retain connection policy when calling ipsecdoi_replace()
+  on parent SA" [Martin Hicks]
+* Update .gitignore to ignore tags file and .sw? [Samir Hussain]
+* Add null check for aes key. If key is null it be segfault. [AnatoliChe]
+* wo#5715: Allow connaddrfamily= to force address family [Martin Hicks]
 * wo#10083 - Fix gateway rekey with roadwarrior peer [Martin Hicks]
 * Move source package lintian overrides to debian/source. [Samuel Thibault]
 
