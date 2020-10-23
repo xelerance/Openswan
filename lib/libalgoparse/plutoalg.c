@@ -144,8 +144,8 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 	alg_info->alg_info_cnt++;
 
 	DBG(DBG_CRYPT, DBG_log("__alg_info_ike_add() "
-                               "ealg=%d aalg=%d prfalg_id=%d modp_id=%d, cnt=%d",
-                               ealg_id, aalg_id, prfalg_id, modp_id,
+                               "ealg=%d(%d) aalg=%d(%d) prfalg_id=%d modp_id=%d, cnt=%d",
+                               ealg_id, ek_bits, aalg_id, ak_bits, prfalg_id, modp_id,
                                alg_info->alg_info_cnt));
 }
 
@@ -237,11 +237,20 @@ alg_info_ike_add (struct alg_info *alg_info
                 for(i_cipher=0; i_cipher < n_ciphers; i_cipher++) {
                     int x_cipher = ciphers[i_cipher];
 
+                    if(ek_bits == 0 && ciphers == default_cipher_algs) {
+                        struct ike_encr_desc *edesc = ike_alg_get_encr(x_cipher);
+                        if (edesc)
+                            ek_bits = edesc->keydeflen;
+                        else
+                            DBG(DBG_CRYPT, DBG_log("warning: unable to get cipher default keylen, "
+                                                   "ike_alg_get_encr(%d) == NULL", x_cipher));
+                    }
+
                     __alg_info_ike_add((struct alg_info_ike *)alg_info,
-                                       x_cipher, ek_bits,
-                                       x_integ,  ak_bits,
-                                       x_prf_id, x_modp_id);
-		}
+                                           x_cipher, ek_bits,
+                                           x_integ,  ak_bits,
+                                           x_prf_id, x_modp_id);
+                }
             }
         }
     }

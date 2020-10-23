@@ -23,6 +23,9 @@ struct ike_integ_desc h1 = {
 
 struct ike_encr_desc e1 = {
  .common = { .name = "encrypt", .officname = "funfun" },
+ .keydeflen = 128,
+ .keyminlen = 128,
+ .keymaxlen = 256,
  .do_crypt = do_crypt_abort
 };
 

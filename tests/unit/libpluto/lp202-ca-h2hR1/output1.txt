@@ -51,47 +51,48 @@ RC=0 "rw":   keys: 1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none...
 RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 |   =========== input from pcap file h2hI1.pcap ========
-| *received 628 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 652 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
-|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   21 20 22 08  00 00 00 00  00 00 02 8c  22 00 01 0c
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  03 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   02 00 00 05  03 00 00 08  03 00 00 0c  00 00 00 08
+|   04 00 00 05  02 00 00 2c  04 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  02 00 00 05
 |   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
-|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
-|   28 00 01 08  00 0e 00 00  bf da ea a0  86 55 9f df
-|   bf bb 5e 42  b9 a6 18 18  ab ca 13 b4  cf 6a 92 77
-|   44 6c 57 46  1c 07 a0 86  44 e0 9c 5f  98 41 7c 4a
-|   3b ab 6c 35  56 5a 63 cc  0b 2e 40 97  16 18 bf c0
-|   83 55 57 cc  94 04 cd 6b  a2 f2 b9 a6  3b 9b 0d fd
-|   73 7f 91 04  06 28 86 f9  cb 0b 8a 65  14 a0 f5 b2
-|   ed 6b 23 1f  7d df 90 28  b8 0f 28 95  fb 00 22 c9
-|   e3 8f b9 df  b8 7c 66 bc  75 1b c8 61  ba b5 93 17
-|   d6 df 87 26  d3 4d 2d 0a  a4 80 e4 51  fd 38 fa 42
-|   ca b5 f5 2d  90 80 be a4  9c 08 17 b6  ab a9 49 4c
-|   f7 45 53 50  cb 49 f8 b4  44 50 86 91  37 f7 5c b0
-|   4a ce 96 1f  fc 2a a5 16  e9 45 e4 f2  e5 f0 c9 81
-|   c1 66 68 55  ed c9 3b 62  27 a9 34 0e  01 a8 54 63
-|   7f 99 2f ea  6d 3a 21 4c  32 72 bf bb  85 df 2b 8e
-|   cc a0 40 3e  96 16 fa 03  96 7f cd d7  d0 11 d0 17
-|   89 96 cd 01  25 d3 3d dd  d2 5e 2c bd  2e 3a e4 97
-|   b6 33 a3 5c  41 01 ed 8e  29 00 00 14  3c d5 15 14
-|   50 ab 73 9a  c8 ac 54 1c  0d e6 bc 04  29 00 00 1c
-|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
-|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
-|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
-|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   02 00 00 2c  05 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0f  00 00 00 2c
+|   06 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0f  28 00 01 08  00 0e 00 00
+|   bf da ea a0  86 55 9f df  bf bb 5e 42  b9 a6 18 18
+|   ab ca 13 b4  cf 6a 92 77  44 6c 57 46  1c 07 a0 86
+|   44 e0 9c 5f  98 41 7c 4a  3b ab 6c 35  56 5a 63 cc
+|   0b 2e 40 97  16 18 bf c0  83 55 57 cc  94 04 cd 6b
+|   a2 f2 b9 a6  3b 9b 0d fd  73 7f 91 04  06 28 86 f9
+|   cb 0b 8a 65  14 a0 f5 b2  ed 6b 23 1f  7d df 90 28
+|   b8 0f 28 95  fb 00 22 c9  e3 8f b9 df  b8 7c 66 bc
+|   75 1b c8 61  ba b5 93 17  d6 df 87 26  d3 4d 2d 0a
+|   a4 80 e4 51  fd 38 fa 42  ca b5 f5 2d  90 80 be a4
+|   9c 08 17 b6  ab a9 49 4c  f7 45 53 50  cb 49 f8 b4
+|   44 50 86 91  37 f7 5c b0  4a ce 96 1f  fc 2a a5 16
+|   e9 45 e4 f2  e5 f0 c9 81  c1 66 68 55  ed c9 3b 62
+|   27 a9 34 0e  01 a8 54 63  7f 99 2f ea  6d 3a 21 4c
+|   32 72 bf bb  85 df 2b 8e  cc a0 40 3e  96 16 fa 03
+|   96 7f cd d7  d0 11 d0 17  89 96 cd 01  25 d3 3d dd
+|   d2 5e 2c bd  2e 3a e4 97  b6 33 a3 5c  41 01 ed 8e
+|   29 00 00 14  3c d5 15 14  50 ab 73 9a  c8 ac 54 1c
+|   0d e6 bc 04  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -161,40 +162,43 @@ RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREF
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
+|    length: 44
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+|    length: 12
 |    transform type: 1
 |    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
 | collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
@@ -212,9 +216,9 @@ RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREF
 |    transform ID: 14
 | collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
+|    length: 44
 |    prop #: 2
 |    proto ID: 1
 |    spi size: 0
