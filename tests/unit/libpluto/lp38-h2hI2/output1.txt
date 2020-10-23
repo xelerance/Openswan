@@ -62,71 +62,72 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | inserting state object #1 bucket: 4
 ./h2hI2 initiating v2 parent SA
 ./h2hI2 STATE_PARENT_I1: initiate
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
-| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
-|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   21 20 22 08  00 00 00 00  00 00 02 8c  22 00 01 0c
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  03 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   02 00 00 05  03 00 00 08  03 00 00 0c  00 00 00 08
+|   04 00 00 05  02 00 00 2c  04 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  02 00 00 05
 |   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
-|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
-|   28 00 01 08  00 0e 00 00  45 a7 3f fb  25 20 77 b3
-|   45 0a e4 91  a6 af 49 64  99 d7 99 08  e8 86 1f d1
-|   29 c7 68 64  ab 29 c3 fb  ad 47 9a d0  6b 35 08 ed
-|   d0 9c 59 fb  e8 b8 1e d8  0b a6 83 90  ca 4a 73 f6
-|   5c c1 9f ad  32 57 70 e3  65 27 9a 8f  69 2d 52 ec
-|   e1 42 bc db  80 8b 10 6a  02 71 fe 15  29 1e fa 8a
-|   e6 21 89 84  d0 dd 72 19  09 1c 26 01  c4 3e bb c1
-|   b6 cd ca fc  d6 f7 aa 0d  86 62 21 e4  1e 86 8a 74
-|   5b 06 d5 2c  19 27 55 ca  bb 5e 1d 20  e0 e3 24 79
-|   9b d9 65 a7  50 57 48 b1  5a d0 71 a2  60 ef 14 75
-|   69 dd 14 1a  09 88 6d c3  b2 7d f5 18  bd c1 33 1d
-|   b0 7d b6 dc  2b 1e a1 98  06 bb aa c4  a4 69 b3 c4
-|   f0 4e 08 f3  ee 73 85 41  4f 5a dd d3  55 e1 ec a2
-|   e1 97 fb 2f  f2 b0 6f bc  fc 5f 6b c2  3a 32 e6 46
-|   e1 df 42 70  03 1c 0e a9  1d cb e0 75  ca dd 45 ad
-|   d7 17 f9 02  ef e0 f9 78  d1 1e 82 8f  c2 b7 aa 25
-|   19 6f 2f 08  4d 2b df dc  29 00 00 14  80 01 02 03
-|   04 05 06 07  08 09 0a 0b  0c 0d 0e 0f  29 00 00 1c
-|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
-|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
-|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
-|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   02 00 00 2c  05 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0f  00 00 00 2c
+|   06 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0f  28 00 01 08  00 0e 00 00
+|   45 a7 3f fb  25 20 77 b3  45 0a e4 91  a6 af 49 64
+|   99 d7 99 08  e8 86 1f d1  29 c7 68 64  ab 29 c3 fb
+|   ad 47 9a d0  6b 35 08 ed  d0 9c 59 fb  e8 b8 1e d8
+|   0b a6 83 90  ca 4a 73 f6  5c c1 9f ad  32 57 70 e3
+|   65 27 9a 8f  69 2d 52 ec  e1 42 bc db  80 8b 10 6a
+|   02 71 fe 15  29 1e fa 8a  e6 21 89 84  d0 dd 72 19
+|   09 1c 26 01  c4 3e bb c1  b6 cd ca fc  d6 f7 aa 0d
+|   86 62 21 e4  1e 86 8a 74  5b 06 d5 2c  19 27 55 ca
+|   bb 5e 1d 20  e0 e3 24 79  9b d9 65 a7  50 57 48 b1
+|   5a d0 71 a2  60 ef 14 75  69 dd 14 1a  09 88 6d c3
+|   b2 7d f5 18  bd c1 33 1d  b0 7d b6 dc  2b 1e a1 98
+|   06 bb aa c4  a4 69 b3 c4  f0 4e 08 f3  ee 73 85 41
+|   4f 5a dd d3  55 e1 ec a2  e1 97 fb 2f  f2 b0 6f bc
+|   fc 5f 6b c2  3a 32 e6 46  e1 df 42 70  03 1c 0e a9
+|   1d cb e0 75  ca dd 45 ad  d7 17 f9 02  ef e0 f9 78
+|   d1 1e 82 8f  c2 b7 aa 25  19 6f 2f 08  4d 2b df dc
+|   29 00 00 14  80 01 02 03  04 05 06 07  08 09 0a 0b
+|   0c 0d 0e 0f  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | #1 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 | v2_state_transition: st is #1; pst is #0; transition_st is #0
@@ -527,10 +528,10 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 leak: saved gi value, item size: X
 ./h2hI2 leak: msg_digest, item size: X
 ./h2hI2 leak: ikev2_outI1 KE, item size: X
+./h2hI2 leak: db2_expand->attrs, item size: X
 ./h2hI2 leak: db_context->trans (expand), item size: X
 ./h2hI2 leak: db_context->conj (expand), item size: X
 ./h2hI2 leak: alg_info_ike, item size: X
-./h2hI2 leak: db_context->attrs, item size: X
 ./h2hI2 leak: db_context, item size: X
 ./h2hI2 leak: v2 policy database, item size: X
 ./h2hI2 leak: struct state in new_state(), item size: X

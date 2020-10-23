@@ -144,8 +144,8 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 	alg_info->alg_info_cnt++;
 
 	DBG(DBG_CRYPT, DBG_log("__alg_info_ike_add() "
-                               "ealg=%d aalg=%d prfalg_id=%d modp_id=%d, cnt=%d",
-                               ealg_id, aalg_id, prfalg_id, modp_id,
+                               "ealg=%d(%d) aalg=%d(%d) prfalg_id=%d modp_id=%d, cnt=%d",
+                               ealg_id, ek_bits, aalg_id, ak_bits, prfalg_id, modp_id,
                                alg_info->alg_info_cnt));
 }
 
@@ -179,6 +179,12 @@ static enum ikev2_trans_type_integ default_integ_algs[] = {
 static enum ikev2_trans_type_encr  default_cipher_algs[] = {
     IKEv2_ENCR_AES_CBC,
     IKEv2_ENCR_AES_GCM_8,          /* IoT SHOULD */
+};
+#define NUM_CIPHER_ALGOS elemsof(default_cipher_algs)
+
+static int default_key_lengths[NUM_CIPHER_ALGOS] = {
+    128,	        /* for IKEv2_ENCR_AES_CBC   */
+    128,            /* for IKEv2_ENCR_AES_GCM_8 */
 };
 
 /*
@@ -237,11 +243,14 @@ alg_info_ike_add (struct alg_info *alg_info
                 for(i_cipher=0; i_cipher < n_ciphers; i_cipher++) {
                     int x_cipher = ciphers[i_cipher];
 
+                    if(ek_bits == 0 && ciphers == default_cipher_algs)
+                        ek_bits = default_key_lengths[i_cipher];
+
                     __alg_info_ike_add((struct alg_info_ike *)alg_info,
-                                       x_cipher, ek_bits,
-                                       x_integ,  ak_bits,
-                                       x_prf_id, x_modp_id);
-		}
+                                           x_cipher, ek_bits,
+                                           x_integ,  ak_bits,
+                                           x_prf_id, x_modp_id);
+                }
             }
         }
     }

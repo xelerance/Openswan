@@ -10,7 +10,7 @@ testing db1 ops
 | parser_alg_info_add() aalg_getbyname("sha1")=2
 | enum_search_prefix ("OAKLEY_GROUP_MODP2048")
 | parser_alg_info_add() modp_getbyname("modp2048")=14
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=2 modp_id=14, cnt=1
 
 PSK:
 | found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14)
@@ -84,89 +84,101 @@ v1 (RSA+PSK):| sa disjunct cnt: 1
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 
 default RSA:
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | proposals: cnt=1
 |  disj: cnt=12 [next=13]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 2:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 3:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 4:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 5:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 6:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 7:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 8:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 9:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 10:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 11:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 12:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
@@ -243,7 +255,7 @@ default v1 (RSA):| sa disjunct cnt: 1
 | parser_alg_info_add() aalg_getbyname("sha1")=2
 | enum_search_prefix ("OAKLEY_GROUP_MODP2048")
 | parser_alg_info_add() modp_getbyname("modp2048")=14
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=2 modp_id=14, cnt=1
 | found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14)
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
@@ -254,89 +266,101 @@ default v1 (RSA):| sa disjunct cnt: 1
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | IKEv2 defaults 
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
-| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
-| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
-| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
-| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
-| found algorithm: aes_cbc(12)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_cbc(12)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
-| found algorithm: aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
 | proposals: cnt=1
 |  disj: cnt=12 [next=13]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 2:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 3:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 4:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | 5:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 6:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 7:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 8:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
 | 9:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 10:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 11:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_cbc" [attrs: 0]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 | 12:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="aes_gcm_8" [attrs: 0]
+|     trans-type-encr value="aes_gcm_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
@@ -346,7 +370,7 @@ default v1 (RSA):| sa disjunct cnt: 1
 | parser_alg_info_add() aalg_getbyname("sha2_512")=14
 | enum_search_prefix ("OAKLEY_GROUP_MODP2048")
 | parser_alg_info_add() modp_getbyname("modp2048")=14
-| __alg_info_ike_add() ealg=12 aalg=14 prfalg_id=7 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=12(256) aalg=14(0) prfalg_id=7 modp_id=14, cnt=1
 | found algorithm: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP2048(14)
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
