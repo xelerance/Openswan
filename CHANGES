@@ -5,7 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 
-v2.6.52.2rc1 (October 16, 2020)
+v2.6.52.2 (October 23, 2020)
 
 Fixing "road warrior" bug related to SA replacement.
 
