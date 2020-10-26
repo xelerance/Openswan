@@ -125,6 +125,7 @@ struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
             if(esp_info->authkeylen) {
                 db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
             }
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_ESN, IKEv2_ESN_DISABLED);
             db2_prop_close(dc);
         }
         break;
