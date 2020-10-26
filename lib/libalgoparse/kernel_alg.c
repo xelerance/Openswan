@@ -226,7 +226,7 @@ kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
               return 0;
           }
           if(alg_p->kernel_sadb_alg.sadb_alg_minbits == 0) {
-              openswan_log("registed kernel %s algorithm %s [%u, %u<=key<=%u]"
+              openswan_log("registered kernel %s algorithm %s [%u, %u<=key<=%u]"
                            , extname
                            , enum_show(en, ikev2num)
                            , ikev2num

@@ -12,12 +12,12 @@
 | init_fake_secrets() corrupting svm #0, 'initiator-V2_init' recv=0x22
 | init_fake_secrets() corrupting svm #1, 'initiator-failure' recv=0x22
 | init_fake_secrets() corrupting svm #3, 'responder-V2_init' recv=0x22
-./h2hR1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./h2hR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./h2hR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./h2hR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./h2hR1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./h2hR1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./h2hR1 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hR1 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hR1 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hR1 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./h2hR1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./h2hR1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y

@@ -9,12 +9,12 @@
 ./parentR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./parentR2 loading secrets from "../samples/jj.secrets"
 ./parentR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-./parentR2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./parentR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./parentR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./parentR2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./parentR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./parentR2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./parentR2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./parentR2 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./parentR2 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./parentR2 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentR2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentR2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -25,7 +25,7 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2--wrong with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| ike (phase1) algorihtm values: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
 ./parentR2 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./parentR2 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>

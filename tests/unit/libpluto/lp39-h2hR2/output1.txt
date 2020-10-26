@@ -9,12 +9,12 @@
 ./h2hR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR2 loading secrets from "../samples/jj.secrets"
 ./h2hR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-./h2hR2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./h2hR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./h2hR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./h2hR2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./h2hR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./h2hR2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./h2hR2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hR2 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hR2 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hR2 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./h2hR2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./h2hR2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y

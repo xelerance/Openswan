@@ -10,12 +10,12 @@
 ./v1rwnatM3 adjusting ipsec.d to ../samples/alice
 ./v1rwnatM3 loading secrets from "../samples/alice.secrets"
 ./v1rwnatM3 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
-./v1rwnatM3 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1rwnatM3 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1rwnatM3 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1rwnatM3 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatM3 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatM3 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1rwnatM3 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatM3 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatM3 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatM3 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatM3 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatM3 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -31,7 +31,7 @@ processing whack msg time: X size: Y
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | from whack: got --esp=3des-md5;modp2048
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1rwnatM3 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
 ./v1rwnatM3 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>

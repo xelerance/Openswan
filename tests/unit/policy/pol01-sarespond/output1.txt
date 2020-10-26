@@ -7,12 +7,12 @@
 ./sarespond ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ./sarespond ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./sarespond ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./sarespond registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./sarespond registed kernel encr algorithm 3des [3, 192<=key<=192]
-./sarespond registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./sarespond registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./sarespond registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./sarespond registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./sarespond registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./sarespond registered kernel encr algorithm 3des [3, 192<=key<=192]
+./sarespond registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./sarespond registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./sarespond registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./sarespond registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./sarespond no secrets filename matched "../samples/parker.secrets"
 | processing whack message of size: A
 | processing whack message of size: A

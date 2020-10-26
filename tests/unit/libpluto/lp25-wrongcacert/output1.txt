@@ -11,12 +11,12 @@
 ./wrongcacert loading secrets from "../samples/gatewaycert.secrets"
 ./wrongcacert   loaded private key file '../samples/wrongcert/private/moonKey.pem' (CERT bytes)
 ./wrongcacert loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
-./wrongcacert registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./wrongcacert registed kernel encr algorithm 3des [3, 192<=key<=192]
-./wrongcacert registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./wrongcacert registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./wrongcacert registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./wrongcacert registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./wrongcacert registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./wrongcacert registered kernel encr algorithm 3des [3, 192<=key<=192]
+./wrongcacert registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./wrongcacert registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./wrongcacert registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./wrongcacert registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y

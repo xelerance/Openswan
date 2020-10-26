@@ -11,12 +11,12 @@
 ./v1rwnatN2 loading secrets from "../../libpluto/samples/moon.secrets"
 ./v1rwnatN2   loaded private key file '../../libpluto/samples/moon/private/moonKey.pem' (CERT bytes)
 ./v1rwnatN2 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
-./v1rwnatN2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1rwnatN2 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1rwnatN2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1rwnatN2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatN2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatN2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1rwnatN2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatN2 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatN2 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatN2 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatN2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatN2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -32,7 +32,7 @@ processing whack msg time: X size: Y
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
 ./v1rwnatN2 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
 ./v1rwnatN2 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>

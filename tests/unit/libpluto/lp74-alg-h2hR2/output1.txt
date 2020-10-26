@@ -9,12 +9,12 @@
 ./h2hR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./h2hR2 loading secrets from "../samples/jj.secrets"
 ./h2hR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-./h2hR2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./h2hR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./h2hR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./h2hR2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./h2hR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./h2hR2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./h2hR2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./h2hR2 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./h2hR2 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./h2hR2 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./h2hR2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./h2hR2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -27,7 +27,7 @@ processing whack msg time: X size: Y
 | Added new connection alttunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | from whack: got --esp=aes128-sha1;modp1536
 | esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./h2hR2 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
 ./h2hR2 use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>

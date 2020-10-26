@@ -11,12 +11,12 @@
 ./v1sha512M1 loading secrets from "../samples/carol.secrets"
 ./v1sha512M1   loaded private key file '../samples/carol/private/carolKey.pem' (CERT bytes)
 ./v1sha512M1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
-./v1sha512M1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1sha512M1 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1sha512M1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1sha512M1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1sha512M1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1sha512M1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1sha512M1 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1sha512M1 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./v1sha512M1 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1sha512M1 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1sha512M1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1sha512M1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./v1sha512M1 Setting NAT-Traversal port-4500 floating to on
 ./v1sha512M1    port floating activation criteria nat_t=1/port_float=1
 ./v1sha512M1    NAT-Traversal support  [enabled]
@@ -26,7 +26,7 @@ processing whack msg time: X size: Y
 | Added new connection home512 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | from whack: got --esp=3des-md5;modp2048
 | esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(16); flags=-strict
+| ike (phase1) algorithm values: aes_cbc(12)_256-hmac_sha2_512_256(14)-prfsha2_512(7)-MODP4096(16); flags=-strict
 ./v1sha512M1   loading certificate from carolCert.pem
 ./v1sha512M1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
 | certificate is valid
