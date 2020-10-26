@@ -148,14 +148,13 @@ ikev2_out_sa(pb_stream *outs
 		      , TRUE /* tunnel */);
     }
 
-    /* now send out all the proposals */
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
     {
 	struct db_v2_prop *vp = &sadb->prop_disj[pc_cnt];
 	unsigned int pr_cnt;
 
 
-	/* now send out all the transforms */
+	/* now send out all the proposals */
 	for(pr_cnt=0; pr_cnt < vp->prop_cnt; pr_cnt++)
 	{
 	    unsigned int ts_cnt;
@@ -202,6 +201,7 @@ ikev2_out_sa(pb_stream *outs
 		}
 	    }
 
+	    /* now send out all the transforms */
 	    for(ts_cnt=0; ts_cnt < vpc->trans_cnt; ts_cnt++) {
 		struct db_v2_trans *tr = &vpc->trans[ts_cnt];
 		struct ikev2_trans t;
@@ -230,9 +230,9 @@ ikev2_out_sa(pb_stream *outs
 			, &at_pbs);
 		}
 
-
 		close_output_pbs(&at_pbs);
 	    }
+
 	    close_output_pbs(&t_pbs);
 	}
     }
