@@ -266,9 +266,7 @@ spdb_v2_match_parent(struct db_sa *sadb
 
     //DBG_log("prop_disj_cnt: %u", sadb->prop_disj_cnt);
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
-	struct db_v2_prop_conj  *pj;
-	struct db_v2_trans      *tr;
-	unsigned int             tr_cnt;
+	unsigned int pj_cnt;
 	int encrid, integid, prfid, dhid, esnid;
         int encr_keylen_policy;
 
@@ -277,101 +275,106 @@ spdb_v2_match_parent(struct db_sa *sadb
         encr_keylen_policy = 0;
 	encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 
-	/* In PARENT SAs, we only support one conjunctive item */
-	pj = &pd->props[0];
-	if(pj->protoid  != PROTO_ISAKMP) continue;
+	for(pj_cnt=0; pj_cnt < pd->prop_cnt; pj_cnt++) {
+	    struct db_v2_prop_conj  *pj;
+	    struct db_v2_trans      *tr;
+	    unsigned int             tr_cnt;
 
-	for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
-	   int keylen = -1;
-	   unsigned int attr_cnt;
+	    pj = &pd->props[pj_cnt];
+	    if (pj->protoid != PROTO_ISAKMP)
+		continue;
 
-	    tr = &pj->trans[tr_cnt];
+	    for(tr_cnt=0; tr_cnt < pj->trans_cnt; tr_cnt++) {
+		int keylen = -1;
+		unsigned int attr_cnt;
 
-	    for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		struct db_v2_attr *attr = &tr->attrs[attr_cnt];
+		tr = &pj->trans[tr_cnt];
 
-		if (attr->ikev2 == IKEv2_KEY_LENGTH)
+		for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
+		    struct db_v2_attr *attr = &tr->attrs[attr_cnt];
+
+		    if (attr->ikev2 == IKEv2_KEY_LENGTH)
 			keylen = attr->val;
-	    }
+		}
 
-            /* the assignments are outside of the if, because they are
-             * used to debug things when the match fails
-             */
-	    switch(tr->transform_type) {
-	    case IKEv2_TRANS_TYPE_ENCR:
-                encrid = tr->value;
-                encr_keylen_policy = keylen;
-                if(tr->value == encr_transform && (encr_keylen_policy == -1 || encr_keylen_policy == encr_keylen)) {
-		    encr_matched=TRUE;
-                }
+		/* the assignments are outside of the if, because they are
+		 * used to debug things when the match fails
+		 */
+		switch(tr->transform_type) {
+		case IKEv2_TRANS_TYPE_ENCR:
+		    encrid = tr->value;
+		    encr_keylen_policy = keylen;
+		    if(tr->value == encr_transform && (encr_keylen_policy == -1 || encr_keylen_policy == encr_keylen)) {
+			encr_matched=TRUE;
+		    }
+		    break;
+
+		case IKEv2_TRANS_TYPE_INTEG:
+		    integid = tr->value;
+		    if(tr->value == integ_transform) {
+			integ_matched=TRUE;
+		    }
+		    break;
+
+		case IKEv2_TRANS_TYPE_PRF:
+		    prfid = tr->value;
+		    if(tr->value == prf_transform) {
+			prf_matched=TRUE;
+		    }
 		break;
 
-	    case IKEv2_TRANS_TYPE_INTEG:
-                integid = tr->value;
-                if(tr->value == integ_transform) {
-		    integ_matched=TRUE;
-                }
-		break;
+		case IKEv2_TRANS_TYPE_DH:
+		    dhid = tr->value;
+		    if(tr->value == dh_transform) {
+			dh_matched=TRUE;
+		    }
+		    break;
 
-	    case IKEv2_TRANS_TYPE_PRF:
-                prfid = tr->value;
-		if(tr->value == prf_transform) {
-		    prf_matched=TRUE;
-                }
-		break;
+		default:
+		    continue; /* could be clearer as a break */
+		}
 
-	    case IKEv2_TRANS_TYPE_DH:
-                dhid = tr->value;
-		if(tr->value == dh_transform) {
-		    dh_matched=TRUE;
-                }
-		break;
-
-	    default:
-		continue; /* could be clearer as a break */
-	    }
-
-	    /* esn_matched not tested! */
-	    if(dh_matched && prf_matched && integ_matched && encr_matched) {
-                if(DBGP(DBG_CONTROL)) {
-                    DBG_log("selected proposal %u encr=%s[%d] integ=%s prf=%s modp=%s"
+		/* esn_matched not tested! */
+		if(dh_matched && prf_matched && integ_matched && encr_matched) {
+		    if(DBGP(DBG_CONTROL)) {
+			DBG_log("selected proposal %u encr=%s[%d] integ=%s prf=%s modp=%s"
                             , propnum
                             , enum_name(&trans_type_encr_names, encrid), encr_keylen
                             , enum_name(&trans_type_integ_names, integid)
                             , enum_name(&trans_type_prf_names, prfid)
                             , enum_name(&oakley_group_names, dhid));
-                }
+		    }
 
-		return TRUE;
-            }
-	}
-        /* only dumped when there is no match: it can be volumnous */
-	if(DBGP(DBG_CONTROLMORE)) {
-            /* note: enum_show uses a static buffer so more than one call per
-               statement is dangerous */
-	    DBG_log("proposal %u %6s encr= (policy:%20s[%d] vs offered:%s[%d]) [%u,%u]"
+		    return TRUE;
+		}
+	    }
+	    /* only dumped when there is no match: it can be volumnous */
+	    if(DBGP(DBG_CONTROLMORE)) {
+		/* note: enum_show uses a static buffer so more than one call per
+		 *       statement is dangerous */
+		DBG_log("proposal %u %6s encr= (policy:%20s[%d] vs offered:%s[%d]) [%u,%u]"
 		    , propnum
 		    , encr_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_encr_names, encrid), encr_keylen
 		    , enum_show(&trans_type_encr_names, encr_transform), encr_keylen_policy
                     , pd_cnt, attempt++);
-	    DBG_log("proposal %u %6s integ=(policy:%20s vs offered:%s)"
+		DBG_log("proposal %u %6s integ=(policy:%20s vs offered:%s)"
                     , propnum
 		    , integ_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_integ_names, integid)
 		    , enum_show(&trans_type_integ_names, integ_transform));
-	    DBG_log("proposal %u %6s prf=  (policy:%20s vs offered:%s)"
+		DBG_log("proposal %u %6s prf=  (policy:%20s vs offered:%s)"
                     , propnum
 		    , prf_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_prf_names, prfid)
 		    , enum_show(&trans_type_prf_names, prf_transform));
-	    DBG_log("proposal %u %6s dh=   (policy:%20s vs offered:%s)"
+		DBG_log("proposal %u %6s dh=   (policy:%20s vs offered:%s)"
                     , propnum
 		    , dh_matched ? "succ" : "failed"
 		    , enum_name(&oakley_group_names, dhid)
 		    , enum_show(&oakley_group_names, dh_transform));
+	    }
 	}
-
     }
     return FALSE;
 }
