@@ -37,6 +37,7 @@
 #include "oswlog.h"
 #include "oswalloc.h"
 #include "algparse.h"
+#include "kernel_alg.h"
 
 #ifdef HAVE_LIBNSS
 #include "oswconf.h"
@@ -100,8 +101,8 @@ __alg_info_esp_add (struct alg_info_esp *alg_info
 	/* sadb values */
 	alg_info->alg_info_cnt++;
 	DBG(DBG_CRYPT, DBG_log("__alg_info_esp_add() "
-				"ealg=%d aalg=%d cnt=%d",
-				ealg_id, aalg_id, alg_info->alg_info_cnt));
+				"ealg=%d/%dbit aalg=%d/%dbit cnt=%d",
+				ealg_id, ek_bits, aalg_id, ak_bits, alg_info->alg_info_cnt));
 }
 
 /*
@@ -117,6 +118,9 @@ alg_info_esp_add (struct alg_info *alg_info,
     /*	Policy: default to AES_CBC */
     if (ealg_id==0)
         ealg_id=IKEv2_ENCR_AES_CBC;
+
+    if (ek_bits == 0)
+        ek_bits = kernel_alg_esp_enc_keylen(ealg_id) * BITS_PER_BYTE;
 
     if (ealg_id>0) {
         if(aalg_id > 0) {

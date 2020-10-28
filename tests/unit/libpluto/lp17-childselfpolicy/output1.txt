@@ -370,9 +370,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 1: output to OUTPUT/respondselfR2.pcap
 |   =========== input from pcap file parentI2.pcap ========
-| *received 400 bytes from 93.184.216.34:500 on eth0 (port=500)
+| *received 416 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   2e 20 23 08  00 00 00 01  00 00 01 90  23 00 01 74
+|   2e 20 23 08  00 00 00 01  00 00 01 a0  23 00 01 84
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   e2 e7 56 4f  b8 f9 1e 31  2d 67 40 ce  dc 28 3e f6
 |   fe 6f 4b 2e  73 7c 09 db  6b 44 35 b6  9d 13 04 de
@@ -387,15 +387,16 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   aa 88 de fa  c3 4e fc 5c  d6 19 53 ea  cc f8 62 17
 |   1e 40 9e 06  16 43 fb e9  8f 00 de e2  29 0e 34 55
 |   33 33 87 27  88 ec 2b 36  90 7a b5 6c  dd 1d c1 5b
-|   f5 dc a4 2c  36 62 0f b9  b9 cd 55 9c  67 ac fc 43
-|   21 13 26 68  91 ba ac 1d  59 eb 7e 55  7b cd 85 11
-|   c4 d3 1d a0  7a cd 63 14  11 84 cf e9  1c ca dd 19
-|   d9 03 c3 87  06 3a bc 6b  4d 13 a5 5c  35 0a 14 76
-|   30 e2 df 7f  9f 3c 58 64  24 eb 4f c1  2a 43 e3 79
-|   e1 a2 83 ae  77 ba 02 14  cd b5 58 59  a3 27 a3 da
-|   7b ea da 41  37 de 9a 1f  2b b3 95 3a  92 d0 c5 8a
-|   a6 cf 0a bc  07 46 0b 32  b8 72 36 15  20 78 17 81
-|   d3 27 be 36  57 ef 1b 7c  b9 23 2a 71  a8 73 6b 73
+|   a8 4a 69 d4  c8 93 71 56  ab ba 8b 52  5c ae 86 be
+|   68 8e 56 17  7e d2 7d 84  85 f1 9c 84  f8 fd b9 35
+|   4e 1e b9 b5  92 36 e3 d9  13 26 2c e6  53 8c 58 5c
+|   c8 9e 8b df  93 12 83 1b  4f a3 a7 da  81 5a b1 06
+|   44 c6 2d bb  a5 9e 68 30  3d ec 67 22  35 43 6f 6e
+|   43 10 ea 6b  b2 71 5d 2e  34 80 f4 8d  8e d6 52 5c
+|   6c f9 f9 bb  11 6e bb a5  5a 74 3a 60  59 8f e6 bc
+|   b2 ac d2 7b  3d 33 04 3a  fd 58 c3 44  88 cf 13 aa
+|   41 c7 09 89  84 82 61 e1  2b 6b 19 39  3a 56 67 fa
+|   b3 06 09 57  10 e2 43 8b  4b 49 5c 2f  b0 97 fe db
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -428,7 +429,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ikev2 R 0x8001020304050607 0x640a06435c7c4b31 sha256:0x515b0bd22e6d76b34fdb760aa7bfad802e053c7e128712992e053c7e12871299 aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | decrypting as RESPONDER, using INITIATOR keys
 | data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   2e 20 23 08  00 00 00 01  00 00 01 90  23 00 01 74
+|   2e 20 23 08  00 00 00 01  00 00 01 a0  23 00 01 84
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   e2 e7 56 4f  b8 f9 1e 31  2d 67 40 ce  dc 28 3e f6
 |   fe 6f 4b 2e  73 7c 09 db  6b 44 35 b6  9d 13 04 de
@@ -443,16 +444,17 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   aa 88 de fa  c3 4e fc 5c  d6 19 53 ea  cc f8 62 17
 |   1e 40 9e 06  16 43 fb e9  8f 00 de e2  29 0e 34 55
 |   33 33 87 27  88 ec 2b 36  90 7a b5 6c  dd 1d c1 5b
-|   f5 dc a4 2c  36 62 0f b9  b9 cd 55 9c  67 ac fc 43
-|   21 13 26 68  91 ba ac 1d  59 eb 7e 55  7b cd 85 11
-|   c4 d3 1d a0  7a cd 63 14  11 84 cf e9  1c ca dd 19
-|   d9 03 c3 87  06 3a bc 6b  4d 13 a5 5c  35 0a 14 76
-|   30 e2 df 7f  9f 3c 58 64  24 eb 4f c1  2a 43 e3 79
-|   e1 a2 83 ae  77 ba 02 14  cd b5 58 59  a3 27 a3 da
-|   7b ea da 41  37 de 9a 1f  2b b3 95 3a  92 d0 c5 8a
-|   a6 cf 0a bc  07 46 0b 32  b8 72 36 15  20 78 17 81
-| R2 calculated auth:  d3 27 be 36  57 ef 1b 7c  b9 23 2a 71  a8 73 6b 73
-| R2  provided  auth:  d3 27 be 36  57 ef 1b 7c  b9 23 2a 71  a8 73 6b 73
+|   a8 4a 69 d4  c8 93 71 56  ab ba 8b 52  5c ae 86 be
+|   68 8e 56 17  7e d2 7d 84  85 f1 9c 84  f8 fd b9 35
+|   4e 1e b9 b5  92 36 e3 d9  13 26 2c e6  53 8c 58 5c
+|   c8 9e 8b df  93 12 83 1b  4f a3 a7 da  81 5a b1 06
+|   44 c6 2d bb  a5 9e 68 30  3d ec 67 22  35 43 6f 6e
+|   43 10 ea 6b  b2 71 5d 2e  34 80 f4 8d  8e d6 52 5c
+|   6c f9 f9 bb  11 6e bb a5  5a 74 3a 60  59 8f e6 bc
+|   b2 ac d2 7b  3d 33 04 3a  fd 58 c3 44  88 cf 13 aa
+|   41 c7 09 89  84 82 61 e1  2b 6b 19 39  3a 56 67 fa
+| R2 calculated auth:  b3 06 09 57  10 e2 43 8b  4b 49 5c 2f  b0 97 fe db
+| R2  provided  auth:  b3 06 09 57  10 e2 43 8b  4b 49 5c 2f  b0 97 fe db
 | authenticator matched, np=35
 | data before decryption:
 |   e2 e7 56 4f  b8 f9 1e 31  2d 67 40 ce  dc 28 3e f6
@@ -468,14 +470,15 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   aa 88 de fa  c3 4e fc 5c  d6 19 53 ea  cc f8 62 17
 |   1e 40 9e 06  16 43 fb e9  8f 00 de e2  29 0e 34 55
 |   33 33 87 27  88 ec 2b 36  90 7a b5 6c  dd 1d c1 5b
-|   f5 dc a4 2c  36 62 0f b9  b9 cd 55 9c  67 ac fc 43
-|   21 13 26 68  91 ba ac 1d  59 eb 7e 55  7b cd 85 11
-|   c4 d3 1d a0  7a cd 63 14  11 84 cf e9  1c ca dd 19
-|   d9 03 c3 87  06 3a bc 6b  4d 13 a5 5c  35 0a 14 76
-|   30 e2 df 7f  9f 3c 58 64  24 eb 4f c1  2a 43 e3 79
-|   e1 a2 83 ae  77 ba 02 14  cd b5 58 59  a3 27 a3 da
-|   7b ea da 41  37 de 9a 1f  2b b3 95 3a  92 d0 c5 8a
-|   a6 cf 0a bc  07 46 0b 32  b8 72 36 15  20 78 17 81
+|   a8 4a 69 d4  c8 93 71 56  ab ba 8b 52  5c ae 86 be
+|   68 8e 56 17  7e d2 7d 84  85 f1 9c 84  f8 fd b9 35
+|   4e 1e b9 b5  92 36 e3 d9  13 26 2c e6  53 8c 58 5c
+|   c8 9e 8b df  93 12 83 1b  4f a3 a7 da  81 5a b1 06
+|   44 c6 2d bb  a5 9e 68 30  3d ec 67 22  35 43 6f 6e
+|   43 10 ea 6b  b2 71 5d 2e  34 80 f4 8d  8e d6 52 5c
+|   6c f9 f9 bb  11 6e bb a5  5a 74 3a 60  59 8f e6 bc
+|   b2 ac d2 7b  3d 33 04 3a  fd 58 c3 44  88 cf 13 aa
+|   41 c7 09 89  84 82 61 e1  2b 6b 19 39  3a 56 67 fa
 | decrypted payload:  27 00 00 13  02 00 00 00  65 78 61 6d  70 6c 65 2e
 |   63 6f 6d 21  00 00 c8 01  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
@@ -489,11 +492,12 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 2c  00 00 44 02
-|   00 00 20 01  03 04 02 12  34 56 78 03  00 00 08 01
-|   00 00 0c 00  00 00 0c 03  00 00 0c 80  0e 00 80 00
-|   00 00 20 02  03 04 02 12  34 56 78 03  00 00 08 01
-|   00 00 0c 00  00 00 0c 03  00 00 02 80  0e 00 80 2d
+|   00 00 00 00  00 00 00 00  00 00 00 2c  00 00 54 02
+|   00 00 28 01  03 04 03 12  34 56 78 03  00 00 0c 01
+|   00 00 0c 80  0e 00 80 03  00 00 08 03  00 00 0c 00
+|   00 00 08 05  00 00 00 00  00 00 28 02  03 04 03 12
+|   34 56 78 03  00 00 0c 01  00 00 0c 80  0e 00 80 03
+|   00 00 08 03  00 00 02 00  00 00 08 05  00 00 00 2d
 |   00 00 18 01  00 00 00 07  00 00 10 00  00 ff ff 5d
 |   b8 d8 22 5d  b8 d8 22 00  00 00 18 01  00 00 00 07
 |   00 00 10 00  00 ff ff 0a  02 00 00 0a  02 ff ff 00
@@ -510,8 +514,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | processing payload: ISAKMP_NEXT_v2AUTH (len=200)
 | **parse IKEv2 Security Association Payload:
 |    critical bit: none
-|    length: 68
-| processing payload: ISAKMP_NEXT_v2SA (len=68)
+|    length: 84
+| processing payload: ISAKMP_NEXT_v2SA (len=84)
 | **parse IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    length: 24
@@ -634,36 +638,41 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |    next-payload: ISAKMP_NEXT_v2SA [@38=0x21]
 | *****emit IKEv2 Security Association Payload:
 |    critical bit: none
-| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
-| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| __alg_info_esp_add() ealg=12/128bit aalg=12/0bit cnt=1
+| __alg_info_esp_add() ealg=12/128bit aalg=2/0bit cnt=2
 | ***parse IKEv2 Proposal Substructure Payload:
-|    length: 32
+|    length: 40
 |    prop #: 1
 |    proto ID: 3
 |    spi size: 4
-|    # transforms: 2
+|    # transforms: 3
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
 | CHILD SA SPI  12 34 56 78
 | SPI received: 12345678
 | ****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 12
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| ****parse IKEv2 Transform Substructure Payload:
 |    length: 12
-|    transform type: 3
+|    transform type: 1
 |    transform ID: 12
 | *****parse IKEv2 Attribute Substructure Payload:
 |    af+type: KEY_LENGTH
 |    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 5
+|    transform ID: 0
 | collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
 | ***parse IKEv2 Proposal Substructure Payload:
-|    length: 32
+|    length: 40
 |    prop #: 2
 |    proto ID: 3
 |    spi size: 4
-|    # transforms: 2
+|    # transforms: 3
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
 | CHILD SA SPI  12 34 56 78
 | SPI received: 12345678
