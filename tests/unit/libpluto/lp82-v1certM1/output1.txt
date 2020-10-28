@@ -25,7 +25,7 @@
 processing whack msg time: X size: Y
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | from whack: got --esp=3des-md5;modp2048
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 | ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1certM1   loading certificate from carolCert.pem
 ./v1certM1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
@@ -58,7 +58,7 @@ RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuz
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
 RC=0 "home":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 RC=0 "home":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
-RC=0 "home":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+RC=0 "home":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
 RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'home'
 | creating state object #1 at Z

@@ -333,8 +333,8 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    auth method: v2_AUTH_RSA
 | emitting 192 zero bytes of fake rsa sig into IKEv2 Authentication Payload
 | emitting length of IKEv2 Authentication Payload: 200
-| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
-| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| __alg_info_esp_add() ealg=12/128bit aalg=12/0bit cnt=1
+| __alg_info_esp_add() ealg=12/128bit aalg=2/0bit cnt=2
 |    next-payload: ISAKMP_NEXT_v2SA [@12=0x21]
 | *****emit IKEv2 Security Association Payload:
 |    critical bit: none
@@ -348,7 +348,11 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| emitting length of IKEv2 Transform Substructure Payload: 8
+| ********emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
 |    transform ID: 12
@@ -357,7 +361,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 36
+| emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
 |    prop #: 2
 |    proto ID: 3
@@ -368,7 +372,11 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| emitting length of IKEv2 Transform Substructure Payload: 8
+| ********emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
 |    transform ID: 2
@@ -377,8 +385,8 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 36
-| emitting length of IKEv2 Security Association Payload: 76
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| emitting length of IKEv2 Security Association Payload: 84
 |    next-payload: ISAKMP_NEXT_v2TSi [@212=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
@@ -394,7 +402,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | ipv4 high  c0 a8 01 01
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
-|    next-payload: ISAKMP_NEXT_v2TSr [@288=0x2d]
+|    next-payload: ISAKMP_NEXT_v2TSr [@296=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    number of TS: 1
@@ -409,8 +417,8 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | ipv4 high  84 d5 ee 07
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
-| emitting 16 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+| emitting 8 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07
 | emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 388
 | emitting length of ISAKMP Message: 416
@@ -429,15 +437,15 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  2c 00 00 4c  02 00 00 24  01 03 04 03
-|   12 34 56 78  03 00 00 08  01 00 00 0c  03 00 00 08
-|   03 00 00 0c  00 00 00 08  05 00 00 00  00 00 00 24
-|   02 03 04 03  12 34 56 78  03 00 00 08  01 00 00 0c
-|   03 00 00 08  03 00 00 02  00 00 00 08  05 00 00 00
-|   2d 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
-|   c0 a8 01 01  c0 a8 01 01  00 00 00 18  01 00 00 00
-|   07 00 00 10  00 00 ff ff  84 d5 ee 07  84 d5 ee 07
-|   00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   00 00 00 00  2c 00 00 54  02 00 00 28  01 03 04 03
+|   12 34 56 78  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 0c  00 00 00 08  05 00 00 00
+|   00 00 00 28  02 03 04 03  12 34 56 78  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 02
+|   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
+|   07 00 00 10  00 00 ff ff  c0 a8 01 01  c0 a8 01 01
+|   00 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
+|   84 d5 ee 07  84 d5 ee 07  00 01 02 03  04 05 06 07
 | data after encryption:
 |   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
 |   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
@@ -452,15 +460,15 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
 |   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
 |   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   52 9c 35 74  31 21 8e f6  4b a8 d3 e9  ee 03 95 f3
-|   06 3e 5f 36  2d 1d de b8  8a 28 d8 44  24 c1 d2 d8
-|   9d 6e af 9a  38 45 f8 dc  52 17 b5 4e  91 8a d0 c7
-|   88 0f 2f 4a  77 a7 a3 b5  55 e9 00 6b  ab 76 40 4f
-|   e4 74 8e b8  23 86 95 a0  d3 c3 96 80  17 3d ac 02
-|   87 23 18 f3  49 c3 53 ae  99 a4 12 ac  65 0a fa aa
-|   ed 6f 76 db  ab e4 d6 84  32 75 b2 42  90 96 67 bb
-|   9a 73 4e c7  20 d0 01 73  ed b0 eb d2  94 53 a7 1f
-|   65 a9 11 90  27 80 67 93  da 3a 02 39  b1 3c e0 4f
+|   6d 1f ca 5d  07 d8 d5 46  94 72 e2 87  ab 30 c8 57
+|   fb 3c bb e1  b3 a5 97 70  49 d3 f3 fd  d9 72 d8 35
+|   7e ff 7f f1  e4 6c f6 ee  4f 6c f4 31  96 f8 4e f1
+|   a5 c7 a2 10  15 07 14 e6  c0 f7 e0 90  05 f3 e2 7a
+|   e3 20 9f 32  2d e5 3b 03  a8 4f 97 b2  c7 6c 02 f2
+|   41 8a 39 1d  2b 7d 24 72  2a 0c 19 dd  9e fd 0f 8d
+|   74 33 64 44  8f d6 25 53  9f 04 9c 6c  59 ee df 9a
+|   b0 0a 84 49  87 d4 04 3d  19 51 db 2f  62 14 39 b1
+|   d7 e4 b8 f0  89 c9 30 1e  3a ad a4 b2  74 3f dd 3c
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 01 a0  23 00 01 84
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -477,17 +485,17 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
 |   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
 |   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   52 9c 35 74  31 21 8e f6  4b a8 d3 e9  ee 03 95 f3
-|   06 3e 5f 36  2d 1d de b8  8a 28 d8 44  24 c1 d2 d8
-|   9d 6e af 9a  38 45 f8 dc  52 17 b5 4e  91 8a d0 c7
-|   88 0f 2f 4a  77 a7 a3 b5  55 e9 00 6b  ab 76 40 4f
-|   e4 74 8e b8  23 86 95 a0  d3 c3 96 80  17 3d ac 02
-|   87 23 18 f3  49 c3 53 ae  99 a4 12 ac  65 0a fa aa
-|   ed 6f 76 db  ab e4 d6 84  32 75 b2 42  90 96 67 bb
-|   9a 73 4e c7  20 d0 01 73  ed b0 eb d2  94 53 a7 1f
-|   65 a9 11 90  27 80 67 93  da 3a 02 39  b1 3c e0 4f
+|   6d 1f ca 5d  07 d8 d5 46  94 72 e2 87  ab 30 c8 57
+|   fb 3c bb e1  b3 a5 97 70  49 d3 f3 fd  d9 72 d8 35
+|   7e ff 7f f1  e4 6c f6 ee  4f 6c f4 31  96 f8 4e f1
+|   a5 c7 a2 10  15 07 14 e6  c0 f7 e0 90  05 f3 e2 7a
+|   e3 20 9f 32  2d e5 3b 03  a8 4f 97 b2  c7 6c 02 f2
+|   41 8a 39 1d  2b 7d 24 72  2a 0c 19 dd  9e fd 0f 8d
+|   74 33 64 44  8f d6 25 53  9f 04 9c 6c  59 ee df 9a
+|   b0 0a 84 49  87 d4 04 3d  19 51 db 2f  62 14 39 b1
+|   d7 e4 b8 f0  89 c9 30 1e  3a ad a4 b2  74 3f dd 3c
 | out calculated auth:
-|   67 1a ef d1  69 62 c5 68  71 c4 dd 75  bd a4 13 c4
+|   93 cc c4 d2  15 19 4e c5  a1 e8 af 60  b0 cf 91 9a
 | #2 complete v2 state transition with STF_OK
 ./rekeyParentSA transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -510,16 +518,16 @@ sending 416 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
 |   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
 |   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
-|   52 9c 35 74  31 21 8e f6  4b a8 d3 e9  ee 03 95 f3
-|   06 3e 5f 36  2d 1d de b8  8a 28 d8 44  24 c1 d2 d8
-|   9d 6e af 9a  38 45 f8 dc  52 17 b5 4e  91 8a d0 c7
-|   88 0f 2f 4a  77 a7 a3 b5  55 e9 00 6b  ab 76 40 4f
-|   e4 74 8e b8  23 86 95 a0  d3 c3 96 80  17 3d ac 02
-|   87 23 18 f3  49 c3 53 ae  99 a4 12 ac  65 0a fa aa
-|   ed 6f 76 db  ab e4 d6 84  32 75 b2 42  90 96 67 bb
-|   9a 73 4e c7  20 d0 01 73  ed b0 eb d2  94 53 a7 1f
-|   65 a9 11 90  27 80 67 93  da 3a 02 39  b1 3c e0 4f
-|   67 1a ef d1  69 62 c5 68  71 c4 dd 75  bd a4 13 c4
+|   6d 1f ca 5d  07 d8 d5 46  94 72 e2 87  ab 30 c8 57
+|   fb 3c bb e1  b3 a5 97 70  49 d3 f3 fd  d9 72 d8 35
+|   7e ff 7f f1  e4 6c f6 ee  4f 6c f4 31  96 f8 4e f1
+|   a5 c7 a2 10  15 07 14 e6  c0 f7 e0 90  05 f3 e2 7a
+|   e3 20 9f 32  2d e5 3b 03  a8 4f 97 b2  c7 6c 02 f2
+|   41 8a 39 1d  2b 7d 24 72  2a 0c 19 dd  9e fd 0f 8d
+|   74 33 64 44  8f d6 25 53  9f 04 9c 6c  59 ee df 9a
+|   b0 0a 84 49  87 d4 04 3d  19 51 db 2f  62 14 39 b1
+|   d7 e4 b8 f0  89 c9 30 1e  3a ad a4 b2  74 3f dd 3c
+|   93 cc c4 d2  15 19 4e c5  a1 e8 af 60  b0 cf 91 9a
 | recv_pcap_packet() call 1: exit
 1: output to OUTPUT/rekeyParentSA.pcap
 1: input from h2hR2rekey.pcap
@@ -736,8 +744,8 @@ sending 416 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   endport: 65535
 |   ip low: 132.213.238.7
 |   ip high: 132.213.238.7
-| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
-| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| __alg_info_esp_add() ealg=12/128bit aalg=12/0bit cnt=1
+| __alg_info_esp_add() ealg=12/128bit aalg=2/0bit cnt=2
 | ***parse IKEv2 Proposal Substructure Payload:
 |    length: 40
 |    prop #: 1

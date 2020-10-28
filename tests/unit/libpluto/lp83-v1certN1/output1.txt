@@ -25,7 +25,7 @@ processing whack msg time: X size: Y
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection rw with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
 ./v1certN1   loading certificate from moonCert.pem
 ./v1certN1   loaded host cert file '../samples/moon/certs/moonCert.pem' (CERT bytes)
@@ -162,7 +162,7 @@ RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz:
 RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 RC=0 "rw":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
 RC=0 "rw":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
-RC=0 "rw":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "rw":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   =========== input from pcap file v1certM1.pcap ========
 | *received 216 bytes from 192.168.0.100:500 on eth0 (port=500)
