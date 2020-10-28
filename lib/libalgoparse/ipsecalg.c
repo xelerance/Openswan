@@ -129,10 +129,10 @@ alg_info_esp_add (struct alg_info *alg_info,
             /*	Policy: default to SHA256 and SHA1 */
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                ealg_id, ek_bits,
-                               IKEv2_AUTH_HMAC_SHA2_256_128, 128, modp_id);
+                               IKEv2_AUTH_HMAC_SHA2_256_128, 0, modp_id);
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                ealg_id, ek_bits,
-                               IKEv2_AUTH_HMAC_SHA1_96, 128, modp_id);
+                               IKEv2_AUTH_HMAC_SHA1_96, 0, modp_id);
         }
     }
 }
@@ -160,10 +160,10 @@ alg_info_ah_add (struct alg_info *alg_info,
             /*	Policy: default to SHA256 and SHA1 */
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                0,0,
-                               IKEv2_AUTH_HMAC_SHA2_256_128, 128, modp_id);
+                               IKEv2_AUTH_HMAC_SHA2_256_128, 0, modp_id);
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                0,0,
-                               IKEv2_AUTH_HMAC_SHA1_96, 128, modp_id);
+                               IKEv2_AUTH_HMAC_SHA1_96, 0, modp_id);
     }
 }
 
