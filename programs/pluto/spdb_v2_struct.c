@@ -834,6 +834,10 @@ spdb_v2_match_child(struct db_sa *sadb
 
     encr_matched=integ_matched=esn_matched=FALSE;
 
+    if (encr_keylen <= 0)
+	/* Use default key length */
+	encr_keylen = kernel_alg_esp_enc_keylen(encr_transform) * BITS_PER_BYTE;
+
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
 	struct db_v2_prop_conj  *pj;
 	struct db_v2_trans      *tr;
