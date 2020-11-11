@@ -65,9 +65,9 @@ print_sa_attr_ipsec(struct db_attr *at)
     }
     DBG_log("        type: %u(%s) val: %u(%s)\n"
 	   , at->type.ipsec
-           , enum_name(&ipsec_attr_names, at->type.ipsec+ISAKMP_ATTR_AF_TV)
+           , enum_name(&ipsec_attr_names, at->type.ipsec)
 	   , at->val
-           ,  en ? enum_name(en, at->val) : "unknown");
+           , en ? enum_name(en, at->val) : "unknown");
 }
 
 void
