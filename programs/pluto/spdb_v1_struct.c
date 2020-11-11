@@ -554,7 +554,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
             /* child SA policy */
             db_trans_add(sadb->prop_v1_ctx, v2tov1_encr_child(cur_dtf->encr_transid));
             db_attr_add_ipsec_values(sadb->prop_v1_ctx, AUTH_ALGORITHM,
-                               v2tov1_integ(cur_dtf->integ_transid));
+                               v2tov1_integ_child(cur_dtf->integ_transid));
             if(cur_dtf->group_transid) {
                 db_attr_add_ipsec_values(sadb->prop_v1_ctx, GROUP_DESCRIPTION,
                                          cur_dtf->group_transid);

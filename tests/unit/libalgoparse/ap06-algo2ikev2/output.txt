@@ -82,19 +82,19 @@ ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 5 
 |       transform: 12 cnt: 2 
-|         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
+|         type: 5((null)) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
 |         type: 3((null)) val: 14(OAKLEY_GROUP_MODP2048) 
 |       transform: 12 cnt: 2 
 |         type: 5((null)) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
 |         type: 3((null)) val: 14(OAKLEY_GROUP_MODP2048) 
 |       transform: 12 cnt: 2 
-|         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
+|         type: 5((null)) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
 |         type: 3((null)) val: 5(OAKLEY_GROUP_MODP1536) 
 |       transform: 12 cnt: 2 
 |         type: 5((null)) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
 |         type: 3((null)) val: 5(OAKLEY_GROUP_MODP1536) 
 |       transform: 12 cnt: 2 
-|         type: 5((null)) val: 4(AUTH_ALGORITHM_KPDK) 
+|         type: 5((null)) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
 |         type: 3((null)) val: 15(OAKLEY_GROUP_MODP3072) 
 | free now
 ./algo2ikev2 leak: alg_info_ike, item size: 2064
