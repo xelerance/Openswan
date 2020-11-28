@@ -1429,8 +1429,8 @@ static const char *const rr_qtype_name[] = {
 	NULL
     };
 
-enum_names rr_qtype_names = { ns_t_tkey, ns_t_any
-			      , rr_qtype_name, &rr_type_names };
+/* ns_t_tkey doesn't exist in uclibc-ng, so use ns_t_tsig-1 as the start value */
+enum_names rr_qtype_names = { ns_t_tsig - 1, ns_t_any, rr_qtype_name, &rr_type_names };
 
 static const char *const rr_class_name[] = {
 	"C_IN",	/* 1 the arpa internet */
