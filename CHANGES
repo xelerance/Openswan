@@ -5,6 +5,13 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 
+v2.6.52.3 (December 3, 2020)
+
+Fixing segfault bug.
+
+* github#541: Fix segfault when rekeying child SA with no parent [Martin Hicks]
+* pluto: add ALLOW_MICROSOFT_BAD_PROPOSAL for self-proposals [Emil Velikov]
+
 v2.6.52.2 (October 23, 2020)
 
 Fixing "road warrior" bug related to SA replacement.
