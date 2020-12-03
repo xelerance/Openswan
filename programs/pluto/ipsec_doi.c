@@ -489,12 +489,14 @@ ipsecdoi_replace(struct state *st
 	struct state *parent = find_phase1_state(c
 				, ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
 
-	if (parent->st_serialno != st->st_clonedfrom) {
-	    DBG(DBG_CONTROL, DBG_log("Switched parent SA from #%lu to #%lu for rekey",
+	if (parent) {
+	    if (parent->st_serialno != st->st_clonedfrom) {
+		DBG(DBG_CONTROL, DBG_log("Switched parent SA from #%lu to #%lu for rekey",
 				     st->st_clonedfrom, parent->st_serialno));
-	} else {
-	    DBG(DBG_CONTROL, DBG_log("Using existing parent SA #%lu for rekey",
+	    } else {
+		DBG(DBG_CONTROL, DBG_log("Using existing parent SA #%lu for rekey",
 				     parent->st_serialno));
+	    }
 	}
 
         policy = update_policy_from_state(st, policy);
