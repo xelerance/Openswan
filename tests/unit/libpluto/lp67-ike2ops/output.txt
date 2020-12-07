@@ -28,9 +28,10 @@ PSK:
 v1 (PSK):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 
@@ -50,9 +51,10 @@ RSA:
 v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 
@@ -72,14 +74,16 @@ RSA+PSK:
 v1 (RSA+PSK):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 2 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 
@@ -219,34 +223,40 @@ default RSA:
 default v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 6 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072) 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072) 
 | for input ike=aes128-sha1-sha1-modp2048
@@ -386,9 +396,10 @@ default v1 (RSA):| sa disjunct cnt: 1
 strong v1 (RSA):| sa disjunct cnt: 1 
 |   conjunctions cnt: 1 
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
-|       transform: 1 cnt: 4 
+|       transform: 1 cnt: 5 
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 14(OAKLEY_KEY_LENGTH) val: 256(unknown) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 6(OAKLEY_SHA2_512) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 ./lp67-ike2ops leak: 2 * alg_info_ike, item size: 2064

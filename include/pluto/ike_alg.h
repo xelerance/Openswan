@@ -157,7 +157,7 @@ extern struct db_sa *kernel_alg_makedb(lset_t policy
 extern int ike_alg_sha2_init(void);
 
 /* Translate from IKEv1->IKEv2 */
-extern enum ikev2_trans_type_integ ikev1toikev2integ(enum oakley_hash_t num);
+extern enum ikev2_trans_type_integ ikev1toikev2integ(enum ikev1_auth_attribute num);
 
 #endif /* _IKE_ALG_H */
 

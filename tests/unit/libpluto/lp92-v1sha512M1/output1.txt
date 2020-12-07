@@ -113,6 +113,9 @@ RC=0 "home512":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 256
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 6
 |     [6 is OAKLEY_SHA2_512]
@@ -120,9 +123,9 @@ RC=0 "home512":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 16
 |     [16 is OAKLEY_GROUP_MODP4096]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| emitting length of ISAKMP Proposal Payload: 40
-| emitting length of ISAKMP Security Association Payload: 52
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 44
+| emitting length of ISAKMP Security Association Payload: 56
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
@@ -157,22 +160,22 @@ RC=0 "home512":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 216
-sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:500 (using #1)
+| emitting length of ISAKMP Message: 220
+sending 220 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
-|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
-|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 06  80 04 00 10
-|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
-|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
-|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
-|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
-|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
-|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
-|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
-|   0b e8 a8 46  95 79 dd cc
+|   01 10 02 00  00 00 00 00  00 00 00 dc  0d 00 00 38
+|   00 00 00 01  00 00 00 01  00 00 00 2c  00 01 00 01
+|   00 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 01 00  80 02 00 06
+|   80 04 00 10  0d 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30  0d 00 00 14  af ca d7 13  68 a1 f1 c9
+|   6b 86 96 fc  77 57 01 00  0d 00 00 14  4a 13 1c 81
+|   07 03 58 45  5c 57 28 f2  0e 95 45 2f  0d 00 00 14
+|   7d 94 19 a6  53 10 ca 6f  2c 17 9d 92  15 52 9d 56
+|   0d 00 00 14  90 cb 80 91  3e bb 69 6e  08 63 81 b5
+|   ec 42 7b 1f  0d 00 00 14  cd 60 46 43  35 df 21 f8
+|   7c fd b2 fc  68 b6 a4 48  00 00 00 14  44 85 15 2d
+|   18 b6 bb cd  0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
 ./v1sha512M1 deleting state #1 (STATE_MAIN_I1)
 | removing state object #1
