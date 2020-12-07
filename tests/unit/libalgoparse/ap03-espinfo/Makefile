@@ -49,6 +49,8 @@ update:
 clean:
 	-@rm -f ${TESTNAME}
 
+pcapupdate:
+	@true
 
 # Local Variables:
 # compile-command: "make check"

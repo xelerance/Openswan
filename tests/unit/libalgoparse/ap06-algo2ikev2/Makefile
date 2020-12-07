@@ -53,5 +53,5 @@ clean:
 	-rm -f ${TESTNAME} .gdbinit
 	-rm -rf OUTPUT/${TESTNAME}.txt
 
-
-
+pcapupdate:
+	@true
