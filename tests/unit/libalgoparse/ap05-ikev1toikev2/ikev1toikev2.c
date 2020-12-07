@@ -30,11 +30,13 @@ int main(int argc, char *argv[])
 
     tool_init_log();
 
-    passert(ikev1toikev2integ(OAKLEY_MD5)    == IKEv2_AUTH_HMAC_MD5_96);
-    passert(ikev1toikev2integ(OAKLEY_SHA1)   == IKEv2_AUTH_HMAC_SHA1_96);
-    passert(ikev1toikev2integ(OAKLEY_SHA2_256) == IKEv2_AUTH_HMAC_SHA2_256_128);
-    passert(ikev1toikev2integ(OAKLEY_SHA2_384) == IKEv2_AUTH_HMAC_SHA2_384_192);
-    passert(ikev1toikev2integ(OAKLEY_SHA2_512) == IKEv2_AUTH_HMAC_SHA2_512_256);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_HMAC_MD5)      == IKEv2_AUTH_HMAC_MD5_96);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_HMAC_SHA1)     == IKEv2_AUTH_HMAC_SHA1_96);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_DES_MAC)       == IKEv2_AUTH_DES_MAC);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_KPDK)          == IKEv2_AUTH_KPDK_MD5);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_HMAC_SHA2_256) == IKEv2_AUTH_HMAC_SHA2_256_128);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_HMAC_SHA2_384) == IKEv2_AUTH_HMAC_SHA2_384_192);
+    passert(ikev1toikev2integ(AUTH_ALGORITHM_HMAC_SHA2_512) == IKEv2_AUTH_HMAC_SHA2_512_256);
 
     report_leaks();
     tool_close_log();

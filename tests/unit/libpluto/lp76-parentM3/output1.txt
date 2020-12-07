@@ -147,6 +147,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
 |     [4 is OAKLEY_SHA2_256]
@@ -154,7 +157,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
 |     [14 is OAKLEY_GROUP_MODP2048]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 1
 |    transform ID: KEY_IKE
@@ -174,6 +177,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
 |     [2 is OAKLEY_SHA1]
@@ -181,7 +187,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
 |     [14 is OAKLEY_GROUP_MODP2048]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 2
 |    transform ID: KEY_IKE
@@ -201,6 +207,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
 |     [4 is OAKLEY_SHA2_256]
@@ -208,7 +217,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 5
 |     [5 is OAKLEY_GROUP_MODP1536]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 3
 |    transform ID: KEY_IKE
@@ -228,6 +237,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
 |     [2 is OAKLEY_SHA1]
@@ -235,7 +247,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 5
 |     [5 is OAKLEY_GROUP_MODP1536]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 4
 |    transform ID: KEY_IKE
@@ -255,6 +267,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 7
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4
 |     [4 is OAKLEY_SHA2_256]
@@ -262,9 +277,9 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 15
 |     [15 is OAKLEY_GROUP_MODP3072]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| emitting length of ISAKMP Proposal Payload: 168
-| emitting length of ISAKMP Security Association Payload: 180
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 188
+| emitting length of ISAKMP Security Association Payload: 200
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
@@ -274,24 +289,25 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 244
-sending 244 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 264
+sending 264 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 00 f4  0d 00 00 b4
-|   00 00 00 01  00 00 00 01  00 00 00 a8  00 01 00 05
-|   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
-|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
-|   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
-|   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
-|   00 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
-|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
-|   00 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00
+|   01 10 02 00  00 00 00 00  00 00 01 08  0d 00 00 c8
+|   00 00 00 01  00 00 00 01  00 00 00 bc  00 01 00 05
+|   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0e  03 00 00 24  01 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 03 00 03  80 01 00 07  80 0e 00 80
+|   80 02 00 02  80 04 00 0e  03 00 00 24  02 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
+|   80 0e 00 80  80 02 00 04  80 04 00 05  03 00 00 24
+|   03 01 00 00  80 0b 00 01  80 0c 0e 10  80 03 00 03
+|   80 01 00 07  80 0e 00 80  80 02 00 02  80 04 00 05
+|   00 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0f  0d 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30  00 00 00 14  af ca d7 13  68 a1 f1 c9
+|   6b 86 96 fc  77 57 01 00
 RC=105 STATE_MAIN_I1: initiate
 0: input from parentN1.pcap
 |   =========== input from pcap file parentN1.pcap ========
@@ -537,7 +553,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | my identity  62 65 72 72  69 2e 74 65  73 74 69 6e  67 2e 78 65
 |   6c 65 72 61  6e 63 65 2e  63 6f 6d
 | emitting length of ISAKMP Identification Payload (IPsec DOI): 35
-| hashing 176 bytes of SA
+| hashing 196 bytes of SA
 | started looking for secret for @berri.testing.xelerance.com->132.213.238.7 of kind PPK_RSA
 | actually looking for secret for @berri.testing.xelerance.com->132.213.238.7 of kind PPK_RSA
 | line 1: key type PPK_RSA(@berri.testing.xelerance.com) to type PPK_RSA
@@ -550,49 +566,49 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | signing hash with RSA Key *AQN7wUerV
 | ***emit ISAKMP Signature Payload:
 | emitting 256 raw bytes of SIG_I into ISAKMP Signature Payload
-| SIG_I  19 07 35 1e  63 37 08 9e  ce e3 7e 16  9b 63 5b f5
-|   3b 11 d3 c1  b8 72 85 d1  07 58 a4 d2  27 45 91 10
-|   49 62 03 24  c0 61 09 ec  a3 66 76 d7  df 96 a0 8d
-|   dd 08 ad 49  79 83 2c 84  37 93 4a 4b  70 94 bb 80
-|   2b db 36 4f  88 4e c9 66  da 80 38 7e  31 23 32 16
-|   12 66 05 bd  77 a2 a6 3a  0f 14 9c 63  d3 d8 9f b2
-|   0a 88 59 3d  76 96 82 88  0a 19 0a d6  fe 90 3d 80
-|   89 2a fc e5  6e 2a 48 c9  d3 61 fb 85  fc 59 95 b7
-|   c5 10 18 c4  cc 02 e7 3d  06 b4 4e 0a  40 5c 3a a9
-|   27 cf 2e 1e  fc 5e 3a e0  92 ef 7d 34  04 0b bb d9
-|   93 c0 97 54  c8 99 8d a8  6f d2 ad b4  a6 f8 ca 0a
-|   d7 53 ad da  72 f6 26 d1  ad 6b 88 1d  43 ae ef 49
-|   dc 81 9c 76  16 94 3c e9  d7 d4 01 47  e8 ba e8 4e
-|   4b c3 31 4e  55 2d b8 fe  3a db d2 91  de 24 17 58
-|   82 db 48 68  0e 13 4d 61  1f d2 04 3a  e6 10 e3 c1
-|   5e b5 ec 2d  48 36 c2 21  3f e9 db cb  a3 66 d2 73
+| SIG_I  6e b9 cd e0  41 5e d3 51  17 f6 b7 6b  11 1e 41 41
+|   0e aa 5d 23  7f ff 37 a9  3e 0b 99 eb  d8 29 82 be
+|   af fc df 88  d7 be 9d 19  a5 80 ee 60  8e 1a 92 7c
+|   f9 12 ad cf  04 3f 6d 72  d2 c7 d5 6b  e8 4a 4a d7
+|   b9 61 05 36  1a 64 f2 28  d0 e6 c5 57  52 fe 60 d1
+|   68 11 f1 43  0f fb 68 01  ef 88 02 4d  e3 a9 13 d5
+|   de 5f 6a b9  88 26 bd b1  a0 36 0e 49  26 aa 66 11
+|   67 45 81 b3  89 83 92 55  9e e7 96 b1  de b5 c0 66
+|   18 1e 23 98  15 92 79 bf  eb 84 c4 8e  35 39 6e 29
+|   24 df e1 a1  92 65 af f5  f6 56 37 f4  45 1c 4f bf
+|   17 a1 78 98  43 be 6e 5d  eb 33 10 bb  90 ad ac b9
+|   ca 23 f3 5d  8f a8 9d 6e  3f 85 fe 31  40 7d f0 62
+|   5a e3 39 76  36 d5 b4 a4  65 0c 8b de  32 74 c8 4a
+|   6d 07 e9 59  6c 0a 74 af  80 6d 5b 5f  42 cc 90 8c
+|   d6 ad e4 38  b6 4b 97 95  79 34 0d 22  f7 c2 c5 b0
+|   38 78 0e aa  f5 44 b5 4e  26 04 61 46  66 1a cb f4
 | emitting length of ISAKMP Signature Payload: 260
 | encrypting:
 |   09 00 00 23  02 00 00 00  62 65 72 72  69 2e 74 65
 |   73 74 69 6e  67 2e 78 65  6c 65 72 61  6e 63 65 2e
-|   63 6f 6d 00  00 01 04 19  07 35 1e 63  37 08 9e ce
-|   e3 7e 16 9b  63 5b f5 3b  11 d3 c1 b8  72 85 d1 07
-|   58 a4 d2 27  45 91 10 49  62 03 24 c0  61 09 ec a3
-|   66 76 d7 df  96 a0 8d dd  08 ad 49 79  83 2c 84 37
-|   93 4a 4b 70  94 bb 80 2b  db 36 4f 88  4e c9 66 da
-|   80 38 7e 31  23 32 16 12  66 05 bd 77  a2 a6 3a 0f
-|   14 9c 63 d3  d8 9f b2 0a  88 59 3d 76  96 82 88 0a
-|   19 0a d6 fe  90 3d 80 89  2a fc e5 6e  2a 48 c9 d3
-|   61 fb 85 fc  59 95 b7 c5  10 18 c4 cc  02 e7 3d 06
-|   b4 4e 0a 40  5c 3a a9 27  cf 2e 1e fc  5e 3a e0 92
-|   ef 7d 34 04  0b bb d9 93  c0 97 54 c8  99 8d a8 6f
-|   d2 ad b4 a6  f8 ca 0a d7  53 ad da 72  f6 26 d1 ad
-|   6b 88 1d 43  ae ef 49 dc  81 9c 76 16  94 3c e9 d7
-|   d4 01 47 e8  ba e8 4e 4b  c3 31 4e 55  2d b8 fe 3a
-|   db d2 91 de  24 17 58 82  db 48 68 0e  13 4d 61 1f
-|   d2 04 3a e6  10 e3 c1 5e  b5 ec 2d 48  36 c2 21 3f
-|   e9 db cb a3  66 d2 73
+|   63 6f 6d 00  00 01 04 6e  b9 cd e0 41  5e d3 51 17
+|   f6 b7 6b 11  1e 41 41 0e  aa 5d 23 7f  ff 37 a9 3e
+|   0b 99 eb d8  29 82 be af  fc df 88 d7  be 9d 19 a5
+|   80 ee 60 8e  1a 92 7c f9  12 ad cf 04  3f 6d 72 d2
+|   c7 d5 6b e8  4a 4a d7 b9  61 05 36 1a  64 f2 28 d0
+|   e6 c5 57 52  fe 60 d1 68  11 f1 43 0f  fb 68 01 ef
+|   88 02 4d e3  a9 13 d5 de  5f 6a b9 88  26 bd b1 a0
+|   36 0e 49 26  aa 66 11 67  45 81 b3 89  83 92 55 9e
+|   e7 96 b1 de  b5 c0 66 18  1e 23 98 15  92 79 bf eb
+|   84 c4 8e 35  39 6e 29 24  df e1 a1 92  65 af f5 f6
+|   56 37 f4 45  1c 4f bf 17  a1 78 98 43  be 6e 5d eb
+|   33 10 bb 90  ad ac b9 ca  23 f3 5d 8f  a8 9d 6e 3f
+|   85 fe 31 40  7d f0 62 5a  e3 39 76 36  d5 b4 a4 65
+|   0c 8b de 32  74 c8 4a 6d  07 e9 59 6c  0a 74 af 80
+|   6d 5b 5f 42  cc 90 8c d6  ad e4 38 b6  4b 97 95 79
+|   34 0d 22 f7  c2 c5 b0 38  78 0e aa f5  44 b5 4e 26
+|   04 61 46 66  1a cb f4
 | IV:
 |   bc d5 89 68  0c 42 2e cd  14 72 ae a3  97 42 67 41
 | unpadded size is: 295
 | emitting 9 zero bytes of encryption padding into ISAKMP Message
 | encrypting 304 using OAKLEY_AES_CBC
-| next IV:  d3 a8 5b e3  27 7e 28 f2  f6 99 ad d4  f2 8f 8b 82
+| next IV:  49 83 08 b4  f4 54 d2 9e  5a 08 7a 30  27 5b 13 a6
 | emitting length of ISAKMP Message: 332
 | complete state transition with STF_OK
 ./parentM3 transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
@@ -601,24 +617,24 @@ sending 332 bytes for STATE_MAIN_I2 through eth0:500 [93.184.216.34:55044] to 13
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   05 10 02 01  00 00 00 00  00 00 01 4c  a7 8f 70 19
 |   92 e2 f9 56  9a 8b 57 a6  63 2d 10 a8  7e 45 6f d7
-|   fd 5e cb ee  29 1a c8 f8  e8 3a d5 f4  cb c4 c4 8b
-|   86 47 27 df  0b 0f 21 43  46 41 de 76  92 41 99 91
-|   55 97 4a 2f  d7 37 57 38  25 9a 21 01  82 b1 7b 86
-|   2f 27 88 81  20 fd fa 5f  4a 7a ee df  ea e9 4d 7b
-|   51 10 22 60  eb 25 9b bc  40 90 44 ea  01 17 db 98
-|   2e 10 3f 2b  6f 6d 21 2b  0f da 07 e1  41 61 57 33
-|   31 a4 a3 3e  32 0a 78 3b  4d f6 38 8d  86 4a 3c c3
-|   e5 1f 66 79  fd 65 11 f2  be 2a 0b ac  75 af 16 a5
-|   a2 21 3f 2d  b4 a5 5e dc  de cd 79 4f  49 73 40 74
-|   88 7d d3 56  35 94 f2 17  39 5c 54 d8  8e 25 11 a7
-|   b3 f1 94 79  22 f0 a3 24  5b 69 df 56  77 07 9d c7
-|   a0 36 4b bc  ac 01 ce 03  63 6e 07 2a  1e f9 f3 77
-|   a6 49 a2 3e  3e 67 2e dc  49 38 7d 46  31 64 9e 17
-|   9e 06 15 d2  dd 5c f9 38  00 0a f6 bb  4d 86 04 ef
-|   88 4c 38 e9  4f af 44 68  7c 0f 36 4b  33 17 e2 09
-|   56 8e 05 31  93 96 2b 7d  e6 e3 97 92  eb 11 d4 3d
-|   c0 b3 cc 18  d1 f2 ca d0  07 a0 71 71  d3 a8 5b e3
-|   27 7e 28 f2  f6 99 ad d4  f2 8f 8b 82
+|   fd 5e cb ee  29 1a c8 f8  e8 3a d5 f4  8b d1 17 3c
+|   0a d1 18 60  07 74 50 0b  69 25 0a 37  8a ed c3 55
+|   72 57 ef 15  63 94 15 f1  99 ef b7 b6  dc 81 95 c5
+|   d3 d9 0e ee  13 18 a7 c5  f4 fb 45 e8  d8 18 39 ba
+|   32 95 14 a9  2f a8 7d b2  cd 99 9e 49  92 37 a6 cc
+|   5e c1 0a 05  2c 5d fa 03  41 87 8e 0d  42 41 7a e3
+|   82 a6 75 df  d2 39 9a 63  24 7c da 1c  74 d0 39 25
+|   12 c6 46 5c  43 7a b1 88  55 50 4a 90  69 45 8e c7
+|   ce 84 92 1a  e0 65 99 d6  ed 0e 8f 5e  c7 61 7d 70
+|   13 f8 a4 5c  02 5b ea 6d  5e 4d 73 c8  11 af c7 26
+|   0f bd e1 b6  28 c7 ac 01  e9 ab ee 68  01 69 e5 c5
+|   bd dc ec fd  f0 f1 51 01  28 a7 72 94  58 fe a0 22
+|   03 91 ca 10  a8 d6 e4 eb  ce ce c7 97  bc e1 84 a3
+|   c2 bb 7f 39  0e fa 2b 47  54 b1 c7 08  85 21 38 1b
+|   b6 80 8a fd  e8 e2 d9 28  67 23 5a 1b  e1 bf 1c b9
+|   55 a1 06 d2  90 f1 09 e1  19 33 df 41  27 1b f1 94
+|   16 9b e9 5d  20 4d 27 65  46 39 2c 49  49 83 08 b4
+|   f4 54 d2 9e  5a 08 7a 30  27 5b 13 a6
 ./parentM3 STATE_MAIN_I3: sent MI3, expecting MR3
 | modecfg pull: noquirk policy:push not-client
 | phase 1 is done, looking for phase 2 to unpend
@@ -661,8 +677,8 @@ RC=0 #1: "t4901":500 IKEv1.0 STATE_MAIN_I3 (sent MI3, expecting MR3); none in -1
 ./parentM3 leak: vid->data, item size: X
 ./parentM3 leak: sa in main_outI1, item size: X
 ./parentM3 leak: v1 policy proposal conj, item size: X
-./parentM3 leak: db_context->attrs (expand), item size: X
 ./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->attrs (expand), item size: X
 ./parentM3 leak: db_context, item size: X
 ./parentM3 leak: db2_expand->attrs, item size: X
 ./parentM3 leak: db_context->trans (expand), item size: X
