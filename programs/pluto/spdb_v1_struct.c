@@ -280,7 +280,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
     for(pass = 0; pass < 2; pass++) {
         /* first count number of combinations expressed in IKEv2, so we can
-         * allocate a table big for all the combinations, then collect
+         * allocate a big table for all the combinations, then collect
          * the unique combinations
          */
         prop_disj  = 0;
@@ -317,8 +317,9 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                         , pc->trans_cnt);
 #endif
                 for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
-                    //unsigned int attr_i;
+                    unsigned int attr_i;
                     struct db_v2_trans *tr = &pc->trans[trans_i];
+                    struct db_v2_attr *at;
 #if EXTRAPOLATE_DEBUG
                     /* enable this when debugging problems with cur_combo */
                     DBG_log("%u: %u disj_cnt: %d/%d conj: %d/%d trans: %d/%d type: %d"
@@ -361,6 +362,10 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
                         case IKEv2_TRANS_TYPE_ENCR:
                             cur_dtf->encr_transid = tr->value;
+                            for (attr_i = 0, at=tr->attrs; attr_i < tr->attr_cnt; attr_i++, at++) {
+                                if (at->ikev2 == IKEv2_KEY_LENGTH)
+                                    cur_dtf->encr_keylen = at->val;
+                            }
                             break;
 
                         case IKEv2_TRANS_TYPE_INTEG:
@@ -374,7 +379,6 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                              */
                             continue;
                         }
-                        /* now see if we have a new combination */
                         transform_values[tr->transform_type] = tr->value;
                     }
                 }
@@ -544,6 +548,10 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                                        oakley_auth_alg);
                     db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_ENCRYPTION_ALGORITHM,
                            v2tov1_encr(cur_dtf->encr_transid));
+                    if(cur_dtf->encr_keylen) {
+                        db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_KEY_LENGTH,
+                                           cur_dtf->encr_keylen);
+                    }
                     db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_HASH_ALGORITHM,
                            v2tov1_integ(cur_dtf->integ_transid));
                     db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_GROUP_DESCRIPTION,
@@ -553,6 +561,10 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
         } else {
             /* child SA policy */
             db_trans_add(sadb->prop_v1_ctx, v2tov1_encr_child(cur_dtf->encr_transid));
+            if(cur_dtf->encr_keylen) {
+                db_attr_add_ipsec_values(sadb->prop_v1_ctx, KEY_LENGTH,
+                        cur_dtf->encr_keylen);
+            }
             db_attr_add_ipsec_values(sadb->prop_v1_ctx, AUTH_ALGORITHM,
                                v2tov1_integ_child(cur_dtf->integ_transid));
             if(cur_dtf->group_transid) {
