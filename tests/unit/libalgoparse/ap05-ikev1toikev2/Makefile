@@ -47,5 +47,5 @@ update:
 clean:
 	-@rm -f ${TESTNAME}
 
-
-
+pcapupdate:
+	@true

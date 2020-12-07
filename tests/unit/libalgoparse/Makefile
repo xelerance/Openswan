@@ -24,7 +24,7 @@ UNITTESTS+=ap05-ikev1toikev2
 UNITTESTS+=ap06-algo2ikev2
 
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
-clean check pcapupdate:
+clean check pcapupdate update:
 	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:

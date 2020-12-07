@@ -41,12 +41,11 @@ check:
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS}
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
-update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
-
 clean:
 	-@rm -f ${TESTNAME}
 
+update pcapupdate:
+	@true
 
 # Local Variables:
 # compile-command: "make check"
