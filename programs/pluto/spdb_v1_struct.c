@@ -222,14 +222,14 @@ ikev1_alg_makedb(lset_t policy, struct alg_info_ike *ei, bool oneproposal UNUSED
 }
 
 struct db_sa *
-kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei, enum phase1_role role)
+kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, enum phase1_role role)
 {
 	struct db_sa *sadb;
 
     sadb = alginfo2child_db2(ei);
     sadb->parentSA = FALSE;
 
-    if(!extrapolate_v1_from_v2(sadb, policy, role)) {
+    if(!(policy & POLICY_IKEV1_DISABLE) && !extrapolate_v1_from_v2(sadb, policy, role)) {
         openswan_log("failed to create v1 IPsec policy from v2 settings");
 	return NULL;
     }
