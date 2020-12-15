@@ -105,6 +105,8 @@ int v2tov1_encr_child(enum ikev2_trans_type_encr encr)
         return ESP_3DES;
     case  IKEv2_ENCR_CAST:
         return ESP_CAST;
+    case  IKEv2_ENCR_NULL:
+        return ESP_NULL;
     case  IKEv2_ENCR_AES_CBC:
         return ESP_AES;
     default:
