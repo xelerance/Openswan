@@ -16,7 +16,7 @@ TESTNAME=parentM3
 all: programs
 
 pcapupdate:
-	cp ../lp73-parentN1/OUTPUT/parentN1.pcap parentN1.pcap
-	cp ../lp75-parentN2/OUTPUT/parentN2.pcap parentN2.pcap
+	cp ../lp173-parentN1/OUTPUT/parentN1.pcap parentN1.pcap
+	cp ../lp175-parentN2/OUTPUT/parentN2.pcap parentN2.pcap
 
 

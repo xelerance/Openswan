@@ -98,11 +98,11 @@ UNITTESTS_I1+=lp90-h2h-sareplace-I1
 UNITTESTS_R1+=lp91-h2h-sareplace-R1
 
 UNITTESTS_v1I1+=lp43-parentM1
-UNITTESTS_v1R1+=lp73-parentN1
-UNITTESTS_v1I2+=lp74-parentM2
-UNITTESTS_v1R2+=lp75-parentN2
-UNITTESTS_v1I3+=lp76-parentM3
-UNITTESTS_v1R3+=lp77-parentN3
+UNITTESTS_v1R1+=lp173-parentN1
+UNITTESTS_v1I2+=lp174-parentM2
+UNITTESTS_v1R2+=lp175-parentN2
+UNITTESTS_v1I3+=lp176-parentM3
+UNITTESTS_v1R3+=lp177-parentN3
 
 UNITTESTS_v1I1+=lp81-ikev1derived
 
@@ -166,8 +166,7 @@ UNITTESTS_I3+=lp65-nattI3
 UNITTESTS_I4+=lp66-natt-replaceI
 UNITTESTS_R4+=lp67-natt-replaceR
 
-UNITTESTS_I4+=lp71-childTSwrong
-UNITTESTS_I4+=lp71-childTSwrong
+UNITTESTS_I4+=lp171-childTSwrong
 
 # these three do not work yet, #6602
 #algo UNITTESTS_I4+=lp71-childTSwrong
