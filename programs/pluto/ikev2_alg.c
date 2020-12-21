@@ -116,7 +116,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
                           , enum_show(&esp_transformid_names
                                       ,st->st_esp.attrs.transattrs.encrypt)
                           , st->st_esp.attrs.transattrs.enckeylen
-                          , enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)
+                          , enum_show(&trans_type_integ_names, st->st_esp.attrs.transattrs.integ_hash)
                           , c->policy & POLICY_PFS ? pfs_group_from_state(st) : "nopfs"
 		    );
 
@@ -125,7 +125,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		, "\"%s\"%s:   %s algorithm newest: %s-%s"
                           , c->name
 			  , instance, satype
-                          , enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)
+                          , enum_show(&trans_type_integ_names, st->st_esp.attrs.transattrs.integ_hash)
                           , c->policy & POLICY_PFS ? pfs_group_from_state(st) : "nopfs"
 	);
 
