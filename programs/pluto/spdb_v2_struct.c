@@ -820,7 +820,7 @@ ikev2_parse_parent_sa_body(
     return NOTHING_WRONG;
 }
 
-static bool
+bool
 spdb_v2_match_child(struct db_sa *sadb
 	      , unsigned propnum
 	      , unsigned encr_transform

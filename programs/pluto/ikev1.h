@@ -212,3 +212,5 @@ extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike 
 extern bool spdb_v2_match_parent(struct db_sa *sadb, unsigned propnum, unsigned encr_transform,
                                  int encr_keylen, unsigned integ_transform,
                                  unsigned prf_transform, unsigned dh_transform);
+extern bool spdb_v2_match_child(struct db_sa *sadb, unsigned propnum, unsigned encr_transform,
+				int encr_keylen, unsigned integ_transform, unsigned esn_transform);

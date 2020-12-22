@@ -2334,6 +2334,7 @@ parse_ipsec_sa_body(
     const struct connection *c = st->st_connection;
     u_int32_t ipsecdoisit;
     pb_stream next_proposal_pbs;
+    struct db_sa *p2alg;
 
     struct isakmp_proposal next_proposal;
     ipsec_spi_t next_spi;
@@ -2375,6 +2376,8 @@ parse_ipsec_sa_body(
 
     if (!in_struct(&next_proposal, &isakmp_proposal_desc, sa_pbs, &next_proposal_pbs))
           return BAD_PROPOSAL_SYNTAX;
+
+    p2alg = alginfo2child_db2(c->alg_info_esp);
 
     /* for each conjunction of proposals... */
     while (next_full)
@@ -2817,51 +2820,58 @@ AA                        XXXX;
                     tunnel_mode = TRUE;
           }
 
-          /* Eureka: we liked what we saw -- accept it. */
+          /* Check vs. local policy to see if the proposal is acceptable */
+          if (!spdb_v2_match_child(p2alg, propno,
+                                  esp_attrs.transattrs.encrypt,
+                                  esp_attrs.transattrs.enckeylen,
+                                  esp_attrs.transattrs.integ_hash,
+                                  esp_attrs.transattrs.esn))
+                /* Not acceptable */
+                continue;
 
           if (r_sa_pbs != NULL)
           {
-              /* emit what we've accepted */
+                /* emit what we've accepted */
 
-              /* Situation */
-              if (!out_struct(&ipsecdoisit, &ipsec_sit_desc, r_sa_pbs, NULL))
+                /* Situation */
+                if (!out_struct(&ipsecdoisit, &ipsec_sit_desc, r_sa_pbs, NULL))
                     impossible();
 
-              /* AH proposal */
-              if (ah_seen)
-		  echo_proposal(st, ah_proposal
-                        , ah_trans
-                        , esp_seen || ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
-                        , r_sa_pbs
-                        , &st->st_ah
-                        , &isakmp_ah_transform_desc
-                        , &ah_trans_pbs
-                        , tunnel_mode && inner_proto == IPPROTO_AH);
+                /* AH proposal */
+                if (ah_seen)
+		            echo_proposal(st, ah_proposal
+                            , ah_trans
+                            , esp_seen || ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
+                            , r_sa_pbs
+                            , &st->st_ah
+                            , &isakmp_ah_transform_desc
+                            , &ah_trans_pbs
+                            , tunnel_mode && inner_proto == IPPROTO_AH);
 
-              /* ESP proposal */
-              if (esp_seen)
-		  echo_proposal(st, esp_proposal
-                        , esp_trans
-                        , ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
-                        , r_sa_pbs
-                        , &st->st_esp
-                        , &isakmp_esp_transform_desc
-                        , &esp_trans_pbs
-                        , tunnel_mode && inner_proto == IPPROTO_ESP);
+                /* ESP proposal */
+                if (esp_seen)
+		            echo_proposal(st, esp_proposal
+                            , esp_trans
+                            , ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
+                            , r_sa_pbs
+                            , &st->st_esp
+                            , &isakmp_esp_transform_desc
+                            , &esp_trans_pbs
+                            , tunnel_mode && inner_proto == IPPROTO_ESP);
 
-              /* IPCOMP proposal */
-              if (ipcomp_seen)
-		  echo_proposal(st, ipcomp_proposal
-                        , ipcomp_trans
-                        , ISAKMP_NEXT_NONE
-                        , r_sa_pbs
-                        , &st->st_ipcomp
-                        , &isakmp_ipcomp_transform_desc
-                        , &ipcomp_trans_pbs
-                        , tunnel_mode && inner_proto == IPPROTO_COMP);
-
-              close_output_pbs(r_sa_pbs);
+                /* IPCOMP proposal */
+                if (ipcomp_seen)
+		            echo_proposal(st, ipcomp_proposal
+                            , ipcomp_trans
+                            , ISAKMP_NEXT_NONE
+                            , r_sa_pbs
+                            , &st->st_ipcomp
+                            , &isakmp_ipcomp_transform_desc
+                            , &ipcomp_trans_pbs
+                            , tunnel_mode && inner_proto == IPPROTO_COMP);
           }
+          if (r_sa_pbs != NULL)
+                close_output_pbs(r_sa_pbs);
 
           /* save decoded version of winning SA in state */
 
