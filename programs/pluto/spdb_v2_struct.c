@@ -909,21 +909,21 @@ spdb_v2_match_child(struct db_sa *sadb
 		return TRUE;
 	}
 	if(DBGP(DBG_CONTROLMORE)) {
-                DBG_log("proposal %u,%u %s encr= (policy:%20s vs offered:%s)"
+                DBG_log("proposal %u,%u %s encr= (policy:%20s[%d] vs offered:%s[%d])"
                         , propnum,pc_cnt
                         , encr_matched ? "match " : "failed"
-		    , enum_name(&trans_type_encr_names, encrid)
-		    , enum_name(&trans_type_encr_names, encr_transform));
+                        , enum_name(&trans_type_encr_names, encrid), encr_keylen
+                        , enum_name(&trans_type_encr_names, encr_transform), encr_keylen_policy);
                 DBG_log("proposal %u,%u %s integ=(policy:%20s vs offered:%s)"
                         , propnum,pc_cnt
                         , integ_matched? "match " : "failed"
-		    , enum_name(&trans_type_integ_names, integid)
-		    , enum_name(&trans_type_integ_names, integ_transform));
+                        , enum_name(&trans_type_integ_names, integid)
+                        , enum_name(&trans_type_integ_names, integ_transform));
                 DBG_log("proposal %u,%u %s esn=  (policy:%20s vs offered:%s)"
                         , propnum,pc_cnt
                         , esn_matched  ? "match " : "failed"
-		    , enum_name(&trans_type_esn_names, esnid)
-		    , enum_name(&trans_type_esn_names, esn_transform));
+                        , enum_name(&trans_type_esn_names, esnid)
+                        , enum_name(&trans_type_esn_names, esn_transform));
             }
 	}
 
