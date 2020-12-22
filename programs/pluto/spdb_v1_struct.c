@@ -150,6 +150,24 @@ int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ)
    }
 }
 
+static int v2integ_to_prf(enum ikev2_trans_type_integ v2integ)
+{
+    switch(v2integ) {
+    case IKEv2_AUTH_HMAC_MD5_96:
+        return IKEv2_PRF_HMAC_MD5;
+    case IKEv2_AUTH_HMAC_SHA1_96:
+        return IKEv2_PRF_HMAC_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
+        return IKEv2_PRF_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_384_192:
+        return IKEv2_PRF_HMAC_SHA2_384;
+    case IKEv2_AUTH_HMAC_SHA2_512_256:
+        return IKEv2_PRF_HMAC_SHA2_512;
+    default:
+        return IKEv2_PRF_INVALID;
+    }
+}
+
 /** output an attribute (within an SA) */
 bool
 out_attr(int type
@@ -1098,6 +1116,55 @@ lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs)
 
 
 /**
+ * Emit the winning proposal, tranforms and attributes into the pbs
+ */
+static void emit_isakmp_sa_body(pb_stream *r_sa_pbs,
+                                uint32_t ipsecdoisit,
+                                struct isakmp_proposal proposal,
+                                struct isakmp_transform trans,
+                                u_char *attr_start, int attr_len)
+{
+    pb_stream proposal_pbs;
+    pb_stream trans_pbs;
+
+    passert(r_sa_pbs);
+
+    /* Situation */
+    if (!out_struct(&ipsecdoisit, &ipsec_sit_desc, r_sa_pbs, NULL))
+        impossible();
+
+    /* Proposal */
+#ifdef EMIT_ISAKMP_SPI
+    proposal.isap_spisize = COOKIE_SIZE;
+#else
+    proposal.isap_spisize = 0;
+#endif
+    proposal.isap_notrans = 1;
+    if (!out_struct(&proposal, &isakmp_proposal_desc, r_sa_pbs, &proposal_pbs))
+        impossible();
+
+    /* SPI */
+#ifdef EMIT_ISAKMP_SPI
+    if (!out_raw(my_cookie, COOKIE_SIZE, &proposal_pbs, "SPI"))
+        impossible();
+    proposal.isap_spisize = COOKIE_SIZE;
+#else
+    /* none (0) */
+#endif
+
+    /* Transform */
+    trans.isat_np = ISAKMP_NEXT_NONE;
+    if (!out_struct(&trans, &isakmp_isakmp_transform_desc, &proposal_pbs, &trans_pbs))
+        impossible();
+
+    if (!out_raw(attr_start, attr_len, &trans_pbs, "attributes"))
+        impossible();
+    close_output_pbs(&trans_pbs);
+    close_output_pbs(&proposal_pbs);
+    close_output_pbs(r_sa_pbs);
+}
+
+/**
  * Parse the body of an ISAKMP SA Payload (i.e. Phase 1 / Main Mode).
  * Various shortcuts are taken.  In particular, the policy, such as
  * it is, is hardwired.
@@ -1135,6 +1202,7 @@ parse_isakmp_sa_body(
     struct spd_route *spd, *me = &c->spd;
     bool xauth_init, xauth_resp;
     const char *role;
+    struct db_sa *sadb;
 
     role = "";
 
@@ -1251,6 +1319,9 @@ parse_isakmp_sa_body(
           return BAD_PROPOSAL_SYNTAX;
     }
 
+    sadb = ikev1_alg_makedb(st->st_policy, c->alg_info_ike, TRUE,
+                            selection ? INITIATOR : RESPONDER);
+
     /* for each transform payload... */
 
     last_transnum = -1;
@@ -1359,16 +1430,17 @@ parse_isakmp_sa_body(
                         if (ikev1_alg_enc_ok(val, 0, c->alg_info_ike, &ugh, ugh_buf, sizeof(ugh_buf))) {
                             ta.encrypter = ikev1_alg_get_encr(val);
                             ta.encrypt   = ta.encrypter->common.algo_v2id;
-                              ta.enckeylen = ta.encrypter->keydeflen;
+                            ta.enckeylen = ta.encrypter->keydeflen;
                         }
                         break;
 
                     case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
                         if (ikev1_alg_integ_present(val, 0)) {
-                              ta.integ_hasher = ikev1_crypto_get_hasher(val);
-                              ta.integ_hash   = ta.integ_hasher->common.algo_v2id;
-                              ta.prf_hasher   = ta.integ_hasher;
-                              ta.prf_hash     = ta.integ_hash;
+                            ta.integ_hasher = ikev1_crypto_get_hasher(val);
+                            ta.integ_hash   = ta.integ_hasher->common.algo_v2id;
+                            ta.prf_hash     = v2integ_to_prf(ta.integ_hash);  /* returns IKEv2 number */
+                            ta.prf_hasher   = ike_alg_get_prf(ta.prf_hash);   /* so use v2 lookup */
+                            passert(ta.prf_hasher != NULL);
                         } else {
                               ugh = builddiag("%s is not supported"
                                   , enum_show(&oakley_hash_names, val));
@@ -1639,63 +1711,37 @@ parse_isakmp_sa_body(
                         return BAD_PROPOSAL_SYNTAX;
                     }
               }
-              /* We must have liked this transform.
-               * Lets finish early and leave.
-               */
 
-              DBG(DBG_PARSING | DBG_CRYPT
-                    , DBG_log("Oakley Transform %u accepted", trans.isat_transnum));
-
-              if (r_sa_pbs != NULL)
+              /* Check if the transform matches against local policy */
+              if (!spdb_v2_match_parent(sadb, trans.isat_transnum,
+                                        ta.encrypt, ta.enckeylen,
+                                        ta.integ_hash, ta.prf_hash,
+                                        ta.group->group))
               {
-                    struct isakmp_proposal r_proposal = proposal;
-                    pb_stream r_proposal_pbs;
-                    struct isakmp_transform r_trans = trans;
-                    pb_stream r_trans_pbs;
-
-                    /* Situation */
-                    if (!out_struct(&ipsecdoisit, &ipsec_sit_desc, r_sa_pbs, NULL))
-                        impossible();
-
-                    /* Proposal */
-#ifdef EMIT_ISAKMP_SPI
-                    r_proposal.isap_spisize = COOKIE_SIZE;
-#else
-                    r_proposal.isap_spisize = 0;
-#endif
-                    r_proposal.isap_notrans = 1;
-                    if (!out_struct(&r_proposal, &isakmp_proposal_desc, r_sa_pbs, &r_proposal_pbs))
-                        impossible();
-
-                    /* SPI */
-#ifdef EMIT_ISAKMP_SPI
-                    if (!out_raw(my_cookie, COOKIE_SIZE, &r_proposal_pbs, "SPI"))
-                        impossible();
-                    r_proposal.isap_spisize = COOKIE_SIZE;
-#else
-                    /* none (0) */
-#endif
-
-                    /* Transform */
-                    r_trans.isat_np = ISAKMP_NEXT_NONE;
-                    if (!out_struct(&r_trans, &isakmp_isakmp_transform_desc, &r_proposal_pbs, &r_trans_pbs))
-                        impossible();
-
-                    if (!out_raw(attr_start, attr_len, &r_trans_pbs, "attributes"))
-                        impossible();
-                    close_output_pbs(&r_trans_pbs);
-                    close_output_pbs(&r_proposal_pbs);
-                    close_output_pbs(r_sa_pbs);
+                    DBG(DBG_PARSING | DBG_CRYPT,
+                        DBG_log("Oakley Transform %u unacceptable", trans.isat_transnum));
+                    if (r_sa_pbs != NULL)
+                        close_output_pbs(r_sa_pbs);
               }
+              else
+              {
+                    /* This transform is acceptable.  Use it */
+                    DBG(DBG_PARSING | DBG_CRYPT
+                            , DBG_log("Oakley Transform %u accepted", trans.isat_transnum));
 
-              /* ??? If selection, we used to save the proposal in state.
-               * We never used it.  From proposal_pbs.start,
-               * length pbs_room(&proposal_pbs)
-               */
+                    if (r_sa_pbs != NULL)
+                        emit_isakmp_sa_body(r_sa_pbs, ipsecdoisit,
+                                            proposal, trans, attr_start, attr_len);
 
-              /* copy over the results */
-              st->st_oakley = ta;
-              return NOTHING_WRONG;
+                    /* ??? If selection, we used to save the proposal in state.
+                     * We never used it.  From proposal_pbs.start,
+                     * length pbs_room(&proposal_pbs)
+                     */
+
+                    /* copy over the results */
+                    st->st_oakley = ta;
+                    return NOTHING_WRONG;
+              }
           }
 
           /* on to next transform */

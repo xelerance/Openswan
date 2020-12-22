@@ -248,7 +248,7 @@ return_out:
  * the inputs to this function are the proposals from the other end.
  * they get matched to the configured policy contained in the sadb.
  */
-static bool
+bool
 spdb_v2_match_parent(struct db_sa *sadb
 	      , unsigned propnum
 	      , unsigned encr_transform

@@ -208,3 +208,7 @@ extern notification_t parse_ipsec_sa_body(
 extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
                                       , bool oneproposal
                                       , enum phase1_role role);
+/* spdb_v2_struct.c */
+extern bool spdb_v2_match_parent(struct db_sa *sadb, unsigned propnum, unsigned encr_transform,
+                                 int encr_keylen, unsigned integ_transform,
+                                 unsigned prf_transform, unsigned dh_transform);

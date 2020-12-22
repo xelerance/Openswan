@@ -347,4 +347,11 @@ extern void ikev2_calculate_sighash(struct state *st
                                     , chunk_t firstpacket
                                     , unsigned char *sig_octets);
 
+extern bool spdb_v2_match_parent(struct db_sa *sadb,
+                                unsigned propnum,
+                                unsigned encr_transform,
+                                int encr_keylen,
+                                unsigned integ_transform,
+                                unsigned prf_transform,
+                                unsigned dh_transform);
 #endif /* IKEV2H */
