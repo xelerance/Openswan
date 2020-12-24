@@ -170,7 +170,7 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
 |   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
@@ -212,6 +212,21 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
+| EI starts with: 3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5)
+| pass: 0 noticed combo 0/0: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:5(OAKLEY_GROUP_MODP1536) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:5 encr:3 integ:1
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1
+|       transform: 1 cnt: 4
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 4(OAKLEY_RSA_ENC)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+| selected proposal 0 encr=3des[192] integ=hmac_md5_96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP1536
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | ****emit ISAKMP Proposal Payload:
@@ -224,7 +239,7 @@ RC=0 "rw":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    transform ID: KEY_IKE
 | emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
 | attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 05
-|   80 02 00 01  80 04 00 0e
+|   80 02 00 01  80 04 00 05
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | emitting length of ISAKMP Proposal Payload: 40
 | emitting length of ISAKMP Security Association Payload: 52
@@ -252,7 +267,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 192.16
 |   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
 |   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
@@ -273,6 +288,15 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.1:500] to 192.16
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
+./v1certN1 leak: v1 policy proposal conj, item size: X
+./v1certN1 leak: db_context->attrs, item size: X
+./v1certN1 leak: db_context->trans, item size: X
+./v1certN1 leak: db_context, item size: X
+./v1certN1 leak: db_context->trans (expand), item size: X
+./v1certN1 leak: db_context->attrs, item size: X
+./v1certN1 leak: db_context->conj, item size: X
+./v1certN1 leak: db_context, item size: X
+./v1certN1 leak: v2 policy database, item size: X
 ./v1certN1 leak: 67 * VendorID MD5, item size: X
 ./v1certN1 leak: 3 * vid->data, item size: X
 ./v1certN1 leak: 15 * VendorID MD5, item size: X
