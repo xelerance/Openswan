@@ -74,12 +74,13 @@ void crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc, u_int8_t *buf, 
 #define update_iv(st)	passert(st->st_new_iv_len <= sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \
     , (st)->st_iv_len = (st)->st_new_iv_len)
 
+#define iv_min(x,y) ((x) < (y) ? (x) : (y))
 #define init_new_iv(st)     passert(st->st_new_iv_len <= sizeof(st->st_new_iv)); memcpy((st)->st_new_iv, (st)->st_iv, (st)->st_new_iv_len);
-#define save_iv(st, tmp)    passert((st)->st_iv_len <= sizeof((tmp))); memcpy((tmp), (st)->st_iv, (st)->st_iv_len);
+#define save_iv(st, tmp)    passert((st)->st_iv_len <= sizeof((tmp))); memcpy((tmp), (st)->st_iv, iv_min((st)->st_iv_len, sizeof((tmp))));
 #define save_new_iv(st, tmp)  passert((st)->st_new_iv_len <= sizeof((tmp))); memcpy((tmp), (st)->st_new_iv, (st)->st_new_iv_len);
-#define set_iv(st, tmp)     passert((st)->st_iv_len <= sizeof((st)->st_iv)); memcpy((st)->st_iv, (tmp), (st)->st_iv_len);
-#define set_new_iv(st, iv)  passert((st)->st_new_iv_len <= sizeof((st)->st_new_iv)); memcpy((st)->st_new_iv, (iv), (st)->st_new_iv_len);
-#define set_ph1_iv(st, iv)  passert((st)->st_ph1_iv_len <= sizeof((st)->st_ph1_iv)); memcpy((st)->st_ph1_iv, (iv), (st)->st_ph1_iv_len);
+#define set_iv(st, tmp)     passert((st)->st_iv_len <= sizeof((st)->st_iv)); memcpy((st)->st_iv, (tmp), iv_min((st)->st_iv_len,sizeof((st)->st_iv)));
+#define set_new_iv(st, iv)  passert((st)->st_new_iv_len <= sizeof((st)->st_new_iv)); memcpy((st)->st_new_iv, (iv), iv_min((st)->st_new_iv_len, sizeof((st)->st_new_iv)));
+#define set_ph1_iv(st, iv)  passert((st)->st_ph1_iv_len <= sizeof((st)->st_ph1_iv)); memcpy((st)->st_ph1_iv, (iv), iv_min((st)->st_ph1_iv_len, sizeof((st)->st_ph1_iv)));
 
 /* unification of cryptographic hashing mechanisms */
 /* use no #ifdef here */
