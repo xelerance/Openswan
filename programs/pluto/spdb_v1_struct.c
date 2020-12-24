@@ -204,6 +204,10 @@ ikev1_alg_makedb(lset_t policy, struct alg_info_ike *ei, bool oneproposal UNUSED
     struct db_sa *sadb;
     char info_buf[1024];
 
+    if(ei == NULL) {
+        ei = alg_info_ike_defaults();
+    }
+
     alg_info_snprint_ike(info_buf, sizeof(info_buf), ei);
     DBG_log("EI starts with: %s", info_buf);
 
