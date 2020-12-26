@@ -10,12 +10,12 @@
 ./v1rwnatN3 adjusting ipsec.d to ../../libpluto/samples/sun
 ./v1rwnatN3 loading secrets from "../../libpluto/samples/sun.secrets"
 ./v1rwnatN3 loaded private key for keyid: PPK_RSA:AQOssdnqo/D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
-./v1rwnatN3 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1rwnatN3 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1rwnatN3 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1rwnatN3 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatN3 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatN3 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1rwnatN3 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatN3 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatN3 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatN3 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatN3 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatN3 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -30,8 +30,8 @@ processing whack msg time: X size: Y
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1rwnatN3 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
 ./v1rwnatN3 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
@@ -57,9 +57,9 @@ RC=0 "bobnet-ikev1":   keys: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
 RC=0 "bobnet-ikev1":        ....1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none
 RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
-RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP1536(5)
-RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | Changed path to directory '../../libpluto/samples/sun/cacerts'
 | Changed path to directory '../../libpluto/samples/sun/aacerts'
@@ -72,7 +72,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
@@ -121,6 +121,21 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
+| EI starts with: 3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1
+|       transform: 1 cnt: 4
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 4(OAKLEY_RSA_ENC)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+| selected proposal 0 encr=3des[192] integ=hmac_md5_96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | ****emit ISAKMP Proposal Payload:
@@ -139,7 +154,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | emitting length of ISAKMP Security Association Payload: 52
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 53 ab ab  ab ab ab ab  ab ab ab ab
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
@@ -147,6 +162,7 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
 | out_vendorid(): sending [RFC 3947]
+|    next-payload: ISAKMP_NEXT_VID [@96=0x d]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
@@ -161,7 +177,7 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 93.184
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
-|   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -513,6 +529,15 @@ sending 324 bytes for STATE_MAIN_R2 through eth0:4500 [192.168.0.2:4500] to 93.1
 | freeing state object #1
 ./v1rwnatN3 leak: main_inI2_outR2_tail, item size: X
 ./v1rwnatN3 leak: inI2_outR2 KE, item size: X
+./v1rwnatN3 leak: v1 policy proposal conj, item size: X
+./v1rwnatN3 leak: db_context->attrs, item size: X
+./v1rwnatN3 leak: db_context->trans, item size: X
+./v1rwnatN3 leak: db_context, item size: X
+./v1rwnatN3 leak: db_context->trans (expand), item size: X
+./v1rwnatN3 leak: db_context->attrs, item size: X
+./v1rwnatN3 leak: db_context->conj, item size: X
+./v1rwnatN3 leak: db_context, item size: X
+./v1rwnatN3 leak: v2 policy database, item size: X
 ./v1rwnatN3 leak: keep id name, item size: X
 ./v1rwnatN3 leak: host ip, item size: X
 ./v1rwnatN3 leak: keep id name, item size: X

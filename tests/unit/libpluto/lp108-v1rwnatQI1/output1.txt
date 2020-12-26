@@ -10,12 +10,12 @@
 ./v1rwnatQI1 adjusting ipsec.d to ../samples/alice
 ./v1rwnatQI1 loading secrets from "../samples/alice.secrets"
 ./v1rwnatQI1 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
-./v1rwnatQI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
-./v1rwnatQI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
-./v1rwnatQI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
-./v1rwnatQI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
-./v1rwnatQI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
-./v1rwnatQI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./v1rwnatQI1 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatQI1 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatQI1 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatQI1 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatQI1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatQI1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -29,9 +29,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-| from whack: got --esp=3des-md5;modp2048
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
+| from whack: got --esp=3des-md5;modp1536
+| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1rwnatQI1 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
 ./v1rwnatQI1 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
@@ -66,7 +66,7 @@ RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; r
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
-RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'bobnet-ikev1'
 | creating state object #1 at Z
@@ -97,14 +97,6 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
-| IKEv1 outsa starts
-| proposals: cnt=1
-|  disj: cnt=1 [next=2]
-| 1:  protoid="PROTO_ISAKMP" [trans: 4]
-|     trans-type-encr value="3des" [attrs: 0]
-|     trans-type-prf value="prf-hmac-md5" [attrs: 0]
-|     trans-type-integ value="hmac_md5_96" [attrs: 0]
-|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
 | pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
 | new combo 0: dh:14 encr:3 integ:1
@@ -189,7 +181,7 @@ sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.1
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
-|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
@@ -208,7 +200,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
 |   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 0e
-|   0d 00 00 10  4f 53 ab ab  ab ab ab ab  ab ab ab ab
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
 |   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
 |   5c 57 28 f2  0e 95 45 2f
@@ -245,6 +237,20 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    number of transforms: 1
+| EI starts with: 3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1
+|       transform: 1 cnt: 4
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
 | *****parse ISAKMP Transform Payload (ISAKMP):
 |    length: 32
 |    transform number: 0
@@ -271,6 +277,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | ******parse ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
+| selected proposal 0 encr=3des[192] integ=hmac_md5_96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | Oakley Transform 0 accepted
 ./v1rwnatQI1 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
@@ -606,7 +613,7 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | inserting state object #2 bucket: 5
-./v1rwnatQI1 initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK {using isakmp#1 msgid:03020180 proposal=3des(3)_192-hmac_md5_96(1)_128 pfsgroup=OAKLEY_GROUP_MODP2048}
+./v1rwnatQI1 initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK {using isakmp#1 msgid:03020180 proposal=3des(3)_192-hmac_md5_96(1)_128 pfsgroup=OAKLEY_GROUP_MODP1536}
 | quick outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -620,12 +627,6 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 | ***emit ISAKMP Hash Payload:
 | emitting 16 zero bytes of HASH into ISAKMP Hash Payload
 | emitting length of ISAKMP Hash Payload: 20
-| IKEv1 outsa starts
-| proposals: cnt=1
-|  disj: cnt=1 [next=2]
-| 1:  protoid="PROTO_IPSEC_ESP" [trans: 2]
-|     trans-type-encr value="3des" [attrs: 0]
-|     trans-type-integ value="hmac_md5_96" [attrs: 0]
 | pass: 0 noticed combo 0/0: dh:-1((null)) encr:3(3des) integ:1(hmac_md5_96)
 | pass: 1 noticed combo 0/2: dh:-1((null)) encr:3(3des) integ:1(hmac_md5_96)
 | new combo 0: dh:0 encr:3 integ:1
@@ -647,8 +648,8 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |    ESP transform ID: ESP_3DES
 | ******emit ISAKMP IPsec DOI attribute:
 |    af+type: GROUP_DESCRIPTION
-|    length/value: 14
-|     [14 is OAKLEY_GROUP_MODP2048]
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
 | ******emit ISAKMP IPsec DOI attribute:
 |    af+type: ENCAPSULATION_MODE
 |    length/value: 3
@@ -661,12 +662,15 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |    af+type: SA_LIFE_DURATION
 |    length/value: 1200
 | ******emit ISAKMP IPsec DOI attribute:
+|    af+type: KEY_LENGTH
+|    length/value: 192
+| ******emit ISAKMP IPsec DOI attribute:
 |    af+type: AUTH_ALGORITHM
 |    length/value: 1
 |     [1 is AUTH_ALGORITHM_HMAC_MD5]
-| emitting length of ISAKMP Transform Payload (ESP): 28
-| emitting length of ISAKMP Proposal Payload: 40
-| emitting length of ISAKMP Security Association Payload: 52
+| emitting length of ISAKMP Transform Payload (ESP): 32
+| emitting length of ISAKMP Proposal Payload: 44
+| emitting length of ISAKMP Security Association Payload: 56
 | ***emit ISAKMP Nonce Payload:
 | emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
 | Ni  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
@@ -694,37 +698,40 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 | client mask  ff ff 00 00
 | emitting length of ISAKMP Identification Payload (IPsec DOI): 16
 | HASH(1) computed:
-|   01 0f ed 6f  1b e4 8d 20  4e 7f d5 c4  27 99 94 bb
+|   50 58 e6 95  59 d3 cd b6  a2 c9 99 cd  6f 10 7a da
 | last Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
 | current Phase 1 IV:  b1 9b 24 c7  4d c8 16 88
 | computed Phase 2 IV:
 |   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
 | encrypting:
-|   01 00 00 14  01 0f ed 6f  1b e4 8d 20  4e 7f d5 c4
-|   27 99 94 bb  0a 00 00 34  00 00 00 01  00 00 00 01
-|   00 00 00 28  00 03 04 01  12 34 56 78  00 00 00 1c
-|   00 03 00 00  80 03 00 0e  80 04 00 03  80 01 00 01
-|   80 02 04 b0  80 05 00 01  04 00 00 14  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  05 00 00 04
-|   05 00 00 10  04 00 00 00  0a 01 00 0a  ff ff ff ff
-|   00 00 00 10  04 00 00 00  0a 02 00 00  ff ff 00 00
+|   01 00 00 14  50 58 e6 95  59 d3 cd b6  a2 c9 99 cd
+|   6f 10 7a da  0a 00 00 38  00 00 00 01  00 00 00 01
+|   00 00 00 2c  00 03 04 01  12 34 56 78  00 00 00 20
+|   00 03 00 00  80 03 00 05  80 04 00 03  80 01 00 01
+|   80 02 04 b0  80 06 00 c0  80 05 00 01  04 00 00 14
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   05 00 00 04  05 00 00 10  04 00 00 00  0a 01 00 0a
+|   ff ff ff ff  00 00 00 10  04 00 00 00  0a 02 00 00
+|   ff ff 00 00
 | IV:
 |   53 fa f1 02  29 d3 70 15  30 d5 3d a2  43 c7 98 b7
-| unpadded size is: 128
-| encrypting 128 using OAKLEY_3DES_CBC
-| next IV:  4b 03 dd 24  3b bf 33 66
-| emitting length of ISAKMP Message: 156
-sending 156 bytes for quick_outI1 through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #2)
+| unpadded size is: 132
+| emitting 4 zero bytes of encryption padding into ISAKMP Message
+| encrypting 136 using OAKLEY_3DES_CBC
+| next IV:  63 92 b9 3c  bc 2f 6d 32
+| emitting length of ISAKMP Message: 164
+sending 164 bytes for quick_outI1 through eth0:4500 [93.184.216.34:55045] to 192.168.0.2:4500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   08 10 20 01  80 01 02 03  00 00 00 9c  bc 63 cc 8a
-|   3f 7a fb f9  c9 fa 8f 19  b0 83 79 d6  00 87 79 e6
-|   40 ab 7d 1b  9c 3a 75 1b  fd f4 1c a1  55 cb b5 75
-|   a4 d9 53 5c  5e 0a b5 61  33 8e 5d 7e  67 8f 72 0e
-|   f6 f3 10 60  7d 74 b2 dc  a8 78 02 34  81 5e 5c be
-|   9d ad aa 5b  46 49 32 75  e5 d4 65 30  54 fa 72 0b
-|   19 b4 74 26  62 16 11 61  f7 92 4f ea  61 61 10 51
-|   ed 00 fd 56  ce 43 d6 9f  c1 c9 dc 52  91 19 68 ea
-|   49 c0 04 06  4b 03 dd 24  3b bf 33 66
+|   08 10 20 01  80 01 02 03  00 00 00 a4  85 e3 40 07
+|   ea 20 22 47  61 11 d5 64  5d 02 65 7a  de 7f 75 e5
+|   cb 7f 0f 40  b8 d8 87 11  c3 f4 b7 03  56 5e ef 3d
+|   48 92 2a 92  71 b5 4c df  88 f4 50 84  4b 4f 53 ce
+|   17 dc 71 05  90 e5 78 41  74 74 6b 5b  27 b6 c0 a0
+|   1c 33 51 f5  3f 1a c7 fb  92 f1 ec ee  71 b1 a1 e3
+|   cf 36 db 7c  60 78 b3 3b  da 6d a7 83  93 98 57 8d
+|   cb a4 f5 ed  a6 88 4f f1  18 1c 3a 43  4e 17 8f 77
+|   c3 c9 3f 8e  dc 05 65 1d  ec 84 49 b8  63 92 b9 3c
+|   bc 2f 6d 32
 RC=118 STATE_QUICK_I1: initiate
 3: output closed
 ./v1rwnatQI1 deleting connection
@@ -790,6 +797,15 @@ sending 76 bytes for delete notify through eth0:4500 [93.184.216.34:55045] to 19
 ./v1rwnatQI1 leak: long term secret, item size: X
 ./v1rwnatQI1 leak: saved gi value, item size: X
 ./v1rwnatQI1 leak: initiator nonce, item size: X
+./v1rwnatQI1 leak: v1 policy proposal conj, item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->trans, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->trans, item size: X
+./v1rwnatQI1 leak: db_context->conj, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: v2 policy database, item size: X
 ./v1rwnatQI1 leak: quick_outI1 KE, item size: X
 ./v1rwnatQI1 leak: st_nr in duplicate_state, item size: X
 ./v1rwnatQI1 leak: st_skey_pr in duplicate_state, item size: X
@@ -819,6 +835,15 @@ sending 76 bytes for delete notify through eth0:4500 [93.184.216.34:55045] to 19
 ./v1rwnatQI1 leak: long term secret, item size: X
 ./v1rwnatQI1 leak: saved gi value, item size: X
 ./v1rwnatQI1 leak: outI2 KE, item size: X
+./v1rwnatQI1 leak: v1 policy proposal conj, item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->trans, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: db_context->trans (expand), item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->conj, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: v2 policy database, item size: X
 ./v1rwnatQI1 leak: msg_digest, item size: X
 ./v1rwnatQI1 leak: 67 * VendorID MD5, item size: X
 ./v1rwnatQI1 leak: 3 * vid->data, item size: X
@@ -830,6 +855,15 @@ sending 76 bytes for delete notify through eth0:4500 [93.184.216.34:55045] to 19
 ./v1rwnatQI1 leak: 23 * VendorID MD5, item size: X
 ./v1rwnatQI1 leak: vid->data, item size: X
 ./v1rwnatQI1 leak: sa in main_outI1, item size: X
+./v1rwnatQI1 leak: v1 policy proposal conj, item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->trans, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: db_context->trans (expand), item size: X
+./v1rwnatQI1 leak: db_context->attrs, item size: X
+./v1rwnatQI1 leak: db_context->conj, item size: X
+./v1rwnatQI1 leak: db_context, item size: X
+./v1rwnatQI1 leak: v2 policy database, item size: X
 ./v1rwnatQI1 leak: struct state in new_state(), item size: X
 ./v1rwnatQI1 leak: keep id name, item size: X
 ./v1rwnatQI1 leak: pubkey entry, item size: X

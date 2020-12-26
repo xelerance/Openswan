@@ -29,8 +29,8 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-| from whack: got --esp=3des-md5;modp2048
-| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+| from whack: got --esp=3des-md5;modp1536
+| esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1rwnatM3 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
 | counting wild cards for @alice is 0
@@ -66,7 +66,7 @@ RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; r
 RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
-RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP2048(14); flags=-strict
+RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | find_phase1_state: no SA found for conn 'bobnet-ikev1'
 | creating state object #1 at Z
@@ -236,6 +236,20 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    number of transforms: 1
+| EI starts with: 3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
+| found algorithm: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| pass: 1 noticed combo 0/2: dh:14(OAKLEY_GROUP_MODP2048) encr:3(3des) integ:1(hmac_md5_96)
+| new combo 0: dh:14 encr:3 integ:1
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1
+|       transform: 1 cnt: 4
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 5(OAKLEY_3DES_CBC)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 1(OAKLEY_MD5)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
 | *****parse ISAKMP Transform Payload (ISAKMP):
 |    length: 32
 |    transform number: 0
@@ -262,6 +276,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | ******parse ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
+| selected proposal 0 encr=3des[192] integ=hmac_md5_96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | Oakley Transform 0 accepted
 ./v1rwnatM3 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
 | complete state transition with STF_SUSPEND
@@ -538,6 +553,15 @@ sending 324 bytes for STATE_MAIN_I2 through eth0:4500 [93.184.216.34:55045] to 1
 ./v1rwnatM3 leak: long term secret, item size: X
 ./v1rwnatM3 leak: saved gi value, item size: X
 ./v1rwnatM3 leak: outI2 KE, item size: X
+./v1rwnatM3 leak: v1 policy proposal conj, item size: X
+./v1rwnatM3 leak: db_context->attrs, item size: X
+./v1rwnatM3 leak: db_context->trans, item size: X
+./v1rwnatM3 leak: db_context, item size: X
+./v1rwnatM3 leak: db_context->trans (expand), item size: X
+./v1rwnatM3 leak: db_context->attrs, item size: X
+./v1rwnatM3 leak: db_context->conj, item size: X
+./v1rwnatM3 leak: db_context, item size: X
+./v1rwnatM3 leak: v2 policy database, item size: X
 ./v1rwnatM3 leak: msg_digest, item size: X
 ./v1rwnatM3 leak: 67 * VendorID MD5, item size: X
 ./v1rwnatM3 leak: 3 * vid->data, item size: X
