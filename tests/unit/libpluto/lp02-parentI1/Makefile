@@ -60,7 +60,7 @@ ${TESTNAME}.E:
 
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+	${READWRITE} --rootdir=${SAMPLEDIR}${ENDNAME} --config ${SAMPLEDIR}${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 else
 ${WHACKFILE}: ${WHACKREFFILE}
 	@mkdir -p OUTPUT
