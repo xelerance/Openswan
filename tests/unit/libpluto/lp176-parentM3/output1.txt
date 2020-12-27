@@ -334,6 +334,70 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | v1 state object #1 found, in STATE_MAIN_I1
 ./parentM3 received Vendor ID payload [Dead Peer Detection]
 ./parentM3 received Vendor ID payload [RFC 3947] meth=115, but port floating is off
+| EI starts with: aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 4: dh:15 encr:12 integ:12
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 5
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
+| selected proposal 0 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | complete state transition with STF_SUSPEND
 | main inR1_outI2: calculated ke+nonce, sending I2
 | removing state object #1
@@ -665,6 +729,16 @@ RC=0 #1: "t4901":500 IKEv1.0 STATE_MAIN_I3 (sent MI3, expecting MR3); none in -1
 ./parentM3 leak: long term secret, item size: X
 ./parentM3 leak: saved gi value, item size: X
 ./parentM3 leak: outI2 KE, item size: X
+./parentM3 leak: v1 policy proposal conj, item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->attrs (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: db2_expand->attrs, item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->conj (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: v2 policy database, item size: X
+./parentM3 leak: alg_info_ike, item size: X
 ./parentM3 leak: msg_digest, item size: X
 ./parentM3 leak: 67 * VendorID MD5, item size: X
 ./parentM3 leak: 3 * vid->data, item size: X
