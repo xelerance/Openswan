@@ -1,7 +1,7 @@
 # -*- makefile -*-
-CONNNAME=t4901-wrongPolicy
+CONNNAME=t4901-wrongpolicy
 ENDNAME=h2h-ikev1
-INPUTPCAPS=parentM1.pcap parentM2.pcap parentM3.pcap
+INPUTPCAPS=parentM1.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ${INPUTPCAPS}
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
@@ -17,5 +17,3 @@ EXTRALIBS+=${LIBPLUTO}
 
 pcapupdate:
 	cp ../lp43-parentM1/OUTPUT/parentM1.pcap parentM1.pcap
-	cp ../lp174-parentM2/OUTPUT/parentM2.pcap parentM2.pcap
-	cp ../lp176-parentM3/OUTPUT/parentM3.pcap parentM3.pcap

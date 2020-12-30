@@ -46,14 +46,12 @@ static void init_loaded(void)
 {   /* nothing */ }
 
 
-#define PCAP_INPUT_COUNT 3
+#define PCAP_INPUT_COUNT 1
 
 #include "seam_parentR2.c"
 
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
     recv_pcap_packet1ikev1,
-    recv_pcap_packet2ikev1,
-    recv_pcap_packet3ikev1,
 };
 
 #include "../lp12-parentR2/parentR2_main.c"

@@ -102,6 +102,7 @@ UNITTESTS_v1I2+=lp174-parentM2
 UNITTESTS_v1R2+=lp175-parentN2
 UNITTESTS_v1I3+=lp176-parentM3
 UNITTESTS_v1R3+=lp177-parentN3
+UNITTESTS_v1R3+=lp178-parentN3wrongpolicy
 
 UNITTESTS_v1I1+=lp81-ikev1derived
 
