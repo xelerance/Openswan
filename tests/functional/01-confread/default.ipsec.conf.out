@@ -5,7 +5,7 @@ config setup
 	oe=no
 	nat_traversal=yes
 	dumpdir=/var/run/pluto/
-	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8
 	protostack=auto
 
 
