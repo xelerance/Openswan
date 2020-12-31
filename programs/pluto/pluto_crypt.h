@@ -307,6 +307,16 @@ static inline void pcr_init(struct pluto_crypto_req *r
 #define pcrc_init(pcrc) do { /* nothing yet */ } while (0)
 #endif
 
+int v2tov1_encr(enum ikev2_trans_type_encr encr);
+int v2tov1_encr_child(enum ikev2_trans_type_encr encr);
+
+int v2tov1_integ(enum ikev2_trans_type_integ v2integ);
+int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ);
+
+int v2tov1_prf(enum ikev2_trans_type_prf v2prf);
+int v2integ_to_prf(enum ikev2_trans_type_integ v2integ);
+int v2prf_to_integ(enum ikev2_trans_type_prf v2prf);
+
 #endif /* _PLUTO_CRYPT_H */
 
 

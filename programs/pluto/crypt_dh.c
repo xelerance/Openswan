@@ -51,6 +51,7 @@
 #include "log.h"
 #include "timer.h"
 #include "pluto/ike_alg.h"
+#include "pluto/spdb.h"
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
@@ -504,7 +505,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     )
 {
     oakley_auth_t auth = skq->auth;
-    const struct ike_prf_desc *hasher = crypto_get_hasher(skq->v2_prf);
+    const struct ike_prf_desc *hasher = crypto_get_hasher(v2prf_to_integ(skq->v2_prf));
     chunk_t pss;
     chunk_t ni;
     chunk_t nr;
@@ -517,6 +518,8 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
     const struct ike_encr_desc *encrypter = skq->encrypter;
 #endif
+
+    passert(hasher != NULL);
 
     /* this doesn't take any memory */
     setchunk_fromwire(gi, &skq->gi, skq);
