@@ -168,6 +168,24 @@ static int v2integ_to_prf(enum ikev2_trans_type_integ v2integ)
     }
 }
 
+int v2tov1_prf(enum ikev2_trans_type_prf v2prf)
+{
+    switch(v2prf) {
+    case IKEv2_PRF_HMAC_MD5:
+        return OAKLEY_MD5;
+    case IKEv2_PRF_HMAC_SHA1:
+        return OAKLEY_SHA1;
+    case IKEv2_PRF_HMAC_SHA2_256:
+        return OAKLEY_SHA2_256;
+    case IKEv2_PRF_HMAC_SHA2_384:
+        return OAKLEY_SHA2_384;
+    case IKEv2_PRF_HMAC_SHA2_512:
+        return OAKLEY_SHA2_512;
+    default:
+        return -1;
+    }
+}
+
 /** output an attribute (within an SA) */
 bool
 out_attr(int type
