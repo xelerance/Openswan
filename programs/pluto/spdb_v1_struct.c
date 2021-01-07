@@ -202,6 +202,9 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
     }
 
+    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++)
+        transform_values[i] = old_transform_values[i] = -1;
+
     tot_combos = 0;
 
     for(pass = 0; pass < 2; pass++) {
@@ -225,12 +228,6 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                     , cur_combo, prop_disj, sadb->prop_disj_cnt, pd->prop_cnt);
 #endif
 
-            /* reset the transform values */
-            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-                old_transform_values[i] = transform_values[i];
-                transform_values[i] = -1;
-            }
-
             for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
                 unsigned int trans_i;
                 struct db_v2_prop_conj *pc = &pd->props[prop_conj];
@@ -242,6 +239,13 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                         , prop_conj, pd->prop_cnt
                         , pc->trans_cnt);
 #endif
+
+                /* reset the transform values */
+                for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+                    old_transform_values[i] = transform_values[i];
+                    transform_values[i] = -1;
+                }
+
                 for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                     unsigned int attr_i;
                     struct db_v2_trans *tr = &pc->trans[trans_i];

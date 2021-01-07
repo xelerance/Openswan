@@ -129,17 +129,19 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | new combo 3: dh:5 encr:12 integ:2
 | pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | out_sa pcn: 0 has 1 valid proposals
-| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 5
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 6
 | ****emit ISAKMP Proposal Payload:
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    number of transforms: 5
+|    number of transforms: 6
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 0
 |    transform ID: KEY_IKE
@@ -290,8 +292,38 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |    length/value: 15
 |     [15 is OAKLEY_GROUP_MODP3072]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
-| emitting length of ISAKMP Proposal Payload: 188
-| emitting length of ISAKMP Security Association Payload: 200
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 5
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 15
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 224
+| emitting length of ISAKMP Security Association Payload: 236
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
@@ -326,11 +358,11 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 364
-sending 364 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 400
+sending 400 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 6c  0d 00 00 c8
-|   00 00 00 01  00 00 00 01  00 00 00 bc  00 01 00 05
+|   01 10 02 00  00 00 00 00  00 00 01 90  0d 00 00 ec
+|   00 00 00 01  00 00 00 01  00 00 00 e0  00 01 00 06
 |   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
 |   80 04 00 0e  03 00 00 24  01 01 00 00  80 0b 00 01
@@ -340,17 +372,19 @@ sending 364 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.2
 |   80 0e 00 80  80 02 00 04  80 04 00 05  03 00 00 24
 |   03 01 00 00  80 0b 00 01  80 0c 0e 10  80 03 00 03
 |   80 01 00 07  80 0e 00 80  80 02 00 02  80 04 00 05
-|   00 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   03 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
-|   80 04 00 0f  0d 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30  0d 00 00 14  af ca d7 13  68 a1 f1 c9
-|   6b 86 96 fc  77 57 01 00  0d 00 00 14  4a 13 1c 81
-|   07 03 58 45  5c 57 28 f2  0e 95 45 2f  0d 00 00 14
-|   7d 94 19 a6  53 10 ca 6f  2c 17 9d 92  15 52 9d 56
-|   0d 00 00 14  90 cb 80 91  3e bb 69 6e  08 63 81 b5
-|   ec 42 7b 1f  0d 00 00 14  cd 60 46 43  35 df 21 f8
-|   7c fd b2 fc  68 b6 a4 48  00 00 00 14  44 85 15 2d
-|   18 b6 bb cd  0b e8 a8 46  95 79 dd cc
+|   80 04 00 0f  00 00 00 24  05 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 03 00 03  80 01 00 07  80 0e 00 80
+|   80 02 00 02  80 04 00 0f  0d 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30  0d 00 00 14  af ca d7 13
+|   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  0d 00 00 14
+|   4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+|   0d 00 00 14  7d 94 19 a6  53 10 ca 6f  2c 17 9d 92
+|   15 52 9d 56  0d 00 00 14  90 cb 80 91  3e bb 69 6e
+|   08 63 81 b5  ec 42 7b 1f  0d 00 00 14  cd 60 46 43
+|   35 df 21 f8  7c fd b2 fc  68 b6 a4 48  00 00 00 14
+|   44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
 RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/parentM2.pcap
 |   =========== input from pcap file parentN1.pcap ========
@@ -439,10 +473,12 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | new combo 3: dh:5 encr:12 integ:2
 | pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
 | Translated IKEv2 policy to:
 | sa disjunct cnt: 1
 |   conjunctions cnt: 1
-|     protoid: 1 (PROTO_ISAKMP) cnt: 5
+|     protoid: 1 (PROTO_ISAKMP) cnt: 6
 |       transform: 1 cnt: 5
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
@@ -472,6 +508,12 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
 |         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
 | *****parse ISAKMP Transform Payload (ISAKMP):
 |    length: 32
@@ -603,8 +645,8 @@ sending 380 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 13
 ./parentM2 leak: saved gi value, item size: X
 ./parentM2 leak: outI2 KE, item size: X
 ./parentM2 leak: v1 policy proposal conj, item size: X
-./parentM2 leak: db_context->trans (expand), item size: X
 ./parentM2 leak: db_context->attrs (expand), item size: X
+./parentM2 leak: db_context->trans (expand), item size: X
 ./parentM2 leak: db_context, item size: X
 ./parentM2 leak: db2_expand->attrs, item size: X
 ./parentM2 leak: db_context->trans (expand), item size: X
@@ -624,8 +666,8 @@ sending 380 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 13
 ./parentM2 leak: vid->data, item size: X
 ./parentM2 leak: sa in main_outI1, item size: X
 ./parentM2 leak: v1 policy proposal conj, item size: X
-./parentM2 leak: db_context->trans (expand), item size: X
 ./parentM2 leak: db_context->attrs (expand), item size: X
+./parentM2 leak: db_context->trans (expand), item size: X
 ./parentM2 leak: db_context, item size: X
 ./parentM2 leak: db2_expand->attrs, item size: X
 ./parentM2 leak: db_context->trans (expand), item size: X

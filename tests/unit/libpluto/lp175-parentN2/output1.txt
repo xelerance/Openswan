@@ -127,10 +127,12 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 | new combo 3: dh:5 encr:12 integ:2
 | pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
 | new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
 | Translated IKEv2 policy to:
 | sa disjunct cnt: 1
 |   conjunctions cnt: 1
-|     protoid: 1 (PROTO_ISAKMP) cnt: 5
+|     protoid: 1 (PROTO_ISAKMP) cnt: 6
 |       transform: 1 cnt: 5
 |         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 4(OAKLEY_RSA_ENC)
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
@@ -160,6 +162,12 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; inter
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
 |         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 4(OAKLEY_RSA_ENC)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
 | selected proposal 0 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****emit IPsec DOI SIT:
@@ -360,8 +368,8 @@ sending 380 bytes for STATE_MAIN_R1 through eth0:500 [132.213.238.7:500] to 93.1
 ./parentN2 leak: main_inI2_outR2_tail, item size: X
 ./parentN2 leak: inI2_outR2 KE, item size: X
 ./parentN2 leak: v1 policy proposal conj, item size: X
-./parentN2 leak: db_context->trans (expand), item size: X
 ./parentN2 leak: db_context->attrs (expand), item size: X
+./parentN2 leak: db_context->trans (expand), item size: X
 ./parentN2 leak: db_context, item size: X
 ./parentN2 leak: db2_expand->attrs, item size: X
 ./parentN2 leak: db_context->trans (expand), item size: X
