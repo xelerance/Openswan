@@ -21,20 +21,21 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
+QCB=${OPENSWANSRCDIR}/lib/libwhack/qcbor
 SRCS=whacklib.c aliascomp.c
+
+SRCS+=UsefulBuf.c qcbor_encode.c qcbor_decode.c qcbor_err_to_str.c
+SRCS+=ieee754.c
 
 OBJS=${SRCS:.c=.o}
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
-
-VPATH+= ${KLIPSSRCDIR}
+VPATH+= ${QCB}/src
 
 LIB=libwhack.a
 
 # Original flags
-INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+INCLUDES=-I. -I${OPENSWANSRCDIR} -I${QCB}/inc
 INCLUDES+=-I${OPENSWANSRCDIR}/include
 CFLAGS+=${PORTINCLUDE} ${INCLUDES}
 CFLAGS+=-DDEBUG
@@ -43,7 +44,7 @@ CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
 CFLAGS+= -Wpointer-arith
-CFLAGS+= -Wcast-qual
+CFLAGS+= -Wno-cast-qual
 #CFLAGS+= -Wmissing-declarations
 CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
@@ -113,6 +114,10 @@ $(LIB): $(OBJS)
 $(OBJS):	$(HDRS)
 
 %.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+%.o: ${TC}/src/%.c
 	@echo CC $(notdir $<)
 	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 

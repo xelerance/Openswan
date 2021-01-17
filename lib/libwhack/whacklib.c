@@ -41,88 +41,84 @@
 #include "oswlog.h"
 
 #include "secrets.h"
+#include "qcbor/qcbor_encode.h"
+#include "qcbor/qcbor_decode.h"
 
-/**
- * Pack a string to a whack messages
+struct whackpacker {
+    struct whack_message *msg;
+    unsigned char        *str_roof;
+    unsigned char        *str_next;
+    int                   n;
+    int                   cnt;
+};
+
+/*
+ * The WhackMessage consists of a map embedded into an array.
+ * This is done so that the initial ~8 bytes are typically identical.
  *
- * @param wp
- * @param p a string
- * @return bool True if operation was successful
+ * Some CDDL:
+ *   whackmessage = [ magic:    0x77686B1F,
+ *                    action:   uint,
+ *                    whackdetails: WhackDetails ]
+ *
+ *   action //=       whack_status
+ *   action //=       whack_shutdown
+ *   action //=       whack_options
+ *   action //=       whack_connection
+ *
+ *   WhackDetails //= ...
+ *
  */
-static bool
-pack_str(struct whackpacker *wp, char **p)
-{
-    const char *s = *p == NULL? "" : *p;	/* note: NULL becomes ""! */
-    size_t len = strlen(s) + 1;
 
-    if (wp->str_roof - wp->str_next < (ptrdiff_t)len)
-    {
-	return FALSE;	/* fishy: no end found */
-    }
-    else
-    {
-	strcpy((char *)wp->str_next, s);
-	wp->str_next += len;
-        wp->cnt++;
-#if 0
-        DBG_log("packing: %u", wp->cnt);
-        DBG_dump("str", s, len);
-#endif
-	*p = NULL;	/* don't send pointers on the wire! */
-	return TRUE;
-    }
+#define OK(x) ugh = (x); if(ugh) goto bad
+#define CborSignatureTag 55799
+#define CborOpenSwanTag  0x4f50534e
+
+static void whack_cbor_encode_empty_map(QCBOREncodeContext *qec)
+{
+  QCBOREncode_OpenMap(qec);
+  QCBOREncode_CloseMap(qec);
 }
 
-
-/**
- * Unpack a whack message into a string
- *
- * @param wp Whack Message
- * @param p a string into which you want the message to be placed into
- * @return bool True if operation successful
- */
-static bool
-unpack_str(struct whackpacker *wp, char **p)
+static err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
 {
-    unsigned char *end;
-
-    end = memchr(wp->str_next, '\0', (wp->str_roof - wp->str_next) );
-
-    if (end == NULL)
-    {
-	return FALSE;	/* fishy: no end found */
-    }
-    else
-    {
-	unsigned char *s = (wp->str_next == end? NULL : wp->str_next);
-
-	*p = (char *)s;
-        wp->cnt++;
-#if 0
-        fprintf(stderr, "%u: unpacked string: %s\n", wp->cnt, *p);
-#endif
-	wp->str_next = end + 1;
-	return TRUE;
-    }
+  UsefulBufC bor = UsefulBuf_FROM_SZ_LITERAL("BOR");
+  QCBOREncode_AddTag(qec, CborSignatureTag);
+  QCBOREncode_AddTag(qec, CborOpenSwanTag);
+  QCBOREncode_AddBytes(qec, bor);
+  return NULL;
 }
 
-
-
-/**
- * Pack a message to be sent to whack
- *
- * @param wp The whack message
- * @return err_t
- */
-err_t pack_whack_msg (struct whackpacker *wp)
+err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *plen)
 {
-    err_t ugh = NULL;
-    /**
-     * Pack strings
-     */
-    wp->str_next = wp->msg->string;
-    wp->str_roof = &wp->msg->string[sizeof(wp->msg->string)];
+  size_t outlen;
+  QCBOREncodeContext qec;
+  err_t ugh= NULL;
+  QCBORError e;
 
+  UsefulBuf into = {buf, (unsigned long)*plen};
+  QCBOREncode_Init(&qec, into);
+
+  OK(whack_cbor_magic_header(&qec));
+
+  QCBOREncode_OpenArray(&qec);
+  if(wm->whack_status) {
+    QCBOREncode_AddInt64(&qec, WHACK_STATUS);
+    whack_cbor_encode_empty_map(&qec);
+    goto end;
+  }
+
+  if(wm->whack_shutdown) {
+    QCBOREncode_AddInt64(&qec, WHACK_SHUTDOWN);
+    whack_cbor_encode_empty_map(&qec);
+    goto end;
+  }
+
+  QCBOREncode_AddInt64(&qec, WHACK_OPTIONS);
+
+  QCBOREncode_OpenMap(&qec);
+
+#if 0
     if (!pack_str(wp, &wp->msg->name)	        /* string 1 */
 	|| !pack_str(wp, &wp->msg->left.id)     /* string 2 */
 	|| !pack_str(wp, &wp->msg->left.cert)   /* string 3 */
@@ -169,9 +165,36 @@ err_t pack_whack_msg (struct whackpacker *wp)
     wp->str_next += wp->msg->keyval.len;
 
     return ugh;
+
+#endif
+
+    QCBOREncode_CloseMap(&qec);
+
+ end:
+    QCBOREncode_CloseArray(&qec);
+
+    /* close the array */
+    e = QCBOREncode_FinishGetSize(&qec, &outlen);
+    if(e != QCBOR_SUCCESS) {
+      ugh = "encoding failed";
+      return ugh;
+    }
+
+    if(plen) {
+      *plen = outlen;
+    }
+    return NULL;
+
+ bad:
+    return "CBOR encoding error";
 }
 
+err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t buf_len)
+{
+  return "UGH";
+}
 
+#if 0
 /**
  * Unpack a message whack received
  *
@@ -224,6 +247,8 @@ err_t unpack_whack_msg (struct whackpacker *wp)
 
     return ugh;
 }
+
+#endif
 
 void
 clear_end(struct whack_end *e)
@@ -298,6 +323,4 @@ whack_get_secret(char *buf, size_t bufsize)
 
     return len;
 }
-
-
 

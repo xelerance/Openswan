@@ -101,6 +101,23 @@ enum whack_opt_set {
     WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
+enum whack_CBOR_actions {
+    WHACK_STATUS =  1,
+    WHACK_SHUTDOWN =2,
+    WHACK_OPTIONS  =3,
+};
+
+/* this is the historic message from Openswan < 3.1 */
+struct legacy_whack_message {
+    u_int32_t magic;
+
+    /* for WHACK_STATUS: */
+    bool whack_status;
+
+    /* for WHACK_SHUTDOWN */
+    bool whack_shutdown;
+};
+
 /* whack message should be size independant, but it is in host-endian format */
 struct whack_message {
     u_int32_t magic;
@@ -320,18 +337,14 @@ struct whack_message {
 #define REREAD_ALL	LRANGES(REREAD_SECRETS, REREAD_CRLS)  /* all reread options */
 #define REREAD_TPMEVAL    0x40  /* evaluate in Tcl */
 
-
-struct whackpacker {
-    struct whack_message *msg;
-    unsigned char        *str_roof;
-    unsigned char        *str_next;
-    int                   n;
-    int                   cnt;
-};
+struct whackpacker;
 
 extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
 extern void clear_end(struct whack_end *e);
+
+extern err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t buf_len);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);
