@@ -20,17 +20,10 @@ int readwhackmsg(char *infile)
 	    exit(9);
     }
 
-    /* okay, eat first line, it's a comment, but log it. */
-    if(fgets(b1, sizeof(b1), record)==NULL)
-	DBG(DBG_PARSING, DBG_log("readwhackmsg: fgets returned NULL"));
-    printf("Pre-amble (offset: %llu): %s",
-           (unsigned long long)ftello(record), b1);
-
     plen=0;
     while((iocount=fread(&plen, 4, 1, record))==1) {
 	u_int32_t a[2];
 	err_t ugh = NULL;
-        struct whackpacker wp;
 	struct whack_message m1;
 	size_t abuflen;
 
@@ -80,10 +73,6 @@ int readwhackmsg(char *infile)
             continue;
         }
 
-        wp.msg = &m1;
-        wp.n   = plen;
-        wp.str_next = m1.string;
-        wp.str_roof = (unsigned char *)&m1 + plen;
         fprintf(stderr, "processing whack msg time: %u size: %d\n",
                 a[1],plen);
 
@@ -91,14 +80,11 @@ int readwhackmsg(char *infile)
         fprintf(stderr, "m1: %p next: %p roof: %p\n",
                 &m1, wp.str_next, wp.str_roof);
 #endif
-
-        if ((ugh = unpack_whack_msg(&wp)) != NULL)
+        if ((ugh = deserialize_whack_msg(&m1, plen)) != NULL)
         {
             fprintf(stderr, "failed to parse whack msg: %s\n", ugh);
 	    continue;
 	}
-
-	m1.keyval.ptr = wp.str_next;    /* grab chunk */
 
 	/*
 	 * okay, we have plen bytes in b1, so turn it into a whack

@@ -155,7 +155,7 @@ UNITTESTS_R1+=lp62-nattR1
 UNITTESTS_I2+=lp63-nattI2
 UNITTESTS_R2+=lp64-nattR2
 UNITTESTS_I3+=lp65-nattI3
-UNITTESTS_I4+=lp166-natt-replaceI
+#UNITTESTS_I4+=lp166-natt-replaceI
 UNITTESTS_R4+=lp167-natt-replaceR
 
 UNITTESTS_I4+=lp171-childTSwrong

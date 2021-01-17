@@ -102,10 +102,14 @@ static struct option const longopts[] =
 static int send_whack_msg_to_file(struct starter_config *cfg, struct whack_message *msg)
 {
     static int recno = 0;
+    unsigned char sendbuf[4096];
+    size_t msg_len;
 
     fprintf(stderr, "writing record %u to whack file\n", ++recno);
-    unsigned int len = serialize_whack_msg(msg);
-    writewhackrecord((char *)msg, len);
+    if(whack_cbor_encode_msg(msg, sendbuf, &msg_len) != NULL) {
+        return -1;
+    }
+    writewhackrecord(sendbuf, msg_len);
     return 0;
 }
 
