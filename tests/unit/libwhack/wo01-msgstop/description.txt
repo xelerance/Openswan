@@ -1,0 +1,1 @@
+This creates a whack message with a STOP/QUIT command and that is all.

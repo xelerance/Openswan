@@ -593,9 +593,18 @@ done:
 /*
  * Handle a whack request.
  */
+
+static unsigned char cbor_opsn_magic[] =
+{
+    0xd9,0xd9,0xf7,0xda,
+    0x4f,0x50,0x53,0x4e,
+    0x43,0x42,0x4f,0x52
+};
+
 void
 whack_handle(int whackctlfd)
 {
+    unsigned char msg_buf[4096];
     struct whack_message msg, msg_saved;
     struct sockaddr_un whackaddr;
     socklen_t whackaddrlen = sizeof(whackaddr);
@@ -616,7 +625,9 @@ whack_handle(int whackctlfd)
        return;
     }
     memset(&msg, 0, sizeof(msg));
-    n = read(whackfd, &msg, sizeof(msg));
+
+    /* first read the magic sequence */
+    n = read(whackfd, msg_buf, sizeof(msg_buf));
     if (n <= 0)
     {
 	log_errno((e, "read() failed in whack_handle()"));
@@ -626,53 +637,37 @@ whack_handle(int whackctlfd)
 
     whack_log_fd = whackfd;
 
-    msg_saved = msg;
-
-    /* DBG_log("msg %d size=%u\n", ++msgnum, n); */
-
     /* sanity check message */
     {
 	err_t ugh = NULL;
-        struct whackpacker wp;
+        struct legacy_whack_message *lwm = (struct legacy_whack_message *)msg_buf;
 
-        wp.msg = &msg;
-        wp.n   = n;
-        wp.cnt = 0;
-        wp.str_next = msg.string;
-        wp.str_roof = (unsigned char *)&msg + n;
+        if(lwm->magic == WHACK_BASIC_MAGIC) {
+            /* we are dealing with a legacy situation */
+            /* Only basic commands.  Simpler inter-version compatibility. */
+            if (lwm->whack_status)
+                show_status();
 
-	if ((size_t)n < offsetof(struct whack_message, whack_shutdown) + sizeof(msg.whack_shutdown))
-	{
-	    ugh = builddiag("ignoring runt message from whack: got %d bytes", (int)n);
+            if (lwm->whack_shutdown) {
+                openswan_log("shutting down");
+                exit_pluto(0);	/* delete lock and leave, with 0 status */
+            }
+            return;
+        }
+
+        /* okay, check for CBOR sequence */
+        if(n <= 12 || memcpy(msg_buf, cbor_opsn_magic, 12) != 0) {
+            u_int32_t *bu32 = (u_int32_t*)msg_buf;
+            ugh = builddiag("ignoring message from whack with bad magic %08x/%08x/%08x"
+                            , bu32[0], bu32[1], bu32[2]);
 	}
-	else if (msg.magic != WHACK_MAGIC)
-	{
-	    if (msg.magic == WHACK_BASIC_MAGIC)
-	    {
-		/* Only basic commands.  Simpler inter-version compatibility. */
-		if (msg.whack_status)
-		    show_status();
-
-		if (msg.whack_shutdown)
-		{
-		    openswan_log("shutting down");
-		    exit_pluto(0);	/* delete lock and leave, with 0 status */
-		}
-		ugh = "";	/* bail early, but without complaint */
-	    }
-	    else
-	    {
-		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and PLUTO code."
-                                , msg.magic, WHACK_MAGIC);
-	    }
-	}
-        else if ((ugh = unpack_whack_msg(&wp)) != NULL)
+        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf+12, n-12)) != NULL)
         {
             /* nothing, ugh is already set */
         }
         else
         {
-            msg.keyval.ptr = wp.str_next;    /* grab chunk */
+            /* everything decoded fine */
         }
 
 	if (ugh != NULL)
@@ -686,7 +681,7 @@ whack_handle(int whackctlfd)
     }
 
     /* dump record if necessary */
-    writewhackrecord((char *)&msg_saved, n);
+    writewhackrecord(msg_buf, n);
 
     whack_process(whackfd, msg);
 }

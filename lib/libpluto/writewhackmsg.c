@@ -61,43 +61,23 @@ void close_whackrecordfile(void)
 }
 
 /*
- * writes out 64-bit time, even though we actually
- * only have 32-bit time here. Assumes that time will
- * be written out in big-endian format, with MSB word
- * being first.
- *
+ * Whack is now self-describing CBOR format, and a time value is included in the record itself.
  */
-bool writewhackrecord(char *buf, int buflen)
+bool writewhackrecord(unsigned char *buf, int buflen)
 {
-    u_int32_t header[3];
-    time_t n;
-
-    /* round up buffer length */
-    int abuflen = (buflen + 3) & ~0x3;
-
     /* bail if we aren't writing anything */
     if(whackrecordfile == NULL) return TRUE;
 
-    header[0]=buflen + sizeof(u_int32_t)*3;
-    header[1]=0;
-    time(&n);
-    header[2]=n;
-
     DBG(DBG_CONTROL
-	, DBG_log("writewhack record buflen: %u abuflen: %u\n", header[0], abuflen));
+	, DBG_log("writewhack record buflen: %u", buflen));
 
-    if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
-	DBG_log("writewhackrecord: fwrite error when writing header");
-    }
-
-    if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
+    if(fwrite(buf, buflen, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing buf");
     }
     fflush(whackrecordfile);
 
     return TRUE;
 }
-
 
 /*
  * we write out an empty record with the right WHACK magic.
@@ -107,15 +87,6 @@ bool writewhackrecord(char *buf, int buflen)
  */
 bool openwhackrecordfile(char *file)
 {
-    char when[256];
-    char FQDN[HOST_NAME_MAX + 1];
-    u_int32_t magic;
-    struct tm tm1, *tm;
-    time_t n;
-
-    strcpy(FQDN, "unknown host");
-    gethostname(FQDN, sizeof(FQDN));
-
     strncpy(whackrecordname, file, sizeof(whackrecordname));
     whackrecordfile = fopen(whackrecordname, "w");
     if(whackrecordfile==NULL) {
@@ -123,17 +94,6 @@ bool openwhackrecordfile(char *file)
 		     , whackrecordname);
 	return FALSE;
     }
-
-    time(&n);
-    tm = localtime_r(&n, &tm1);
-    strftime(when, sizeof(when), "%F %T", tm);
-
-    fprintf(whackrecordfile, "#!-pluto-whack-file- recorded on %s on %s\n",
-	    FQDN, when);
-
-    magic = WHACK_BASIC_MAGIC;
-    writewhackrecord((char *)&magic, 4);
-    fflush(whackrecordfile);
 
     DBG(DBG_CONTROL
 	, DBG_log("writewhack started recording whack messages to %s\n"

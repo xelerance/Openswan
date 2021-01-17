@@ -11,19 +11,22 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/unit
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
+
+all: programs
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-testlist clean check programs:
-	@${MAKE} -C libwhack    $@
-	@${MAKE} -C libopenswan $@
-	@${MAKE} -C libalgoparse $@
-	@${MAKE} -C libcrypto   $@
-	@${MAKE} -C policy      $@
-	@${MAKE} -C libpluto    $@
-	@${MAKE} -C ikev2crypto $@
-	@${MAKE} -C liboswkeys  $@
-	@${MAKE} -C xfrmmock    $@
+UNITTESTS+=wo01-msgstop
 
+# running 'make check KEEPGOING=1' will run through all tests w/o stopping
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+programs clean check pcapupdate:
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}
+
+testcount:
+	@echo ${UNITTESTS} | wc -w

@@ -181,33 +181,6 @@ int starter_whack_read_reply(int sock,
 	return ret;
 }
 
-/* returns length of result... XXX unit test would be good here */
-int serialize_whack_msg(struct whack_message *msg)
-{
-	struct whackpacker wp;
-	ssize_t len;
-	err_t ugh;
-
-	/**
-	 * Pack strings
-	 */
-        wp.cnt = 0;
-	wp.msg = msg;
-	wp.str_next = (unsigned char *)msg->string;
-	wp.str_roof = (unsigned char *)&msg->string[sizeof(msg->string)];
-
-	ugh = pack_whack_msg(&wp);
-
-	if(ugh)
-	{
-	    starter_log(LOG_LEVEL_ERR, "send_wack_msg(): can't pack strings: %s", ugh);
-	    return -1;
-	}
-
-	len = wp.str_next - (unsigned char *)msg;
-        return len;
-}
-
 static int send_whack_msg(struct starter_config *cfg, struct whack_message *msg)
 {
   if(cfg->send_whack_msg) {
@@ -223,14 +196,18 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	struct sockaddr_un ctl_addr =
 	    { .sun_family = AF_UNIX };
 	int sock;
-	ssize_t len;
+	size_t len;
+        unsigned char sendbuf[4096];
 	int ret;
 
 	/* copy socket location */
 	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
 
-        len = serialize_whack_msg(msg);
-        if(len == -1) return -1;   /* already logged error */
+        err_t ugh = whack_cbor_encode_msg(msg, sendbuf, &len);
+        if(ugh) {
+          starter_log(LOG_LEVEL_ERR, "error encoding: %s", ugh);
+          return -1;
+        }
 
 	/**
 	 * Connect to pluto ctl

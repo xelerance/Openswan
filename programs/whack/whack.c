@@ -900,7 +900,6 @@ int
 main(int argc, char **argv)
 {
     struct whack_message msg;
-    struct whackpacker wp;
     char esp_buf[256];	/* uses snprintf */
     lset_t
         opts_seen = LEMPTY,
@@ -918,6 +917,8 @@ main(int argc, char **argv)
     int xauthnamelen = 0, xauthpasslen = 0;
     bool gotxauthname = FALSE, gotxauthpass = FALSE;
     const char *ugh;
+    unsigned char sendbuf[4096];
+    size_t msg_len;
 
     progname = argv[0];
 
@@ -1951,9 +1952,6 @@ main(int argc, char **argv)
             msg.remotepeertype = NON_CISCO; /*NON_CISCO=0*/
     }
 
-    /* pack strings for inclusion in message */
-    wp.msg = &msg;
-
     /* build esp message as esp="<esp>;<pfsgroup>" */
     if (msg.pfsgroup) {
 	    snprintf(esp_buf, sizeof (esp_buf), "%s;%s",
@@ -1961,9 +1959,11 @@ main(int argc, char **argv)
 		    msg.pfsgroup ? msg.pfsgroup : "");
 	    msg.esp=esp_buf;
     }
-    ugh = pack_whack_msg(&wp);
-    if (ugh)
-	diag(ugh);
+
+    ugh = whack_cbor_encode_msg(&msg, sendbuf, &msg_len);
+    if(ugh) {
+        diag(ugh);
+    }
 
     msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN) | LELEM(OPT_STATUS)))
 		| opts2_seen | lst_seen | cd_seen) != LEMPTY
@@ -1996,7 +1996,6 @@ main(int argc, char **argv)
     {
 	int sock = safe_socket(AF_UNIX, SOCK_STREAM, 0);
 	int exit_status = 0;
-	ssize_t len = wp.str_next - (unsigned char *)&msg;
 
 	if (sock == -1)
 	{
@@ -2017,7 +2016,7 @@ main(int argc, char **argv)
 	    exit(RC_WHACK_PROBLEM);
 	}
 
-	if (write(sock, &msg, len) != len)
+	if (write(sock, sendbuf, msg_len) != msg_len)
 	{
 	    int e = errno;
 
