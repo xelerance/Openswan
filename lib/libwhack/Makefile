@@ -27,6 +27,9 @@ SRCS=whackwrite.c aliascomp.c plutoopts.c
 SRCS+=UsefulBuf.c qcbor_encode.c qcbor_decode.c qcbor_err_to_str.c
 SRCS+=ieee754.c
 
+SRCS+=UsefulBuf.c qcbor_encode.c qcbor_decode.c qcbor_err_to_str.c
+SRCS+=ieee754.c
+
 OBJS=${SRCS:.c=.o}
 
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
