@@ -2577,6 +2577,9 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
    /* Derive new keying material */
     compute_keymats(st);
 
+    if (md->pst == NULL)
+	return STF_INTERNAL_ERROR;
+
     /* Tell the kernel to establish the inbound, outbound, and routing part
      * of the new SA (unless the commit bit is set -- which we don't support).
      * We do this before any state updating so that
