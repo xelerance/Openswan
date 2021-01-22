@@ -473,6 +473,21 @@ void confwrite_conn(FILE *out,
 	    } else {
 		fprintf(out, "\ttype=transport\n");
 	    }
+            break;
+
+	case POLICY_SHUNT_PASS:
+	    fprintf(out, "\ttype=passthrough\n");
+	    break;
+
+	case POLICY_SHUNT_DROP:
+	    fprintf(out, "\ttype=drop\n");
+	    break;
+
+	case POLICY_SHUNT_REJECT:
+	    fprintf(out, "\ttype=reject\n");
+	    break;
+
+	}
 
 	    if(conn->policy & POLICY_COMPRESS) {
 		fprintf(out, "\tcompress=yes\n");
@@ -498,6 +513,11 @@ void confwrite_conn(FILE *out,
 		fprintf(out, "\toverlapip=no\n");
 	    }
 
+        if(conn->policy & POLICY_IKEV1_DISABLE) {
+            fprintf(out, "\tikev1=no\n");
+        } else {
+            fprintf(out, "\tikev1=yes\n");
+        }
 	    auth_policy=(conn->policy & POLICY_ID_AUTH_MASK);
 	    switch(auth_policy) {
 	    case POLICY_PSK:
@@ -565,21 +585,6 @@ void confwrite_conn(FILE *out,
 		fprintf(out, "\tikev2=insist\n");
 		break;
 	    }
-	    break;
-
-	case POLICY_SHUNT_PASS:
-	    fprintf(out, "\ttype=passthrough\n");
-	    break;
-
-	case POLICY_SHUNT_DROP:
-	    fprintf(out, "\ttype=drop\n");
-	    break;
-
-	case POLICY_SHUNT_REJECT:
-	    fprintf(out, "\ttype=reject\n");
-	    break;
-
-	}
 
     }
 

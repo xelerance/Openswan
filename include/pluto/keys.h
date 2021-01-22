@@ -111,7 +111,7 @@ extern struct pubkey_list *pluto_pubkeys;
 
 struct packet_byte_stream;
 extern stf_status
-RSA_check_signature_gen(struct state *st
+check_signature_gen(struct connection *c, struct state *st
 			, const u_char hash_val[MAX_DIGEST_LEN]
 			, size_t hash_len
 			, const struct packet_byte_stream *sig_pbs

@@ -1,0 +1,170 @@
+parentXY-test
+================
+
+    lp02-parentI1   ----I1-->
+                              lp08-parentR1
+                              lp06-parentR1notchosen
+                    <--R1----
+    lp11-parentI2dup
+    lp10-parentI2   ----I1-->
+                                 lp12-parentR2
+                                 lp06-msg1noproopchosen
+                    <--R2----
+    lp13-parentI3
+
+These test cases do IKEv2 with RSA keys, using whatever the built-in, default policy is.
+Almost all subsequent tests are built upon these tests.
+
+Status: working.
+
+lp11-parentI2dup
+----------------
+This test determines what happens if the R1 message is duplicated for some
+reason.
+
+lp06-parentR1nochosen
+---------------------
+This test determines what happens when the responder has no matching policy.
+
+lp72-msg1nopropchosen
+---------------------
+This test determines what happens when the responder chooses no proposal,
+but the initiator sends some additional messages.
+
+initiateself
+============
+
+A key part of Opportunistic Encryption and other uses is that the policy
+allow a remote entity to create a policy for itself only.  That is, IPv4 /32,
+or IPv6/128.
+
+
+    lp14-initiateself   ----I1-->
+                                 lp15-respondself
+                        <--R1----
+    lp16-initiateselfI2 ----I1-->
+                                 lp17-childselfpolicy
+                        <--R2----
+
+certificateself
+===============
+
+This series of tests uses a certificate with a policy for /32.  This requires
+that the general policy (a template) be instantiated into a specific policy.
+
+
+    lp18-certificateselfI1 ----I1-->
+                                      lp19-certreplyselfR1
+                           <---R1---
+    lp20-certificateselfI2 ----I2-->
+                                      lp21-certreplyselfR2
+                                      lp22-certreplymanyR2
+                           <---R2---
+
+
+davecert
+========
+
+This series builds upon the certificateself sequence above, but it adds a
+second initiator to the process in order to test that states and policy
+are correctly split up.
+
+    lp23-davecertI1       ----I1-->
+                                      lp70-certreplydaveR1
+                           <---R1---
+    lp26-davecertI2       ----I2-->
+                                      lp24-certreplydaveR2
+
+
+ikev1
+=====
+
+The series tests IKEv1 mechanism.  The first of these was created to verify
+that IKEv1 proposals are reject properly when IKEv2 mode, but the rest
+were added to validate IKEv1 functionality.
+
+    lp43-parentM1        ---M1-->
+                                      lp73-parentN1
+                         <--N1---
+    lp74-parentM2        ---M2--->
+                                      lp75-parentN2
+                         <--N2---
+    lp76-parentM3
+
+host-to-host
+============
+This test case deals with policy which is /32 to /32, and is derived from
+implicit configuration of some things.  It does some rekeys in each
+direction, and then also some deletes initiated from each direction.
+
+    lp36-h2hI1           ---I1-->
+                                      lp37-h2hR1
+                         <--R1---
+    lp38-h2hI2           ---I2-->
+                                      lp39-h2hR2
+                         <--I3---
+                                      lp80-h2h-rekey-ikev2-R2-msgid0
+                         <--I4---
+                         ---I4-->     lp81-h2h-rekey-ikev2-I3-msgid0
+
+                                      lp82-h2h-deleteSA-R2
+                         <--D1---
+
+                         ---D2-->     lp83-h2h-deleteSA-I3
+
+INVALID_SYNTAX rekey tests
+==========================
+This sequence adds to the base parentXY.
+It sends a corrupted Ni in the rekey, and then processes the resulting
+invalid syntax.
+
+    lp87-rekeyv2-inval-I1  ---CI1->
+                                      lp88-rekeyv2-inval-R1
+                           <--CR1--
+    lp89-rekeyv2-inval-inCR1
+
+
+SA-replace I1
+=============
+After keying with lp36/37/38/39, then there is a rekey of the parent SA.
+
+    lp90-h2h-sareplace-I1  ---I1_2-->
+                                      lp91-h2h-sareplace-R1
+                           <--R1_2---
+
+ikev1 certificate
+=================
+This test uses IKEv1 with certificates
+
+
+    lp82-v1certM1        ---M1-->
+                                     lp83-v1certN1
+                         <--N1---
+    lp84-v1certM2        ---M2-->
+                                     lp85-v1certN2
+                         <--N2---
+    lp86-v1certM3        ---M3-->
+                                     lp87-v1certN3
+                         <--N3---
+
+    lp92-v1emptyM1       ---M1-->
+
+
+ikev1 with NAT-traversal
+========================
+This test uses IKEv1 with certificates and NAT-traversal.
+
+
+    lp102-v1rwnatM1      ---M1-->
+                                     lp103-v1rwnatN1
+                         <--N1---
+    lp104-v1rwnatM2      ---M2-->
+                                     lp105-v1rwnatN2
+                         <--N2---
+    lp106-v1rwnatM3      ---M3-->
+                                     lp107-v1rwnatN3
+                         <--N3---
+    lp108-v1rwnatQI1     ---QI1->
+                                     lp109-v1rwnatQR1
+
+

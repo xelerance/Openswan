@@ -23,9 +23,9 @@
 #include "defs.h"
 #include "md5.h"
 #include "sha1.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -45,13 +45,13 @@
  */
 
 #ifdef HAVE_LIBNSS
-static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher);
-static SECOidTag nss_hash_oid(const struct hash_desc *hasher);
+static CK_MECHANISM_TYPE nss_hash_mech(const struct ike_integ_desc *hasher);
+static SECOidTag nss_hash_oid(const struct ike_integ_desc *hasher);
 #endif
 
 void
 hmac_init(struct hmac_ctx *ctx,
-    const struct hash_desc *h,
+    const struct ike_integ_desc *h,
     const u_char *key, size_t key_len)
 {
 #ifndef HAVE_LIBNSS
@@ -175,7 +175,7 @@ void
 hmac_final(u_char *output, struct hmac_ctx *ctx)
 {
 #ifndef HAVE_LIBNSS
-    const struct hash_desc *h = ctx->h;
+    const struct ike_integ_desc *h = ctx->h;
 
     h->hash_final(output, &ctx->hash_ctx);
 
@@ -219,11 +219,11 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
 }
 
 #ifdef HAVE_LIBNSS
-static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
+static SECOidTag nss_hash_oid(const struct ike_integ_desc *hasher)
 {
     SECOidTag mechanism=0;
 
-    switch(hasher->common.algo_id) {
+    switch(hasher->common.ikev1_algo_id) {
 	case OAKLEY_MD5:       mechanism = SEC_OID_MD5;    break;
 	case OAKLEY_SHA1:      mechanism = SEC_OID_SHA1;   break;
 	case OAKLEY_SHA2_256:  mechanism = SEC_OID_SHA256; break;
@@ -234,11 +234,11 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
     return mechanism;
 }
 
-static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher)
+static CK_MECHANISM_TYPE nss_hash_mech(const struct ike_integ_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism=0x80000000;
 
-    switch(hasher->common.algo_id) {
+    switch(hasher->common.ikev1_algo_id) {
 	case OAKLEY_MD5:       mechanism = CKM_MD5;    break;
 	case OAKLEY_SHA1:      mechanism = CKM_SHA_1;  break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256; break;
@@ -323,11 +323,11 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
 }
 
 
-CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher)
+CK_MECHANISM_TYPE nss_key_derivation_mech(const struct ike_integ_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism=0x80000000;
 
-    switch(hasher->common.algo_id) {
+    switch(hasher->common.ikev1_algo_id) {
 	case OAKLEY_MD5:       mechanism = CKM_MD5_KEY_DERIVATION; break;
 	case OAKLEY_SHA1:      mechanism = CKM_SHA1_KEY_DERIVATION; break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256_KEY_DERIVATION; break;

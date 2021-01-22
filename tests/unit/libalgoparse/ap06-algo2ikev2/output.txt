@@ -1,0 +1,114 @@
+
+  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
+ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+| EI starts with: aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| IKEv2 outsa starts 
+| proposals: cnt=1
+|  disj: cnt=6 [next=7]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 2:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+| 3:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 4:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP1536" [attrs: 0]
+| 5:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha2_256_128" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+| 6:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
+| IKEv1 outsa is now 
+| sa disjunct cnt: 1 
+|   conjunctions cnt: 1 
+|     protoid: 1 (PROTO_ISAKMP) cnt: 6 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
+|         type: 3(GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
+|         type: 3(GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
+|         type: 3(GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536) 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
+|         type: 3(GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536) 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 5(AUTH_ALGORITHM_HMAC_SHA2_256) 
+|         type: 3(GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072) 
+|       transform: 12 cnt: 3 
+|         type: 6(KEY_LENGTH) val: 128(unknown) 
+|         type: 5(AUTH_ALGORITHM) val: 2(AUTH_ALGORITHM_HMAC_SHA1) 
+|         type: 3(GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072) 
+| free now
+./algo2ikev2 leak: alg_info_ike, item size: 2064
+./algo2ikev2 leak: 4 * hasher name, item size: 16
+./algo2ikev2 leak: 10 * group description, item size: 56
+./algo2ikev2 leak detective found 15 leaks, total size 2136

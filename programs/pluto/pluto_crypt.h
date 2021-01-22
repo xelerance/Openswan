@@ -32,7 +32,7 @@
 #define _PLUTO_CRYPT_H
 
 #include "osw_select.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
 typedef unsigned int pcr_req_id;
 
@@ -66,8 +66,10 @@ struct pcr_skeyid_q {
   /* inputs */
   u_int16_t     oakley_group;
   oakley_auth_t auth;
-  oakley_hash_t integ_hash;
-  oakley_hash_t prf_hash;
+    oakley_hash_t v1_integ_hash;  /* IKEv1 */
+    oakley_hash_t v1_prf_hash;
+    enum ikev2_trans_type_prf   v2_prf;  /* IKEv2 */
+    enum ikev2_trans_type_integ v2_integ;
   enum phase1_role init;
   size_t        keysize;     /* of encryptor */
   wire_chunk_t gi;
@@ -80,7 +82,7 @@ struct pcr_skeyid_q {
   wire_chunk_t secret;
 #ifdef HAVE_LIBNSS
   /* u_int16_t encrypt_algo; */
-  const struct encrypt_desc *encrypter;
+  const struct ike_encr_desc *encrypter;
   wire_chunk_t   pubk;
 #endif
 };
@@ -248,8 +250,9 @@ extern void unpack_KE(struct state *st
 		      , chunk_t *g);
 extern void unpack_nonce(chunk_t *n, struct pluto_crypto_req *r);
 
-extern void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln);
-#define ikev2_validate_key_lengths(st) __ikev2_validate_key_lengths(st,__func__,__LINE__)
+extern void __validate_key_lengths(struct state *st, const char *vers, const char *fn, int ln);
+#define ikev2_validate_key_lengths(st) __validate_key_lengths(st,"v2",__func__,__LINE__)
+#define ikev1_validate_key_lengths(st) __validate_key_lengths(st,"v1",__func__,__LINE__)
 
 static inline void clonetowirechunk(wire_chunk_t  *thespace,
 			     unsigned char *space,
@@ -303,6 +306,16 @@ static inline void pcr_init(struct pluto_crypto_req *r
 #else
 #define pcrc_init(pcrc) do { /* nothing yet */ } while (0)
 #endif
+
+int v2tov1_encr(enum ikev2_trans_type_encr encr);
+int v2tov1_encr_child(enum ikev2_trans_type_encr encr);
+
+int v2tov1_integ(enum ikev2_trans_type_integ v2integ);
+int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ);
+
+int v2tov1_prf(enum ikev2_trans_type_prf v2prf);
+int v2integ_to_prf(enum ikev2_trans_type_integ v2integ);
+int v2prf_to_integ(enum ikev2_trans_type_prf v2prf);
 
 #endif /* _PLUTO_CRYPT_H */
 

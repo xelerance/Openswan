@@ -1,0 +1,5 @@
+This test case is an IKEv1 responder.
+
+receives the I1 message but should see that the proposals
+fail to match the local IKE proposal configuration and
+respond with NO_PROPOSAL_CHOSEN

@@ -53,7 +53,7 @@
 #include "whack.h"	/* needs connections.h */
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "kernel.h"	/* needs connections.h */
 #include "rcv_whack.h"
@@ -73,7 +73,7 @@
 #include "secrets.h"
 
 #include "kernel_alg.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #ifdef TPM
 #include "tpm/tpm.h"

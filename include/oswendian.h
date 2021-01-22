@@ -12,6 +12,9 @@
  * for more details.
  */
 
+#ifndef _OSW_ENDIAN_H
+#define _OSW_ENDIAN_H
+
 /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #if defined(__CYGWIN__)
@@ -59,3 +62,6 @@
 #ifndef BYTE_ORDER
  #error BYTE_ORDER must be defined
 #endif
+
+#endif /* _OSW_ENDIAN_H */
+

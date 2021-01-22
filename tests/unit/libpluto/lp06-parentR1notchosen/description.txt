@@ -1,2 +1,0 @@
-This tests the case where an I1 is emitted, but the responder does not like
-any proposal, and/or can not find a policy that matches, and replies as such.

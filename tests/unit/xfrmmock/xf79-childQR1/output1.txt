@@ -1,0 +1,1036 @@
+./xf79-childQR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./xf79-childQR1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./xf79-childQR1 loading secrets from "../../libpluto/samples/jj.secrets"
+./xf79-childQR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./xf79-childQR1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./xf79-childQR1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./xf79-childQR1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./xf79-childQR1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./xf79-childQR1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./xf79-childQR1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./xf79-childQR1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
+| Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+./xf79-childQR1 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+| counting wild cards for @berri.testing.xelerance.com is 0
+./xf79-childQR1 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+| counting wild cards for 132.213.238.7 is 0
+| orient t4901 reference sr#1 this: addr:132.213.238.7 that: %any
+| orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:4500)
+| orient t4901 checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient t4901 finished with: 1 [132.213.238.7]
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=132.213.238.7 him=@berri.testing.xelerance.com (exact)
+|   concluded with <none>
+./xf79-childQR1 adding connection: "t4901"
+| 132.213.238.7...%any[@berri.testing.xelerance.com]
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+|   orient t4901 finished with: 1 [132.213.238.7]
+RC=0 "t4901": 132.213.238.7...%any[@berri.testing.xelerance.com]; unrouted; eroute owner: #0
+RC=0 "t4901":     myip=unset; hisip=unset;
+RC=0 "t4901":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "t4901":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
+RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+0: input from parentM1.pcap
+|   =========== input from from parentM1.pcap ========
+| *received 376 bytes from 93.184.216.34:55044 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 01 78  0d 00 00 d4
+|   00 00 00 01  00 00 00 01  00 00 00 c8  00 01 00 06
+|   03 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   03 00 00 20  01 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   03 00 00 20  02 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 05
+|   03 00 00 20  03 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 05
+|   03 00 00 20  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0f
+|   00 00 00 20  05 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0f
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
+|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
+|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
+|   0b e8 a8 46  95 79 dd cc
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+./xf79-childQR1 received Vendor ID payload [Openswan (this version) 2.6-regression ]
+./xf79-childQR1 received Vendor ID payload [Dead Peer Detection]
+./xf79-childQR1 received Vendor ID payload [RFC 3947] method set to=115
+./xf79-childQR1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-03] meth=108, but already using method 115
+./xf79-childQR1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02_n] meth=106, but already using method 115
+./xf79-childQR1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-02] meth=107, but already using method 115
+./xf79-childQR1 received Vendor ID payload [draft-ietf-ipsec-nat-t-ike-00]
+| find_host_connection2 called from main_inI1_outR1, me=132.213.238.7:500 him=93.184.216.34:55044 policy=/!IKEv1
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:55044 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with t4901
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:55044 -> hp:t4901
+| searching for connection with policy = /!IKEv1
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (t4901)
+| find_host_connection2 returns t4901 (ike=none/none)
+| creating state object #1 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #1 bucket: 5
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+./xf79-childQR1 responding to Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ISAKMP)
+| attributes  80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
+|   80 02 00 02  80 04 00 0e
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [RFC 3947]
+|    next-payload: ISAKMP_NEXT_VID [@96=0x d]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 136
+| complete state transition with STF_OK
+./xf79-childQR1 transition from state STATE_MAIN_R0 to state STATE_MAIN_R1
+| sending reply packet to 93.184.216.34:55044 (from port 500)
+sending 136 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 93.184.216.34:55044 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 02  80 04 00 0e
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+./xf79-childQR1 STATE_MAIN_R1: sent MR1, expecting MI2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+1: input from parentM2.pcap
+|   =========== input from from parentM2.pcap ========
+| *received 356 bytes from 93.184.216.34:55044 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   04 10 02 00  00 00 00 00  00 00 01 64  0a 00 01 04
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  14 00 00 18  d7 66 3f 90  45 db b1 6f
+|   2c 55 f2 25  78 55 db 6a  76 d4 bc 8f  00 00 00 18
+|   b4 e3 01 b0  85 e7 22 52  83 ee ec 6c  44 47 8e 55
+|   28 66 44 8e
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_R1
+| got payload 0x10(ISAKMP_NEXT_KE) needed: 0x410 opt: 0x102080
+| ***parse ISAKMP Key Exchange Payload:
+|    length: 260
+| got payload 0x400(ISAKMP_NEXT_NONCE) needed: 0x400 opt: 0x102080
+| ***parse ISAKMP Nonce Payload:
+|    length: 20
+| got payload 0x100000(ISAKMP_NEXT_NAT-D) needed: 0x0 opt: 0x102080
+| ***parse ISAKMP NAT-D Payload:
+|    length: 24
+| got payload 0x100000(ISAKMP_NEXT_NAT-D) needed: 0x0 opt: 0x102080
+| ***parse ISAKMP NAT-D Payload:
+|    length: 24
+| DH public value received:
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+./xf79-childQR1 NAT-Traversal: Result using draft-ietf-ipsec-nat-t-ike (MacOS X): peer is NATed
+| inserting event EVENT_NAT_T_KEEPALIVE, timeout in 0 second
+| complete state transition with STF_SUSPEND
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+| emitting length of ISAKMP Key Exchange Payload: 260
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Nr into ISAKMP Nonce Payload
+| Nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| emitting length of ISAKMP Nonce Payload: 20
+| sending NAT-D payloads
+|    next-payload: ISAKMP_NEXT_NAT-D [@288=0x14]
+| ***emit ISAKMP NAT-D Payload:
+| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  c4 00 10 99  12 11 34 5e  78 ab 84 55  96 7a 2b 38
+|   63 63 32 03
+| emitting length of ISAKMP NAT-D Payload: 24
+| ***emit ISAKMP NAT-D Payload:
+| emitting 20 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
+|   76 d4 bc 8f
+| emitting length of ISAKMP NAT-D Payload: 24
+| emitting length of ISAKMP Message: 356
+| main inI2_outR2: starting async DH calculation (group=14)
+| started dh_secretiv, returned: stf=STF_SUSPEND
+| complete state transition with STF_OK
+./xf79-childQR1 transition from state STATE_MAIN_R1 to state STATE_MAIN_R2
+| sending reply packet to 93.184.216.34:55044 (from port 500)
+sending 356 bytes for STATE_MAIN_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.34:55044 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   04 10 02 00  00 00 00 00  00 00 01 64  0a 00 01 04
+|   a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+|   14 00 00 14  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc
+|   bb c6 15 84  14 00 00 18  c4 00 10 99  12 11 34 5e
+|   78 ab 84 55  96 7a 2b 38  63 63 32 03  00 00 00 18
+|   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
+|   76 d4 bc 8f
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+./xf79-childQR1 STATE_MAIN_R2: sent MR2, expecting MI3
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+2: input from parentM3.pcap
+|   =========== input from from parentM3.pcap ========
+| *received 332 bytes from 93.184.216.34:55045 on eth0 (port=4500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   05 10 02 01  00 00 00 00  00 00 01 4c  76 6f a4 8e
+|   5e fc a9 90  e0 03 31 bf  35 3d f6 d6  b3 67 ba 6d
+|   75 5d ef 96  32 f5 87 ff  2f 4b 58 ab  da 27 05 dd
+|   b1 1b 1e 04  8b 53 9e 9b  de 0b d9 17  a6 b6 cb 46
+|   e3 50 7d 44  9b 7c 7b 08  06 3d 3c 82  ae 81 fb 0d
+|   41 53 d8 5d  a7 eb 66 25  8b ef d1 35  e8 56 10 82
+|   81 cb 1f d8  16 30 6f 1a  82 ee d5 1c  c4 9d 4f b6
+|   a5 4b 8a b5  a5 26 a7 cd  e1 5a b9 fc  27 91 af 1a
+|   1a 99 bb d0  39 9c f4 e7  9e 4d 56 d6  1f 15 c7 b2
+|   cb f5 bb 03  4b 4a 5f 52  f6 4d 5a dc  db 74 4e 90
+|   73 46 2a 80  cd 6f 2a c6  38 61 1f c0  e7 5d 1a 04
+|   ba 1a d5 64  7b e5 c3 ae  eb dc 23 72  7a 51 7d e8
+|   f7 62 a9 8b  41 21 18 37  a9 3c c3 18  d7 f4 36 69
+|   83 c0 02 9f  9d a8 84 7d  fb 11 79 f3  30 2a 81 91
+|   80 4a 26 bc  b3 e8 04 7f  f6 cf b2 10  7b 8c 1f 90
+|   f7 7f 77 d9  5b 22 a8 88  b2 12 97 80  93 eb 8e f4
+|   d7 75 08 8c  6b 3f fa d5  ae eb 44 17  ee 14 2e 29
+|   58 70 77 c3  5c 9e c7 df  cb a5 b2 f8  eb c8 a2 38
+|   2d bc 44 bd  09 59 7b 2e  7f 54 16 3c  fd 07 9f e6
+|   06 15 c6 c1  33 dc 1d 65  95 ba ad f4
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_R2
+| received encrypted packet from 93.184.216.34:55045
+| decrypting 304 bytes using algorithm OAKLEY_AES_CBC
+| crypting using IV:  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
+| decrypted:
+|   09 00 00 23  02 00 00 00  62 65 72 72  69 2e 74 65
+|   73 74 69 6e  67 2e 78 65  6c 65 72 61  6e 63 65 2e
+|   63 6f 6d 00  00 01 04 52  f1 fb d4 e1  40 26 8e 05
+|   21 7b ca 22  78 55 73 c6  cc ef d2 10  c4 f5 e2 2e
+|   c3 dc fb 55  ea 60 a8 3b  c8 4e 93 61  08 c7 eb 34
+|   b3 b2 69 71  9c 0e 8b 75  d8 47 1f 92  af 82 db 92
+|   0a 44 c9 c2  41 4c 14 ae  7e 93 b6 1f  71 bf 11 4d
+|   a5 ae a0 8f  70 29 93 bf  5c bc 14 fc  ea 92 f7 0c
+|   6a c2 46 8a  9b a6 3e 22  9f 31 68 bd  8b 4c f6 f9
+|   4c 29 28 b3  1b 0f ab 2a  b9 92 e5 f9  54 2d b9 47
+|   07 c7 4d 04  24 04 ac 9d  f3 4f 4c a7  c1 a6 93 91
+|   a1 23 2e c7  dd c9 04 04  8f 3c a2 82  c2 42 bd 85
+|   e4 50 af f5  7a bd 42 82  33 b7 d1 5d  28 64 37 c0
+|   a4 9e 80 b0  14 17 ab fb  ff 78 e5 1b  e2 d6 0f 04
+|   67 3b eb a1  7e 53 d1 29  7d 4d b6 7d  b1 be c9 dc
+|   8f cc 48 c8  4a ee 8b df  c0 f5 9c ad  f5 23 d6 dc
+|   83 c2 d8 63  29 14 12 9f  da 04 82 ac  6d 4e 87 6a
+|   c1 2a f7 34  7c a9 15 a7  19 0f c6 59  8a 3b 86 5f
+|   06 e9 49 b7  70 05 74 00  00 00 00 00  00 00 00 00
+| next IV:  fd 07 9f e6  06 15 c6 c1  33 dc 1d 65  95 ba ad f4
+| got payload 0x20(ISAKMP_NEXT_ID) needed: 0x220 opt: 0x20c0
+| ***parse ISAKMP Identification Payload:
+|    length: 35
+|    ID type: ID_FQDN
+|    DOI specific A: 0
+|    DOI specific B: 0
+|      obj:   62 65 72 72  69 2e 74 65  73 74 69 6e  67 2e 78 65
+|   6c 65 72 61  6e 63 65 2e  63 6f 6d
+| got payload 0x200(ISAKMP_NEXT_SIG) needed: 0x200 opt: 0x20c0
+| ***parse ISAKMP Signature Payload:
+|    length: 260
+| removing 9 bytes of padding
+./xf79-childQR1 Main mode peer ID is ID_FQDN: '@berri.testing.xelerance.com'
+| refine_connection: starting with t4901
+|    match_id a=@berri.testing.xelerance.com
+|             b=@berri.testing.xelerance.com
+|    results  matched
+|   trusted_ca called with a=(empty) b=(empty)
+| refine_connection: checking t4901 against t4901, best=(none) with match=1(id=1/ca=1/reqca=1)
+| refine_connection: checked t4901 against t4901, now for see if best
+| started looking for secret for 132.213.238.7->@berri.testing.xelerance.com of kind PPK_RSA
+| actually looking for secret for 132.213.238.7->@berri.testing.xelerance.com of kind PPK_RSA
+| line 1: key type PPK_RSA(132.213.238.7) to type PPK_RSA
+| 1: compared key (none) to 132.213.238.7 / @berri.testing.xelerance.com -> 2
+| 2: compared key (none) to 132.213.238.7 / @berri.testing.xelerance.com -> 2
+| line 1: match=16
+| best_match 0>16 line=1
+| concluding with best_match=16 lineno=1
+| rsa key AQOg5H7A4 found
+| offered CA: '%none'
+| hashing 208 bytes of SA
+| key issuer CA is '%any'
+| an RSA Sig check passed with *AQN7wUerV [preloaded key]
+| authentication succeeded
+| thinking about whether to send my certificate:
+|   I have RSA key: OAKLEY_RSA_SIG cert.type: CERT_NONE
+|   sendcert: CERT_SENDIFASKED and I did not get a certificate request
+|   so do not send cert.
+| I did not send a certificate because I do not have one.
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_IPV4_ADDR
+|    Protocol ID: 0
+|    port: 0
+| emitting 4 raw bytes of my identity into ISAKMP Identification Payload (IPsec DOI)
+| my identity  84 d5 ee 07
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 12
+| hashing 208 bytes of SA
+| started looking for secret for 132.213.238.7->@berri.testing.xelerance.com of kind PPK_RSA
+| actually looking for secret for 132.213.238.7->@berri.testing.xelerance.com of kind PPK_RSA
+| line 1: key type PPK_RSA(132.213.238.7) to type PPK_RSA
+| 1: compared key (none) to 132.213.238.7 / @berri.testing.xelerance.com -> 2
+| 2: compared key (none) to 132.213.238.7 / @berri.testing.xelerance.com -> 2
+| line 1: match=16
+| best_match 0>16 line=1
+| concluding with best_match=16 lineno=1
+| rsa key AQOg5H7A4 found
+| signing hash with RSA Key *AQOg5H7A4
+| ***emit ISAKMP Signature Payload:
+| emitting 274 raw bytes of SIG_R into ISAKMP Signature Payload
+| SIG_R  77 e4 4d 00  38 09 46 47  3b 80 52 4c  e9 8d c5 6e
+|   b9 a4 e7 55  bd b9 c2 dc  07 f5 0c 59  3f 66 80 7f
+|   54 94 bd 5d  c9 6f 9d 29  65 11 b6 06  2a 6a 7f 6d
+|   9a 91 a3 2e  03 4f 8a 1a  38 63 74 1b  67 7b bb 92
+|   26 e8 14 47  bb 92 fe d0  37 61 97 7a  00 63 11 c0
+|   30 30 4c 7e  cf 46 17 ea  82 13 0f c3  a3 20 e4 f6
+|   83 de a9 40  ea c6 0a 88  03 c4 0c a1  a3 43 c1 24
+|   b0 90 e0 eb  b7 e7 a4 96  d2 da e8 d7  f3 3c 1a 13
+|   cc ca 92 03  a4 75 c1 c2  08 38 57 de  a4 f3 3f 07
+|   6d 59 ec 97  0a 30 48 a1  74 6f 06 42  b0 28 1c 02
+|   78 4c 07 c8  f7 e7 8e eb  36 cd 9c 88  06 8e bb 7d
+|   3d 6a d4 55  af fa cb e2  7a 9f 25 94  4b 84 4e 03
+|   2c d1 1a e0  2d 0a 5f 0c  58 a6 63 de  38 f6 04 40
+|   13 90 27 a6  8c 86 6b 5d  b9 82 78 9b  61 e8 ee 85
+|   dc ce b1 ec  4d f5 b2 41  94 f9 00 40  02 69 dc b8
+|   db 0b 67 f3  22 35 44 8e  eb 56 0e 5d  de ea 28 38
+|   ba 1c 39 b7  da 6f 38 01  4d c3 d4 e1  34 71 6c 17
+|   cd 97
+| emitting length of ISAKMP Signature Payload: 278
+| encrypting:
+|   09 00 00 0c  01 00 00 00  84 d5 ee 07  00 00 01 16
+|   77 e4 4d 00  38 09 46 47  3b 80 52 4c  e9 8d c5 6e
+|   b9 a4 e7 55  bd b9 c2 dc  07 f5 0c 59  3f 66 80 7f
+|   54 94 bd 5d  c9 6f 9d 29  65 11 b6 06  2a 6a 7f 6d
+|   9a 91 a3 2e  03 4f 8a 1a  38 63 74 1b  67 7b bb 92
+|   26 e8 14 47  bb 92 fe d0  37 61 97 7a  00 63 11 c0
+|   30 30 4c 7e  cf 46 17 ea  82 13 0f c3  a3 20 e4 f6
+|   83 de a9 40  ea c6 0a 88  03 c4 0c a1  a3 43 c1 24
+|   b0 90 e0 eb  b7 e7 a4 96  d2 da e8 d7  f3 3c 1a 13
+|   cc ca 92 03  a4 75 c1 c2  08 38 57 de  a4 f3 3f 07
+|   6d 59 ec 97  0a 30 48 a1  74 6f 06 42  b0 28 1c 02
+|   78 4c 07 c8  f7 e7 8e eb  36 cd 9c 88  06 8e bb 7d
+|   3d 6a d4 55  af fa cb e2  7a 9f 25 94  4b 84 4e 03
+|   2c d1 1a e0  2d 0a 5f 0c  58 a6 63 de  38 f6 04 40
+|   13 90 27 a6  8c 86 6b 5d  b9 82 78 9b  61 e8 ee 85
+|   dc ce b1 ec  4d f5 b2 41  94 f9 00 40  02 69 dc b8
+|   db 0b 67 f3  22 35 44 8e  eb 56 0e 5d  de ea 28 38
+|   ba 1c 39 b7  da 6f 38 01  4d c3 d4 e1  34 71 6c 17
+|   cd 97
+| IV:
+|   fd 07 9f e6  06 15 c6 c1  33 dc 1d 65  95 ba ad f4
+| unpadded size is: 290
+| emitting 14 zero bytes of encryption padding into ISAKMP Message
+| encrypting 304 using OAKLEY_AES_CBC
+| crypting using IV:  fd 07 9f e6  06 15 c6 c1  33 dc 1d 65  95 ba ad f4
+| next IV:  2b d6 a9 12  96 6d a8 7f  6e 75 c9 7a  65 0d af fd
+| emitting length of ISAKMP Message: 332
+| last encrypted block of Phase 1:
+|   2b d6 a9 12  96 6d a8 7f  6e 75 c9 7a  65 0d af fd
+| complete state transition with STF_OK
+./xf79-childQR1 transition from state STATE_MAIN_R2 to state STATE_MAIN_R3
+| state #1 NAT-T: new mapping 93.184.216.34:55045
+./xf79-childQR1 new NAT mapping for #1, was 93.184.216.34:55044, now 93.184.216.34:55045
+| sending reply packet to 93.184.216.34:55045 (from port 4500)
+sending 332 bytes for STATE_MAIN_R2 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   05 10 02 01  00 00 00 00  00 00 01 4c  5e 37 c0 b8
+|   f4 84 cd 48  20 54 51 cd  84 65 49 2f  15 b4 29 ca
+|   4b 36 2d 95  8d bc bc b0  32 32 39 98  9e 6d 4f 10
+|   54 3c c5 70  5d 10 ae 51  80 f7 84 68  75 35 25 14
+|   f6 65 f2 20  f2 a3 ff 50  d2 2b c2 8e  d1 5c 66 4f
+|   e6 e3 96 35  dd 13 a4 9f  cd ee d9 22  f7 dc 61 b6
+|   f9 7c 8d ab  bc 08 25 04  4a 1c c1 cb  cd f3 f5 b2
+|   e6 47 6b 58  95 54 d0 76  9b 27 42 a0  23 8c 53 55
+|   44 01 df a5  52 02 7d 33  dd b1 d9 3b  01 29 99 f6
+|   be af 10 17  72 f9 3e 38  b8 7e e4 d8  25 d1 df a6
+|   e3 f0 ba 40  81 8d a9 0d  36 70 4e de  47 18 a4 18
+|   82 c8 cb 8f  7f 4d 52 7d  0c bc 53 92  de 69 5a 06
+|   9f 7c 11 0f  dd de 1a c3  03 de 76 0f  fc c7 38 18
+|   05 13 12 f5  f3 ec 08 06  75 9f 30 62  e5 89 83 7f
+|   45 32 2d 44  4b ea a3 ae  1e a7 5b 6c  a7 83 4a d7
+|   fe 26 45 fe  17 cd 17 89  99 80 ca a6  ec 20 26 0f
+|   43 b4 72 b8  e6 3d 4c fc  96 be df 8f  e8 71 56 17
+|   b4 67 1f 7e  27 8b 6a d4  db 98 43 1d  34 cc 19 24
+|   2e fb 60 a4  de 44 8f 6a  e8 a4 e2 08  2b d6 a9 12
+|   96 6d a8 7f  6e 75 c9 7a  65 0d af fd
+| inserting event EVENT_SA_REPLACE, timeout in 3510 seconds for #1
+./xf79-childQR1 STATE_MAIN_R3: sent MR3, ISAKMP SA established {auth=OAKLEY_RSA_SIG oursig= theirsig=AQN7wUerV cipher=aes_128 prf=oakley_sha group=modp2048}
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+3: output to OUTPUT/xf79-childQR1.pcap
+3: input from childQI1.pcap
+|   =========== input from from childQI1.pcap ========
+| *received 508 bytes from 93.184.216.34:55045 on eth0 (port=4500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   08 10 20 01  80 01 02 03  00 00 01 fc  f2 11 72 3e
+|   73 32 e7 6a  4e 87 31 9f  4d a4 8d b2  d3 a5 57 43
+|   d2 1c c7 c4  b5 02 e5 89  16 4a f7 08  19 33 7e 76
+|   fb af a5 ff  9b 75 8f 17  5c 5f 06 e0  42 97 64 7f
+|   b4 f7 04 b4  c9 a2 fe 54  f6 49 f8 f2  09 e7 ab d0
+|   5d 64 97 9b  e6 c7 8a 4c  bf 74 26 cd  fc 9d 46 89
+|   05 92 92 b6  d1 42 8c 9d  35 ad 86 1f  fc be ac f1
+|   64 38 17 a2  a3 9c 8a ef  cf 91 29 b1  e9 ca 73 cc
+|   16 65 9d d3  7f 1b 0f bc  6d 7e 15 16  8d 24 45 99
+|   14 66 51 33  63 b2 a6 15  72 1e c7 d4  d7 9d 61 89
+|   57 34 5a aa  12 0c 2e 0a  18 9a a4 ef  bb 37 5f 0c
+|   a7 0c ab fd  ba 75 0a 31  da aa 79 cc  9d 8e d7 98
+|   0e 75 6c 1e  e0 79 40 eb  2b 55 89 7b  e9 02 2b d3
+|   25 06 73 58  0f 3d b0 12  76 1a 89 4a  50 bd 4d 02
+|   e9 86 68 87  e6 72 72 78  f3 d0 81 d0  d7 81 2a f0
+|   93 e0 17 18  8d b8 47 b5  c5 e2 26 ab  d5 bf 7e 55
+|   99 b5 fb de  e9 01 97 ae  8a 91 78 9e  42 e4 a8 72
+|   c9 02 de 4f  2c fd 28 4e  f0 e2 ad 70  d4 ed fb 05
+|   fe 2d dc 62  23 38 86 e2  15 51 18 f8  1a 7f 16 6e
+|   ae f0 b3 e0  b5 fa eb 3f  43 a7 ab 7d  40 59 4a 75
+|   69 7c 20 a7  29 ed 6b 5f  70 9f d7 39  03 0f 81 18
+|   16 58 8d 75  a1 72 bf 93  40 ee ba ce  dc f6 7b 27
+|   47 87 24 fc  a2 19 17 bd  30 ab 4a b2  55 eb e5 32
+|   1e f1 3d a9  92 f0 86 59  f0 31 d4 9f  55 90 58 95
+|   c6 84 2b 3e  70 97 aa a1  49 03 d9 4e  f6 fa 19 f7
+|   ca 32 b6 22  51 aa 98 3a  5c e4 ac 4d  38 a9 92 12
+|   88 75 c6 e9  4b 46 bc 93  e4 7e 24 62  f3 ca cb b5
+|   7d 75 36 e7  4a 8d 37 eb  b8 5b e0 b2  3d f5 af d0
+|   aa 7e 94 f6  f2 9e df dc  75 d9 f8 e6  30 95 f8 74
+|   b2 b6 6a 96  03 7f a1 2a  33 57 0f c1  5c e5 4d c6
+|   e9 f5 67 2f  2e ce 20 98  3e 44 43 fe
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_QUICK
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  80 01 02 03
+|    length: 508
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_QUICK (32), msgid: 2147549699
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 80010203 vs 00000000
+| v1 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_R3
+| last Phase 1 IV:  2b d6 a9 12  96 6d a8 7f  6e 75 c9 7a  65 0d af fd
+| current Phase 1 IV:  2b d6 a9 12  96 6d a8 7f  6e 75 c9 7a  65 0d af fd
+| computed Phase 2 IV:
+|   0d 11 f3 ec  13 af d9 8e  5f f0 ba b5  31 68 4f 25
+|   1b 87 1e 0b
+| received encrypted packet from 93.184.216.34:55045
+| decrypting 480 bytes using algorithm OAKLEY_AES_CBC
+| crypting using IV:  0d 11 f3 ec  13 af d9 8e  5f f0 ba b5  31 68 4f 25
+| decrypted:
+|   01 00 00 18  c7 e7 a9 87  4b 7e 42 29  20 dc 3b c2
+|   56 dc ab f3  36 fc f2 98  0a 00 00 90  00 00 00 01
+|   00 00 00 01  00 00 00 84  00 03 04 04  12 34 56 78
+|   03 00 00 20  00 0c 00 00  80 03 00 0e  80 04 00 03
+|   80 01 00 01  80 02 04 b0  80 05 00 02  80 06 00 80
+|   03 00 00 20  01 0c 00 00  80 03 00 0e  80 04 00 03
+|   80 01 00 01  80 02 04 b0  80 05 00 01  80 06 00 80
+|   03 00 00 1c  02 03 00 00  80 03 00 0e  80 04 00 03
+|   80 01 00 01  80 02 04 b0  80 05 00 02  00 00 00 1c
+|   03 03 00 00  80 03 00 0e  80 04 00 03  80 01 00 01
+|   80 02 04 b0  80 05 00 01  04 00 00 14  20 98 9d 37
+|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  05 00 01 04
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   05 00 00 10  04 00 00 00  c0 a8 01 01  ff ff ff ff
+|   00 00 00 10  04 00 00 00  84 d5 ee 07  ff ff ff ff
+| next IV:  5c e5 4d c6  e9 f5 67 2f  2e ce 20 98  3e 44 43 fe
+| got payload 0x100(ISAKMP_NEXT_HASH) needed: 0x502 opt: 0x200030
+| ***parse ISAKMP Hash Payload:
+|    length: 24
+| got payload 0x2(ISAKMP_NEXT_SA) needed: 0x402 opt: 0x200030
+| ***parse ISAKMP Security Association Payload:
+|    length: 144
+|    DOI: ISAKMP_DOI_IPSEC
+| got payload 0x400(ISAKMP_NEXT_NONCE) needed: 0x400 opt: 0x200030
+| ***parse ISAKMP Nonce Payload:
+|    length: 20
+| got payload 0x10(ISAKMP_NEXT_KE) needed: 0x0 opt: 0x200030
+| ***parse ISAKMP Key Exchange Payload:
+|    length: 260
+| got payload 0x20(ISAKMP_NEXT_ID) needed: 0x0 opt: 0x200030
+| ***parse ISAKMP Identification Payload (IPsec DOI):
+|    length: 16
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+|      obj:   c0 a8 01 01  ff ff ff ff
+| got payload 0x20(ISAKMP_NEXT_ID) needed: 0x0 opt: 0x200030
+| ***parse ISAKMP Identification Payload (IPsec DOI):
+|    length: 16
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+|      obj:   84 d5 ee 07  ff ff ff ff
+| HASH(1) computed:
+|   c7 e7 a9 87  4b 7e 42 29  20 dc 3b c2  56 dc ab f3
+|   36 fc f2 98
+| peer client is subnet 192.168.1.1/32
+| peer client protocol/port is 0/0
+| our client is subnet 132.213.238.7/32
+| our client protocol/port is 0/0
+./xf79-childQR1 the peer proposed: 132.213.238.7/32:0/0 -> 192.168.1.1/32:0/0
+| find_client_connection starting with t4901
+|   looking for 132.213.238.7/32:0/0 -> 192.168.1.1/32:0/0
+|   concrete checking against sr#0 132.213.238.7/32 -> 0.0.0.0/32
+|    match_id a=@berri.testing.xelerance.com
+|             b=@berri.testing.xelerance.com
+|    results  matched
+|   trusted_ca called with a=(empty) b=(empty)
+|   fc_try trying t4901:132.213.238.7/32:0/0 -> 192.168.1.1/32:0/0 vs t4901:<type:%address:0/0 -> %self/3:0/0
+|   fc_try concluding with t4901 [128]
+|   fc_try t4901 gives t4901
+|   concluding with d = t4901
+| client wildcard: no  port wildcard: no  virtual: no
+| duplicating state object #1
+| creating state object #2 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #2 bucket: 5
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
+| ****parse IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****parse ISAKMP Proposal Payload:
+|    length: 132
+|    proposal number: 0
+|    protocol ID: PROTO_IPSEC_ESP
+|    SPI size: 4
+|    number of transforms: 4
+| parsing 4 raw bytes of ISAKMP Proposal Payload into SPI
+| SPI  12 34 56 78
+| *****parse ISAKMP Transform Payload (ESP):
+|    length: 32
+|    transform number: 0
+|    transform ID: ESP_AES
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: GROUP_DESCRIPTION
+|    length/value: 14
+|    [14 is OAKLEY_GROUP_MODP2048]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: ENCAPSULATION_MODE
+|    length/value: 3
+|    [3 is ENCAPSULATION_MODE_UDP_TUNNEL_RFC]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_TYPE
+|    length/value: 1
+|    [1 is SA_LIFE_TYPE_SECONDS]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_DURATION
+|    length/value: 1200
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: AUTH_ALGORITHM
+|    length/value: 2
+|    [2 is AUTH_ALGORITHM_HMAC_SHA1]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| DH public value received:
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+| complete state transition with STF_SUSPEND
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_QUICK
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  80 01 02 03
+| ***emit ISAKMP Hash Payload:
+| emitting 20 zero bytes of HASH into ISAKMP Hash Payload
+| emitting length of ISAKMP Hash Payload: 24
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****parse IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****parse ISAKMP Proposal Payload:
+|    length: 132
+|    proposal number: 0
+|    protocol ID: PROTO_IPSEC_ESP
+|    SPI size: 4
+|    number of transforms: 4
+| parsing 4 raw bytes of ISAKMP Proposal Payload into SPI
+| SPI  12 34 56 78
+| *****parse ISAKMP Transform Payload (ESP):
+|    length: 32
+|    transform number: 0
+|    transform ID: ESP_AES
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: GROUP_DESCRIPTION
+|    length/value: 14
+|    [14 is OAKLEY_GROUP_MODP2048]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: ENCAPSULATION_MODE
+|    length/value: 3
+|    [3 is ENCAPSULATION_MODE_UDP_TUNNEL_RFC]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_TYPE
+|    length/value: 1
+|    [1 is SA_LIFE_TYPE_SECONDS]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_DURATION
+|    length/value: 1200
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: AUTH_ALGORITHM
+|    length/value: 2
+|    [2 is AUTH_ALGORITHM_HMAC_SHA1]
+| ******parse ISAKMP IPsec DOI attribute:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_IPSEC_ESP
+|    SPI size: 4
+|    number of transforms: 1
+| emitting 4 raw bytes of SPI into ISAKMP Proposal Payload
+| SPI  12 34 56 78
+| *****emit ISAKMP Transform Payload (ESP):
+|    transform number: 0
+|    transform ID: ESP_AES
+| emitting 24 raw bytes of attributes into ISAKMP Transform Payload (ESP)
+| attributes  80 03 00 0e  80 04 00 03  80 01 00 01  80 02 04 b0
+|   80 05 00 02  80 06 00 80
+| emitting length of ISAKMP Transform Payload (ESP): 32
+| emitting length of ISAKMP Proposal Payload: 44
+| emitting length of ISAKMP Security Association Payload: 56
+./xf79-childQR1 responding to Quick Mode proposal {msgid:03020180}
+./xf79-childQR1     us: 132.213.238.7
+./xf79-childQR1   them: %any[@berri.testing.xelerance.com]
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Nr into ISAKMP Nonce Payload
+| Nr  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+| emitting length of ISAKMP Nonce Payload: 20
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+| emitting length of ISAKMP Key Exchange Payload: 260
+| emitting 16 raw bytes of IDci into ISAKMP Message
+| IDci  05 00 00 10  04 00 00 00  c0 a8 01 01  ff ff ff ff
+| emitting 16 raw bytes of IDcr into ISAKMP Message
+| IDcr  00 00 00 10  04 00 00 00  84 d5 ee 07  ff ff ff ff
+| HASH(2) computed:
+|   49 e6 ba fb  0a 80 f2 2c  a6 6d 63 65  53 65 f0 58
+|   88 0b f8 dd
+| compute_proto_keymat:needed_len (after ESP enc)=16
+| compute_proto_keymat:needed_len (after ESP auth)=36
+| ESP KEYMAT
+|   KEYMAT computed:
+|   4b 58 90 7b  af 46 0a b7  2c 71 ac 00  ad 6c 7e fc
+|   8c c4 bd e7  76 ee 35 0e  3d 8c d6 b9  45 ef 77 59
+|   15 7c 6f b0
+|   Peer KEYMAT computed:
+|   4b 58 90 7b  af 46 0a b7  2c 71 ac 00  ad 6c 7e fc
+|   8c c4 bd e7  76 ee 35 0e  3d 8c d6 b9  45 ef 77 59
+|   15 7c 6f b0
+| install_inbound_ipsec_sa() checking if we can route
+| route owner of "t4901" unrouted: NULL; eroute owner: NULL
+| could_route called for t4901 (kind=CK_PERMANENT)
+|    routing is easy, or has resolvable near-conflict
+| checking if this is a replacement state
+|   st->serialno=#2 ost->serialno=#0
+| installing outgoing SA now as refhim=0
+| ESP enckey:  4b 58 90 7b  af 46 0a b7  2c 71 ac 00  ad 6c 7e fc
+| ESP authkey:  8c c4 bd e7  76 ee 35 0e  3d 8c d6 b9  45 ef 77 59
+|   15 7c 6f b0
+writing netlink for esp.12345678@93.184.216.34
+0000: c0 01 00 00  10 00 05 00  00 00 00 00  00 00 00 00
+0040: 00 00 00 00  00 00 00 00  5d b8 d8 22  00 00 00 00
+0050: 00 00 00 00  00 00 00 00  12 34 56 78  32 00 00 00
+0060: 84 d5 ee 07  00 00 00 00  00 00 00 00  00 00 00 00
+0070: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+0080: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+00e0: 01 40 00 00  02 00 01 20  20 00 00 00  00 00 00 00
+00f0: 5c 00 01 00  73 68 61 31  00 00 00 00  00 00 00 00
+0130: 00 00 00 00  a0 00 00 00  8c c4 bd e7  76 ee 35 0e
+0140: 3d 8c d6 b9  45 ef 77 59  15 7c 6f b0  58 00 02 00
+0150: 61 65 73 00  00 00 00 00  00 00 00 00  00 00 00 00
+0190: 80 00 00 00  4b 58 90 7b  af 46 0a b7  2c 71 ac 00
+01a0: ad 6c 7e fc  1c 00 04 00  02 00 11 94  d7 05 00 00
+| outgoing SA has refhim=4294901761
+| ESP enckey:  4b 58 90 7b  af 46 0a b7  2c 71 ac 00  ad 6c 7e fc
+| ESP authkey:  8c c4 bd e7  76 ee 35 0e  3d 8c d6 b9  45 ef 77 59
+|   15 7c 6f b0
+writing netlink for esp.12345678@132.213.238.7
+0000: c0 01 00 00  1a 00 05 00  00 00 00 00  00 00 00 00
+0040: 00 00 00 00  00 00 00 00  84 d5 ee 07  00 00 00 00
+0050: 00 00 00 00  00 00 00 00  12 34 56 78  32 00 00 00
+0060: 5d b8 d8 22  00 00 00 00  00 00 00 00  00 00 00 00
+0070: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+0080: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+00e0: 01 40 00 00  02 00 01 20  20 00 00 00  00 00 00 00
+00f0: 5c 00 01 00  73 68 61 31  00 00 00 00  00 00 00 00
+0130: 00 00 00 00  a0 00 00 00  8c c4 bd e7  76 ee 35 0e
+0140: 3d 8c d6 b9  45 ef 77 59  15 7c 6f b0  58 00 02 00
+0150: 61 65 73 00  00 00 00 00  00 00 00 00  00 00 00 00
+0190: 80 00 00 00  4b 58 90 7b  af 46 0a b7  2c 71 ac 00
+01a0: ad 6c 7e fc  1c 00 04 00  02 00 d7 05  11 94 00 00
+writing netlink policy for tun.10000@132.213.238.7
+0000: fc 00 00 00  19 00 05 00  00 00 00 00  00 00 00 00
+0010: 84 d5 ee 07  00 00 00 00  00 00 00 00  00 00 00 00
+0020: 5d b8 d8 22  00 00 00 00  00 00 00 00  00 00 00 00
+0030: 00 00 00 00  00 00 00 00  02 00 20 20  00 00 00 00
+0040: 00 00 00 00  00 00 00 00  ff ff ff ff  ff ff ff ff
+0050: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+0060: ff ff ff ff  ff ff ff ff  00 00 00 00  00 00 00 00
+00a0: 00 00 00 00  00 00 00 00  20 08 00 00  00 00 00 00
+00b0: 00 00 00 00  00 00 00 00  44 00 05 00  84 d5 ee 07
+00d0: 32 00 00 00  02 00 00 00  5d b8 d8 22  00 00 00 00
+00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
+00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff
+writing netlink policy for tun.10000@132.213.238.7
+0000: fc 00 00 00  19 00 05 00  00 00 00 00  00 00 00 00
+0010: 84 d5 ee 07  00 00 00 00  00 00 00 00  00 00 00 00
+0020: 5d b8 d8 22  00 00 00 00  00 00 00 00  00 00 00 00
+0030: 00 00 00 00  00 00 00 00  02 00 20 20  00 00 00 00
+0040: 00 00 00 00  00 00 00 00  ff ff ff ff  ff ff ff ff
+0050: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+0060: ff ff ff ff  ff ff ff ff  00 00 00 00  00 00 00 00
+00a0: 00 00 00 00  00 00 00 00  20 08 00 00  00 00 00 00
+00b0: 02 00 00 00  00 00 00 00  44 00 05 00  84 d5 ee 07
+00d0: 32 00 00 00  02 00 00 00  5d b8 d8 22  00 00 00 00
+00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
+00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff
+./xf79-childQR1 add inbound eroute 93.184.216.34/32:0 --0-> 132.213.238.7/32:0 => tun.10000@132.213.238.7 succeeded
+| encrypting:
+|   01 00 00 18  49 e6 ba fb  0a 80 f2 2c  a6 6d 63 65
+|   53 65 f0 58  88 0b f8 dd  0a 00 00 38  00 00 00 01
+|   00 00 00 01  00 00 00 2c  00 03 04 01  12 34 56 78
+|   00 00 00 20  00 0c 00 00  80 03 00 0e  80 04 00 03
+|   80 01 00 01  80 02 04 b0  80 05 00 02  80 06 00 80
+|   04 00 00 14  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  05 00 01 04  a5 9a 13 6c  b8 87 48 57
+|   e1 22 6e a0  b8 55 c2 00  31 15 65 84  8b f9 dc a4
+|   5f 49 d4 c5  f0 98 8e 9b  31 85 6e 27  5a c2 75 09
+|   07 37 05 b5  b1 53 18 07  81 e8 1d 07  c6 19 1c de
+|   dc 1f 2c 26  d2 0b 59 f9  67 6a ee 3c  e5 fa 72 3f
+|   54 96 1e 7d  8e d0 30 08  0b ed 95 b0  65 2f 5c a6
+|   36 7e 92 2d  da cb 88 54  e3 97 fa 16  6f 9e 7c a6
+|   0c 43 2f 29  be 2c a4 55  68 01 45 bc  56 a9 84 b9
+|   2b 1b bf 9a  fc 84 67 5f  d3 04 79 90  b7 fa 89 5b
+|   04 06 d5 9a  50 92 16 4b  d6 33 40 be  2a 44 94 74
+|   33 a7 a5 c1  1f 88 5b eb  4e d2 bb 94  b9 22 db e3
+|   b6 5a 8c f9  d6 43 5d 5e  5d c9 19 b8  c8 81 53 01
+|   95 09 02 7b  c0 2a b0 c8  5d 2c 69 78  6c e8 f6 5d
+|   e4 90 43 83  fd f7 98 5e  cc 92 5c 79  7b 62 ae 98
+|   db 4f 7f e0  68 7c cd 29  69 0a ad a3  e8 37 d7 41
+|   b4 79 b3 a5  38 a2 8d a0  69 ff bd aa  ba d5 54 70
+|   40 ab b5 fc  26 6d ae ce  05 00 00 10  04 00 00 00
+|   c0 a8 01 01  ff ff ff ff  00 00 00 10  04 00 00 00
+|   84 d5 ee 07  ff ff ff ff
+| IV:
+|   5c e5 4d c6  e9 f5 67 2f  2e ce 20 98  3e 44 43 fe
+| unpadded size is: 392
+| emitting 8 zero bytes of encryption padding into ISAKMP Message
+| encrypting 400 using OAKLEY_AES_CBC
+| crypting using IV:  5c e5 4d c6  e9 f5 67 2f  2e ce 20 98  3e 44 43 fe
+| next IV:  a9 ec 27 3b  fd b2 c2 36  1b e5 7a 9a  5c 03 d1 7c
+| emitting length of ISAKMP Message: 428
+| finished processing quick inI1
+| complete state transition with STF_OK
+./xf79-childQR1 transition from state STATE_QUICK_R0 to state STATE_QUICK_R1
+| sending reply packet to 93.184.216.34:55045 (from port 4500)
+sending 428 bytes for STATE_QUICK_R0 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #2)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   08 10 20 01  80 01 02 03  00 00 01 ac  58 3d 80 2d
+|   e2 da 59 13  5a d3 d7 89  99 93 ef c0  50 84 f0 ef
+|   ac 8a 31 e5  5e 4c 8a f8  67 77 29 48  0e 42 69 ab
+|   71 50 9b 03  d2 98 04 ab  b6 5b 10 f8  fd 5f 67 02
+|   24 fd a9 bd  c5 20 ec fd  80 9f 59 89  49 e6 fd 11
+|   88 57 0a 03  54 1c 30 59  1f 1d b4 78  6b 80 81 5d
+|   36 6b d7 37  b4 e7 19 37  86 95 cf 87  9e 69 e0 fe
+|   e4 9c 2d 23  fa 21 46 c4  3c fa af f3  a0 15 b0 20
+|   06 b5 62 26  9b 32 11 ce  8c bf 21 63  74 bd fb e3
+|   76 e7 8b 05  33 bd e1 4a  79 bb 0d 3b  d3 1d 03 72
+|   a2 9f c6 0f  6d 50 e3 df  a9 be af 70  85 60 0a aa
+|   7f eb c0 61  d8 72 81 ed  3b e7 69 34  a6 25 b9 41
+|   3c 1d 36 16  87 44 63 09  ce 25 d8 b2  41 fa 31 41
+|   ba 41 9e d8  94 89 68 5f  d1 21 65 f2  aa 5b 47 60
+|   17 4d 3c 5a  1d 47 d1 53  63 cb 29 26  ad 4d 79 15
+|   02 d2 10 3c  48 ce 81 53  13 37 2f 25  a2 18 90 9b
+|   0a 96 62 e6  3a 13 58 1f  99 f6 d3 b3  3a ca 9f 41
+|   19 f9 04 89  eb ca 3d fd  37 de 0a 44  b5 df 84 24
+|   b6 74 b9 79  92 e5 ae 27  ce 23 99 da  84 26 c8 98
+|   bb 36 d4 ae  ed 24 06 43  6b b0 93 bf  3c b5 92 dd
+|   d2 2c e7 09  fe 3f 7d 31  a8 7a 8a cf  9a 0c ad 71
+|   6e 6f 18 99  31 33 b9 57  ac ff ce 47  a7 e3 f2 fd
+|   71 25 8a 19  3d fe 11 f8  44 9a a5 d1  54 56 43 56
+|   e8 cd 1c ec  50 56 6f ae  c1 b6 a4 38  e9 9e ee e8
+|   e6 04 d3 bc  d4 01 c3 10  bd 1c 53 ff  a9 ec 27 3b
+|   fd b2 c2 36  1b e5 7a 9a  5c 03 d1 7c
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #2
+./xf79-childQR1 STATE_QUICK_R1: sent QR1, inbound IPsec SA installed, expecting QI2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+./xf79-childQR1 leak: reply packet, item size: X
+./xf79-childQR1 leak: peer_keymat in quick_inI1_outR1(), item size: X
+./xf79-childQR1 leak: keymat in compute_keymat(), item size: X
+./xf79-childQR1 leak: calculated grshared secret, item size: X
+./xf79-childQR1 leak: calculated sharedshared secret, item size: X
+./xf79-childQR1 leak: alg_info_esp, item size: X
+./xf79-childQR1 leak: long term secret, item size: X
+./xf79-childQR1 leak: saved gi value, item size: X
+./xf79-childQR1 leak: quick outR1 DH, item size: X
+./xf79-childQR1 leak: initiator nonce, item size: X
+./xf79-childQR1 leak: quick_outI1 KE, item size: X
+./xf79-childQR1 leak: Gi, item size: X
+./xf79-childQR1 leak: nonce, item size: X
+./xf79-childQR1 leak: alg_info_esp, item size: X
+./xf79-childQR1 leak: st_skey_pr in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_pi in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_er in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_ei in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_ar in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_ai in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skey_d in duplicate_state, item size: X
+./xf79-childQR1 leak: st_skeyseed in duplicate_state, item size: X
+./xf79-childQR1 leak: st_enc_key in duplicate_state, item size: X
+./xf79-childQR1 leak: struct state in new_state(), item size: X
+./xf79-childQR1 leak: main_inI2_outR2_tail, item size: X
+./xf79-childQR1 leak: inI2_outR2 KE, item size: X
+./xf79-childQR1 leak: 67 * VendorID MD5, item size: X
+./xf79-childQR1 leak: 3 * vid->data, item size: X
+./xf79-childQR1 leak: 15 * VendorID MD5, item size: X
+./xf79-childQR1 leak: self-vendor ID, item size: X
+./xf79-childQR1 leak: init_pluto_vendorid, item size: X
+./xf79-childQR1 leak: 4 * fswan VID, item size: X
+./xf79-childQR1 leak: vid->data, item size: X
+./xf79-childQR1 leak: 23 * VendorID MD5, item size: X
+./xf79-childQR1 leak: vid->data, item size: X
+./xf79-childQR1 leak: msg_digest, item size: X
+./xf79-childQR1 leak: keep id name, item size: X
+./xf79-childQR1 leak: ID host_pair, item size: X
+./xf79-childQR1 leak: host_pair, item size: X
+./xf79-childQR1 leak: keep id name, item size: X
+./xf79-childQR1 leak: host ip, item size: X
+./xf79-childQR1 leak: connection name, item size: X
+./xf79-childQR1 leak: struct connection, item size: X
+./xf79-childQR1 leak: pubkey entry, item size: X
+./xf79-childQR1 leak: rfc3110 format of public key, item size: X
+./xf79-childQR1 leak: pubkey, item size: X
+./xf79-childQR1 leak: keep id name, item size: X
+./xf79-childQR1 leak: pubkey entry, item size: X
+./xf79-childQR1 leak: rfc3110 format of public key, item size: X
+./xf79-childQR1 leak: pubkey, item size: X
+./xf79-childQR1 leak: 2 * id list, item size: X
+./xf79-childQR1 leak: rfc3110 format of public key [created], item size: X
+./xf79-childQR1 leak: pubkey, item size: X
+./xf79-childQR1 leak: secret, item size: X
+./xf79-childQR1 leak: 3 * hasher name, item size: X
+./xf79-childQR1 leak: 10 * group description, item size: X
+./xf79-childQR1 leak: policies path, item size: X
+./xf79-childQR1 leak: ocspcerts path, item size: X
+./xf79-childQR1 leak: aacerts path, item size: X
+./xf79-childQR1 leak: certs path, item size: X
+./xf79-childQR1 leak: private path, item size: X
+./xf79-childQR1 leak: crls path, item size: X
+./xf79-childQR1 leak: cacert path, item size: X
+./xf79-childQR1 leak: acert path, item size: X
+./xf79-childQR1 leak: default conf var_dir, item size: X
+./xf79-childQR1 leak: default conf conffile, item size: X
+./xf79-childQR1 leak: default conf ipsecd_dir, item size: X
+./xf79-childQR1 leak: default conf ipsec_conf_dir, item size: X
+./xf79-childQR1 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

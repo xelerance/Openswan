@@ -2,12 +2,12 @@
 .\"     Title: IPSEC.CONF
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/15/2019
+.\"      Date: 01/12/2021
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC\&.CONF" "5" "10/15/2019" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC\&.CONF" "5" "01/12/2021" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -424,41 +424,38 @@ if negotiation is never to be attempted or accepted (useful for shunt\-only conn
 .PP
 \fBike\fR
 .RS 4
-IKE encryption/authentication algorithm to be used for the connection (phase 1 aka ISAKMP SA)\&. The format is
-\fI"cipher\-hash;modpgroup, cipher\-hash;modpgroup, \&.\&.\&."\fR
-Any left out option will be filled in with all allowed default options\&. Multiple proposals are separated by a comma\&. If an
+IKE encryption/authentication algorithm to be used for the connection (phase 1 aka for IKEv1, PARENT SA for IKEv2)\&.
+.sp
+The format is
+\fI"cipher\-integ\-prf\-modpgroup, cipher\-integ\-prf\-modpgroup, \&.\&.\&."\fR
+.sp
+Any left out option will be filled in with all allowed default options\&. For IKEv1, the PRF is ignored, and if it is not specified, it will be made identical to the integrity algorithm, if that is reasonable\&. The thing previous called the "hash", was an integrity check, and it is now called that\&.
+.sp
+Previously, the syntax used a semicolon before the modpgroup, but now both dash and semicolon are accepted\&. Multiple proposals are separated by a comma\&. If an
 \fBike=\fR
-line is specified, no other received proposals will be accepted\&. Formerly there was a distinction (by using a
+line is specified, no other received proposals will be accepted\&.
+.sp
+Formerly there was a distinction (by using a
 \fB"!"\fR
 symbol) between "strict mode" or not\&. That mode has been obsoleted\&. If an
 \fBike=\fR
-option is specified, the mode is always strict, meaning no other received proposals will be accepted\&. Some examples are
+option is specified, the mode is always strict, meaning no other received proposals will be accepted\&.
+.sp
+When an algorithm comes in a variety of strengths (i\&.e\&. AES\-128 and AES\-256), then the specification without the value will result in whatever is considered an appropriate strength\&. At this point, that is AES\-128, and SHA2\-256\&.
+.sp
+The algorithm "sha256" is an alias for "sha2_256"\&. Stronger versions can be specified as "sha2_512", for instance\&.
+.sp
+Some examples are
 \fBike=3des\-sha1,aes\-sha1\fR,
 \fBike=aes\fR,
-\fBike=aes128\-md5;modp2048\fR,
-\fBike=aes128\-sha1;dh22\fR,
+\fBike=aes256\-sha256\-prfsha256\-modp2048\fR,
+\fBike=aes\-sha1\-modp1536\fR,
+\fBike=aes128\-md5\-modp2048\fR,
 \fBike=3des\-md5;modp1024,aes\-sha1;modp1536\fR
 or
-\fBike=modp1536\fR\&. The options must be suitable as a value of
-\fBipsec_spi\fR(8)\*(Aqs
-\fB\-\-ike\fR
-option\&. The default is to use IKE, and to allow all combinations of:
+\fBike=modp1536\fR\&.
 .sp
-.if n \{\
-.RS 4
-.\}
-.nf
-\fB
-                cipher:                 3des or aes
-                hash:                   sha1 or md5
-                pfsgroup (DHgroup):     modp1024 or modp1536
-\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-If Openswan was compiled with extra INSECURE and BROKEN options, then the des (1des) and null cipher, as well as modp768 are available\&. This turns your VPN into a joke\&. Do not enable these options\&.
+The 1DES algorithm can not be included at all\&. Openswan does includes sensible defaults, but they change over time\&.
 .sp
 If openswan was compiled with USE_MODP_RFC5114 support, then Diffie\-Hellman groups 22, 23 and 24 are also implemented as per RFC\-5114\&. Instead of the modp key syntax, use the "dh" keyword, for example
 \fIike=3des\-sha1;dh23\fR
@@ -481,15 +478,15 @@ Specifies the algorithms that will be offered/accepted for a phase2 negotiation\
 .sp
 The default values are the same as for ike= Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here\&.
 .sp
-The format for ESP is ENC\-AUTH followed by an optional PFSgroup\&. For instance, "3des\-md5" or "aes256\-sha1;modp2048" or "aes\-sha1,aes\-md5"\&.
+The format for ESP is cipher\-integ followed by an optional PFSgroup\&. The PFSgroup may be separated by a semicolon, or a dash as with ike=
 .sp
 For RFC\-5114 DH groups, use the "dh" keyword, eg "aes256\-sha1;dh23"
 .sp
-The format for AH is AUTH followed by an optional PFSgroup\&. For instance, "md5" or "sha1;modp1536"\&.
+The AH algorithms could be specified with this setting, but AH is not in well supported\&.
 .sp
 A special case is AES CCM, which uses the syntax of "phase2alg=aes_ccm_a\-152\-null"
 .sp
-A special case is phase2=sha2_256\-96 which does not mean 96 bits, but means truncating the sha2_256 hash to 96 bit\&. This is the same as specifying sha2_truncbug=yes (only supported on NETKEY)\&.
+A special case is phase2=sha2_256\-96 which does not mean 96 bits, but means truncating the sha2_256 hash to 96 bit\&.
 .RE
 .PP
 \fBsha2_truncbug\fR
@@ -1278,7 +1275,7 @@ interface(s) should be set to, overriding IPsec\*(Aqs (large) default\&. This pa
 .PP
 \fBfirstmsgid\fR
 .RS 4
-first request message sent by this host will be this value\&. The default value 0 is consistent with the RFC and compatible with strongSwan, while firstmsgid=1 allow for backwards compatibility with older versions of OpenSWAN\&.
+value of the message ID used, by this host, to generate the first IKEv2 request message\&. This value is only used when the initial connection responder sends a request to the initial connection initiator, like in the case of a child SA rekey\&. The value must be either 0 (the default) or 1\&. The default value (0) is consistent with the RFCs and compatible with strongSwan, while firstmsgid=1 allows for backwards compatibility with OpenSWAN pre 2\&.6\&.52\&.
 .RE
 .SH "IMPLICIT CONNS"
 .PP

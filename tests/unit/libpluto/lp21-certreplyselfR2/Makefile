@@ -1,9 +1,4 @@
-include ../lp17-childselfpolicy/Makefile
-
-update_pcaps:
-	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap  parentI1.pcap
-	cp ../lp20-certificateselfI2/OUTPUT/parentI2.pcap  parentI2.pcap
-
+include ../lp12-parentR2/Makefile
 
 # Local Variables:
 # gdb-command: ""

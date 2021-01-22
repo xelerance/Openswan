@@ -39,17 +39,19 @@
 
 #include "sysdep.h"
 #include "constants.h"
+#include "enum_names.h"
 #include "defs.h"
 #include "packet.h"
 #include "demux.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "rnd.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "pluto_crypt.h"
 #include "oswlog.h"
 #include "log.h"
 #include "timer.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
+#include "pluto/spdb.h"
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
@@ -80,7 +82,7 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism;
 
-    switch(hasher->common.algo_id) {
+    switch(hasher->common.ikev1_algo_id) {
 	case OAKLEY_MD5:   mechanism = CKM_MD5_HMAC; break;
 	case OAKLEY_SHA1:  mechanism = CKM_SHA_1_HMAC; break;
 	case OAKLEY_SHA2_256:  mechanism = CKM_SHA256_HMAC; break;
@@ -92,11 +94,11 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 }
 */
 
-static CK_MECHANISM_TYPE nss_encryption_mech(const struct encrypt_desc *encrypter)
+static CK_MECHANISM_TYPE nss_encryption_mech(const struct ike_encr_desc *encrypter)
 {
 CK_MECHANISM_TYPE mechanism=0x80000000;
 
-    switch(encrypter->common.algo_id){
+    switch(encrypter->common.ikev1_algo_id){
     case OAKLEY_3DES_CBC:   mechanism = CKM_DES3_CBC; break;
     case OAKLEY_AES_CBC:  mechanism = CKM_AES_CBC; break;
     default: loglog(RC_LOG_SERIOUS,"NSS: Unsupported encryption mechanism"); break; /*should not reach here*/
@@ -284,14 +286,14 @@ skeyid_preshared(const chunk_t pss
                  , const chunk_t ni
                  , const chunk_t nr
                  , const chunk_t shared_chunk
-                 , const struct hash_desc *hasher
+                 , const struct ike_prf_desc *hasher
                  , chunk_t *skeyid_chunk)
 #else
 static void
 skeyid_preshared(const chunk_t pss
 		 , const chunk_t ni
 		 , const chunk_t nr
-		 , const struct hash_desc *hasher
+		 , const struct ike_prf_desc *hasher
 		 , chunk_t *skeyid)
 #endif
 {
@@ -404,7 +406,7 @@ static void
 skeyid_digisig(const chunk_t ni
 	       , const chunk_t nr
 	       , const chunk_t shared_chunk
-	       , const struct hash_desc *hasher
+	       , const struct ike_prf_desc *hasher
 	       , chunk_t *skeyid_chunk)
 {
     struct hmac_ctx ctx;
@@ -503,8 +505,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     )
 {
     oakley_auth_t auth = skq->auth;
-    oakley_hash_t hash = skq->prf_hash;
-    const struct hash_desc *hasher = crypto_get_hasher(hash);
+    const struct ike_prf_desc *hasher = crypto_get_hasher(v2prf_to_integ(skq->v2_prf));
     chunk_t pss;
     chunk_t ni;
     chunk_t nr;
@@ -515,8 +516,10 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 #ifdef HAVE_LIBNSS
     PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key;
     /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
 #endif
+
+    passert(hasher != NULL);
 
     /* this doesn't take any memory */
     setchunk_fromwire(gi, &skq->gi, skq);
@@ -1243,16 +1246,16 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
     DBG(DBG_CONTROLMORE
 	, DBG_log("calculating skeyseed using prf=%s integ=%s cipherkey=%lu"
-		  , enum_name(&trans_type_prf_names, skq->prf_hash)
-		  , enum_name(&trans_type_integ_names, skq->integ_hash)
+		  , enum_name(&ikev2_prf_names,   skq->v2_prf)
+		  , enum_name(ikev2_integ_names.official_names, skq->v2_integ)
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct hash_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
+    const struct ike_integ_desc *hasher = ike_alg_get_prf(skq->v2_prf);
     passert(hasher);
 
 
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
     passert(encrypter);
 
 
@@ -1269,7 +1272,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(skeyseed_k);
 
 #else
-    vpss.prf_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
+    vpss.prf_hasher = ike_alg_get_prf(skq->v2_prf);
     passert(vpss.prf_hasher);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
@@ -1312,7 +1315,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_p needs PRF hasher*2 key bits */
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
-	const struct hash_desc *integ_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG, skq->integ_hash, 0);
+	const struct ike_integ_desc *integ_hasher = ike_alg_get_integ(skq->v2_integ);
 #ifdef HAVE_LIBNSS
        int skd_bytes = hasher->hash_key_size;
        int skp_bytes = hasher->hash_key_size;
@@ -1566,9 +1569,9 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 void calc_dh_v2(struct pluto_crypto_req *r)
 {
-    struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;
-    struct pcr_skeycalc_v2 *skr = &r->pcr_d.dhv2;
-    struct pcr_skeyid_q dhq;
+    struct pcr_skeyid_q    *skq = &r->pcr_d.dhq;  // request
+    struct pcr_skeycalc_v2 *skr = &r->pcr_d.dhv2; // response
+    struct pcr_skeyid_q dhq;                      // copy of request
     const struct oakley_group_desc *group;
     chunk_t  shared, g, ltsecret;
     chunk_t  skeyseed;

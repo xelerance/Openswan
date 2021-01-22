@@ -33,23 +33,23 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "pluto/connections.h"
 #include "hostpair.h"
 
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
 #include "x509more.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "packet.h"
 #include "demux.h"
 #include "ikev2.h"
 #include "log.h"
-#include "spdb.h"          /* for out_sa */
+#include "pluto/spdb.h"          /* for out_sa */
 #include "ipsec_doi.h"
 #include "vendor.h"
 #include "timer.h"
@@ -60,6 +60,7 @@
 #include "pending.h"
 #include "kernel.h"
 #include "pluto/nat_traversal.h"
+#include "pluto/db2_ops.h"
 
 #include "tpm/tpm.h"
 
@@ -323,6 +324,12 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         pst = state_with_serialno(st->st_clonedfrom);
     }
 
+    if(pst->st_oakley.integ_hasher == NULL
+       || pst->st_oakley.encrypter == NULL) {
+        DBG(DBG_CONTROL
+            , DBG_log("can not decyrpt message as no ciphers/hashers selected"));
+        return STF_FATAL;
+    }
     if(init == INITIATOR) {
         DBG(DBG_CONTROLMORE, DBG_log("decrypting as INITIATOR, using RESPONDER keys"));
         cipherkey = &pst->st_skey_er;
@@ -437,7 +444,6 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 static stf_status ikev2_send_auth(struct connection *c
                                   , struct state *st
                                   , enum phase1_role role
-                                  , unsigned int np
                                   , unsigned char *idhash_out
                                   , pb_stream *outpbs)
 {
@@ -456,7 +462,7 @@ static stf_status ikev2_send_auth(struct connection *c
         a.isaa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
     }
 
-    a.isaa_np = np;
+    a.isaa_np = ISAKMP_NEXT_NONE;
 
     if(c->policy & POLICY_RSASIG) {
         a.isaa_type = v2_AUTH_RSA;

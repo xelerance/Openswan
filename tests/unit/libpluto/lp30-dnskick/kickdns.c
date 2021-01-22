@@ -21,12 +21,11 @@
 #include "pluto/defs.h"
 #include "pluto/demux.h"
 #include "pluto/connections.h"
-#include "state.h"
+#include "pluto/state.h"
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
 #include "seam_vendor.c"
-#include "seam_fakevendor.c"
 #include "seam_pending.c"
 #include "seam_kernel.c"
 #include "seam_io.c"
@@ -47,6 +46,7 @@
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_delete.c"
+#include "seam_ke.c"
 
 const char *progname=NULL;
 int verbose=0;

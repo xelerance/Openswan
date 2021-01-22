@@ -43,4 +43,6 @@ check:
 update:
 	cp OUTPUT/${TESTNAME}.cooked output.txt
 
+clean:
+	@rm -f ${TESTNAME}
 

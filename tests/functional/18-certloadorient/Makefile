@@ -37,6 +37,7 @@ all:
 vars:
 	@echo PLUTO: ${PLUTOBIN}
 	@echo ADDCONN: ${ADDCONN}
+	@echo LOGFILE: ${LOGFILE}
 
 step1:
 	@rm -f ${OUTPUTS}/base.pid

@@ -33,20 +33,20 @@
 #include "defs.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "log.h"
 #include "whack.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "db_ops.h"
 #include "id.h"
 #include "pluto/connections.h"
 #include "kernel.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 
 /*
  * 	Show registered IKE algorithms
@@ -58,20 +58,20 @@ ike_alg_show_status(void)
 	struct ike_alg *algo;
 	IKE_EALG_FOR_EACH(algo) {
 		passert(algo != NULL);
-		alg=algo->algo_id;
+		alg=algo->ikev1_algo_id;
 		whack_log(RC_COMMENT, "algorithm IKE encrypt: id=%d, name=%s, blocksize=%d, keydeflen=%d"
 			, alg
 			, enum_name(&oakley_enc_names, alg)
-			, (int)((struct encrypt_desc *)algo)->enc_blocksize
-			, ((struct encrypt_desc *)algo)->keydeflen
+			, (int)((struct ike_encr_desc *)algo)->enc_blocksize
+			, ((struct ike_encr_desc *)algo)->keydeflen
 			);
 
 	}
 	IKE_HALG_FOR_EACH(algo) {
 		whack_log(RC_COMMENT, "algorithm IKE hash: id=%d, name=%s, hashsize=%d"
-			, algo->algo_id
-			, enum_name(&oakley_hash_names, algo->algo_id)
-			, (int)((struct hash_desc *)algo)->hash_digest_len
+			, algo->ikev1_algo_id
+			, enum_name(&oakley_hash_names, algo->ikev1_algo_id)
+			, (int)((struct ike_integ_desc *)algo)->hash_digest_len
 			);
 	}
 #define IKE_DH_ALG_FOR_EACH(idx) for(idx = 0; idx != oakley_group_size; idx++)
@@ -97,7 +97,7 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		char buf[1024];
 
 		alg_info_snprint(buf, sizeof(buf)-1,
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 		whack_log(RC_COMMENT
 		    , "\"%s\"%s:   IKE algorithms wanted: %s"
 		    , c->name
@@ -117,12 +117,9 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		, "\"%s\"%s:   IKE algorithm newest: %s_%03d-%s-%s"
 		, c->name
 		, instance
-		, enum_show(&oakley_enc_names, st->st_oakley.encrypt)
-		+7 /* strlen("OAKLEY_") */
-		/* , st->st_oakley.encrypter->keydeflen */
+		, enum_show(&trans_type_encr_names, st->st_oakley.encrypt)
 		, st->st_oakley.enckeylen
-		, enum_show(&oakley_hash_names, st->st_oakley.prf_hash)
-		+7 /* strlen("OAKLEY_") */
+		, enum_show(&trans_type_integ_names, st->st_oakley.prf_hash)
 		, enum_show(&oakley_group_names, st->st_oakley.group->group)
 		+13 /* strlen("OAKLEY_GROUP_") */
 	 );

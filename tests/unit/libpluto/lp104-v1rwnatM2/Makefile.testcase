@@ -1,0 +1,21 @@
+# -*- makefile -*-
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+EXTRALIBS+=${LIBPLUTO}
+
+CONNNAME=bobnet-ikev1
+ENDNAME=alice
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/v1rwnatM2.pcap v1rwnatN1.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=v1rwnatM2
+
+all: programs
+
+pcapupdate:
+	cp ../lp103-v1rwnatN1/OUTPUT/v1rwnatN1.pcap v1rwnatN1.pcap
+
+

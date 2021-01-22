@@ -42,7 +42,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "packet.h"	/* so we can calculate sizeof(struct isakmp_hdr) */
@@ -57,8 +57,8 @@
 #include "sha1.h"
 #include "md5.h"
 #include "cookie.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
-#include "spdb.h"
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/spdb.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -1000,7 +1000,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
-    nst->st_orig_initiator = st->st_orig_initiator;
+    nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;

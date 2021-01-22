@@ -30,7 +30,7 @@ config setup
 	# It seems that T-Mobile in the US and Rogers/Fido in Canada are
 	# using 25/8 as "private" address space on their 3G network.
 	# This range has not been announced via BGP (at least upto 2010-12-21)
-	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8
 	# OE is now off by default. Uncomment and change to on, to enable.
 	oe=off
 	# which IPsec stack to use. auto will try netkey, then klips then mast
@@ -51,7 +51,7 @@ config setup
 #		right=10.12.12.1
 #		rightsubnet=192.168.0.0/24
 #		rightnexthop=10.101.102.103
-#		# To authorize this connection, but not actually start it, 
+#		# To authorize this connection, but not actually start it,
 #		# at startup, uncomment this.
 #		#auto=add
 

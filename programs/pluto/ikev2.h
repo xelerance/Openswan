@@ -1,4 +1,21 @@
 /*
+ * Copyright (C) 2002  D. Hugh Redelmeier.
+ * Copyright (C) 2020  Michael Richardson <mcr@xelerance.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ */
+#ifndef _IKEV2_H
+#define _IKEv2_H
+
+/*
  * IKEv2 functions: that ikev2_parent.c/ikev2_child.c needs.
  *
  */
@@ -42,7 +59,7 @@ extern stf_status ikev2parent_outI1_withstate(struct state *st
 
 extern void ikev2_delete_out(struct state *st);
 
-bool ikev2_out_attr(unsigned int type
+extern bool ikev2_out_attr(unsigned int type
         , unsigned long val
         , struct_desc *attr_desc
         , enum_names **attr_val_descs USED_BY_DEBUG
@@ -160,6 +177,7 @@ extern bool ikev2_calculate_psk_auth(struct state *st
 
 extern stf_status ikev2_verify_rsa_sha1(struct state *st
 					, enum phase1_role role
+                                     , struct IDhost_pair *hp
 				   , unsigned char *idhash
 				   , const struct pubkey_list *keys_from_dns
 				   , const struct gw_info *gateways_from_dns
@@ -167,6 +185,7 @@ extern stf_status ikev2_verify_rsa_sha1(struct state *st
 
 extern stf_status ikev2_verify_psk_auth(struct state *st
 					, enum phase1_role role
+                                     , struct IDhost_pair *hp
 				   , unsigned char *idhash
 				   , pb_stream *sig_pbs);
 
@@ -216,7 +235,6 @@ extern stf_status ikev2_emit_ts(struct msg_digest *md
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
                                      , pb_stream *outpbs
                                      , enum phase1_role role
-                                     , unsigned int next_payload
                                      , struct connection *c0
                                      , lset_t policy);
 
@@ -224,6 +242,15 @@ extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, struct traffic_selector *array
 				, unsigned int array_max);
 
+extern stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
+                                          , unsigned int tsi_n
+                                          , struct traffic_selector tsr[16]
+                                          , unsigned int tsr_n
+                                          , enum phase1_role role
+                                          , struct state *pst
+                                          , struct connection *c
+                                          , struct connection **b_result
+                                          , struct spd_route  **bsr_result);
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
                                          , struct state *childst
 					 , pb_stream *outpbs);
@@ -269,13 +296,12 @@ extern bool doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role r
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
 extern stf_status ikev2_send_certreq( struct state *st
-				      , struct msg_digest *md UNUSED
-				      , enum phase1_role role UNUSED
-				      , unsigned int np, pb_stream *outpbs);
+				      , struct msg_digest *md
+				      , enum phase1_role role
+				      , pb_stream *outpbs);
 extern stf_status ikev2_send_cert( struct state *st
 				   , struct msg_digest *md
 				   , enum phase1_role role
-				   , unsigned int np
 				   , pb_stream *outpbs);
 extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 				    u_int8_t protoid, chunk_t *spi,
@@ -320,3 +346,20 @@ extern void ikev2_calculate_sighash(struct state *st
                                     , unsigned char *idhash
                                     , chunk_t firstpacket
                                     , unsigned char *sig_octets);
+
+extern bool spdb_v2_match_parent(struct db_sa *sadb,
+                                unsigned propnum,
+                                unsigned encr_transform,
+                                int encr_keylen,
+                                unsigned integ_transform,
+                                unsigned prf_transform,
+                                unsigned dh_transform);
+
+extern bool spdb_v2_match_child(struct db_sa *sadb,
+                                unsigned propnum,
+                                unsigned encr_transform,
+                                int encr_keylen,
+                                unsigned integ_transform,
+                                unsigned esn_transform);
+
+#endif /* IKEV2H */

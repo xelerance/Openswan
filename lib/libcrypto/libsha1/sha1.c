@@ -15,10 +15,6 @@ A million repetitions of "a"
 /* #define LITTLE_ENDIAN * This should be #define'd already, if true. */
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
-#ifdef HAVE_LIBNSS
-# include <pk11pub.h>
-# include "oswlog.h"
-#endif
 
 #define SHA1HANDSOFF
 
@@ -26,6 +22,10 @@ A million repetitions of "a"
 #include <sys/types.h>	/* for u_int*_t */
 
 #include "sha1.h"
+#if 0
+/* use this for deep issues with mis-matched crypto */
+#include "hexdump.c"
+#endif
 #include "oswendian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
@@ -115,16 +115,9 @@ CHAR64LONG16* block = (const CHAR64LONG16*)buffer;
 
 /* SHA1Init - Initialize new context */
 
-void SHA1Init(SHA1_CTX* context)
+void SHA1Init(void* vcontext)
 {
-#ifdef HAVE_LIBNSS
-    SECStatus status;
-    context->ctx_nss=NULL;
-    context->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA1);
-    PR_ASSERT(context->ctx_nss!=NULL);
-    status=PK11_DigestBegin(context->ctx_nss);
-    PR_ASSERT(status==SECSuccess);
-#else
+  SHA1_CTX* context = vcontext;
     /* SHA1 initialization constants */
     context->state[0] = 0x67452301;
     context->state[1] = 0xEFCDAB89;
@@ -132,21 +125,20 @@ void SHA1Init(SHA1_CTX* context)
     context->state[3] = 0x10325476;
     context->state[4] = 0xC3D2E1F0;
     context->count[0] = context->count[1] = 0;
-#endif
 }
 
 
 /* Run your data through this. */
 
-void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
+void SHA1Update(void * vcontext, const unsigned char* data, long unsigned len)
 {
-#ifdef HAVE_LIBNSS
-	SECStatus status=PK11_DigestOp(context->ctx_nss, data, len);
-	PR_ASSERT(status==SECSuccess);
-        /*loglog(RC_LOG_SERIOUS, "enter sha1 ctx update end");*/
-#else
+  SHA1_CTX* context = vcontext;
 u_int32_t i;
 u_int32_t j;
+#if 0
+  fprintf(stderr, "sha1 update with %u bytes\n", len);
+  hexdump(stderr, data, 0, len);
+#endif
 
     j = context->count[0];
     if ((context->count[0] += len << 3) < j)
@@ -163,48 +155,22 @@ u_int32_t j;
     }
     else i = 0;
     memcpy(&context->buffer[j], &data[i], len - i);
-#endif
 }
 
 
 /* Add padding and return the message digest. */
 
-void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], SHA1_CTX* context)
+void SHA1Final(unsigned char digest[SHA1_DIGEST_SIZE], void* vcontext)
 {
-#ifdef HAVE_LIBNSS
-	unsigned int length;
-	SECStatus status;
-	status=PK11_DigestFinal(context->ctx_nss, digest, &length, SHA1_DIGEST_SIZE);
-	PR_ASSERT(length==SHA1_DIGEST_SIZE);
-	PR_ASSERT(status==SECSuccess);
-	PK11_DestroyContext(context->ctx_nss, PR_TRUE);
-#else
+  SHA1_CTX* context = vcontext;
 unsigned i;
 unsigned char finalcount[8];
 unsigned char c;
 
-#if 0	/* untested "improvement" by DHR */
-    /* Convert context->count to a sequence of bytes
-     * in finalcount.  Second element first, but
-     * big-endian order within element.
-     * But we do it all backwards.
-     */
-    unsigned char *fcp = &finalcount[8];
-
-    for (i = 0; i < 2; i++)
-    {
-	u_int32_t t = context->count[i];
-	int j;
-
-	for (j = 0; j < 4; t >>= 8, j++)
-	    *--fcp = (unsigned char) t
-    }
-#else
     for (i = 0; i < 8; i++) {
         finalcount[i] = (unsigned char)((context->count[(i >= 4 ? 0 : 1)]
          >> ((3-(i & 3)) * 8) ) & 255);  /* Endian independent */
     }
-#endif
     c = 0200;
     SHA1Update(context, &c, 1);
     while ((context->count[0] & 504) != 448) {
@@ -219,5 +185,4 @@ unsigned char c;
     /* Wipe variables */
     memset(context, '\0', sizeof(*context));
     memset(&finalcount, '\0', sizeof(finalcount));
-#endif
 }

@@ -1,0 +1,6 @@
+This test case is an IKEv1 responder.
+
+This version uses certificates that are passed a CERT payloads,
+and become trusted if they validate correctly.
+
+

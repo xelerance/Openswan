@@ -23,14 +23,24 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 include ../../libpluto/lp13-objectlist.make
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-SAMPLEDIR=../samples
+SAMPLEDIR=../samples/
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 OUTPUTS=OUTPUT
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed -f ${TESTUTILS}/sanity.sed
 
 include Makefile.testcase
 
+all: programs
+
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
+
+ifeq (${UNITTEST1ARGS},)
+UNITTEST1ARGS=${UNITTESTARGS}
+endif
+ifeq (${WHACKFILE},)
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+endif
 
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
@@ -39,6 +49,9 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
 	@echo " LD ${TESTNAME}"
 	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
+${TESTNAME}.E: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
+	@echo CC ${TESTNAME}.E
+	@${CC} -c -E -g -O0 -o ${TESTNAME}.E ${TESTNAME}.c ${EXTRAFLAGS}
 check: OUTPUT/I2-dump.txt
 OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT

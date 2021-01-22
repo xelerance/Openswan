@@ -7,13 +7,15 @@ struct seam_chunk {
 };
 
 struct seam_secrets {
-
+  const char *secrets_name;
 	/* config */
 
 	u_int16_t        oakleygroup;
 	oakley_auth_t    auth;
-	oakley_hash_t    hash;
+	enum oakley_hash_t hash;
 	enum phase1_role role;
+        enum ikev2_trans_type_prf   prf;
+        enum ikev2_trans_type_integ integ;
 
 	/* intermediate */
 
@@ -24,6 +26,7 @@ struct seam_secrets {
 	struct seam_chunk icookie;
 	struct seam_chunk rcookie;
 	struct seam_chunk secret;
+        struct seam_chunk secretr;
 
 	/* results */
 
@@ -36,6 +39,10 @@ struct seam_secrets {
 	struct seam_chunk skey_er;
 	struct seam_chunk skey_pi;
 	struct seam_chunk skey_pr;
+
+  /* IKEv1 only */
+        struct seam_chunk new_iv;
+        struct seam_chunk enc_key;
 };
 
 /* Various test cases will define their own SECRETS macro, and common seam code
@@ -60,11 +67,14 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 	seam_chunk_set(&(ss)->chunk_name, \
 		     array, sizeof(array))
 
-#define SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role,...) \
+#define SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role,_prf,_integ,...) \
 	struct seam_secrets SS = { \
+          .secrets_name = #SS, \
 		.oakleygroup = _oakleygroup, \
 		.auth = _auth, \
 		.hash = _hash, \
+		.prf  = _prf, \
+		.integ= _integ, \
 		.role = _role, \
 		##__VA_ARGS__ \
 	}
@@ -72,8 +82,8 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 #define __SS_SET(prefix,part) \
 	.part = { .ptr = prefix##_##part, .len = sizeof(prefix##_##part) }
 
-#define SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(SS,_oakleygroup,_auth,_hash,_role,prefix,...) \
-	SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role, \
+#define SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(SS,_oakleygroup,_auth,_hash,_role,_prf,_integ,prefix,...) \
+  SEAM_SECRETS_DECLARE(SS,_oakleygroup,_auth,_hash,_role, _prf, _integ, \
 		\
 		__SS_SET(prefix,gi), \
 		__SS_SET(prefix,gr), \
@@ -82,6 +92,7 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 		__SS_SET(prefix,icookie), \
 		__SS_SET(prefix,rcookie), \
 		__SS_SET(prefix,secret), \
+		__SS_SET(prefix,secretr), \
 		\
 		__SS_SET(prefix##_results,shared), \
 		__SS_SET(prefix##_results,skeyseed), \
@@ -92,6 +103,8 @@ static inline void seam_chunk_set(struct seam_chunk *c,
 		__SS_SET(prefix##_results,skey_er), \
 		__SS_SET(prefix##_results,skey_pi), \
 		__SS_SET(prefix##_results,skey_pr), \
+		__SS_SET(prefix##_results,new_iv), \
+		__SS_SET(prefix##_results,enc_key), \
 		\
 		##__VA_ARGS__ \
 	)

@@ -2,11 +2,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_rsasig.c"
+#include "seam_rsa_check.c"
 #include "seam_x509.c"
-#include "seam_gi_sha1.c"
-#include "seam_gi_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+#include "seam_kernel.c"
 
 static void init_fake_secrets(void)
 {

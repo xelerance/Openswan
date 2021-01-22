@@ -44,7 +44,7 @@
 #include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "log.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "demux.h"
 #include "ikev1_quick.h"

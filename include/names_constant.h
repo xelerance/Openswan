@@ -1,3 +1,6 @@
+#ifndef _NAMES_CONSTANTS_H
+#define _NAMES_CONSTANTS_H
+
 extern enum kernel_interface kern_interface;
 extern enum_names kern_interface_names;
 extern enum_names timer_event_names;
@@ -27,6 +30,8 @@ extern enum_names enc_mode_names;
 extern enum_names auth_alg_names, extended_auth_alg_names;
 extern enum_names oakley_lifetime_names;
 
+
+
 extern enum_names version_names;
 extern enum_names doi_names;
 extern enum_names payload_names;
@@ -47,14 +52,19 @@ extern enum_names ident_names;
 extern enum_names cert_type_names;
 extern enum_names oakley_attr_names;
 extern const char *const oakley_attr_bit_names[];
-extern enum_names *oakley_attr_val_descs[]; 
-extern enum_names ipsec_attr_names; 
+extern enum_names *oakley_attr_val_descs[];
+extern enum_names ipsec_attr_names;
 extern enum_names *ipsec_attr_val_descs[];
 extern enum_names sa_lifetime_names;
 extern enum_names enc_mode_names;
-extern enum_names auth_alg_names, extended_auth_alg_names;
+extern enum_names auth_alg_names;
+extern enum_and_keyword_names ikev2_auth_alg_names;
+extern enum_names ikev2_prf_names;
+extern enum_and_keyword_names ikev2_prf_alg_names;
+extern enum_and_keyword_names ikev2_group_names;
+extern enum_and_keyword_names ikev2_encr_names;
+extern enum_and_keyword_names ikev2_integ_names;
 extern enum_names oakley_lifetime_names;
-extern enum_names oakley_prf_names;
 extern enum_names oakley_enc_names;
 extern enum_names oakley_hash_names;
 extern enum_names oakley_auth_names;
@@ -72,6 +82,7 @@ extern enum_names trans_type_integ_names;
 extern enum_names trans_type_esn_names;
 extern enum_names ikev2_trans_attr_descs;
 extern enum_names *ikev2_trans_attr_val_descs[];
+extern const unsigned int ikev2_trans_attr_val_descs_size;
 extern enum_names *ikev2_transid_val_descs[];
 extern const unsigned int ikev2_transid_val_descs_size;
 extern enum_names ikev2_cert_type_names;
@@ -120,4 +131,6 @@ extern enum_names ppk_names;
 
 /* natt traversal types */
 extern const char *const natt_type_bitnames[];
+
+#endif /* _NAMES_CONSTANTS_H */
 

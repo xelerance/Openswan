@@ -1,13 +1,12 @@
 #define FIND_ID_EXTENDED_DEBUG 1
 
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
-#include "seam_gr_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
-
-#include "../../programs/pluto/hostpair.c"
-
+#include "seam_kernel.c"
 
 #define TESTNAME "certreplyselfR2"
 

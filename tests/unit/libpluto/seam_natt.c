@@ -1,5 +1,6 @@
-#ifndef __seam_natt_c__
+#if !defined(__seam_natt_c__)
 #define __seam_natt_c__
+#if !defined(NO_SEAM_NATT)
 #include "pluto/nat_traversal.h"
 #include "pluto/vendor.h"
 bool nat_traversal_support_non_ike = FALSE;
@@ -45,4 +46,14 @@ void nat_traversal_new_ka_event (void)
     nat_traversal_ka_event_scheduled = TRUE;
 }
 
+void init_nat_traversal (bool activate, unsigned int keep_alive_period,
+                         bool fka, bool spf) {
+#ifdef NAPT_ENABLED
+  nat_traversal_support_non_ike = TRUE;
+  nat_traversal_support_port_floating = TRUE;
+  nat_traversal_enabled = TRUE;
+#endif
+}
+
+#endif /* NAPT_ENABLED */
 #endif

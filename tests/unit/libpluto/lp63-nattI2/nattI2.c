@@ -1,10 +1,14 @@
+/*
+ * This device is behind a NAT, so it has NAPT_ENABLED, which mangles the
+ * packets before they go into the pcap file.
+ */
 #define NAPT_ENABLED 1
 #include "../lp10-parentI2/parentI2_head.c"
-#include "seam_gi_sha1.c"
-#include "seam_gi_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
-#include "seam_keys.c"
+#include "seam_natt.c"
+#include "seam_rsasig.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
 
@@ -25,6 +29,7 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void) {}
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*

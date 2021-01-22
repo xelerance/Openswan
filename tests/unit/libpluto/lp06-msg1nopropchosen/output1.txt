@@ -1,0 +1,537 @@
+./parentR2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./parentR2 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentR2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./parentR2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./parentR2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./parentR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./parentR2 loading secrets from "../samples/jj.secrets"
+./parentR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./parentR2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./parentR2 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./parentR2 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./parentR2 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentR2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentR2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./parentR2 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./parentR2 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection parker1--jj2--wrong with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| ike (phase1) algorithm values: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
+./parentR2 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+| counting wild cards for @jamesjohnson.emmjay.credil.org is 0
+./parentR2 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+| counting wild cards for @parker01.emmjay.credil.org is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| orient parker1--jj2--wrong checking against if: eth0 (AF_INET:132.213.238.7:4500)
+| orient parker1--jj2--wrong checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient parker1--jj2--wrong finished with: 1 [132.213.238.7]
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (exact)
+|   concluded with <none>
+./parentR2 adding connection: "parker1--jj2--wrong"
+| fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient parker1--jj2--wrong finished with: 1 [132.213.238.7]
+RC=0 "parker1--jj2--wrong": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
+RC=0 "parker1--jj2--wrong":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2--wrong":   keys: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none...
+RC=0 "parker1--jj2--wrong":        ....1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none
+RC=0 "parker1--jj2--wrong":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
+RC=0 "parker1--jj2--wrong":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+RC=0 "parker1--jj2--wrong":   IKE algorithms wanted: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict
+RC=0 "parker1--jj2--wrong":   IKE algorithms found:  3des(3)_192-hmac_sha1_96(2)_160-prfsha1(2)-MODP1536(5)
+|   =========== input from pcap file parentI1.pcap ========
+| *received 652 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 02 8c  22 00 01 0c
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  03 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   02 00 00 05  03 00 00 08  03 00 00 0c  00 00 00 08
+|   04 00 00 05  02 00 00 2c  04 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 2c  05 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0f  00 00 00 2c
+|   06 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0f  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
+| I am the IKE SA Responder
+| I am this exchange's Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| considering state entry: 0
+|   reject: received request, needs response message
+| considering state entry: 1
+|   reject: received request, needs response message
+| considering state entry: 2
+|   reject: received request, needs response message
+| considering state entry: 3
+| now proceed with state specific processing using state #3 responder-V2_init
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
+| find_host_pair: concluded with parker1--jj2--wrong
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:parker1--jj2--wrong
+| searching for connection with policy = IKEv2ALLOW/-
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (parker1--jj2--wrong)
+| find_host_connection2 returns parker1--jj2--wrong (ike=none/none)
+./parentR2 tentatively considering connection: parker1--jj2--wrong
+| creating state object #1 at Z
+| orient parker1--jj2--wrong checking against if: eth0 (AF_INET:132.213.238.7:4500)
+| orient parker1--jj2--wrong checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient parker1--jj2--wrong finished with: 1 [132.213.238.7]
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #1 bucket: 28
+| will not send/process a dcookie
+| received a notify..
+| processor 'responder-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI1outR1: calculated ke+nonce, sending R1
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
+| processing v2N_NAT_DETECTION_SOURCE_IP
+| received nat-t hash  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| calculated nat-t  h  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
+| processing v2N_NAT_DETECTION_DESTINATION_IP
+| received nat-t hash  cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2
+| calculated nat-t  h  cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_RESPONSE
+|    message ID:  00 00 00 00
+| ***emit IKEv2 Security Association Payload:
+|    critical bit: none
+| found algorithm: 3des(3)-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 1 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 1 failed integ=(policy:        hmac_sha1_96 vs offered:hmac_sha2_256_128)
+| proposal 1 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 1 failed dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP2048)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 14<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 2 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 2   succ integ=(policy:        hmac_sha1_96 vs offered:hmac_sha1_96)
+| proposal 2 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 2 failed dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP2048)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 3
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 5
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 5<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 3 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 3 failed integ=(policy:        hmac_sha1_96 vs offered:hmac_sha2_256_128)
+| proposal 3 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 3   succ dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP1536)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 4
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 5
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 5<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 4 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 4   succ integ=(policy:        hmac_sha1_96 vs offered:hmac_sha1_96)
+| proposal 4 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 4   succ dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP1536)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 5
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 15
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 15<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 5 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 5 failed integ=(policy:        hmac_sha1_96 vs offered:hmac_sha2_256_128)
+| proposal 5 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 5 failed dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP3072)
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 6
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 15
+| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 15<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| proposal 6 failed encr= (policy:                3des[128] vs offered:aes_cbc[-1]) [0,1]
+| proposal 6   succ integ=(policy:        hmac_sha1_96 vs offered:hmac_sha1_96)
+| proposal 6 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-sha2-256)
+| proposal 6 failed dh=   (policy:OAKLEY_GROUP_MODP1536 vs offered:OAKLEY_GROUP_MODP3072)
+| #1 complete v2 state transition with STF_FAIL+14
+./parentR2 STATE_PARENT_R1: NO_PROPOSAL_CHOSEN
+./parentR2 sending notification ISAKMP_v2_SA_INIT/v2N_NO_PROPOSAL_CHOSEN to 192.168.1.1:500
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_RESPONSE
+|    message ID:  00 00 00 00
+| Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
+| ***emit IKEv2 Notify Payload:
+|    critical bit: none
+|    Protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    Notify Message Type: v2N_NO_PROPOSAL_CHOSEN
+| emitting length of IKEv2 Notify Payload: 8
+| emitting length of ISAKMP Message: 36
+sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
+|   01 00 00 0e
+| state transition function for STATE_PARENT_R1 failed: NO_PROPOSAL_CHOSEN
+./parentR2 deleting state #1 (STATE_PARENT_R1)
+| considering request to delete IKE parent state
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+1: output to OUTPUT/parentR2.pcap
+|   =========== input from pcap file parentI2.pcap ========
+| *received 464 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 01 d0  23 00 01 b4
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   c6 2c 43 c6  ae 0f ec 1a  69 62 67 2e  9a c5 dd 37
+|   12 23 a6 b7  de 53 97 61  34 05 0e 5c  b1 64 2c 98
+|   e9 d9 a9 bc  39 23 84 2e  eb 15 07 fa  8b a9 6f 4c
+|   b8 09 d0 ed  bd bb b3 10  5e f9 cb 1b  08 8c c3 e9
+|   ae 83 3a 41  c5 c6 42 f7  a3 83 87 36  cf 53 1e b7
+|   ef b6 46 fa  21 e6 56 f8  e0 02 03 41  6e d4 a5 c9
+|   5f 0a 07 28  a3 c7 0d 34  05 18 a5 e0  92 10 8d 6a
+|   20 0f c5 6a  9b f5 29 20  2a 3c 87 bd  49 8e 01 43
+|   4b 41 ce 20  55 e2 26 20  0f f8 4b bf  ee 30 b4 ad
+|   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
+|   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
+|   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
+|   66 54 10 b7  7e 52 fc 43  3a f7 55 99  46 8a e2 9f
+|   02 6d 36 d6  5d 78 99 44  fe 0a d4 00  67 d9 46 82
+|   8e 90 a6 c6  6e b8 4b 21  a2 41 ba 80  5e cc 6f 3b
+|   2e b1 65 2f  09 b9 21 6d  6a 2e af cc  48 d8 0d 2e
+|   dc 05 49 c9  d6 83 28 d0  fd 8f 2d 04  45 b1 13 31
+|   d7 f6 94 4d  b9 38 c7 ad  e8 49 d7 84  48 ba d9 b4
+|   dd 5d 3e 0f  8e 17 54 1f  1a 3f 6a 6c  15 ad 50 6a
+|   f6 b7 b0 aa  b5 e9 c9 04  0f 04 e3 4f  79 36 64 d3
+|   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
+|   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
+|   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
+|   30 de 2b 02  64 68 14 02  09 81 59 5f  1c 39 85 92
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
+| I am the IKE SA Responder
+| I am this exchange's Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
+| considering state entry: 0
+|   reject: received request, needs response message
+| considering state entry: 1
+|   reject: received request, needs response message
+| considering state entry: 2
+|   reject: received request, needs response message
+| considering state entry: 3
+|   reject: recv_type: ISAKMP_v2_AUTH, needs ISAKMP_v2_SA_INIT
+| considering state entry: 4
+|   reject:state needed and state unavailable
+| considering state entry: 5
+| considering state entry: 6
+|   reject: received request, needs response message
+| considering state entry: 7
+|   reject:state needed and state unavailable
+| considering state entry: 8
+| considering state entry: 9
+|   reject:state needed and state unavailable
+| considering state entry: 10
+|   reject:state needed and state unavailable
+| considering state entry: 11
+|   reject:state needed and state unavailable
+| considering state entry: 12
+|   reject:state needed and state unavailable
+| considering state entry: 13
+|   reject:state needed and state unavailable
+| considering state entry: 14
+|   reject:state needed and state unavailable
+| considering state entry: 15
+|   reject:state needed and state unavailable
+| considering state entry: 16
+|   reject:state needed and state unavailable
+| considering state entry: 17
+|   reject:state needed and state unavailable
+| considering state entry: 18
+|   reject: received request, needs response message
+| considering state entry: 19
+|   reject: received request, needs response message
+| considering state entry: 20
+|   reject: received request, needs response message
+| did not find valid state; giving up
+./parentR2 cannot send notification ISAKMP_v2_AUTH/v2N_INVALID_MESSAGE_ID, state is NULL
+should have found a continuation, but none was found
+./parentR2 leak: notification packet, item size: X
+./parentR2 leak: db_context->trans (expand), item size: X
+./parentR2 leak: db_context->attrs, item size: X
+./parentR2 leak: db_context->conj, item size: X
+./parentR2 leak: db_context, item size: X
+./parentR2 leak: v2 policy database, item size: X
+./parentR2 leak: saved first received packet, item size: X
+./parentR2 leak: ikev2_inI1outR1 KE, item size: X
+./parentR2 leak: struct state in new_state(), item size: X
+./parentR2 leak: msg_digest, item size: X
+./parentR2 leak: 2 * keep id name, item size: X
+./parentR2 leak: ID host_pair, item size: X
+./parentR2 leak: host_pair, item size: X
+./parentR2 leak: host ip, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: host ip, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: connection name, item size: X
+./parentR2 leak: struct connection, item size: X
+./parentR2 leak: alg_info_ike, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: rfc3110 format of public key, item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: rfc3110 format of public key, item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: 2 * id list, item size: X
+./parentR2 leak: rfc3110 format of public key [created], item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: secret, item size: X
+./parentR2 leak: 4 * hasher name, item size: X
+./parentR2 leak: 10 * group description, item size: X
+./parentR2 leak: policies path, item size: X
+./parentR2 leak: ocspcerts path, item size: X
+./parentR2 leak: aacerts path, item size: X
+./parentR2 leak: certs path, item size: X
+./parentR2 leak: private path, item size: X
+./parentR2 leak: crls path, item size: X
+./parentR2 leak: cacert path, item size: X
+./parentR2 leak: acert path, item size: X
+./parentR2 leak: default conf var_dir, item size: X
+./parentR2 leak: default conf conffile, item size: X
+./parentR2 leak: default conf ipsecd_dir, item size: X
+./parentR2 leak: default conf ipsec_conf_dir, item size: X
+./parentR2 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

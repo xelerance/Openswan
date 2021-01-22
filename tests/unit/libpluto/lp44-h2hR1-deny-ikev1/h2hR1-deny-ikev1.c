@@ -8,11 +8,12 @@
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_natt_vid.c"
-#include "seam_rsa_check.c"
 #include "seam_dpd.c"
 #include "seam_command.c"
 #include "seam_ikev1_aggr.c"
 #include "seam_unpend.c"
+#include "seam_rsasig.c"
+#include "seam_rsa_check.c"
 
 #define TESTNAME "h2h-deny-ikev1"
 

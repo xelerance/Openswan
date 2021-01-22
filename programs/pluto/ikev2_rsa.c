@@ -44,12 +44,12 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
-#include "ike_alg.h"
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/ike_alg.h"
 #include "log.h"
 #include "demux.h"	/* needs packet.h */
 #include "ikev2.h"
@@ -57,6 +57,7 @@
 #include "vendor.h"
 #include "dpd.h"
 #include "keys.h"
+#include "hostpair.h"
 
 #include "oswcrypto.h"
 
@@ -80,8 +81,11 @@ void ikev2_calculate_sighash(struct state *st
 	}
 
 	DBG(DBG_CRYPT
-	    , DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
+	    , DBG_log("calculate sighash");
+              DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	      DBG_dump_chunk(nonce_name, *nonce);
+              DBG_log("pidhash len: %u",
+                      (unsigned int)st->st_oakley.prf_hasher->hash_digest_len);
 	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
 
 	SHA1Init(&ctx_sha1);
@@ -100,6 +104,7 @@ void ikev2_calculate_sighash(struct state *st
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
 		      , enum phase1_role role
+                      , struct IDhost_pair *hp
 			    , unsigned char *idhash
 			    , const struct pubkey_list *keys_from_dns
 			    , const struct gw_info *gateways_from_dns
@@ -108,24 +113,52 @@ ikev2_verify_rsa_sha1(struct state *st
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
     enum phase1_role invertrole;
+    struct connection *d;
+    stf_status checkresult;
 
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
 
     ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
 
     DBG(DBG_CRYPT,
-        DBG_dump("v2rsa calculated octets", calc_hash, hash_len);
+        DBG_dump("v2rsa calculated octets (sans ASN.1)", calc_hash, hash_len);
         DBG_dump_pbs(sig_pbs);
         );
 
-    return RSA_check_signature_gen(st, calc_hash, hash_len
+    if(hp != NULL) {
+        d=hp->connections;
+    } else {
+        d = st->st_connection;
+    }
+
+    while(d != NULL) {
+        checkresult = check_signature_gen(d, st, calc_hash, hash_len
 				   , sig_pbs
 #ifdef USE_KEYRR
 				   , keys_from_dns
 #endif
 				   , gateways_from_dns
 				   , try_RSA_signature_v2);
+        if(checkresult == STF_OK) {
+            if(d != st->st_connection) {
+                loglog(RC_LOG, "Good signature from key attached to \"%s\" (started with: \"%s\"): switched"
+                       , d->name
+                       , st->st_connection->name);
+                st->st_connection = d;
+            }
+            return STF_OK;
+        }
 
+        if(hp || role == RESPONDER) {
+            d = d->IDhp_next;
+        } else {
+            /* just finish, as we are likely initiator */
+            d = NULL;
+        }
+    }
+
+    loglog(RC_AUTHFAILED, "no policy with given IDs authenticates this connection");
+    return STF_FAIL;
 }
 
 /*

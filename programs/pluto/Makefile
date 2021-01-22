@@ -85,22 +85,21 @@ DISTGCRYPT = \
 	smallprime.c
 
 DISTSRC = \
-        connections.c initiate.c terminate.c connections.h \
+        connections.c initiate.c terminate.c \
 	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
-	crypto.h crypto.c \
-	db_ops.c \
-	demux.c demux.h msgdigest.c \
+	crypto.c \
+	demux.c msgdigest.c \
 	dnskey.c dnskey.h \
-	dpd.c dpd.h \
+	dpd.c  \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
 	ikev1_crypto.c ikev1_nss.c \
-        ikev2.c ikev2_parent.c ikev2_parent_I1.c ikev2_parent_R1.c ikev2_child.c ikev2_derived_keys.c ikev2_notify.c \
+        ikev2.c ikev2_alg.c ikev2_parent.c ikev2_parent_I1.c ikev2_parent_R1.c ikev2_child.c ikev2_derived_keys.c ikev2_notify.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
-	kernel.c kernel.h \
+	kernel.c kernel_ops.c kernel.h \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
@@ -108,15 +107,15 @@ DISTSRC = \
 	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
-	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
-	log.c log.h \
-	plutomain.c plutoalg.c \
+	${EXTRA_CRYPTO_SRCS} \
+	log.c \
+	plutomain.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
-	keys.c \
-	server.c server.h \
-	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
-	state.c state.h \
+	signatures.c keymgmt.c \
+	server.c \
+	spdb_struct.c spdb_v1_struct.c \
+	state.c \
 	stubs.c \
 	${SYSDEP_SRC} \
 	timer.c timer.h \
@@ -140,22 +139,22 @@ OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
-OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
+OBJSPLUTO += foodgroups.o log.o state.o plutomain.o server.o
 OBJSPLUTO += timer.o replace.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
-OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
-OBJSPLUTO += ikeping.o kernel.o
+OBJSPLUTO += ikev2.o ikev2_alg.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
+OBJSPLUTO += ikeping.o kernel.o kernel_ops.o
 OBJSPLUTO += $(NETKEY_OBJS) $(BSDKAME_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${PFKEYv2_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o
-OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
+OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keymgmt.o signatures.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o build_ke.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_derived_keys.o ikev2_prfplus.o
-OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
+OBJSPLUTO += spdb_struct.o spdb_v1_struct.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
-OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
-OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o
+OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
+OBJSPLUTO += ike_alg_status.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
@@ -221,13 +220,10 @@ ifneq ($(USE_NOMANINSTALL),true)
 		done
 endif
 
-alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) ${LIBOPENSWAN}
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
-
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM} ${LIBALGOPARSE}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
@@ -256,9 +252,13 @@ check:
 
 checkprograms:
 
-.c.o:
+%.o: %.c
+ifeq ($(V),1)
+	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+else
 	@echo CC $(notdir $<)
 	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+endif
 
 %.E: %.c
 	@echo CPP $(notdir $<)

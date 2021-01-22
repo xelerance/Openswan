@@ -138,6 +138,15 @@ unsigned char __tc14_results_skey_pr[]= {
 	0xeb, 0x81, 0x58, 0xe7,
 };
 
+unsigned char __tc14_results_new_iv[] = {
+  0xbc, 0xd5, 0x89, 0x68, 0x0c, 0x42, 0x2e, 0xcd,
+  0x14, 0x72, 0xae, 0xa3, 0x97, 0x42, 0x67, 0x41
+};
+unsigned char __tc14_results_enc_key[] = {
+  0x56, 0x4c, 0x62, 0xb3, 0x52, 0xd9, 0x33, 0x45,
+  0x0a, 0xd1, 0xdf, 0x32, 0x4e, 0xa5, 0x7d, 0x69
+};
+
 unsigned char __tc14_undefined[] = {};
 #define __tc14_gi __tc14_undefined
 #define __tc14_ni __tc14_undefined
@@ -150,6 +159,8 @@ SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(tc14_secrets,
 					 AUTH_ALGORITHM_HMAC_SHA1,
 					 OAKLEY_SHA1,
 					 RESPONDER,
+                                         IKEv2_PRF_HMAC_SHA1,
+                                         IKEv2_AUTH_HMAC_SHA1_96,
 					 __tc14);
 #undef SECRETS
 #define SECRETS (&tc14_secrets)

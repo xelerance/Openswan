@@ -41,11 +41,9 @@ XAUTH_USEPAM=1
 endif
 endif
 
-# -O on Linux makes gcc coredump when compiling sha1.c
-# -Wundef is nice but RHL5.2 compiler doesn't support it
 CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
-	-Wstrict-prototypes # -Wundef
+	-Wstrict-prototypes -Wundef
 
 ifeq ($(HAVE_OCF),true)
 CFLAGS += -DHAVE_OCF
@@ -112,11 +110,11 @@ PFKEYv2_DIST_SRC=
 PFKEYv2_OBJS=
 endif
 
-NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h
+NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h kernel_forces.c kernel_forces.h
 ifeq ($(USE_NETKEY),true)
 NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES -DPFKEY
 NETKEY_SRCS=${NETKEY_DIST_SRCS}
-NETKEY_OBJS=kernel_netlink.o
+NETKEY_OBJS=kernel_netlink.o kernel_forces.o
 endif
 
 KLIPS_DIST_SRCS=kernel_klips.c
@@ -259,6 +257,10 @@ LEAK_CONF+=-DONGOING_LEAK_DETECTIVE
 endif
 endif
 
+ifeq ($(USE_IKEv1),true)
+IKEVERSION_FLAGS+= -DIKEV1
+endif
+
 ifeq ($(USE_TAPROOM),true)
 LIBTPM=tpm/libtpm.a
 TPM_LIBS=${LIBTPM} ${TCLLIB}
@@ -278,8 +280,8 @@ DEFINES = $(EXTRA_DEFINES) \
 	${KLIPS_DEFS} ${WIN2K_DEFS} ${TPM_DEFS} ${MAST_DEFS} ${BSDKAME_DEFS} \
 	-DBUILDER=\"${BUILDER}\" \
 	-DDEBUG \
-	-DUSE_AES -DUSE_3DES -DUSE_SHA2 \
-	-DIKE_ALG -DKERNEL_ALG -DIKEV1 \
+	${IKE_CRYPTO_DEFINES} ${IKEVERSION_FLAGS} \
+	-DKERNEL_ALG -DIKEV1 \
 	${AGGRESSIVE_DEFS} \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
 	${NAT_DEFS} ${CURL_DEFS}\
@@ -293,13 +295,13 @@ DEFINES = $(EXTRA_DEFINES) \
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO =$(OBJSGCRYPT)
-LIBSPLUTO+=$(LIBOSWCRYPTO)
-LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) ${LIBOPENSWAN} ${LIBPLUTO}
+LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) ${LIBOPENSWAN} ${LIBPLUTO} ${LIBALGOPARSE}
 LIBSPLUTO+=${LIBSHA1} ${LIBMD5}
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS)
 LIBSPLUTO+=$(HAVE_THREADS_LIBS)
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
 LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} $(LIBSHA2)
+LIBSPLUTO+=$(LIBOSWCRYPTO)
 LIBSPLUTO+=${WHACKLIB} ${PLUTOLIB} ${BSDKAME_LIBS}
 PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS}
 PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}

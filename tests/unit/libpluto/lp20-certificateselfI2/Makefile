@@ -1,4 +1,4 @@
-include ../lp16-initiateselfI2/Makefile
+include ../lp10-parentI2/Makefile
 
 # Local Variables:
 # gdb-command: ""

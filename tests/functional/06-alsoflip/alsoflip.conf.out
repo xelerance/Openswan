@@ -19,6 +19,7 @@ conn dnsh2h2
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -36,6 +37,7 @@ conn openswan
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4
@@ -55,6 +57,7 @@ conn mytunnel
 	pfs=yes
 	rekey=yes
 	overlapip=no
+	ikev1=yes
 	authby=rsasig
 	phase2=esp
 	endaddrfamily=ipv4

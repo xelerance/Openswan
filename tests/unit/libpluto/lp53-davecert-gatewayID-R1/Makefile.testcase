@@ -1,5 +1,4 @@
 # -*- makefile -*-
-# -*- makefile -*-
 TESTNAME=davecert-R1-id
 CONNNAME=rw-dave
 ENDNAME=gatewaycert-id

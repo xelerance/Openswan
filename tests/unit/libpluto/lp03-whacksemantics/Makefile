@@ -19,43 +19,20 @@ include $(OPENSWANSRCDIR)/Makefile.inc
 EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2.o
-ifeq ($(USE_EXTRACRYPTO),true)
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
-endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOPENSWAN} ${LIBOSWLOG}
-EXTRALIBS+=${LIBIPSECCONF} ${WHACKLIB} ${LIBOPENSWAN} ${LIBOSWKEYS}
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${LIBWHACK} ${LIBOSWLOG}
+EXTRALIBS+=${LIBIPSECCONF} ${WHACKLIB} ${LIBOPENSWAN} ${LIBOSWKEYS} ${LIBALGOPARSE}
+EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${LIBWHACK} ${LIBOSWLOG}
 EXTRALIBS+=${LIBOPENSWAN} -lgmp ${LIBEFENCE} -lpcap
 
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
@@ -72,13 +49,14 @@ export EF_DISABLE_BANNER
 
 check: check1 check2 check3
 update: update1 update2 update3
+programs: ${TESTNAME}
 
 OUTPUT:
 	@mkdir -p OUTPUT
 
 ${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
-	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
+	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
 
 # --- test 1 ---
 

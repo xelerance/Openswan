@@ -1,0 +1,831 @@
+./parentM3 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./parentM3 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./parentM3 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./parentM3 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentM3 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./parentM3 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./parentM3 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./parentM3 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./parentM3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./parentM3 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./parentM3 registered kernel encr algorithm 3des [3, 192<=key<=192]
+./parentM3 registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./parentM3 registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./parentM3 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./parentM3 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./parentM3 loading secrets from "../samples/parker.secrets"
+./parentM3 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./parentM3 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./parentM3 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
+| Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+./parentM3 use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
+| counting wild cards for @berri.testing.xelerance.com is 0
+./parentM3 use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
+| counting wild cards for 132.213.238.7 is 0
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
+| orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+| orient t4901 matching on public/private keys: this=no[%address] that=yes[%any]
+|   orient t4901 matched on that having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
+|   orient t4901 finished with: 1 [192.168.1.1]
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=@berri.testing.xelerance.com him=132.213.238.7 (exact)
+|   concluded with <none>
+./parentM3 adding connection: "t4901"
+| 2620:120:9000:81::/64===%any[@berri.testing.xelerance.com]...132.213.238.7===2620:120:9000:82::/64
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+|   orient t4901 finished with: 1 [192.168.1.1]
+RC=0 "t4901": 2620:120:9000:81::/64===%any[@berri.testing.xelerance.com]...132.213.238.7===2620:120:9000:82::/64; unrouted; eroute owner: #0
+RC=0 "t4901":     myip=2620:120:9000:81::1; hisip=2620:120:9000:82::1;
+RC=0 "t4901":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 2:none...
+RC=0 "t4901":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
+RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 64,64; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 't4901'
+| creating state object #1 at Z
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
+| orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+|   trusted_ca_by_name called with a=(empty) b=(empty)
+| orient t4901 matching on public/private keys: this=yes[%any] that=no[%address]
+|   orient t4901 matched on this having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
+|   orient t4901 finished with: 1 [192.168.1.1]
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| inserting state object #1 bucket: 4
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+./parentM3 initiating Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 6
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 6
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 1
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 2
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 3
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 4
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 15
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 5
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 15
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 224
+| emitting length of ISAKMP Security Association Payload: 236
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 300
+sending 300 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 01 2c  0d 00 00 ec
+|   00 00 00 01  00 00 00 01  00 00 00 e0  00 01 00 06
+|   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0e  03 00 00 24  01 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 03 00 03  80 01 00 07  80 0e 00 80
+|   80 02 00 02  80 04 00 0e  03 00 00 24  02 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 03 00 03  80 01 00 07
+|   80 0e 00 80  80 02 00 04  80 04 00 05  03 00 00 24
+|   03 01 00 00  80 0b 00 01  80 0c 0e 10  80 03 00 03
+|   80 01 00 07  80 0e 00 80  80 02 00 02  80 04 00 05
+|   03 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0f  00 00 00 24  05 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 03 00 03  80 01 00 07  80 0e 00 80
+|   80 02 00 02  80 04 00 0f  0d 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30  00 00 00 14  af ca d7 13
+|   68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+RC=105 STATE_MAIN_I1: initiate
+0: input from parentN1.pcap
+|   =========== input from pcap file parentN1.pcap ========
+picking: eth0:500  outside: 55044 <=> d: 500
+| *received 136 bytes from 132.213.238.7:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
+|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v1 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I1
+./parentM3 received Vendor ID payload [Dead Peer Detection]
+./parentM3 received Vendor ID payload [RFC 3947] meth=115, but port floating is off
+| EI starts with: aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP2048(14), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP1536(5), aes_cbc(12)_128-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15), aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha2_256(5)-MODP3072(15)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| pass: 0 noticed combo 0/0: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 1/1: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 2/2: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 3/3: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 0 noticed combo 4/4: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| pass: 0 noticed combo 5/5: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| pass: 1 noticed combo 0/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 0: dh:14 encr:12 integ:12
+| pass: 1 noticed combo 1/7: dh:14(OAKLEY_GROUP_MODP2048) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 1: dh:14 encr:12 integ:2
+| pass: 1 noticed combo 2/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 2: dh:5 encr:12 integ:12
+| pass: 1 noticed combo 3/7: dh:5(OAKLEY_GROUP_MODP1536) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 3: dh:5 encr:12 integ:2
+| pass: 1 noticed combo 4/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:12(hmac_sha2_256_128)
+| new combo 4: dh:15 encr:12 integ:12
+| pass: 1 noticed combo 5/7: dh:15(OAKLEY_GROUP_MODP3072) encr:12(aes_cbc) integ:2(hmac_sha1_96)
+| new combo 5: dh:15 encr:12 integ:2
+| Translated IKEv2 policy to:
+| sa disjunct cnt: 1
+|   conjunctions cnt: 1
+|     protoid: 1 (PROTO_ISAKMP) cnt: 6
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 5(OAKLEY_GROUP_MODP1536)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 4(OAKLEY_SHA2_256)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
+|       transform: 1 cnt: 5
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG)
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
+|         type: 14(OAKLEY_KEY_LENGTH) val: 128(unknown)
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
+| selected proposal 0 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
+| complete state transition with STF_SUSPEND
+| main inR1_outI2: calculated ke+nonce, sending I2
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #1 bucket: 28
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 256 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+| emitting length of ISAKMP Key Exchange Payload: 260
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+| emitting length of ISAKMP Nonce Payload: 20
+| NAT-T checking st_nat_traversal for NAT_T_WITH_NATD
+| NAT-T found NAT_T_WITH_NATD
+| sending NAT-D payloads
+| _natd_hash: digest_len:32
+| _natd_hash: icookie=
+|   80 01 02 03  04 05 06 07
+| _natd_hash: rcookie=
+|   de bc 58 3a  8f 40 d0 cf
+| _natd_hash: ip=  84 d5 ee 07
+| _natd_hash: port=500
+| _natd_hash: hash=  28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| ***emit ISAKMP NAT-D Payload:
+| emitting 32 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| emitting length of ISAKMP NAT-D Payload: 36
+| _natd_hash: digest_len:32
+| _natd_hash: icookie=
+|   80 01 02 03  04 05 06 07
+| _natd_hash: rcookie=
+|   de bc 58 3a  8f 40 d0 cf
+| _natd_hash: ip=  c0 a8 01 01
+| _natd_hash: port=500
+| _natd_hash: hash=  3b f6 72 b3  06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb
+|   09 4f 6e c8  0d fc aa db  34 ab 41 fa  6c 16 27 66
+| ***emit ISAKMP NAT-D Payload:
+| emitting 32 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  3b f6 72 b3  06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb
+|   09 4f 6e c8  0d fc aa db  34 ab 41 fa  6c 16 27 66
+| emitting length of ISAKMP NAT-D Payload: 36
+| emitting length of ISAKMP Message: 380
+| complete state transition with STF_OK
+./parentM3 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
+| sending reply packet to 132.213.238.7:500 (from port 500)
+sending 380 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   04 10 02 00  00 00 00 00  00 00 01 7c  0a 00 01 04
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  14 00 00 24  28 5b ba 34  6d b3 29 b3
+|   68 bf da dd  c6 f1 04 2c  72 16 05 08  e9 79 31 e7
+|   54 1e 21 f9  d0 83 a3 43  00 00 00 24  3b f6 72 b3
+|   06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb  09 4f 6e c8
+|   0d fc aa db  34 ab 41 fa  6c 16 27 66
+./parentM3 STATE_MAIN_I2: sent MI2, expecting MR2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+1: output to OUTPUT/parentM3.pcap
+1: input from parentN2.pcap
+|   =========== input from pcap file parentN2.pcap ========
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 380 bytes from 132.213.238.7:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   04 10 02 00  00 00 00 00  00 00 01 7c  0a 00 01 04
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   14 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  14 00 00 24  b0 8c f3 1e  b7 00 88 96
+|   f3 2a 91 ff  40 fa dc 67  2d 63 84 a5  80 c1 00 5d
+|   e4 6a 0f 9d  70 ad 74 90  00 00 00 24  28 5b ba 34
+|   6d b3 29 b3  68 bf da dd  c6 f1 04 2c  72 16 05 08
+|   e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I2
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  00 00 00 00
+| DH public value received:
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+| complete state transition with STF_SUSPEND
+| main inR2_outI3: calculated DH, sending I3
+| ../seam_x509.c: ikev1_decode_cr() not implemented
+| thinking about whether to send my certificate:
+|   I have RSA key: OAKLEY_RSA_SIG cert.type: CERT_NONE
+|   sendcert: CERT_SENDIFASKED and I did not get a certificate request
+|   so do not send cert.
+| I did not send a certificate because I do not have one.
+|  I am not sending a certificate request
+| _natd_hash: digest_len:32
+| _natd_hash: icookie=
+|   80 01 02 03  04 05 06 07
+| _natd_hash: rcookie=
+|   de bc 58 3a  8f 40 d0 cf
+| _natd_hash: ip=  c0 a8 01 01
+| _natd_hash: port=500
+| _natd_hash: hash=  3b f6 72 b3  06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb
+|   09 4f 6e c8  0d fc aa db  34 ab 41 fa  6c 16 27 66
+| _natd_hash: digest_len:32
+| _natd_hash: icookie=
+|   80 01 02 03  04 05 06 07
+| _natd_hash: rcookie=
+|   de bc 58 3a  8f 40 d0 cf
+| _natd_hash: ip=  84 d5 ee 07
+| _natd_hash: port=500
+| _natd_hash: hash=  28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| NAT_TRAVERSAL hash=0 (me:0) (him:0)
+| expected NAT-D(me):  3b f6 72 b3  06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb
+|   09 4f 6e c8  0d fc aa db  34 ab 41 fa  6c 16 27 66
+| expected NAT-D(him):
+|   28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| received NAT-D:  b0 8c f3 1e  b7 00 88 96  f3 2a 91 ff  40 fa dc 67
+|   2d 63 84 a5  80 c1 00 5d  e4 6a 0f 9d  70 ad 74 90
+| NAT_TRAVERSAL hash=1 (me:0) (him:0)
+| expected NAT-D(me):  3b f6 72 b3  06 99 8c 0a  f0 64 3f 65  a5 b2 8a eb
+|   09 4f 6e c8  0d fc aa db  34 ab 41 fa  6c 16 27 66
+| expected NAT-D(him):
+|   28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| received NAT-D:  28 5b ba 34  6d b3 29 b3  68 bf da dd  c6 f1 04 2c
+|   72 16 05 08  e9 79 31 e7  54 1e 21 f9  d0 83 a3 43
+| NAT_TRAVERSAL hash=2 (me:0) (him:1)
+./parentM3 NAT-Traversal: Result using unknown method: i am NATed
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_FQDN
+|    Protocol ID: 0
+|    port: 0
+| emitting 27 raw bytes of my identity into ISAKMP Identification Payload (IPsec DOI)
+| my identity  62 65 72 72  69 2e 74 65  73 74 69 6e  67 2e 78 65
+|   6c 65 72 61  6e 63 65 2e  63 6f 6d
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 35
+| hashing 232 bytes of SA
+| started looking for secret for @berri.testing.xelerance.com->132.213.238.7 of kind PPK_RSA
+| actually looking for secret for @berri.testing.xelerance.com->132.213.238.7 of kind PPK_RSA
+| line 1: key type PPK_RSA(@berri.testing.xelerance.com) to type PPK_RSA
+| 1: compared key (none) to @berri.testing.xelerance.com / 132.213.238.7 -> 2
+| 2: compared key (none) to @berri.testing.xelerance.com / 132.213.238.7 -> 2
+| line 1: match=16
+| best_match 0>16 line=1
+| concluding with best_match=16 lineno=1
+| rsa key AQN7wUerV found
+| signing hash with RSA Key *AQN7wUerV
+| ***emit ISAKMP Signature Payload:
+| emitting 256 raw bytes of SIG_I into ISAKMP Signature Payload
+| SIG_I  79 d0 52 04  14 b2 fd fd  75 5b 7e 33  36 de 9d 4d
+|   17 fc ca 31  9d 98 90 5f  3a e3 4d a1  6c cb 22 10
+|   5d 93 1d 55  0f 34 48 98  fd 90 16 ac  5e f8 f9 9d
+|   fa 0e b3 de  c2 19 3b b4  f0 c4 b2 ba  8b f4 ff de
+|   8b c8 9b 64  c0 36 3c 34  ff 24 5b b1  fe c1 7f f8
+|   97 0e b6 ae  fd 17 36 81  91 f3 0e bc  a0 0b 79 61
+|   b6 34 eb 05  cf fe 55 21  c4 d7 8e 1f  16 77 cb 2c
+|   cc b7 06 2e  14 78 56 c1  4e d0 d1 48  17 30 b7 af
+|   cd 5c 51 8f  15 70 89 a5  97 ca 9e f2  8b 28 63 f9
+|   e2 eb 19 c9  f1 65 7b b9  45 f4 7f 91  37 1a ec 16
+|   b0 ac 59 e7  b5 09 62 0d  2f 98 65 02  7d 47 fa 87
+|   bf 27 c9 fa  a6 6b dc ca  cd bf 2a 59  5d 9e d1 3c
+|   d2 81 35 30  db f4 b5 c6  fd e1 20 e7  26 a8 79 48
+|   29 59 aa e2  ee b9 a3 67  9d 9a 23 06  a6 3a f8 2c
+|   30 e5 83 40  d5 a2 ad ce  be fc 7d e5  fc 35 17 f6
+|   46 e1 db dc  32 48 25 2a  1a 65 bc 4a  b6 bc 94 77
+| emitting length of ISAKMP Signature Payload: 260
+| encrypting:
+|   09 00 00 23  02 00 00 00  62 65 72 72  69 2e 74 65
+|   73 74 69 6e  67 2e 78 65  6c 65 72 61  6e 63 65 2e
+|   63 6f 6d 00  00 01 04 79  d0 52 04 14  b2 fd fd 75
+|   5b 7e 33 36  de 9d 4d 17  fc ca 31 9d  98 90 5f 3a
+|   e3 4d a1 6c  cb 22 10 5d  93 1d 55 0f  34 48 98 fd
+|   90 16 ac 5e  f8 f9 9d fa  0e b3 de c2  19 3b b4 f0
+|   c4 b2 ba 8b  f4 ff de 8b  c8 9b 64 c0  36 3c 34 ff
+|   24 5b b1 fe  c1 7f f8 97  0e b6 ae fd  17 36 81 91
+|   f3 0e bc a0  0b 79 61 b6  34 eb 05 cf  fe 55 21 c4
+|   d7 8e 1f 16  77 cb 2c cc  b7 06 2e 14  78 56 c1 4e
+|   d0 d1 48 17  30 b7 af cd  5c 51 8f 15  70 89 a5 97
+|   ca 9e f2 8b  28 63 f9 e2  eb 19 c9 f1  65 7b b9 45
+|   f4 7f 91 37  1a ec 16 b0  ac 59 e7 b5  09 62 0d 2f
+|   98 65 02 7d  47 fa 87 bf  27 c9 fa a6  6b dc ca cd
+|   bf 2a 59 5d  9e d1 3c d2  81 35 30 db  f4 b5 c6 fd
+|   e1 20 e7 26  a8 79 48 29  59 aa e2 ee  b9 a3 67 9d
+|   9a 23 06 a6  3a f8 2c 30  e5 83 40 d5  a2 ad ce be
+|   fc 7d e5 fc  35 17 f6 46  e1 db dc 32  48 25 2a 1a
+|   65 bc 4a b6  bc 94 77
+| IV:
+|   bc d5 89 68  0c 42 2e cd  14 72 ae a3  97 42 67 41
+| unpadded size is: 295
+| emitting 9 zero bytes of encryption padding into ISAKMP Message
+| encrypting 304 using OAKLEY_AES_CBC
+| next IV:  a2 e4 62 21  ef 3e 6d 13  7f 4a 97 04  f8 f0 be a1
+| emitting length of ISAKMP Message: 332
+| complete state transition with STF_OK
+./parentM3 transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
+| sending reply packet to 132.213.238.7:500 (from port 500)
+sending 332 bytes for STATE_MAIN_I2 through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   05 10 02 01  00 00 00 00  00 00 01 4c  a7 8f 70 19
+|   92 e2 f9 56  9a 8b 57 a6  63 2d 10 a8  7e 45 6f d7
+|   fd 5e cb ee  29 1a c8 f8  e8 3a d5 f4  e1 a8 60 48
+|   69 34 76 d1  2f 6d e1 66  5d d6 3f 02  a1 ef 97 20
+|   f5 39 5d 6d  d8 1c a6 52  53 e7 4c a4  ec dc f3 30
+|   75 57 55 44  c4 5c 75 29  e3 76 07 3a  27 a6 97 cb
+|   04 d3 81 e6  e4 79 d0 f4  db 65 4f 41  22 d7 e4 3c
+|   1e 69 a3 e3  3a c2 9c f5  e7 7b 14 96  aa 65 12 71
+|   13 d7 8d 8f  fb 12 2a fc  f0 f9 88 0c  44 bc c5 5d
+|   0f 1e 1f 58  a7 59 6c fa  20 44 c4 bb  79 59 39 12
+|   fb 10 9a 97  2a cd 2e 05  cd 0d ce 60  f9 47 ff dc
+|   57 e4 0a fd  9d 0c 02 d6  2f ff 03 9f  a3 82 da fe
+|   2d 93 d1 a1  da af c4 90  4f 33 a8 89  b6 79 9c cb
+|   f1 34 ac 6c  a0 58 26 98  94 38 03 93  d8 ee d3 6a
+|   f0 3f d1 6a  92 e0 29 65  ff 71 96 e2  aa 33 fc b8
+|   7b 1a ac 53  44 86 e5 b5  45 51 2d 06  f4 f2 79 0e
+|   83 9e 51 18  a8 bd 36 d8  32 66 de 00  1b 68 52 68
+|   78 33 f0 9d  61 d8 fa e6  6e 83 22 aa  71 25 9a 91
+|   f9 19 6a a6  8f 68 1a 80  ee b9 62 c0  a2 e4 62 21
+|   ef 3e 6d 13  7f 4a 97 04  f8 f0 be a1
+./parentM3 STATE_MAIN_I3: sent MI3, expecting MR3
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+RC=0 #1: "t4901":500 IKEv1.0 STATE_MAIN_I3 (sent MI3, expecting MR3); none in -1s; lastdpd=-1s(seq in:0 out:0); idle; import:admin initiate
+./parentM3 deleting connection
+| pass 0: considering CHILD SAs to delete
+./parentM3 deleting state #1 (STATE_MAIN_I3)
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| pass 1: considering PARENT SAs to delete
+./parentM3 leak: reply packet, item size: X
+./parentM3 leak: raw packet, item size: X
+./parentM3 leak: calculated enc_keyshared secret, item size: X
+./parentM3 leak: calculated skey_prshared secret, item size: X
+./parentM3 leak: calculated skey_pishared secret, item size: X
+./parentM3 leak: calculated skey_ershared secret, item size: X
+./parentM3 leak: calculated skey_eishared secret, item size: X
+./parentM3 leak: calculated skey_arshared secret, item size: X
+./parentM3 leak: calculated skey_aishared secret, item size: X
+./parentM3 leak: calculated skey_dshared secret, item size: X
+./parentM3 leak: calculated sharedshared secret, item size: X
+./parentM3 leak: aggr outR1 DH, item size: X
+./parentM3 leak: nonce, item size: X
+./parentM3 leak: Gr, item size: X
+./parentM3 leak: initiator nonce, item size: X
+./parentM3 leak: long term secret, item size: X
+./parentM3 leak: saved gi value, item size: X
+./parentM3 leak: outI2 KE, item size: X
+./parentM3 leak: v1 policy proposal conj, item size: X
+./parentM3 leak: db_context->attrs (expand), item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: db2_expand->attrs, item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->conj (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: v2 policy database, item size: X
+./parentM3 leak: alg_info_ike, item size: X
+./parentM3 leak: msg_digest, item size: X
+./parentM3 leak: 67 * VendorID MD5, item size: X
+./parentM3 leak: 3 * vid->data, item size: X
+./parentM3 leak: 15 * VendorID MD5, item size: X
+./parentM3 leak: self-vendor ID, item size: X
+./parentM3 leak: init_pluto_vendorid, item size: X
+./parentM3 leak: 4 * fswan VID, item size: X
+./parentM3 leak: vid->data, item size: X
+./parentM3 leak: 23 * VendorID MD5, item size: X
+./parentM3 leak: vid->data, item size: X
+./parentM3 leak: sa in main_outI1, item size: X
+./parentM3 leak: v1 policy proposal conj, item size: X
+./parentM3 leak: db_context->attrs (expand), item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: db2_expand->attrs, item size: X
+./parentM3 leak: db_context->trans (expand), item size: X
+./parentM3 leak: db_context->conj (expand), item size: X
+./parentM3 leak: alg_info_ike, item size: X
+./parentM3 leak: db_context, item size: X
+./parentM3 leak: v2 policy database, item size: X
+./parentM3 leak: struct state in new_state(), item size: X
+./parentM3 leak: pubkey entry, item size: X
+./parentM3 leak: rfc3110 format of public key, item size: X
+./parentM3 leak: pubkey, item size: X
+./parentM3 leak: keep id name, item size: X
+./parentM3 leak: pubkey entry, item size: X
+./parentM3 leak: rfc3110 format of public key, item size: X
+./parentM3 leak: pubkey, item size: X
+./parentM3 leak: policies path, item size: X
+./parentM3 leak: ocspcerts path, item size: X
+./parentM3 leak: aacerts path, item size: X
+./parentM3 leak: certs path, item size: X
+./parentM3 leak: private path, item size: X
+./parentM3 leak: crls path, item size: X
+./parentM3 leak: cacert path, item size: X
+./parentM3 leak: acert path, item size: X
+./parentM3 leak: default conf var_dir, item size: X
+./parentM3 leak: default conf conffile, item size: X
+./parentM3 leak: default conf ipsecd_dir, item size: X
+./parentM3 leak: default conf ipsec_conf_dir, item size: X
+./parentM3 leak: 2 * id list, item size: X
+./parentM3 leak: rfc3110 format of public key [created], item size: X
+./parentM3 leak: pubkey, item size: X
+./parentM3 leak: secret, item size: X
+./parentM3 leak: 4 * hasher name, item size: X
+./parentM3 leak: 10 * group description, item size: X
+./parentM3 leak detective found Z leaks, total size X

@@ -40,15 +40,15 @@
 #include "pgp.h"
 #include "certs.h"
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "demux.h"
+#include "pluto/ike_alg.h"
 #include "ikev2.h"
 #include "ikev2_prfplus.h"
-#include "ike_alg.h"
 #include "alg_info.h"
 #include "kernel_alg.h"
 
@@ -61,12 +61,11 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	chunk_t ikeymat,rkeymat;
 	struct ipsec_proto_info *ipi = &st->st_esp;
 
-	ipi->attrs.transattrs.ei=kernel_alg_esp_info(
+	kernel_alg_esp_info(&ipi->attrs.transattrs.ei,
 		ipi->attrs.transattrs.encrypt,
 		ipi->attrs.transattrs.enckeylen,
 		ipi->attrs.transattrs.integ_hash);
 
-	passert(ipi->attrs.transattrs.ei != NULL);
 	memset(&childsacalc, 0, sizeof(childsacalc));
 
 	pst = st;
@@ -76,8 +75,7 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	}
 
 	alg = pst->st_oakley.prf_hash;
-	childsacalc.prf_hasher = (struct hash_desc *)
-		ike_alg_ikev2_find(IKE_ALG_HASH, alg, 0);
+	childsacalc.prf_hasher = ike_alg_get_prf(alg);
 	if (!childsacalc.prf_hasher) {
 		DBG(DBG_CONTROL,
 		    DBG_log("unsupported prf+ algorithm %d", alg));
@@ -96,23 +94,23 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 		struct connection *c = st->st_connection;
 		if (c->alg_info_ike) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 			DBG_log("SA #%lu IKE alg: %s", st->st_serialno, buf);
 		}
 		if (c->alg_info_esp) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_esp, TRUE);
+				 (struct alg_info *)c->alg_info_esp);
 			DBG_log("SA #%lu ESP alg: %s", st->st_serialno, buf);
 		}
 		c = pst->st_connection;
 		if (st != pst && c->alg_info_ike) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 			DBG_log("SA #%lu IKE alg: %s", pst->st_serialno, buf);
 		}
 		if (st != pst && c->alg_info_esp) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_esp, TRUE);
+				 (struct alg_info *)c->alg_info_esp);
 			DBG_log("SA #%lu ESP alg: %s", pst->st_serialno, buf);
 		}
 	);
@@ -131,8 +129,8 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	childsacalc.skeyseed = &st->st_skey_d;
 
 	st->st_esp.present = TRUE;
-	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei->enckeylen+
-		st->st_esp.attrs.transattrs.ei->authkeylen;
+	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei.enckeylen+
+		st->st_esp.attrs.transattrs.ei.authkeylen;
 
 
 /*

@@ -1,9 +1,11 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 #include "../../programs/pluto/x509keys.c"
-#include "seam_gr_md5.c"
+#include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
+#include "seam_kernel.c"
 
 #define TESTNAME "h2hR2"
 

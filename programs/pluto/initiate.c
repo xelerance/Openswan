@@ -59,7 +59,7 @@
 #include "foodgroups.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "pluto/server.h"
@@ -70,11 +70,11 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
 #include "alg_info.h"
-#include "spdb.h"
-#include "ike_alg.h"
+#include "pluto/spdb.h"
+#include "pluto/ike_alg.h"
 #include "plutocerts.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "xauth.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -1723,11 +1723,11 @@ void connection_check_phase2(void)
 	    struct state *p1st;
             bool kicknow = kick_adns_connection(c, NULL);
 
-	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
+            if(kicknow) {
+                openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
 
-            if(kicknow) {
                 /*
                  * look for a phase 1 to kill, but not point in doing that until we
                  * actually have something new to try.

@@ -31,6 +31,9 @@ FUNCTIONALTESTS+=11-subnets
 FUNCTIONALTESTS+=12-rwcertwrite
 FUNCTIONALTESTS+=13-bigpubkey
 FUNCTIONALTESTS+=14-deadalgos
+FUNCTIONALTESTS+=15-certload
+FUNCTIONALTESTS+=16-v4inv6
+FUNCTIONALTESTS+=17-connclientfamily
 FUNCTIONALTESTS+=19-builtnss
 
 # running 'make check KEEPGOING=1' will run through all tests w/o stopping

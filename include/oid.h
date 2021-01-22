@@ -8,6 +8,9 @@
  * Do not edit manually!
  */
 
+#ifndef _OID_H
+#define _OID_H
+
 typedef struct {
 	unsigned char octet;
 	unsigned char down;	/* bool */
@@ -59,3 +62,6 @@ extern const oid_t oid_names[];
 #define OID_SHA256			141
 #define OID_SHA384			142
 #define OID_SHA512			143
+
+#endif /* _OID_H */
+

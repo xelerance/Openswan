@@ -19,7 +19,6 @@
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
-#include "seam_fakevendor.c"
 #include "seam_initiate.c"
 #include "seam_pending.c"
 #include "seam_ikev1.c"
@@ -34,10 +33,10 @@
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
 #include "seam_whack.c"
-#include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_dnskey.c"
 #include "seam_natt.c"
+#include "seam_rsasig.c"
 
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
@@ -75,6 +74,7 @@ int main(int argc, char *argv[])
 
     argc--;
     argv++;
+    pluto_shared_secrets_file = "/dev/null";
 
     for(i=0; i < argc; i++) {
         conn_name = argv[i];

@@ -154,8 +154,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct IDhost_pair *hp = NULL;
     unsigned char *idhash_in, *idhash_out;
     unsigned char *authstart;
-    unsigned int np;
-    int v2_notify_num = 0;
+    bool child_SA_present = FALSE;
 
     md->transition_state = st;
 
@@ -176,7 +175,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 
     /*Once the message has been decrypted, then only we can check for auth payload*/
-    /*check the presense of auth payload now so that it does not crash in rehash_state if auth payload has not been received*/
+    /* check the presense of auth payload now so that it
+     * does not crash in rehash_state if auth payload has not been
+     * received
+     */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
         openswan_log("no authentication payload found");
         return STF_FAIL;
@@ -214,8 +216,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, st->st_skey_pi);
 
         /* calculate hash of IDi for AUTH below */
-        DBG(DBG_CRYPT, DBG_dump_chunk("idhash verify pi", st->st_skey_pi));
-        DBG(DBG_CRYPT, DBG_dump("idhash verify I2", idstart, idlen));
+        DBG(DBG_CRYPT, DBG_dump_chunk("parent SA IDi pi verify", st->st_skey_pi));
+        DBG(DBG_CRYPT, DBG_dump("parent SA I2 idhash verify", idstart, idlen));
         hmac_update(&id_ctx, idstart, idlen);
         idhash_in = alloca(st->st_oakley.prf_hasher->hash_digest_len);
         hmac_final(idhash_in, &id_ctx);
@@ -246,12 +248,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* process AUTH payload now */
     /* now check signature from RSA key */
-    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
-        {
+    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type) {
         case v2_AUTH_RSA:
             {
                 stf_status authstat = ikev2_verify_rsa_sha1(st
                                                             , RESPONDER
+                                                        , hp
                                                             , idhash_in
                                                             , NULL /* keys from DNS */
                                                             , NULL /* gateways from DNS */
@@ -267,6 +269,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             {
                 stf_status authstat = ikev2_verify_psk_auth(st
                                                             , RESPONDER
+                                                        , hp
                                                             , idhash_in
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
@@ -294,6 +297,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* now that we now who they are, give them a higher crypto priority! */
     st->st_import = pcim_known_crypto;
 
+    /* At this point, any errors result in a notify that is encrypted */
     /* note: as we will switch to child state, we force the parent to the
      * new state now, but note also that child state exists just to contain
      * the IPsec SA, and to provide for it's eventual rekeying
@@ -378,10 +382,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                              &c->spd.this);
             r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
-            if(send_cert)
-                r_id.isai_np = ISAKMP_NEXT_v2CERT;
-            else
-                r_id.isai_np = ISAKMP_NEXT_v2AUTH;
+            r_id.isai_np = 0;
 
             id_start = e_pbs_cipher.cur;
 
@@ -412,7 +413,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         if(send_cert) {
             stf_status certstat = ikev2_send_cert(st, md
                                                   , RESPONDER
-                                                  , ISAKMP_NEXT_v2AUTH
                                                   , &e_pbs_cipher);
             if(certstat != STF_OK)
                 return certstat;
@@ -431,10 +431,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             /* initiator didn't propose anything. Weird. Try unpending out end. */
             /* UNPEND XXX */
             openswan_log("No CHILD SA proposals received.");
-            np = ISAKMP_NEXT_NONE;
+            child_SA_present = FALSE;
+            //np = ISAKMP_NEXT_NONE;
         } else {
             DBG_log("CHILD SA proposals received");
-            np = ISAKMP_NEXT_v2SA;
+            child_SA_present = TRUE;
+            //np = ISAKMP_NEXT_v2SA;
         }
 
         DBG(DBG_CONTROLMORE
@@ -443,21 +445,23 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         /* now send AUTH payload */
         {
             stf_status authstat = ikev2_send_auth(c, st
-                                                  , RESPONDER, np
+                                                  , RESPONDER
                                                   , idhash_out, &e_pbs_cipher);
             if(authstat != STF_OK) return authstat;
         }
 
-        if(np == ISAKMP_NEXT_v2SA) {
+        if(child_SA_present) {
             /* must have enough to build an CHILD_SA... go do that! */
             ret = ikev2_child_sa_respond(md, NULL, &e_pbs_cipher);
             if(ret > STF_FAIL) {
-                v2_notify_num = ret - STF_FAIL;
-                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
-                np = ISAKMP_NEXT_NONE;
+                /* CHILD SA analysis */
+
+                ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL
+                         , PROTO_ISAKMP, NULL, ret - STF_FAIL
+                         , NULL, &e_pbs_cipher);
             } else if(ret != STF_OK) {
                 DBG_log("ikev2_child_sa_respond returned %s", stf_status_name(ret));
-                np = ISAKMP_NEXT_NONE;
+                //np = ISAKMP_NEXT_NONE;
             }
         }
 
@@ -490,7 +494,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      * at this point, the other end has proven who they are, and so we should stop
      * setting the I bit....
      */
-    st->st_orig_initiator = FALSE;
+    st->st_ikev2_orig_initiator = FALSE;
 
     /* keep it for a retransmit if necessary */
     freeanychunk(st->st_tpacket);

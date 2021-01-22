@@ -1,5 +1,4 @@
-include ../lp16-initiateselfI2/Makefile
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+include ../lp10-parentI2/Makefile
 
 # Local Variables:
 # gdb-command: ""

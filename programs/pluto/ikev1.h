@@ -1,4 +1,18 @@
- #ifndef _IKEV1_H
+/*
+ * Copyright (C) 2002  D. Hugh Redelmeier.
+ * Copyright (C) 2020  Michael Richardson <mcr@xelerance.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ */
+#ifndef _IKEV1_H
 #define _IKEv1_H
 
 #include "pluto_crypt.h"
@@ -155,3 +169,48 @@ extern bool
 do_command(struct connection *c, const struct spd_route *sr
            , const char *verb, struct state *st);
 #endif
+
+extern bool out_sa(
+    pb_stream *outs,
+    struct db_sa *sadb,
+    struct state *st,
+    bool oakley_mode,
+    enum phase1_role role,
+    bool aggressive_mode,
+    u_int8_t np);
+
+#if 0
+extern complaint_t accept_oakley_auth_method(
+    struct state *st,   /* current state object */
+    u_int32_t amethod,  /* room for larger values */
+    bool credcheck);    /* whether we can check credentials now */
+#endif
+
+extern lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs);
+
+extern notification_t parse_isakmp_sa_body(
+    pb_stream *sa_pbs,	/* body of input SA Payload */
+    const struct isakmp_sa *sa,	/* header of input SA Payload */
+    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
+    bool selection,	/* if this SA is a selection, only one tranform can appear */
+    struct state *st);	/* current state object */
+
+/* initialize a state with the aggressive mode parameters */
+extern int init_am_st_oakley(struct state *st, lset_t policy);
+
+extern notification_t parse_ipsec_sa_body(
+    pb_stream *sa_pbs,	/* body of input SA Payload */
+    const struct isakmp_sa *sa,	/* header of input SA Payload */
+    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
+    bool selection,	/* if this SA is a selection, only one tranform can appear */
+    struct state *st);	/* current state object */
+/* spdb_v1_struct.c */
+extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
+                                      , bool oneproposal
+                                      , enum phase1_role role);
+/* spdb_v2_struct.c */
+extern bool spdb_v2_match_parent(struct db_sa *sadb, unsigned propnum, unsigned encr_transform,
+                                 int encr_keylen, unsigned integ_transform,
+                                 unsigned prf_transform, unsigned dh_transform);
+extern bool spdb_v2_match_child(struct db_sa *sadb, unsigned propnum, unsigned encr_transform,
+				int encr_keylen, unsigned integ_transform, unsigned esn_transform);

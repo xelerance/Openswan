@@ -31,13 +31,15 @@ TESTNUMBER=lo06-verifybadsigs
 TESTNAME=verifybadsigs
 UNITTESTARGS=
 
+programs: ${TESTNAME}
+.PHONY: programs
+
 check: ${TESTNAME}
 	@mkdir -p OUTPUT
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
-.PHONY: ${TESTNAME}
 ${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
 	@${CC} -Wno-pointer-sign -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS} ${EXTRALIBS}
@@ -56,4 +58,5 @@ initiate:
 	(echo ': RSA	{'; ${OBJDIRTOP}/programs/rsasigkey/rsasigkey --random /dev/urandom 4096 --hostname fivetwelve; echo '  }') >key-4096.secrets
 	(echo ': RSA	{'; ${OBJDIRTOP}/programs/rsasigkey/rsasigkey --random /dev/urandom 8192 --hostname fivetwelve; echo '  }') >key-8192.secrets
 
-
+clean:
+	@rm -f ${TESTNAME}

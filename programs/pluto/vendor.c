@@ -36,10 +36,10 @@
 #include "demux.h"
 #include "pluto/server.h"
 #include "whack.h"
-#include "vendor.h"
+#include "pluto/vendor.h"
 #include "quirks.h"
 #include "kernel.h"
-#include "state.h"
+#include "pluto/state.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -388,8 +388,68 @@ static struct vid_struct _vid_tab[] = {
 
 static const char _hexdig[] = "0123456789abcdef";
 
+/* Pluto's Vendor ID
+ *
+ * Note: it is a NUL-terminated ASCII string, but NUL won't go on the wire.
+ */
+#define PLUTO_VENDORID_SIZE 12
+static bool pluto_vendorid_built = FALSE;
+char pluto_vendorid[PLUTO_VENDORID_SIZE + 1];
 static int _vid_struct_init = 0;
 
+/* USED by unit tests */
+void init_fake_vendorid()
+{
+	strcpy(pluto_vendorid, "OEplutounit0");
+        pluto_vendorid[PLUTO_VENDORID_SIZE] = '\0';
+        pluto_vendorid_built = TRUE;
+}
+
+const char *
+init_pluto_vendorid(void)
+{
+    MD5_CTX hc;
+    unsigned char hash[MD5_DIGEST_SIZE];
+    const char *v = ipsec_version_string();
+    int i;
+
+    if(pluto_vendorid_built) {
+	return pluto_vendorid;
+    }
+
+    osMD5Init(&hc);
+    osMD5Update(&hc, (const unsigned char *)v, strlen(v));
+    osMD5Update(&hc, (const unsigned char *)compile_time_interop_options
+	, strlen(compile_time_interop_options));
+    osMD5Final(hash, &hc);
+
+    pluto_vendorid[0] = 'O';
+    pluto_vendorid[1] = 'S';
+    pluto_vendorid[2] = 'W';
+
+#if PLUTO_VENDORID_SIZE - 3 <= MD5_DIGEST_SIZE
+    /* truncate hash to fit our vendor ID */
+    memcpy(pluto_vendorid + 3, hash, PLUTO_VENDORID_SIZE - 3);
+#else
+    /* pad to fill our vendor ID */
+    memcpy(pluto_vendorid + 3, hash, MD5_DIGEST_SIZE);
+    memset(pluto_vendorid + 3 + MD5_DIGEST_SIZE, '\0'
+	, PLUTO_VENDORID_SIZE - 3 - MD5_DIGEST_SIZE);
+#endif
+
+    /* Make it printable!  Hahaha - MCR */
+    for (i = 0; i < PLUTO_VENDORID_SIZE; i++)
+    {
+	/* Reset bit 7, force bit 6.  Puts it into 64-127 range */
+	pluto_vendorid[i] &= 0x7f;
+	pluto_vendorid[i] |= 0x40;
+        if(pluto_vendorid[i]==127) pluto_vendorid[i]='_';  /* omit RUBOUT */
+    }
+    pluto_vendorid[PLUTO_VENDORID_SIZE] = '\0';
+    pluto_vendorid_built = TRUE;
+
+    return pluto_vendorid;
+}
 /*
  * Setup VendorID structs, and populate them
  * FIXME: This functions leaks a little bit, but these are one time leaks:
@@ -712,8 +772,7 @@ bool out_vendorid (u_int8_t np, pb_stream *outs, unsigned int vid)
 		DBG_log("out_vendorid(): sending [%s]", pvid->descr);
 	);
 
-	if (!out_modify_previous_np(ISAKMP_NEXT_VID, outs))
-		return FALSE;
+        pbs_set_np(outs, ISAKMP_NEXT_VID);
 
 	return out_generic_raw(np, &isakmp_vendor_id_desc, outs,
 		pvid->vid, pvid->vid_len, "V_ID");

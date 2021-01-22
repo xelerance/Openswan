@@ -1,0 +1,15 @@
+# -*- makefile -*-
+CONNNAME=parker-wrong-TS
+ENDNAME=jamesjohnson
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1PCAP=OUTPUT/childTSwrong.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} ../lp62-nattR1/nattI1.pcap nattI2.pcap
+
+TESTNAME=childTSwrong
+
+pcapupdate:
+	cp ../lp63-nattI2/OUTPUT/nattI2.pcap nattI2.pcap
+
+
+
+

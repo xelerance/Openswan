@@ -18,7 +18,6 @@
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
 #include "seam_vendor.c"
-#include "seam_fakevendor.c"
 #include "seam_pending.c"
 #include "seam_initiate.c"
 #include "seam_ikev1.c"
@@ -37,8 +36,7 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 #include "seam_x509_list.c"
-
-#include "seam_keys.c"
+#include "seam_ke.c"
 
 #include "seam_host_jamesjohnson.c"
 #define TESTNAME "IDhostpair"

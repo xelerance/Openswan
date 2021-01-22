@@ -32,6 +32,13 @@
 #define LEAK_DETECTIVE
 #include "oswalloc.h"
 
+#ifdef LOG_ALL_MALLOC_FREE
+#define ALLOC_TRACE(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+#else
+#define ALLOC_TRACE(fmt, ...) do {} while(0)
+#endif
+
+
 int leak_detective = 0;
 
 const chunk_t empty_chunk = { NULL, 0 };
@@ -120,6 +127,7 @@ void *alloc_bytes1(size_t size, const char *name, int leak_detective)
 	allocs = p;
 	p->i.newer = NULL;
 	p->i.magic = LEAK_MAGIC;
+        ALLOC_TRACE("oswalloc: %p[%lu] allocated for %s\n", p+1, (long unsigned)size, name);
 	return p+1;
     } else {
 	return p;
@@ -136,6 +144,7 @@ leak_pfree(void *ptr, int leak)
 	passert(ptr != NULL);
 	p = ((union mhdr *)ptr) - 1;
 	passert(p->i.magic == LEAK_MAGIC);
+        ALLOC_TRACE("oswalloc: %p[%lu] freed for %s\n", ptr, (long unsigned)p->i.size, p->i.name);
 	if (p->i.older != NULL)
 	    {
 		passert(p->i.older->i.newer == p);

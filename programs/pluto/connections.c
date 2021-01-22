@@ -53,21 +53,21 @@
 #include "foodgroups.h"
 #include "packet.h"
 #include "pluto/demux.h"	/* needs packet.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "pluto/server.h"
-#include "kernel.h"	/* needs connections.h */
+#include "pluto/kernel.h"	/* needs connections.h */
 #include "pluto/keys.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
 #include "alg_info.h"
-#include "spdb.h"
-#include "ike_alg.h"
+#include "pluto/spdb.h"
+#include "pluto/ike_alg.h"
 #include "plutocerts.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "xauth.h"
 #include "pluto/libpluto.h"
 #ifdef NAT_TRAVERSAL
@@ -225,18 +225,6 @@ delete_connection(struct connection *c, bool relations, bool force)
     lset_t old_cur_debugging = cur_debugging;
 #endif
 
-#if defined(KERNEL_ALG) || defined(IKE_ALG)
-	union {
-		struct alg_info**     ppai;
-#ifdef KERNEL_ALG
-		struct alg_info_esp** ppai_esp;
-#endif
-#ifdef IKE_ALG
-		struct alg_info_ike** ppai_ike;
-#endif
-	} palg_info;
-#endif
-
     set_cur_connection(c);
 
     /* Must be careful to avoid circularity:
@@ -303,14 +291,8 @@ delete_connection(struct connection *c, bool relations, bool force)
     c->ikev1_requested_ca_names = NULL;
 
     gw_delref(&c->gw_info);
-#ifdef KERNEL_ALG
-    palg_info.ppai_esp = &c->alg_info_esp;
-    alg_info_delref(palg_info.ppai);
-#endif
-#ifdef IKE_ALG
-    palg_info.ppai_ike = &c->alg_info_ike;
-    alg_info_delref(palg_info.ppai);
-#endif
+    alg_info_delref((struct alg_info **)&c->alg_info_esp);
+    alg_info_delref((struct alg_info **)&c->alg_info_ike);
     pfree(c);
 }
 
@@ -440,15 +422,17 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     err_t ugh = NULL;
     const struct af_info *afi = aftoinfo(addrtypeof(&e->host_addr));
 
-    if (afi == NULL)
-	return "unknown address family in default_end";
+    if(e->sendcert == 0) {
+	e->sendcert = cert_sendifasked;
+    }
 
+    if (afi) {
     /* default ID to IP (but only if not NO_IP -- WildCard) */
-    if (e->id.kind == ID_NONE && !isanyaddr(&e->host_addr))
-    {
+        if (e->id.kind == ID_NONE && !isanyaddr(&e->host_addr)) {
 	e->id.kind = afi->id_addr;
 	e->id.ip_addr = e->host_addr;
 	e->id.has_wildcards = FALSE;
+        }
     }
 
     /* default nexthop to other side */
@@ -462,9 +446,6 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     if (!e->has_client)
 	ugh = addrtosubnet(&e->host_addr, &e->client);
 
-    if(e->sendcert == 0) {
-	e->sendcert = cert_sendifasked;
-    }
 
     return ugh;
 }
@@ -516,15 +497,11 @@ unshare_connection_strings(struct connection *c)
 
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
-#ifdef KERNEL_ALG
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
-#endif
     }
 
     if(c->alg_info_esp) {
-#ifdef KERNEL_ALG
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
-#endif
     }
 }
 
@@ -535,6 +512,7 @@ load_end_certificate(const char *filename, struct end *dst)
     time_t valid_until;
     cert_t cert;
     err_t ugh = NULL;
+    struct pubkey **key = NULL;
 
     memset(&dst->cert, 0, sizeof(dst->cert));
 
@@ -560,8 +538,6 @@ load_end_certificate(const char *filename, struct end *dst)
 	    if(!valid_cert) {
 		whack_log(RC_FATAL, "can not load certificate file %s\n"
 			  , filename);
-		/* clear the ID, we're expecting it via %fromcert */
-		dst->id.kind = ID_NONE;
 		return;
 	    }
 	}
@@ -589,21 +565,26 @@ load_end_certificate(const char *filename, struct end *dst)
 	{
 	    openswan_log("  %s", ugh);
 	    free_x509cert(cert.u.x509);
+            return;
 	}
-	else
-	{
-	    DBG(DBG_CONTROL,
+        DBG(DBG_CONTROL,
 		DBG_log("certificate is valid")
 		);
-	    add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
-	    dst->cert.type = cert.type;
-	    dst->cert.u.x509 = add_x509cert(cert.u.x509);
+        if(dst->key1 == NULL) {
+            key = &dst->key1;
+        } else if(dst->key2 == NULL) {
+            key = &dst->key2;
+        }
 
-	    /* if no CA is defined, use issuer as default */
-	    if (dst->ca.ptr == NULL)
-		dst->ca = dst->cert.u.x509->issuer;
-	}
+        add_x509_public_key_to_list(&pluto_pubkeys, &dst->id, cert.u.x509, valid_until, DAL_LOCAL, key);
+        dst->cert.type = cert.type;
+        dst->cert.u.x509 = add_x509cert(cert.u.x509);
+
+        /* if no CA is defined, use issuer as default */
+        if (dst->ca.ptr == NULL)
+            dst->ca = dst->cert.u.x509->issuer;
 	break;
+
     default:
 	break;
     }
@@ -1015,7 +996,6 @@ add_connection(const struct whack_message *wm)
 		, c->name);
 
 	c->alg_info_esp = NULL;
-#ifdef KERNEL_ALG
 	if (wm->esp)
 	{
 		DBG(DBG_CONTROL, DBG_log("from whack: got --esp=%s", wm->esp ? wm->esp: "NULL"));
@@ -1034,18 +1014,18 @@ add_connection(const struct whack_message *wm)
 		}
 
 		if(c->policy & POLICY_ENCRYPT) {
-		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		    c->alg_info_esp = alg_info_esp_create_from_str(wm->esp? wm->esp : "", &ugh);
 		}
 
 		if(c->policy & POLICY_AUTHENTICATE) {
-		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh, FALSE);
+		    c->alg_info_esp = alg_info_ah_create_from_str(wm->esp? wm->esp : "", &ugh);
 		}
 
 		DBG(DBG_CRYPT|DBG_CONTROL,
 			static char buf[256]="<NULL>";
 			if (c->alg_info_esp)
 				alg_info_snprint(buf, sizeof(buf),
-						 (struct alg_info *)c->alg_info_esp, TRUE);
+						 (struct alg_info *)c->alg_info_esp);
 			DBG_log("esp string values: %s", buf);
 		);
 		if (c->alg_info_esp) {
@@ -1064,10 +1044,8 @@ add_connection(const struct whack_message *wm)
 			return;
 		}
 	}
-#endif
 
 	c->alg_info_ike = NULL;
-#ifdef IKE_ALG
 	if (wm->ike)
 	{
 	    c->alg_info_ike = alg_info_ike;
@@ -1075,8 +1053,8 @@ add_connection(const struct whack_message *wm)
 	    DBG(DBG_CRYPT|DBG_CONTROL,
 		char buf[256];
 		alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_ike, TRUE);
-		DBG_log("ike (phase1) algorihtm values: %s", buf);
+				 (struct alg_info *)c->alg_info_ike);
+		DBG_log("ike (phase1) algorithm values: %s", buf);
 		);
 	    if (c->alg_info_ike) {
 		if (c->alg_info_ike->alg_info_cnt==0) {
@@ -1094,7 +1072,6 @@ add_connection(const struct whack_message *wm)
 		return;
 	    }
 	}
-#endif
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;
 	c->sa_ipsec_life_seconds = wm->sa_ipsec_life_seconds;
 	c->sa_rekey_margin = wm->sa_rekey_margin;
@@ -1198,6 +1175,13 @@ add_connection(const struct whack_message *wm)
 	    c->spd.that = t;
 	}
 
+        /* use any_id to see if this.id/that.id is valid) */
+        if(any_id(&c->spd.this.id)) {
+            openswan_log("my side id: is wildcard");
+        }
+        if(any_id(&c->spd.that.id)) {
+            openswan_log("their side id: is wildcard");
+        }
 	c->spd.next = NULL;
 	c->spd.reqid = gen_reqid();
 
@@ -2292,10 +2276,19 @@ find_host_connection2(const char *func, bool exact
  * extracts the peer's ca from the chained list of public keys
  */
 static chunk_t
-get_peer_ca(const struct id *peer_id)
+get_peer_ca(const struct state *st, const struct id *peer_id)
 {
     struct pubkey_list *p;
 
+    for (p = st->st_keylist; p != NULL; p = p->next)
+    {
+       struct pubkey *key = p->key;
+
+       if (key->alg == PUBKEY_ALG_RSA && same_id(peer_id, &key->id))
+       {
+           return key->issuer;
+       }
+    }
     for (p = pluto_pubkeys; p != NULL; p = p->next)
     {
        struct pubkey *key = p->key;
@@ -2421,7 +2414,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 , DBG_log("refine_connection: starting with %s"
 		   , c->name));
 
-    peer_ca = get_peer_ca(peer_id);
+    peer_ca = get_peer_ca(st, peer_id);
 
     if (same_id(&c->spd.that.id, peer_id)
 	&& (peer_ca.ptr != NULL)
@@ -2738,11 +2731,17 @@ fc_try(const struct connection *c
     int wildcards, pathlen;
     err_t virtualwhy = NULL;
     char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
-    const bool peer_net_is_host = subnetisaddr(&peer_end->client, &c->spd.that.host_addr) ||
-        (c->spd.that.host_type == KH_ANY && c->spd.that.has_client == FALSE);
+    char our_end_buf[ADDRTOT_BUF], peer_end_buf[ADDRTOT_BUF];
+    char this_host_buf[ADDRTOT_BUF], that_host_buf[ADDRTOT_BUF];
 
     endclienttot(our_end,  s1, sizeof(s1));
     endclienttot(peer_end, d1, sizeof(d1));
+    addrtot(&our_end->host_addr,  0, our_end_buf,  sizeof(our_end_buf));
+    addrtot(&peer_end->host_addr, 0, peer_end_buf, sizeof(peer_end_buf));
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("   fc_try outer us:%s peer:%s "
+                  , our_end_buf, peer_end_buf));
 
     for (d = hp->connections; d != NULL; d = d->IPhp_next)
     {
@@ -2781,6 +2780,8 @@ fc_try(const struct connection *c
 #ifdef DEBUG
 	    char s3[ENDCLIENTTOT_BUF],d3[ENDCLIENTTOT_BUF];
 
+            addrtot(&sr->this.host_addr,  0, this_host_buf,  sizeof(this_host_buf));
+            addrtot(&sr->that.host_addr,  0, that_host_buf,  sizeof(that_host_buf));
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
                 endclienttot(&sr->this, s3, sizeof(s3));
@@ -2802,8 +2803,7 @@ fc_try(const struct connection *c
 		continue;
 	    }
 
-	    if (sr->that.has_client)
-	    {
+	    if (sr->that.has_client) {
 		if (sr->that.has_client_wildcard) {
 		    if (!subnetinsubnet(&peer_end->client, &sr->that.client))
 			continue;
@@ -2817,7 +2817,6 @@ fc_try(const struct connection *c
 			continue;
 		    }
 
-                    /* XXX */
 		    virtualwhy=is_virtual_net_allowed(d, &peer_end->client, &sr->that.host_addr);
 
 		    if ((is_virtual_sr(sr)) &&
@@ -2831,8 +2830,13 @@ fc_try(const struct connection *c
 	    }
 	    else
 	    {
-		if (!peer_net_is_host)
+                if(c->spd.that.host_type == KH_ANY
+                   && !subnetisaddr(&peer_end->client, &peer_end->host_addr)) {
+                    DBG(DBG_CONTROLMORE
+                        , DBG_log("   no match, peer proposed net is not proposing host (%s != %s)"
+                                  , d1, peer_end_buf));
 		    continue;
+                }
 	    }
 
 	    /* We've run the gauntlet -- success:
@@ -3029,6 +3033,8 @@ find_client_connection(struct connection *c
 		    return c;
 
 		unrouted = c;
+	    } else {
+                DBG(DBG_CONTROLMORE, DBG_log("    not matched"))
 	    }
 	}
 
@@ -3383,12 +3389,8 @@ show_one_connection(struct connection *c, logfunc logger)
 		  , c->connalias);
     }
 
-#ifdef IKE_ALG
     ike_alg_show_connection(c, instance);
-#endif
-#ifdef KERNEL_ALG
     kernel_alg_show_connection(c, instance);
-#endif
 }
 
 void

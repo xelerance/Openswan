@@ -18,8 +18,11 @@
  * DBG_RAW. We define the two use cases here, it should not cause any
  * logging when -DNO_DEBUG is defined.
  */
+#ifndef _ASN1_H
+#define _ASN1_H
+
 #ifdef NO_DEBUG
-# define DBG_RAW         LELEM(0) 
+# define DBG_RAW         LELEM(0)
 # define DBG_PRIVATE       LELEM(20)
 #endif
 
@@ -119,4 +122,6 @@ extern void asn1_init(asn1_ctx_t *ctx, chunk_t blob
 extern bool extract_object(asn1Object_t const *objects
     , u_int *objectID, chunk_t *object, u_int *level, asn1_ctx_t *ctx);
 extern bool is_asn1(chunk_t blob);
+
+#endif /* _ASN1_H */
 

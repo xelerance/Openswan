@@ -42,7 +42,7 @@
 #include "log.h"
 #include "pluto/server.h"
 #include "id.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
@@ -54,8 +54,8 @@
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
 #include "kernel_alg.h"
-#include "ike_alg.h"
-#include "plutoalg.h"
+#include "pluto/ike_alg.h"
+#include "pluto/plutoalg.h"
 #include "pluto/virtual.h" /* for show_virtual_private */
 
 #ifndef NO_DB_OPS_STATS
@@ -534,6 +534,30 @@ exit_log(const char *message, ...)
 }
 
 void
+openswan_exit_log(const char *message, ...)
+{
+    va_list args;
+    char m[LOG_WIDTH];	/* longer messages will be truncated */
+
+    va_start(args, message);
+    fmt_log(m, sizeof(m), message, args);
+    va_end(args);
+
+    log_did_something=TRUE;
+
+    if (log_to_stderr)
+	fprintf(stderr, "FATAL ERROR: %s\n", m);
+    if (log_to_syslog)
+	syslog(LOG_ERR, "FATAL ERROR: %s", m);
+    if (log_to_perpeer)
+	peerlog("FATAL ERROR: ", m);
+
+    whack_log(RC_LOG_SERIOUS, "~FATAL ERROR: %s", m);
+
+    exit_pluto(1);
+}
+
+void
 openswan_exit_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
@@ -829,25 +853,17 @@ void
 show_status(void)
 {
     show_kernel_interface();
-    show_ifaces_status();
     show_secrets_status();
+    show_ifaces_status();
     show_myid_status();
     show_debug_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_virtual_private();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#ifdef KERNEL_ALG
     kernel_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
-#ifdef IKE_ALG
     ike_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
-#ifndef NO_DB_OPS_STATS
-    db_ops_show_status();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
     show_connections_status(whack_log);
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_states_status();

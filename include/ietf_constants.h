@@ -18,12 +18,12 @@
  *
  */
 
-#ifndef _IETF_CONSTANTS
+#ifndef _IETF_CONSTANTS_H
+#define _IETF_CONSTANTS_H 1
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
 
 #define MODP_GENERATOR "2"
 
-#ifdef USE_MODP_RFC5114
 /* Diffie-Hellman group 22 generator (RFC 5114) */
 #define MODP_GENERATOR_DH22 \
 	"A4D1CBD5 C3FD3412 6765A442 EFB99905 F8104DD2 58AC507F " \
@@ -60,15 +60,12 @@
 	"B3353BBB 64E0EC37 7FD02837 0DF92B52 C7891428 CDC67EB6 " \
 	"184B523D 1DB246C3 2F630784 90F00EF8 D647D148 D4795451 " \
 	"5E2327CF EF98C582 664B4C0F 6CC41659"
-#endif
 
-#if defined(USE_VERYWEAK_DH1)
 # define MODP768_MODULUS \
     "FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 " \
     "29024E08 8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD " \
     "EF9519B3 CD3A431B 302B0A6D F25F1437 4FE1356D 6D51C245 " \
     "E485B576 625E7EC6 F44C42E9 A63A3620 FFFFFFFF FFFFFFFF"
-#endif
 
 #define MODP1024_MODULUS \
     "FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 " \
@@ -221,7 +218,6 @@
 	"9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71" \
 	"60C980DD 98EDD3DF FFFFFFFF FFFFFFFF"
 
-#ifdef USE_MODP_RFC5114
 /* Diffie-Hellman group 22 prime (RFC 5114) */
 #define MODP1024_MODULUS_DH22 \
 	"B10B8F96 A080E01D DE92DE5E AE5D54EC 52C99FBC FB06A3C6 " \
@@ -259,7 +255,6 @@
 	"75F26375 D7014103 A4B54330 C198AF12 6116D227 6E11715F " \
 	"693877FA D7EF09CA DB094AE9 1E1A1597"
 
-#endif
 
 #define LOCALSECRETSIZE		BYTES_FOR_BITS(256)
 
@@ -547,25 +542,31 @@ extern const char *const critical_names[];
  * extern enum_names protocol_names;
  * same in IKEv1 and IKEv2.
  */
-#define PROTO_RESERVED           0  /* only in IKEv2 */
-#define PROTO_ISAKMP             1
-#define PROTO_IPSEC_AH           2
-#define PROTO_IPSEC_ESP          3
-#define PROTO_IPCOMP             4  /* only in IKEv1 */
+enum ikev2_protocol_names {
+  PROTO_RESERVED  = 0,  /* only in IKEv2 */
+  PROTO_ISAKMP    = 1,
+  PROTO_IPSEC_AH  = 2,
+  PROTO_IPSEC_ESP = 3,
+  PROTO_IPCOMP    = 4  /* only in IKEv1 */
+};
 
 /*
- * IKEv2 proposal
+ * IKEv2 proposal (type is enum_names: trans_type_names )
  * See http://www.iana.org/assignments/ikev2-parameters
  */
 enum ikev2_trans_type {
+  IKEv2_TRANS_TYPE_COMPRESS = -1,    /* IKEv2 does not consider this a type */
 	IKEv2_TRANS_TYPE_ENCR = 1,
 	IKEv2_TRANS_TYPE_PRF  = 2,
 	IKEv2_TRANS_TYPE_INTEG= 3,
 	IKEv2_TRANS_TYPE_DH   = 4,   /* same as in IKEv1 */
 	IKEv2_TRANS_TYPE_ESN  = 5,
 };
+#define IKEv2_TRANS_TYPE_COUNT 6
 
+/** IKEv2 encryption (enum_names: trans_type_encr_names) */
 enum ikev2_trans_type_encr {
+        IKEv2_ENCR_NONE = 0,
 	IKEv2_ENCR_DES_IV64 = 1,
 	IKEv2_ENCR_DES      = 2,
 	IKEv2_ENCR_3DES     = 3,
@@ -587,12 +588,15 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_AES_GCM_12 = 19,
 	IKEv2_ENCR_AES_GCM_16 = 20,
 	IKEv2_ENC_NULL_AUTH_AES_GMAC = 21,
-	IKEv2_RESERVED_IEEE_P1619_XTS_AES = 22,
+	IKEv2_IEEE_P1619_XTS_AES = 22,
 	/* 23 - 1023 Reserved to IANA */
 	/* 1024 - 65535 Private Use */
 	IKEv2_ENCR_INVALID  = 65536
 };
 
+/* https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml#ikev2-parameters-6
+   extern enum_names ikev2_prf_names;
+*/
 enum ikev2_trans_type_prf {
 	IKEv2_PRF_HMAC_MD5      = 1, /* RFC2104 */
 	IKEv2_PRF_HMAC_SHA1     = 2, /* RFC2104 */
@@ -607,6 +611,7 @@ enum ikev2_trans_type_prf {
 	IKEv2_PRF_INVALID	= 65536
 };
 
+/* enum_names: ikev2_integ_names */
 enum ikev2_trans_type_integ {
 	IKEv2_AUTH_NONE              = 0,  /* RFC4306 */
 	IKEv2_AUTH_HMAC_MD5_96       = 1,  /* RFC2403 */
@@ -634,6 +639,15 @@ enum ikev2_trans_type_esn {
 	IKEv2_ESN_ENABLED  = 1,
 };
 
+/** IKEv1/v2 compression algorithms  */
+/* IPCOMP_* from openswan/ipsec_xform.h */
+enum ikev2_trans_type_compress {
+  IKEv2_COMPRESS_NONE = 0,               /* IPCOMP_NONE */
+  IKEv2_COMPRESS_OUI  = 1,               /* IPCOMP_OUI */
+  IKEv2_COMPRESS_DEFLATE=2,              /* IPCOMP_DEFLATE */
+  IKEv2_COMPRESS_LZS   = 3,              /* IPCOMP_LZS */
+  IKEv2_COMPRESS_V42BIS= 4,              /* IPCOMP_V42BIS */
+};
 /* RFC 4306 Section 3.3.5 */
 enum ikev2_trans_attr_type {
 	IKEv2_KEY_LENGTH = 14,
@@ -798,7 +812,7 @@ enum ikev1_ipsec_attr {
 # define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
 #endif
 
-/* Auth Algorithm attribute */
+/* Auth Algorithm attribute (for ESP transforms, not IKEv1 */
 
 /* extern enum_names auth_alg_names, extended_auth_alg_names; */
 
@@ -850,37 +864,42 @@ typedef u_int16_t ipsec_auth_t;
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
-/* extern enum_names oakley_enc_names; (IKEv1 only) */
-
-#define OAKLEY_DES_CBC          1
-#define OAKLEY_IDEA_CBC         2
-#define OAKLEY_BLOWFISH_CBC     3
-#define OAKLEY_RC5_R16_B64_CBC  4
-#define OAKLEY_3DES_CBC         5
-#define OAKLEY_CAST_CBC         6
-#define OAKLEY_AES_CBC          7
-#define OAKLEY_CAMELLIA_CBC	8
-#define OAKLEY_SERPENT_CBC              65004
-#define OAKLEY_TWOFISH_CBC              65005
-#define OAKLEY_TWOFISH_CBC_SSH          65289
+/* OBSOLETED: extern enum_names oakley_enc_names; (IKEv1 only) */
+enum oakley_enc_ikev1 {
+  OAKLEY_DES_CBC     =1,
+  OAKLEY_IDEA_CBC    =2,
+  OAKLEY_BLOWFISH_CBC=3,
+  OAKLEY_RC5_R16_B64_CBC=4,
+  OAKLEY_3DES_CBC    =5,
+  OAKLEY_CAST_CBC    =6,
+  OAKLEY_AES_CBC     =7,
+  OAKLEY_CAMELLIA_CBC=8,
+  OAKLEY_SERPENT_CBC             = 65004,
+  OAKLEY_TWOFISH_CBC             = 65005,
+  OAKLEY_TWOFISH_CBC_SSH         = 65289
+};
 
 #define OAKLEY_ENCRYPT_MAX      65535	/* pretty useless :) */
 
-/* Oakley Hash Algorithm attribute
+/* Oakley Hash Algorithm attribute (IKEv1)
  * draft-ietf-ipsec-ike-01.txt appendix A
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
-typedef u_int16_t oakley_hash_t;
-/* extern enum_names oakley_hash_names; */
+/* typedef to make our life easier */
+typedef enum oakley_hash_t oakley_hash_t;
 
-#define OAKLEY_MD5      1
-#define OAKLEY_SHA1     2
-#define OAKLEY_SHA      OAKLEY_SHA1
-#define OAKLEY_TIGER    3
-#define OAKLEY_SHA2_256        4
-#define OAKLEY_SHA2_384        5
-#define OAKLEY_SHA2_512        6
+/* extern enum_names oakley_hash_names; */
+typedef enum oakley_hash_t oakley_hash_t;
+enum oakley_hash_t {
+  OAKLEY_MD5     =1,
+  OAKLEY_SHA1    =2,
+  OAKLEY_SHA     =OAKLEY_SHA1,
+  OAKLEY_TIGER   =3,
+  OAKLEY_SHA2_256 =4,
+  OAKLEY_SHA2_384 =5,
+  OAKLEY_SHA2_512 =6
+};
 
 #define OAKLEY_HASH_MAX      7
 
@@ -932,12 +951,12 @@ enum ikev2_auth_method {
 /* Oakley Group Description attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
  */
+/*	IKEv2: you must also touch: constants.c, crypto.c */
 /* extern enum_names oakley_group_names; */
 
-typedef enum ike_trans_type_dh oakley_group_t;
+typedef enum ikev2_trans_type_dh oakley_group_t;
 
-/*	you must also touch: constants.c, crypto.c */
-enum ike_trans_type_dh {
+enum ikev2_trans_type_dh {
 	OAKLEY_GROUP_MODP768      = 1,
 	OAKLEY_GROUP_MODP1024     = 2,
 	OAKLEY_GROUP_GP155        = 3,
@@ -949,11 +968,15 @@ enum ike_trans_type_dh {
 	OAKLEY_GROUP_MODP4096     = 16,
 	OAKLEY_GROUP_MODP6144     = 17,
 	OAKLEY_GROUP_MODP8192     = 18,
-#ifdef USE_MODP_RFC5114
+        OAKLEY_GROUP_ECP256       = 19,
+        OAKLEY_GROUP_ECP384       = 20,
+        OAKLEY_GROUP_ECP512       = 21,
 	OAKLEY_GROUP_DH22         = 22,
 	OAKLEY_GROUP_DH23         = 23,
 	OAKLEY_GROUP_DH24         = 24,
-#endif
+        OAKLEY_GROUP_X25519       = 31,
+        OAKLEY_GROUP_X448         = 32,
+        OAKLEY_INVALID_GROUP      = 4294967295UL,  /* -1 */
 };
 
 /* Oakley Group Type attribute
@@ -1201,5 +1224,4 @@ enum pubkey_alg
  * AND: enum_names ident_names is in constants.c
  */
 
-#define _IETF_CONSTANTS 1
-#endif /* _IETF_CONSTANTS */
+#endif /* _IETF_CONSTANTS_H */

@@ -20,32 +20,39 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
-include ../lp13-objectlist.make
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
+include ../../libpluto/lp13-objectlist.make
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-SAMPLEDIR=../samples
+SAMPLEDIR=../samples/
 OUTPUTS=OUTPUT
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/sanity.sed -f ${TESTUTILS}/certsize.sed
+
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 
 include Makefile.testcase
 
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+ifeq (${UNITTEST1ARGS},)
+UNITTEST1ARGS=${UNITTESTARGS}
+endif
+ifeq (${WHACKFILE},)
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+endif
+
 Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 	@echo "file ${TESTNAME}"          >.gdbinit
-	@echo "set args "${UNITTESTARGS} >>.gdbinit
+	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
 	@echo " CC ${TESTNAME}"
 	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@echo " LD ${TESTNAME}"
 	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}.txt 2>&1
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output1.txt
 	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
 ${TESTNAME}.E:
@@ -53,7 +60,7 @@ ${TESTNAME}.E:
 
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+	${READWRITE} --rootdir=${SAMPLEDIR}${ENDNAME} --config ${SAMPLEDIR}${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 else
 ${WHACKFILE}: ${WHACKREFFILE}
 	@mkdir -p OUTPUT
@@ -61,7 +68,7 @@ ${WHACKFILE}: ${WHACKREFFILE}
 endif
 
 update: OUTPUT
-	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output1.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT

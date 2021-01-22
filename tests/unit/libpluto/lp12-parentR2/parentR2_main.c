@@ -1,7 +1,8 @@
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
-/* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
-void recv_pcap_packet(u_char *user
+/* this is replicated in the unit test cases since
+ * the patching up of the crypto values is case specific */
+void recv_pcap_packet_with_ke(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
@@ -23,7 +24,7 @@ void recv_pcap_packet(u_char *user
     }
 }
 
-void recv_pcap_packet2(u_char *user
+void recv_pcap_packet2_with_ke(u_char *user
                       , const struct pcap_pkthdr *h
                       , const u_char *bytes)
 {
@@ -43,8 +44,8 @@ void recv_pcap_packet2(u_char *user
 #ifndef PCAP_INPUT_COUNT
 #define PCAP_INPUT_COUNT 2
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
+    recv_pcap_packet_with_ke,
+    recv_pcap_packet2_with_ke,
 };
 #endif
 
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
     (void)regression;
 
     if(argc != 3+PCAP_INPUT_COUNT) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", progname);
+	fprintf(stderr, "Usage: [%u!=%u, count=%u] %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", argc, 3+PCAP_INPUT_COUNT, PCAP_INPUT_COUNT, progname);
 	exit(10);
     }
 
@@ -93,8 +94,9 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_local_interface();
     init_fake_secrets();
-    init_seam_kernelalgs();
     enable_debugging();
+    init_demux();
+    init_seam_kernelalgs();
 
     infile = argv[0];
     conn_name = argv[1];
@@ -104,6 +106,9 @@ int main(int argc, char *argv[])
     }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+    cur_debugging |= MORE_DEBUGGING;
+#endif
     if(readwhackmsg(infile) == 0) exit(10);
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
@@ -122,11 +127,13 @@ int main(int argc, char *argv[])
         }
 
         /* setup to process the n'th packet */
-        fprintf(stderr, "%u: input from %s\n", i, pcapin[i]);
         recv_pcap_setup(pcapin[i]);
 
         /* process first I1 packet */
         cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+#ifdef MORE_DEBUGGING
+        cur_debugging |= MORE_DEBUGGING;
+#endif
         pcap_dispatch(pt, 1, recv_inputs[i], NULL);
 
         /* set up output file */

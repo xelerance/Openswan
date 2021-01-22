@@ -44,7 +44,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -64,7 +64,7 @@
 #include "log.h"
 #include "cookie.h"
 #include "pluto/server.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "timer.h"
 #include "rnd.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
@@ -75,14 +75,15 @@
 
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/ike_alg.h"
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 
-#include "ike_alg.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "ikev1.h"
 #include "ikev1_continuations.h"
+#include "pluto/db2_ops.h"
 
 #include "oswcrypto.h"
 
@@ -140,12 +141,13 @@ main_outI1(int whack_sock
     if(newstateno) *newstateno = st->st_serialno;
 
     /* we are initiating this exchange */
-    st->st_orig_initiator = TRUE;
+    st->st_ikev2_orig_initiator = TRUE;
 
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv1_MAJOR_VERSION;
     st->st_ike_min        = IKEv1_MINOR_VERSION;
 
+    st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
     change_state(st, STATE_MAIN_I1);
 
     if (HAS_IPSEC_POLICY(policy))
@@ -199,16 +201,17 @@ main_outI1(int whack_sock
     /* SA out */
     {
 	u_char *sa_start = md.rbody.cur;
-	int    policy_index = POLICY_ISAKMP(policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
 
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
+
+        /* mark this as a parent SA */
+        st->st_sadb->parentSA = TRUE;
+
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_sa(&md.rbody
-		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
+		    , st->st_sadb, st, TRUE, INITIATOR, FALSE, np))
 	{
 	    openswan_log("outsa fail");
 	    reset_cur_state();
@@ -482,7 +485,7 @@ RSA_check_signature(struct state *st
 		    , const struct gw_info *gateways_from_dns
 )
 {
-    return RSA_check_signature_gen(st, hash_val, hash_len
+    return check_signature_gen(st->st_connection, st, hash_val, hash_len
 				   , sig_pbs
 #ifdef USE_KEYRR
 				   , keys_from_dns
@@ -505,7 +508,7 @@ accept_v1_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
 bool
 encrypt_message(pb_stream *pbs, struct state *st)
 {
-    const struct encrypt_desc *e = st->st_oakley.encrypter;
+    const struct ike_encr_desc *e = st->st_oakley.encrypter;
     u_int8_t *enc_start = pbs->start + sizeof(struct isakmp_hdr);
     size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
 
@@ -533,7 +536,7 @@ encrypt_message(pb_stream *pbs, struct state *st)
     DBG(DBG_CRYPT
 	, DBG_log("encrypting %d using %s"
 		  , (unsigned int)enc_len
-		  , enum_show(&oakley_enc_names, st->st_oakley.encrypt)));
+                  , enum_show(&oakley_enc_names, st->st_oakley.encrypter->common.ikev1_algo_id)));
 
     TCLCALLOUT_crypt("preEncrypt", st, pbs,sizeof(struct isakmp_hdr),enc_len);
 
@@ -752,7 +755,7 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_interface  = md->iface;
 
     /* we are responding to this exchange */
-    st->st_orig_initiator = FALSE;
+    st->st_ikev2_orig_initiator = FALSE;
 
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
@@ -925,7 +928,7 @@ main_inR1_outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    assert_suspended(st, ke->md);
+    passert(st->st_suspended_md == ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1031,6 +1034,10 @@ main_inR1_outI2_tail(struct pluto_crypto_req_cont *pcrc
     /**************** build output packet HDR;KE;Ni ****************/
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
+    /* Reinsert the state, using the responder cookie we just received */
+    unhash_state(st);
+    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
+    insert_state(st);	/* needs cookies, connection, and msgid (0) */
     /* HDR out.
      * We can't leave this to comm_handle() because the isa_np
      * depends on the type of Auth (eventually).
@@ -1079,11 +1086,6 @@ main_inR1_outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* finish message */
     close_message(&md->rbody);
 
-    /* Reinsert the state, using the responder cookie we just received */
-    unhash_state(st);
-    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
-    insert_state(st);	/* needs cookies, connection, and msgid (0) */
-
     return STF_OK;
 }
 
@@ -1127,7 +1129,7 @@ main_inI2_outR2_continue(struct pluto_crypto_req_cont *pcrc
     passert(cur_state == NULL);
     passert(st != NULL);
 
-    assert_suspended(st, ke->md);
+    passert(st->st_suspended_md == ke->md);
     set_suspended(st, NULL);	/* no longer connected or suspended */
 
     set_cur_state(st);
@@ -1237,7 +1239,7 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
-    ikev2_validate_key_lengths(st);
+    ikev1_validate_key_lengths(st);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
@@ -1501,6 +1503,9 @@ main_inR2_outI3_continue(struct msg_digest *md
         return STF_FAIL + INVALID_KEY_INFORMATION;
     }
 
+    /* set the localport and address */
+    st->st_localaddr  = md->iface->ip_addr;
+    st->st_localport  = md->iface->port;
     /* decode certificate requests */
     ikev1_decode_cr(md, &requested_ca);
 
@@ -1683,7 +1688,7 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   stf_status e;
 
   DBG(DBG_CONTROLMORE
-      , DBG_log("main inR2_outI3: calculated DH, sending R1"));
+      , DBG_log("main inR2_outI3: calculated DH, sending I3"));
 
   if (st == NULL) {
       loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
@@ -1696,7 +1701,7 @@ main_inR2_outI3_cryptotail(struct pluto_crypto_req_cont *pcrc
   passert(cur_state == NULL);
   passert(st != NULL);
 
-  assert_suspended(st, dh->md);
+  passert(st->st_suspended_md == dh->md);
   set_suspended(st, NULL);	/* no longer connected or suspended */
 
   set_cur_state(st);
@@ -1954,7 +1959,7 @@ key_continue(struct adns_continuation *cr
     {
 	stf_status r;
 
-	assert_suspended(st, kc->md);
+	passert(st->st_suspended_md == kc->md);
 	set_suspended(st,NULL);	/* no longer connected or suspended */
 	cur_state = st;
 

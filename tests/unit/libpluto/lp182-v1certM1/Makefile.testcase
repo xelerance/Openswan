@@ -1,0 +1,16 @@
+# -*- makefile -*-
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+EXTRALIBS+=${LIBPLUTO}
+
+CONNNAME=home
+ENDNAME=carol
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+TESTNAME=v1certM1
+
+pcapupdate:
+	@true
+

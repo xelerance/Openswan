@@ -21,12 +21,13 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
 include ../../libpluto/lp13-objectlist.make
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
+
 OUTPUTS=OUTPUT
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
-SAMPLEDIR=../samples
-FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+SAMPLEDIR?=../samples
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed -f ${TESTUTILS}/sanity.sed
 include Makefile.testcase
 
 EF_DISABLE_BANNER=1

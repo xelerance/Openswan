@@ -47,7 +47,7 @@
 #include "oswlog.h"
 
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -62,7 +62,7 @@
 #include "log.h"
 #include "cookie.h"
 #include "pluto/server.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "timer.h"
 #include "rnd.h"
 #include "keys.h"
@@ -71,8 +71,8 @@
 
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
-#include "ike_alg.h"
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/ike_alg.h"
 
 #include "xauth.h"
 #include "pluto/virtual.h"

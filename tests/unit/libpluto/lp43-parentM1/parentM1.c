@@ -1,4 +1,5 @@
 #define OMIT_MAIN_MODE 1
+#define NAT_TRAVERSAL
 
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_gi_sha1.c"
@@ -10,12 +11,12 @@
 #include "seam_pending.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
-#include "seam_keys.c"
 #include "seam_dnskey.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
 #include "seam_natt_vid.c"
 #include "seam_rsa_check.c"
+#include "seam_rsasig.c"
 
 #include "seam_host_parker.c"
 
@@ -24,6 +25,8 @@
 static void init_local_interface(void)
 {
     init_parker_interface(TRUE);
+    nat_traversal_enabled = TRUE;
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_EMITTING;
 }
 
 static void init_fake_secrets(void)

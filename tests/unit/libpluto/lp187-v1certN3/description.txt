@@ -1,0 +1,14 @@
+This test case is an IKEv1 responder, using main mode, sending the R3 packet.
+This version receives the certificates, which must be validated by the
+responder in order to trust this node.
+
+
+
+
+
+
+
+
+
+
+

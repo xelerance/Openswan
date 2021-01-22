@@ -1,8 +1,13 @@
+#define NO_SEAM_RSASIG
 #include "../../libpluto/lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
+#include "seam_kernel.c"
 #include "seam_x509.c"
-#include "seam_gr_sha1_group14.c"
+#include "seam_gi_sha256_group14.c"
+#include "seam_natt.c"
 #include "seam_finish.c"
+#include "seam_dh_v2.c"
+#include "seam_ke.c"
 
 #define TESTNAME "cryptoR2"
 
@@ -20,14 +25,13 @@ static void init_fake_secrets(void)
 }
 
 static void init_loaded(void)
-{   /* nothing */ }
+{
+    /* */
+}
 
-#define PCAP_INPUT_COUNT 2
-recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
-    recv_pcap_packet,
-    recv_pcap_packet2,
-};
+#define MORE_DEBUGGING DBG_CRYPT|DBG_PARSING|DBG_EMITTING
 
+#include "seam_parentR2.c"
 #include "../../libpluto/lp12-parentR2/parentR2_main.c"
 
  /*

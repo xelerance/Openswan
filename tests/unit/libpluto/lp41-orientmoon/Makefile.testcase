@@ -1,5 +1,5 @@
 # -*- makefile -*-
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 SAMPLEDIR=../samples
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 ENDNAME=moon

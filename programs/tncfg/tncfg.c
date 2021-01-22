@@ -230,10 +230,10 @@ main(int argc, char *argv[])
 			break;
 
 		case 'V':
-			strncpy(ifr.ifr_name, optarg, sizeof(ifr.ifr_name));
+			strncpy(ifr.ifr_name, optarg, sizeof(ifr.ifr_name)-1);
 			break;
 		case 'P':
-			strncpy(shc.cf_name, optarg, sizeof(shc.cf_name));
+			strncpy(shc.cf_name, optarg, sizeof(shc.cf_name)-1);
 			break;
 		case 'l':
                     {

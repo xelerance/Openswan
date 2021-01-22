@@ -27,24 +27,24 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "pluto/connections.h"
 #include "hostpair.h"
 
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "sha1.h"   /* for NAT DETECTION processing */
 #include "x509.h"
 #include "x509more.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "packet.h"
 #include "demux.h"
 #include "ikev2.h"
 #include "log.h"
-#include "spdb.h"          /* for out_sa */
+#include "pluto/spdb.h"          /* for out_sa */
 #include "ipsec_doi.h"
 #include "vendor.h"
 #include "timer.h"

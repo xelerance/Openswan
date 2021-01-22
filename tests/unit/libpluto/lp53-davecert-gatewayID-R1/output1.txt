@@ -1,10 +1,22 @@
 ./davecert-R1-id ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 ./davecert-R1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecert-R1-id loading secrets from "../samples/gatewaycert.secrets"
 ./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (CERT bytes)
 ./davecert-R1-id loaded private key for keyid: PPK_RSA:AwEAAcb/r/C288 B34C 31FD 460A B1A3 5E0B 36C5 9D2E 8C09 9325
+./davecert-R1-id registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./davecert-R1-id registered kernel encr algorithm 3des [3, 192<=key<=192]
+./davecert-R1-id registered kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./davecert-R1-id registered kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./davecert-R1-id registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./davecert-R1-id registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -36,44 +48,31 @@ processing whack msg time: X size: Y
 RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any[dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=daveCert.pem;
 RC=0 "rw-dave":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'
+RC=0 "rw-dave":   keys: 1:C288 B34C 31FD 460A B1A3 5E0B 36C5 9D2E 8C09 9325 2:none...
+RC=0 "rw-dave":        ....1:71EF 2412 7A30 AD54 C288 FC00 B917 3DAB 8E76 4790 2:none
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file davecertI1-id.pcap ========
-| *received 892 bytes from 93.184.216.35:500 on eth0 (port=500)
+| *received 652 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 02 8c  22 00 01 0c
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0e  02 00 00 2c
 |   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  03 01 00 04
 |   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   02 00 00 05  03 00 00 08  03 00 00 0c  00 00 00 08
+|   04 00 00 05  02 00 00 2c  04 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 2c  05 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 05  03 00 00 08
+|   03 00 00 0c  00 00 00 08  04 00 00 0f  00 00 00 2c
+|   06 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 02
+|   00 00 00 08  04 00 00 0f  28 00 01 08  00 0e 00 00
 |   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
 |   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
 |   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
@@ -95,7 +94,7 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |   70 cf ee 15  b8 92 a5 e9  51 d9 2d 19  dc a3 b6 67
 |   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
-|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   4f 45 ab ab  ab ab ab ab  ab ab ab ab
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Responder
 | I am this exchange's Responder
@@ -165,7 +164,30 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
-| no IKE algorithms for this connection
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18(128) aalg=12(0) prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18(128) aalg=2(0) prfalg_id=5 modp_id=15, cnt=12
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| found algorithm: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15)
+| not including aes_gcm_8(18)_128-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 1
@@ -179,19 +201,24 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | ******parse IKEv2 Attribute Substructure Payload:
 |    af+type: KEY_LENGTH
 |    length/value: 128
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
+| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
+| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
+| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
@@ -213,11 +240,11 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
-|    transform ID: 2
+|    transform ID: 12
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 2
-|    transform ID: 2
+|    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
@@ -304,7 +331,7 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
-| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| Vendor ID  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 432
 | #1 complete v2 state transition with STF_OK
@@ -316,8 +343,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
+|   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
+|   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
 |   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
 |   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
 |   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
@@ -339,62 +366,19 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   cc 1b 6f 85  74 c9 67 04  00 2b 82 fd  39 ca 41 bc
 |   76 15 7c 80  2b 00 00 1c  00 00 40 05  5b 99 ec 1e
 |   46 90 94 2f  3a df fb bb  b4 da 86 23  e7 d9 0b 8b
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
 ./davecert-R1-id deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
 | removing state object #1
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  75 bb 19 c5  f3 60 73 6d
 | state hash entry 13
+| freeing state object #1
 ./davecert-R1-id deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./davecert-R1-id leak: reply packet, item size: X
-./davecert-R1-id leak: saved first packet, item size: X
-./davecert-R1-id leak: initiator nonce, item size: X
-./davecert-R1-id leak: long term secret, item size: X
-./davecert-R1-id leak: saved gi value, item size: X
-./davecert-R1-id leak: nonce, item size: X
-./davecert-R1-id leak: Gi, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_prop, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: db_attrs, item size: X
-./davecert-R1-id leak: db_v2_trans, item size: X
-./davecert-R1-id leak: db_v2_prop_conj, item size: X
-./davecert-R1-id leak: 12 * sa copy attrs array, item size: X
-./davecert-R1-id leak: sa copy trans array, item size: X
-./davecert-R1-id leak: sa copy prop array, item size: X
-./davecert-R1-id leak: sa copy prop conj array, item size: X
-./davecert-R1-id leak: sa copy prop_conj, item size: X
-./davecert-R1-id leak: saved first received packet, item size: X
+./davecert-R1-id leak: alg_info_ike, item size: X
 ./davecert-R1-id leak: ikev2_inI1outR1 KE, item size: X
-./davecert-R1-id leak: struct state in new_state(), item size: X
 ./davecert-R1-id leak: msg_digest, item size: X
 ./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
 ./davecert-R1-id leak: issuer dn, item size: X
@@ -412,6 +396,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: keep id name, item size: X
 ./davecert-R1-id leak: pubkey entry, item size: X
 ./davecert-R1-id leak: pubkey, item size: X
+./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
+./davecert-R1-id leak: issuer dn, item size: X
+./davecert-R1-id leak: keep id name, item size: X
+./davecert-R1-id leak: pubkey, item size: X
 ./davecert-R1-id leak: certificate filename, item size: X
 ./davecert-R1-id leak: 2 * id list, item size: X
 ./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
@@ -426,10 +414,19 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: cacert path, item size: X
 ./davecert-R1-id leak: acert path, item size: X
 ./davecert-R1-id leak: override ipsec.d, item size: X
+./davecert-R1-id leak: 4 * hasher name, item size: X
+./davecert-R1-id leak: 10 * group description, item size: X
+./davecert-R1-id leak: policies path, item size: X
+./davecert-R1-id leak: ocspcerts path, item size: X
+./davecert-R1-id leak: aacerts path, item size: X
+./davecert-R1-id leak: certs path, item size: X
+./davecert-R1-id leak: private path, item size: X
+./davecert-R1-id leak: crls path, item size: X
+./davecert-R1-id leak: cacert path, item size: X
+./davecert-R1-id leak: acert path, item size: X
 ./davecert-R1-id leak: default conf var_dir, item size: X
 ./davecert-R1-id leak: default conf conffile, item size: X
 ./davecert-R1-id leak: default conf ipsecd_dir, item size: X
 ./davecert-R1-id leak: default conf ipsec_conf_dir, item size: X
-./davecert-R1-id leak: 2 * hasher name, item size: X
 ./davecert-R1-id leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

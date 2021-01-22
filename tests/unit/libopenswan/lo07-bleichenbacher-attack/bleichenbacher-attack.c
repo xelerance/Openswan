@@ -15,9 +15,11 @@
 #include "defs.h"
 #include "state.h"
 #include "packet.h"
+#include "hostpair.h"
 
 struct spd_route;
 struct payload_digest;
+
 #include "ikev2.h"
 
 const char *progname;
@@ -34,6 +36,9 @@ void exit_tool(int stat)
 
 int attack(uint8_t low_exponent, size_t modulus_bit_len)
 {
+    uint8_t pubExpBytes[4];
+    long unsigned int pubExpBytes_len = 1;
+
     /* this would be our message digest */
     uint8_t helloworldSHA1Bytes[] = {
         0x2A, 0xAE, 0x6C, 0x35, 0xC9, 0x4F, 0xCF, 0xB4, 0x15, 0xDB,
@@ -59,19 +64,18 @@ int attack(uint8_t low_exponent, size_t modulus_bit_len)
     /* choose any 128-byte (1024-bit) modulus */
     prng_bytes(&not_very_random, modulusBytes, modulus_byte_len);
     printf("modulusBytes[%lu]:\n", modulus_byte_len);
-    hexdump(modulusBytes, 0, modulus_byte_len);
+    hexdump(stdout, modulusBytes, 0, modulus_byte_len);
 
     /* low-exponent ... let's say 3 */
-    uint8_t pubExpBytes[] = {
-        low_exponent
-    };
-    printf("pubExpBytes[%lu]:\n", sizeof(pubExpBytes));
-    hexdump(pubExpBytes, 0, sizeof(pubExpBytes));
+    zero(pubExpBytes);  /* because we use only one byte */
+    pubExpBytes[0] = low_exponent;
+    printf("pubExpBytes[%lu]:\n", pubExpBytes_len);
+    hexdump(stdout, pubExpBytes, 0, pubExpBytes_len);
 
     /* prepare the public key */
     struct pubkey pk;
     pk.u.rsa.k = sizeof(attackBytes);
-    n_to_mpz(&(pk.u.rsa.e), pubExpBytes, sizeof(pubExpBytes));
+    n_to_mpz(&(pk.u.rsa.e), pubExpBytes,  pubExpBytes_len);
     n_to_mpz(&(pk.u.rsa.n), modulusBytes, sizeof(modulusBytes));
 
     /* prepare a place holder state */

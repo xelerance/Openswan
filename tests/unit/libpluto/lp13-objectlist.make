@@ -1,4 +1,4 @@
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
@@ -15,37 +15,31 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/replace.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 
 ifneq (${FILTER_OUT_EXTRAOBJS},)
 EXTRAOBJS := $(filter-out ${FILTER_OUT_EXTRAOBJS}, ${EXTRAOBJS})
 endif
 
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
+EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 

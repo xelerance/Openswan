@@ -3,6 +3,7 @@
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_x509.c"
+#include "seam_rsasig.c"
 #include "../seam_host_jamesjohnson.c"
 
 
@@ -21,15 +22,6 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 #include "../lp08-parentR1/parentR1_main.c"
-
-
- /*
- * Local Variables:
- * c-style: pluto
- * c-basic-offset: 4
- * compile-command: "make check"
- * End:
- */
 
 
  /*

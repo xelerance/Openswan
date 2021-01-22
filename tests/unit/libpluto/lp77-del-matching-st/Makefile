@@ -19,7 +19,6 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
@@ -39,32 +38,24 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/replace.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
+EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
@@ -74,6 +65,7 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
+FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed
 
 include Makefile.testcase
 
@@ -91,13 +83,13 @@ programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 
 check:	OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@${FILTERS} OUTPUT/${TESTNAME}.txt | diff - output.txt
 
 ${TESTNAME}.E:
 	@${CC} -E -c -g -o ${TESTNAME}.E -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 
 update: OUTPUT
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	${FILTERS} OUTPUT/${TESTNAME}.txt >output.txt
 
 clean: OUTPUT
 	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/${TESTNAME}.pcap *.o *~

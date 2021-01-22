@@ -39,17 +39,18 @@
 #include "defs.h"
 #include "packet.h"
 #include "demux.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "rnd.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "pluto_crypt.h"
 #include "oswlog.h"
 #include "log.h"
 #include "timer.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
+#include "pluto/spdb.h"
 
 /*
  * invoke helper to do DH work.
@@ -74,7 +75,8 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->prf_hash = st->st_oakley.prf_hash;
+    dhq->v1_prf_hash  = v2tov1_prf(st->st_oakley.prf_hash);
+    dhq->v2_prf = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
@@ -157,7 +159,7 @@ void finish_dh_secretiv(struct state *st,
     memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
     st->st_new_iv_len = dhr->new_iv.len;
 
-    ikev2_validate_key_lengths(st);
+    ikev1_validate_key_lengths(st);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
@@ -182,7 +184,8 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 
     /* convert appropriate data to dhq */
     dhq->auth = st->st_oakley.auth;
-    dhq->prf_hash = st->st_oakley.prf_hash;
+    dhq->v1_prf_hash  = v2tov1_prf(st->st_oakley.prf_hash);
+    dhq->v2_prf = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
@@ -272,9 +275,9 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 		  , enum_name(&trans_type_encr_names,  st->st_oakley.encrypt)));
 
     /* convert appropriate data to dhq */
-    dhq->auth = st->st_oakley.auth;
-    dhq->prf_hash   = st->st_oakley.prf_hash;
-    dhq->integ_hash = st->st_oakley.integ_hash;
+    dhq->auth     = st->st_oakley.auth;
+    dhq->v2_prf   = st->st_oakley.prf_hash;
+    dhq->v2_integ = st->st_oakley.integ_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
     dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
@@ -351,7 +354,7 @@ void finish_dh_v2(struct state *st,
     clonetochunk(st->st_skey_er, wire_chunk_ptr(dhv2, &(dhv2->skeyid_er))
 		 , dhv2->skeyid_er.len, "calculated skeyid_er secret");
 
-    ikev2_validate_key_lengths(st);
+    ikev1_validate_key_lengths(st);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
