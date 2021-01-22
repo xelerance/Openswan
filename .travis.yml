@@ -52,6 +52,7 @@ before_script:
   - tests/utils/testsetup.sh
   - "PATH=$HOME/stuff/sbin:$PATH export PATH"
   - which tcpdump
+  - gem install cbor-diag
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
@@ -64,6 +65,5 @@ script:
   - export PATH=$PATH:$HOME/stuff/bin
   - "cat Makefile.inc.local"
   - "make env | sort -f"
-  - git --version
   - ./tests/utils/$TEST_JOB
 
