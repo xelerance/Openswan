@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     tool_init_log();
 
     /* */
-    memset(&wm1.left, 0, sizeof(wm1.left));
+    memset(&wm1, 0, sizeof(wm1));
     wm1.left.id = "test1";
     wm1.left.cert="test2";
     wm1.left.ca  ="test3";
