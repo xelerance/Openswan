@@ -77,14 +77,18 @@ struct whackpacker {
 enum whack_cbor_attributes {
       WHACK_OPT_NAME = 1,
       WHACK_OPT_DEBUGGING = 2,
-      WHACK_OPT_ASYNC
+      WHACK_OPT_ASYNC = 3,
+      WHACK_OPT_SET   = 4,
+      WHACK_OPT_RECORDFILE=5
 };
 
+#if 0
 static void whack_cbor_encode_empty_map(QCBOREncodeContext *qec)
 {
   QCBOREncode_OpenMap(qec);
   QCBOREncode_CloseMap(qec);
 }
+#endif
 
 static err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
 {
@@ -107,34 +111,36 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
   OK(whack_cbor_magic_header(&qec));
 
-  QCBOREncode_OpenArray(&qec);
+  QCBOREncode_OpenMap(&qec);
   if(wm->whack_status) {
-    QCBOREncode_AddInt64(&qec, WHACK_STATUS);
-    whack_cbor_encode_empty_map(&qec);
-    goto end;
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_STATUS);
+    QCBOREncode_CloseMap(&qec);
   }
 
   if(wm->whack_shutdown) {
-    QCBOREncode_AddInt64(&qec, WHACK_SHUTDOWN);
-    whack_cbor_encode_empty_map(&qec);
-    goto end;
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_SHUTDOWN);
+    QCBOREncode_CloseMap(&qec);
   }
 
   if(wm->whack_options) {
-    QCBOREncode_AddInt64(&qec, WHACK_OPTIONS);
-  } else if (wm->whack_connection) {
-    QCBOREncode_AddInt64(&qec, WHACK_CONNECTION);
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_OPTIONS);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SET, wm->opt_set);
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    }
+    if(wm->string1) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_RECORDFILE, wm->string1);
+    }
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DEBUGGING, wm->debugging);
+    QCBOREncode_CloseMap(&qec);
   }
 
-  QCBOREncode_OpenMap(&qec);
+  if (wm->whack_connection) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_CONNECTION);
+    QCBOREncode_CloseMap(&qec);
+  }
 
-  /* really, should set each flag seperately, by name! */
-  QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DEBUGGING, wm->debugging);
   QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
-
-  if(wm->name) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
-  }
 
 #if 0
 
@@ -187,9 +193,6 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
 #endif
 
     QCBOREncode_CloseMap(&qec);
-
- end:
-    QCBOREncode_CloseArray(&qec);
 
     /* close the array */
     e = QCBOREncode_FinishGetSize(&qec, &outlen);
