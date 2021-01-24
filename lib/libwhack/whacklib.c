@@ -74,6 +74,12 @@ struct whackpacker {
 #define CborSignatureTag 55799
 #define CborOpenSwanTag  0x4f50534e
 
+enum whack_cbor_attributes {
+      WHACK_OPT_NAME = 1,
+      WHACK_OPT_DEBUGGING = 2,
+      WHACK_OPT_ASYNC
+};
+
 static void whack_cbor_encode_empty_map(QCBOREncodeContext *qec)
 {
   QCBOREncode_OpenMap(qec);
@@ -114,12 +120,24 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     goto end;
   }
 
-  QCBOREncode_AddInt64(&qec, WHACK_OPTIONS);
+  if(wm->whack_options) {
+    QCBOREncode_AddInt64(&qec, WHACK_OPTIONS);
+  } else if (wm->whack_connection) {
+    QCBOREncode_AddInt64(&qec, WHACK_CONNECTION);
+  }
 
   QCBOREncode_OpenMap(&qec);
 
+  /* really, should set each flag seperately, by name! */
+  QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DEBUGGING, wm->debugging);
+  QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
+
+  if(wm->name) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+  }
+
 #if 0
-    if (!pack_str(wp, &wp->msg->name)	        /* string 1 */
+
 	|| !pack_str(wp, &wp->msg->left.id)     /* string 2 */
 	|| !pack_str(wp, &wp->msg->left.cert)   /* string 3 */
 	|| !pack_str(wp, &wp->msg->left.ca)     /* string 4 */
