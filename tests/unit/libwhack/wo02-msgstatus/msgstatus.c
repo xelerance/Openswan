@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     wm1.right = wm1.left;
 
     wm1.magic = WHACK_MAGIC;
-    wm1.whack_shutdown = TRUE;
+    wm1.whack_status = TRUE;
     wm1.name_len = 12;
     wm1.name     = "abcde_abcde_";
 
