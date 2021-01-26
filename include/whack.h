@@ -106,6 +106,11 @@ enum whack_CBOR_actions {
     WHACK_SHUTDOWN =2,
     WHACK_OPTIONS  =3,
     WHACK_CONNECTION=4,
+    WHACK_ROUTE    =5,
+    WHACK_UNROUTE  =6,
+    WHACK_INITIATE =7,
+    WHACK_INITIATE_OPPO=8,
+    WHACK_TERMINATE=9,
 };
 
 /* this is the historic message from Openswan < 3.1 */
