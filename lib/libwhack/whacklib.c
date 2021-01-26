@@ -73,13 +73,37 @@ struct whackpacker {
 #define OK(x) ugh = (x); if(ugh) goto bad
 #define CborSignatureTag 55799
 #define CborOpenSwanTag  0x4f50534e
+#define CborIPv4Tag      260
+#define CborIPv6Tag      261
 
 enum whack_cbor_attributes {
       WHACK_OPT_NAME = 1,
       WHACK_OPT_DEBUGGING = 2,
-      WHACK_OPT_ASYNC = 3,
-      WHACK_OPT_SET   = 4,
-      WHACK_OPT_RECORDFILE=5
+      WHACK_OPT_ASYNC = 128,
+      WHACK_OPT_SET   = 129,
+      WHACK_OPT_RECORDFILE=130,
+      WHACK_OPT_MYID  = 131,
+      WHACK_OPT_DELETE= 27,
+      WHACK_OPT_DELETESTATE=8,
+      WHACK_OPT_CRASHPEER=132,
+      WHACK_OPT_LISTEN   =132,
+      WHACK_OPT_UNLISTEN =133,
+      WHACK_OPT_REREAD   =134,
+      WHACK_OPT_LIST     =135,
+      WHACK_OPT_PURGE_OCSP=136,
+      WHACK_OPT_LEFT     = 3,
+      WHACK_OPT_RIGHT    = 4,
+      WHACK_OPT_END_ID   = 5,
+      WHACK_OPT_END_CERT = 6,
+      WHACK_OPT_END_CA   = 7,
+      WHACK_OPT_END_GROUPS =8,
+      WHACK_OPT_END_VIRT = 9,
+      WHACK_OPT_END_XAUTH_NAME =137,
+      WHACK_OPT_END_HOST_ADDRNAME = 10,
+      WHACK_OPT_END_HOST_ADDR     = 11,
+      WHACK_OPT_END_HOST_NEXTHOP  = 12,
+      WHACK_OPT_END_HOST_SRCIP    = 13,
+      WHACK_OPT_END_CLIENT        = 14
 };
 
 #if 0
@@ -97,6 +121,92 @@ static err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
   QCBOREncode_AddTag(qec, CborOpenSwanTag);
   QCBOREncode_AddBytes(qec, bor);
   return NULL;
+}
+
+static void whack_cbor_encode_ipaddress(QCBOREncodeContext *qec, ip_address *addr)
+{
+  UsefulBufC ub;
+
+  switch(ip_address_family(addr)) {
+  case AF_INET:
+    QCBOREncode_AddTag(qec, CborIPv4Tag);
+    ub.ptr = (const void *)&addr->u.v4.sin_addr.s_addr;
+    ub.len = 4;
+    QCBOREncode_AddBytes(qec, ub);
+    break;
+  case AF_INET6:
+    QCBOREncode_AddTag(qec, CborIPv6Tag);
+    ub.ptr = (const void *)addr->u.v6.sin6_addr.s6_addr;
+    ub.len = 16;
+    QCBOREncode_AddBytes(qec, ub);
+    break;
+  }
+}
+
+static void whack_cbor_encode_some_ipaddress_ToMapN(QCBOREncodeContext *qec
+                                                   , u_int32_t   link
+                                                   , ip_address *addr)
+{
+  if(!ip_address_isany(addr)) {
+    QCBOREncode_AddInt64(qec, link);
+    whack_cbor_encode_ipaddress(qec, addr);
+  }
+}
+
+static void whack_cbor_encode_some_ipsubnet_ToMapN(QCBOREncodeContext *qec
+                                                  , u_int32_t   link
+                                                  , ip_subnet  *net)
+{
+  ip_address *addr = &net->addr;
+
+  if(!ip_address_isany(addr)) {
+    QCBOREncode_OpenArrayInMapN(qec, link);
+    QCBOREncode_AddInt64(qec, net->maskbits);
+    whack_cbor_encode_ipaddress(qec, addr);
+    QCBOREncode_CloseArray(qec);
+  }
+}
+
+static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
+{
+  if(we->id) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_ID, we->id);
+  }
+  if(we->cert) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_CERT, we->cert);
+  }
+  if(we->ca) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_CA, we->ca);
+  }
+  if(we->groups) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_GROUPS, we->groups);
+  }
+  if(we->virt) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_VIRT, we->virt);
+  }
+  if(we->xauth_name) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_XAUTH_NAME, we->xauth_name);
+  }
+  if(we->host_addr_name) {
+    QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_HOST_ADDRNAME, we->host_addr_name);
+  }
+
+  /* host_addr */
+  whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_ADDR
+                                         , &we->host_addr);
+
+  /* host_nexthop */
+  whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_NEXTHOP
+                                         , &we->host_nexthop);
+
+  /* host_srcip */
+  whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_SRCIP
+                                         , &we->host_srcip);
+
+  /* client */
+  whack_cbor_encode_some_ipsubnet_ToMapN(qec, WHACK_OPT_END_CLIENT
+                                       , &we->client);
+
 }
 
 err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *plen)
@@ -137,35 +247,77 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
   if (wm->whack_connection) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_CONNECTION);
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_OPT_LEFT);
+    whack_cbor_encode_end(&qec, &wm->left);
+    QCBOREncode_CloseMap(&qec);
+
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_OPT_RIGHT);
+    whack_cbor_encode_end(&qec, &wm->right);
+    QCBOREncode_CloseMap(&qec);
+
     QCBOREncode_CloseMap(&qec);
   }
 
   QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
 
+  if(wm->whack_myid) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_MYID, wm->myid);
+  }
+
+  if(wm->whack_delete) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_DELETE, wm->name);
+  }
+
+  if(wm->whack_deletestate) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DELETESTATE, wm->whack_deletestateno);
+  }
+
+  if(wm->whack_crash) {
+    /* open code the IPAddressToMap */
+    QCBOREncode_AddInt64(&qec, WHACK_OPT_CRASHPEER);
+    whack_cbor_encode_ipaddress(&qec, &wm->whack_crash_peer);
+  }
+
+  if(wm->whack_listen) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LISTEN, 1);
+  }
+  if(wm->whack_unlisten) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_UNLISTEN, 1);
+  }
+  if(wm->whack_reread) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_REREAD, wm->whack_reread);
+  }
+  if(wm->whack_list) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIST, wm->whack_list);
+  }
+  if(wm->whack_purgeocsp) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_PURGE_OCSP, wm->whack_purgeocsp);
+  }
+
+  if(wm->whack_key) {
+  }
+
+  if(wm->whack_route) {
+  }
+  if(wm->whack_unroute) {
+  }
+  if(wm->whack_initiate) {
+  }
+  if(wm->whack_oppo_initiate) {
+  }
+  if(wm->whack_terminate) {
+  }
+  if(wm->whack_status) {
+  }
+
+
 #if 0
 
-	|| !pack_str(wp, &wp->msg->left.id)     /* string 2 */
-	|| !pack_str(wp, &wp->msg->left.cert)   /* string 3 */
-	|| !pack_str(wp, &wp->msg->left.ca)     /* string 4 */
-	|| !pack_str(wp, &wp->msg->left.groups) /* string 5 */
-	|| !pack_str(wp, &wp->msg->left.updown) /* string 6 */
-    	|| !pack_str(wp, &wp->msg->left.virt)    /* string 7 */
-	|| !pack_str(wp, &wp->msg->right.id)    /* string 8 */
-    	|| !pack_str(wp, &wp->msg->right.cert)  /* string 9 */
-    	|| !pack_str(wp, &wp->msg->right.ca)    /* string 10 */
-    	|| !pack_str(wp, &wp->msg->right.groups)/* string 11 */
-	|| !pack_str(wp, &wp->msg->right.updown)/* string 12 */
-    	|| !pack_str(wp, &wp->msg->right.virt)  /* string 13 */
 	|| !pack_str(wp, &wp->msg->keyid)       /* string 14 */
 	|| !pack_str(wp, &wp->msg->myid)        /* string 15 */
     	|| !pack_str(wp, &wp->msg->ike)         /* string 16 */
     	|| !pack_str(wp, &wp->msg->esp)         /* string 17 */
-    	|| !pack_str(wp, &wp->msg->tpmeval)     /* string 18 */
-    	|| !pack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
-    	|| !pack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
     	|| !pack_str(wp, &wp->msg->connalias)   /* string 21 */
-    	|| !pack_str(wp, &wp->msg->left.host_addr_name)    /* string 22 */
-    	|| !pack_str(wp, &wp->msg->right.host_addr_name)   /* string 23 */
 	|| !pack_str(wp, &wp->msg->string1)                /* string 24 */
 	|| !pack_str(wp, &wp->msg->string2)                /* string 25 */
 	|| !pack_str(wp, &wp->msg->string3)                /* string 26 */
