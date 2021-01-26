@@ -76,6 +76,7 @@ struct whackpacker {
 #define CborIPv4Tag      260
 #define CborIPv6Tag      261
 
+/* values < 24 get encoded in one byte, < 256 in two bytes */
 enum whack_cbor_attributes {
       WHACK_OPT_NAME = 1,
       WHACK_OPT_DEBUGGING = 2,
@@ -91,6 +92,14 @@ enum whack_cbor_attributes {
       WHACK_OPT_REREAD   =134,
       WHACK_OPT_LIST     =135,
       WHACK_OPT_PURGE_OCSP=136,
+      WHACK_OPT_KEYID    = 137,
+      WHACK_OPT_IKE      = 138,
+      WHACK_OPT_ESP      = 139,
+      WHACK_OPT_CONNALIAS= 140,
+      WHACK_OPT_POLICYLABEL=141,
+      WHACK_OPT_OPPO_MY_CLIENT = 142,
+      WHACK_OPT_OPPO_PEER_CLIENT=143,
+
       WHACK_OPT_LEFT     = 3,
       WHACK_OPT_RIGHT    = 4,
       WHACK_OPT_END_ID   = 5,
@@ -98,12 +107,13 @@ enum whack_cbor_attributes {
       WHACK_OPT_END_CA   = 7,
       WHACK_OPT_END_GROUPS =8,
       WHACK_OPT_END_VIRT = 9,
-      WHACK_OPT_END_XAUTH_NAME =137,
+      WHACK_OPT_END_XAUTH_NAME =137,       /* uncommon */
       WHACK_OPT_END_HOST_ADDRNAME = 10,
       WHACK_OPT_END_HOST_ADDR     = 11,
       WHACK_OPT_END_HOST_NEXTHOP  = 12,
       WHACK_OPT_END_HOST_SRCIP    = 13,
-      WHACK_OPT_END_CLIENT        = 14
+      WHACK_OPT_END_CLIENT        = 14,
+      WHACK_OPT_KEYVAL            = 15,
 };
 
 #if 0
@@ -298,68 +308,87 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
   }
 
   if(wm->whack_route) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_ROUTE);
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    }
+    QCBOREncode_CloseMap(&qec);
   }
+
   if(wm->whack_unroute) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_UNROUTE);
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    }
+    QCBOREncode_CloseMap(&qec);
   }
   if(wm->whack_initiate) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_INITIATE);
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    }
+    QCBOREncode_CloseMap(&qec);
   }
   if(wm->whack_oppo_initiate) {
-  }
-  if(wm->whack_terminate) {
-  }
-  if(wm->whack_status) {
-  }
-
-
-#if 0
-
-	|| !pack_str(wp, &wp->msg->keyid)       /* string 14 */
-	|| !pack_str(wp, &wp->msg->myid)        /* string 15 */
-    	|| !pack_str(wp, &wp->msg->ike)         /* string 16 */
-    	|| !pack_str(wp, &wp->msg->esp)         /* string 17 */
-    	|| !pack_str(wp, &wp->msg->connalias)   /* string 21 */
-	|| !pack_str(wp, &wp->msg->string1)                /* string 24 */
-	|| !pack_str(wp, &wp->msg->string2)                /* string 25 */
-	|| !pack_str(wp, &wp->msg->string3)                /* string 26 */
-	|| !pack_str(wp, &wp->msg->string4)                /* string 27: was dnshostname*/
-	|| !pack_str(wp, &wp->msg->policy_label) /* string 28 */
-	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 28) */
-    {
-	ugh = "too many bytes of strings to fit in message to pluto";
-	return ugh;
-    }
-
-    if(wp->msg->keyval.ptr)
-    {
-      if (wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len) {
-        return "no space for public key";
-      }
-      memcpy(wp->str_next, wp->msg->keyval.ptr, wp->msg->keyval.len);
-      //log_ckaid("whack msg: %s", (unsigned char *)wp->str_next, wp->msg->keyval.len);
-    }
-    wp->msg->keyval.ptr = NULL;
-    wp->str_next += wp->msg->keyval.len;
-
-    return ugh;
-
-#endif
-
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_INITIATE_OPPO);
+    whack_cbor_encode_some_ipaddress_ToMapN(&qec, WHACK_OPT_OPPO_MY_CLIENT, &wm->oppo_my_client);
+    whack_cbor_encode_some_ipaddress_ToMapN(&qec, WHACK_OPT_OPPO_PEER_CLIENT, &wm->oppo_peer_client);
     QCBOREncode_CloseMap(&qec);
+  }
 
-    /* close the array */
-    e = QCBOREncode_FinishGetSize(&qec, &outlen);
-    if(e != QCBOR_SUCCESS) {
-      ugh = "encoding failed";
-      return ugh;
+  if(wm->whack_terminate) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_TERMINATE);
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
     }
+    QCBOREncode_CloseMap(&qec);
+  }
 
-    if(plen) {
-      *plen = outlen;
-    }
-    return NULL;
+  if(wm->whack_status) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_STATUS);
+  }
+
+  if(wm->keyid) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_KEYID, wm->keyid);
+  }
+
+  if(wm->ike) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
+  }
+  if(wm->esp) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_ESP, wm->esp);
+  }
+  if(wm->connalias) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_CONNALIAS, wm->connalias);
+  }
+
+  if(wm->policy_label) {
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_POLICYLABEL, wm->policy_label);
+  }
+
+  if(wm->keyval.ptr && wm->keyval.len > 0) {
+    UsefulBufC ub;
+    ub.ptr = wm->keyval.ptr;
+    ub.len = wm->keyval.len;
+    QCBOREncode_AddBytesToMapN(&qec, WHACK_OPT_KEYVAL, ub);
+  }
+
+  QCBOREncode_CloseMap(&qec);
+
+  /* close the array */
+  e = QCBOREncode_FinishGetSize(&qec, &outlen);
+  if(e != QCBOR_SUCCESS) {
+    ugh = "encoding failed";
+    return ugh;
+  }
+
+  if(plen) {
+    *plen = outlen;
+  }
+  return NULL;
 
  bad:
-    return "CBOR encoding error";
+  return "CBOR encoding error";
 }
 
 err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t buf_len)
