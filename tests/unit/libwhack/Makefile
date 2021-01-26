@@ -21,6 +21,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 UNITTESTS+=wo01-msgstop
 UNITTESTS+=wo02-msgstatus
 UNITTESTS+=wo03-options
+UNITTESTS+=wo04-connections
 
 # running 'make check KEEPGOING=1' will run through all tests w/o stopping
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
