@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
     wm1.left.host_addr_name = "example.com";
 
     wm1.right = wm1.left;
+    char *ip4ex4r = "192.0.1.4";
+    ttoaddr_num(ip4ex4r, strlen(ip4ex4r), AF_INET, &wm1.right.host_addr);
 
     wm1.magic = WHACK_MAGIC;
     wm1.whack_connection = TRUE;
