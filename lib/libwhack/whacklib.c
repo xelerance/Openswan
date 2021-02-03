@@ -70,6 +70,12 @@ struct whackpacker {
  *
  */
 
+#if 0
+#define CBOR_DEBUG(fmt, ...)  printf(fmt, ##__VA_ARGS__)
+#else
+#define CBOR_DEBUG(fmt, ...)  do {} while(0)
+#endif
+
 #define OK(x) ugh = (x); if(ugh) goto bad
 #define CborSignatureTag 55799
 #define CborOpenSwanTag  0x4f50534e
@@ -85,23 +91,26 @@ enum whack_cbor_attributes {
       WHACK_OPT_RECORDFILE=130,
       WHACK_OPT_MYID  = 131,
       WHACK_OPT_DELETE= 27,
-      WHACK_OPT_DELETESTATE=8,
       WHACK_OPT_CRASHPEER=132,
-      WHACK_OPT_LISTEN   =132,
-      WHACK_OPT_UNLISTEN =133,
-      WHACK_OPT_REREAD   =134,
-      WHACK_OPT_LIST     =135,
-      WHACK_OPT_PURGE_OCSP=136,
-      WHACK_OPT_KEYID    = 137,
-      WHACK_OPT_IKE      = 138,
-      WHACK_OPT_ESP      = 139,
-      WHACK_OPT_CONNALIAS= 140,
-      WHACK_OPT_POLICYLABEL=141,
-      WHACK_OPT_OPPO_MY_CLIENT = 142,
-      WHACK_OPT_OPPO_PEER_CLIENT=143,
+      WHACK_OPT_LISTEN   =133,
+      WHACK_OPT_UNLISTEN =134,
+      WHACK_OPT_REREAD   =135,
+      WHACK_OPT_LIST     =136,
+      WHACK_OPT_PURGE_OCSP=137,
+      WHACK_OPT_KEYID    = 138,
+      WHACK_OPT_IKE      = 139,
+      WHACK_OPT_ESP      = 140,
+      WHACK_OPT_CONNALIAS= 141,
+      WHACK_OPT_POLICYLABEL=142,
+      WHACK_OPT_OPPO_MY_CLIENT = 143,
+      WHACK_OPT_OPPO_PEER_CLIENT=144,
+      WHACK_OPT_DELETESTATE=145,
 
       WHACK_OPT_LEFT     = 3,
-      WHACK_OPT_RIGHT    = 4,
+      WHACK_OPT_RIGHT    = 4
+};
+
+enum whack_cbor_end_attr {
       WHACK_OPT_END_ID   = 5,
       WHACK_OPT_END_CERT = 6,
       WHACK_OPT_END_CA   = 7,
@@ -257,6 +266,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
   if (wm->whack_connection) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_CONNECTION);
+
     QCBOREncode_OpenMapInMapN(&qec, WHACK_OPT_LEFT);
     whack_cbor_encode_end(&qec, &wm->left);
     QCBOREncode_CloseMap(&qec);
@@ -268,7 +278,9 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_CloseMap(&qec);
   }
 
-  QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
+  if(wm->whack_async) {
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
+  }
 
   if(wm->whack_myid) {
     QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_MYID, wm->myid);
@@ -305,6 +317,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
   }
 
   if(wm->whack_key) {
+    /* XXXX */
   }
 
   if(wm->whack_route) {
@@ -391,66 +404,514 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
   return "CBOR encoding error";
 }
 
-err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t buf_len)
+
+/*
+** DECODING
+**
+**
+*/
+
+void whack_cbor_string2c(QCBORDecodeContext *qdc, QCBORItem *item, char **where)
 {
-  return "UGH";
+  if(*where) pfree(*where);
+  *where = alloc_bytes(item->val.string.len+1, "whack string");
+  memcpy(*where, item->val.string.ptr, item->val.string.len);
+  (*where)[item->val.string.len]='\0';
 }
 
-#if 0
+/* this routine consumes an item, recursing into the content to get it all */
+void whack_cbor_consume_itemX(QCBORDecodeContext *qdc, QCBORItem *oitem, int level)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+
+    memset(&item, 0, sizeof(item));
+
+    /* the provide item will have the number of things to consume */
+
+    /* do nothing if simple type, though */
+    if(oitem->uDataType != QCBOR_TYPE_MAP
+       && oitem->uDataType != QCBOR_TYPE_ARRAY) return;
+
+    CBOR_DEBUG("  [%u] nesting start: %d\n", level, oitem->uNextNestLevel);
+    while((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS
+          && oitem->uNextNestLevel < item.uNextNestLevel) {
+
+      CBOR_DEBUG("  [%u]   %u type: %d data:%ld nesting: %d->%d\n"
+             , level
+             , oitem->uNextNestLevel
+             , item.uDataType
+             , item.label.int64
+             , item.uNestingLevel, item.uNextNestLevel);
+      whack_cbor_consume_itemX(qdc, &item, level+1);
+    }
+    return;
+}
+
+/* this routine consumes an item, recursing into the content to get it all */
+void whack_cbor_consume_item(QCBORDecodeContext *qdc, QCBORItem *oitem)
+{
+  whack_cbor_consume_itemX(qdc, oitem, 1);
+}
+
+void whack_cbor_decode_ipaddress(QCBORDecodeContext *qdc
+                            , const char *endtype
+                            , QCBORItem *first
+                            , ip_address *ip)
+{
+  if(first->uDataType != QCBOR_TYPE_BYTE_STRING) {
+    whack_cbor_consume_itemX(qdc, first, 1);
+    return;
+  }
+
+  int len = first->val.string.len;
+  const unsigned char *bytes = first->val.string.ptr;
+  memset(ip, 0, sizeof(*ip));
+
+  switch(QCBORDecode_GetNthTag(qdc, first, 0)) {
+  case CborIPv4Tag:
+    ip_address_family(ip) = AF_INET;
+    if(len > 4) len = 4;
+    memcpy((void *)&ip->u.v4.sin_addr.s_addr, bytes, len);
+    break;
+  case CborIPv6Tag:
+    ip_address_family(ip) = AF_INET6;
+    if(len > 16) len = 16;
+    memcpy((void *)ip->u.v6.sin6_addr.s6_addr, bytes, len);
+    break;
+  }
+}
+
+void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
+                                , const char *endtype
+                                , QCBORItem *first
+                                , ip_subnet *ipn)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    if(first->uDataType != QCBOR_TYPE_ARRAY) {
+      whack_cbor_consume_itemX(qdc, first, 1);
+      return;
+    }
+
+    if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
+      ipn->maskbits = item.val.int64;
+    }
+
+    if(uErr != QCBOR_SUCCESS
+       || first->uNextNestLevel > item.uNextNestLevel) {
+      return;
+    }
+
+    if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
+      whack_cbor_decode_ipaddress(qdc, endtype, &item, &ipn->addr);
+    }
+
+    /* here we really need to eat the rest of the array? */
+    //whack_cbor_consume_itemX(qdc, &item, 1);
+
+    return;
+}
+
+
+void whack_cbor_process_namemap(QCBORDecodeContext *qdc
+                                , const char *thingtype
+                                , struct whack_message *wm
+                                , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", thingtype, count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_NAME:
+        whack_cbor_string2c(qdc, &item, &wm->name);
+        break;
+      default:
+        whack_cbor_consume_item(qdc, &item);
+        break;
+      }
+    }
+}
+
+void whack_cbor_process_route(QCBORDecodeContext *qdc
+                              , struct whack_message *wm
+                              , QCBORItem *first)
+{
+  whack_cbor_process_namemap(qdc, "route", wm, first);
+}
+
+void whack_cbor_process_unroute(QCBORDecodeContext *qdc
+                              , struct whack_message *wm
+                              , QCBORItem *first)
+{
+  whack_cbor_process_namemap(qdc, "unroute", wm, first);
+}
+
+void whack_cbor_process_initiate(QCBORDecodeContext *qdc
+                                 , struct whack_message *wm
+                                 , QCBORItem *first)
+{
+  whack_cbor_process_namemap(qdc, "initiate", wm, first);
+}
+
+void whack_cbor_process_terminate(QCBORDecodeContext *qdc
+                                 , struct whack_message *wm
+                                 , QCBORItem *first)
+{
+  whack_cbor_process_namemap(qdc, "terminate", wm, first);
+}
+
+
+void whack_cbor_process_initiate_oppo(QCBORDecodeContext *qdc
+                                      , struct whack_message *wm
+                                      , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+    const char *thingtype = "oppo";
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", thingtype, count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_OPPO_MY_CLIENT:
+        whack_cbor_decode_ipaddress(qdc, thingtype, &item, &wm->oppo_my_client);
+        break;
+      case WHACK_OPT_OPPO_PEER_CLIENT:
+        whack_cbor_decode_ipaddress(qdc, thingtype, &item, &wm->oppo_peer_client);
+        break;
+      default:
+        whack_cbor_consume_item(qdc, &item);
+        break;
+      }
+    }
+
+}
+
+void whack_cbor_process_end(QCBORDecodeContext *qdc
+                            , const char *endtype
+                            , struct whack_end *end
+                            , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing %s end: %ld count: %d\n", endtype, first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", endtype, count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_END_ID:
+        whack_cbor_string2c(qdc, &item, &end->id);
+        break;
+      case WHACK_OPT_END_CERT:
+        whack_cbor_string2c(qdc, &item, &end->cert);
+        break;
+      case WHACK_OPT_END_CA:
+        whack_cbor_string2c(qdc, &item, &end->ca);
+        break;
+      case WHACK_OPT_END_GROUPS:
+        whack_cbor_string2c(qdc, &item, &end->groups);
+        break;
+      case WHACK_OPT_END_VIRT:
+        whack_cbor_string2c(qdc, &item, &end->virt);
+        break;
+      case WHACK_OPT_END_XAUTH_NAME:
+        whack_cbor_string2c(qdc, &item, &end->xauth_name);
+        break;
+      case WHACK_OPT_END_HOST_ADDRNAME:
+        whack_cbor_string2c(qdc, &item, &end->host_addr_name);
+        break;
+      case WHACK_OPT_END_HOST_ADDR:
+        whack_cbor_decode_ipaddress(qdc, endtype, &item, &end->host_addr);
+        break;
+      case WHACK_OPT_END_HOST_NEXTHOP:
+        whack_cbor_decode_ipaddress(qdc, endtype, &item, &end->host_nexthop);
+        break;
+      case WHACK_OPT_END_HOST_SRCIP:
+        whack_cbor_decode_ipaddress(qdc, endtype, &item, &end->host_srcip);
+        break;
+      case WHACK_OPT_END_CLIENT:
+        whack_cbor_decode_ipsubnet(qdc, endtype, &item, &end->client);
+        break;
+      default:
+        whack_cbor_consume_item(qdc, &item);
+        break;
+      }
+    }
+}
+
+void whack_cbor_process_connection(QCBORDecodeContext *qdc
+                                   , struct whack_message *wm
+                                   , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing tag: %ld count: %d\n", first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_LEFT:
+        whack_cbor_process_end(qdc, "left", &wm->left, &item);
+        break;
+
+      case WHACK_OPT_RIGHT:
+        whack_cbor_process_end(qdc, "right",&wm->right, &item);
+        break;
+
+      default:
+        /* Set ERROR */
+        return;
+      }
+    }
+}
+
 /**
  * Unpack a message whack received
  *
  * @param wp The whack message
  * @return err_t
  */
-err_t unpack_whack_msg (struct whackpacker *wp)
+err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t plen)
 {
-    err_t ugh = NULL;
+    err_t ugh = "broken";
+    UsefulBufC todecode = {buf, (unsigned long)plen};
+    QCBORDecodeContext qdc;
+    QCBORItem   item;
+    QCBORError  uErr;
+    int elemCount = 0;
+    bool foundMagic = FALSE;
 
-    if (wp->str_next > wp->str_roof)
-    {
-	ugh = builddiag("ignoring truncated message from whack: got %d bytes; expected %u"
-			, (int) wp->n, (unsigned) sizeof(*wp->msg));
-        return ugh;
+    QCBORDecode_Init(&qdc, todecode, QCBOR_DECODE_MODE_NORMAL);
+
+    uErr = QCBORDecode_GetNext(&qdc, &item);
+    if(uErr != QCBOR_SUCCESS) {
+      return "does not decode as CBOR";
     }
 
-    if (!unpack_str(wp, &wp->msg->name)	          /* string 1 */
-	|| !unpack_str(wp, &wp->msg->left.id)     /* string 2 */
-	|| !unpack_str(wp, &wp->msg->left.cert)   /* string 3 */
-	|| !unpack_str(wp, &wp->msg->left.ca)     /* string 4 */
-	|| !unpack_str(wp, &wp->msg->left.groups) /* string 5 */
-	|| !unpack_str(wp, &wp->msg->left.updown) /* string 6 */
-    	|| !unpack_str(wp, &wp->msg->left.virt)   /* string 7 */
-	|| !unpack_str(wp, &wp->msg->right.id)    /* string 8 */
-    	|| !unpack_str(wp, &wp->msg->right.cert)  /* string 9 */
-    	|| !unpack_str(wp, &wp->msg->right.ca)    /* string 10 */
-	|| !unpack_str(wp, &wp->msg->right.groups)/* string 11 */
-	|| !unpack_str(wp, &wp->msg->right.updown)/* string 12 */
-    	|| !unpack_str(wp, &wp->msg->right.virt)  /* string 13 */
-	|| !unpack_str(wp, &wp->msg->keyid)       /* string 14 */
-	|| !unpack_str(wp, &wp->msg->myid)        /* string 15 */
-    	|| !unpack_str(wp, &wp->msg->ike)         /* string 16 */
-    	|| !unpack_str(wp, &wp->msg->esp)         /* string 17 */
-    	|| !unpack_str(wp, &wp->msg->tpmeval)     /* string 18 */
-    	|| !unpack_str(wp, &wp->msg->left.xauth_name)    /* string 19 */
-    	|| !unpack_str(wp, &wp->msg->right.xauth_name)   /* string 20 */
-    	|| !unpack_str(wp, &wp->msg->connalias)   /* string 21 */
-    	|| !unpack_str(wp, &wp->msg->left.host_addr_name)    /* string 22 */
-    	|| !unpack_str(wp, &wp->msg->right.host_addr_name)   /* string 23 */
-	|| !unpack_str(wp, &wp->msg->string1)                /* string 24 */
-	|| !unpack_str(wp, &wp->msg->string2)                /* string 25 */
-	|| !unpack_str(wp, &wp->msg->string3)                /* string 26 */
-	|| !unpack_str(wp, &wp->msg->string4)                /* string 27 was dnshostname*/
-	|| !unpack_str(wp, &wp->msg->policy_label) /* string 28 */
-	|| wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
-    {
-	ugh = "message from whack contains bad string";
+    /* now look for the magic number, and ignore it */
+    if(item.uDataType == QCBOR_TYPE_BYTE_STRING && item.uNestingLevel == 0) {
+      if(memcmp(item.val.string.ptr, "BOR", 3) == 0
+         && QCBORDecode_GetNthTag(&qdc, &item, 0) == CborOpenSwanTag
+         && QCBORDecode_GetNthTag(&qdc, &item, 1) == CborSignatureTag) {
+        /* COOL, found Magic number */
+        foundMagic = TRUE;
+      }
     }
+
+    /* is it okay for magic sequence to be omitted? */
+    if(!foundMagic) {
+      /* found something weird */
+      return "missing magic tag";
+    }
+
+    /* now open the first Map */
+    uErr = QCBORDecode_GetNext(&qdc, &item);
+    if(uErr != QCBOR_SUCCESS ||
+       item.uDataType != QCBOR_TYPE_MAP) {
+      return "malformed map at level 0";
+    }
+    //whack_cbor_consume_item(&qdc, &item);
+    //return "fun";
+
+    /* keep track of how many items */
+    elemCount = item.val.uCount;
+    while(elemCount > 0
+          && (uErr = QCBORDecode_GetNext(&qdc, &item)) == QCBOR_SUCCESS) {
+      /* within the MAP, the labels are uLabelType, while the values are uDataType */
+      if(item.uLabelType != QCBOR_TYPE_INT64) {
+        return "map key must be integer";
+      }
+      CBOR_DEBUG("%u found map with labeled: %ld\n", elemCount, item.label.int64);
+      switch(item.label.int64) {
+      case WHACK_STATUS:
+        wm->whack_status = TRUE;
+        /* consume value, which is probably empty map */
+        whack_cbor_consume_item(&qdc, &item);
+        break;
+      case WHACK_SHUTDOWN:
+        wm->whack_shutdown = TRUE;
+        whack_cbor_consume_item(&qdc, &item);
+        break;
+
+      case WHACK_OPTIONS:
+        wm->whack_options  = TRUE;
+        whack_cbor_consume_item(&qdc, &item);
+        break;
+
+      case WHACK_CONNECTION:
+        wm->whack_connection = TRUE;
+        whack_cbor_process_connection(&qdc, wm, &item);
+        break;
+
+      case WHACK_OPT_KEYVAL:
+        wm->keyval.ptr = clone_bytes(item.val.string.ptr, item.val.string.len, "whack keyval");
+        wm->keyval.len = item.val.string.len;
+        break;
+
+      case WHACK_OPT_ASYNC:
+        wm->whack_async = item.val.int64;
+        break;
+
+      case WHACK_OPT_MYID:
+        whack_cbor_string2c(&qdc, &item, &wm->myid);
+        break;
+
+      case WHACK_OPT_DELETE:
+        wm->whack_delete = TRUE;
+        whack_cbor_string2c(&qdc, &item, &wm->name);
+        break;
+
+      case WHACK_OPT_DELETESTATE:
+        wm->whack_deletestate = TRUE;
+        wm->whack_deletestateno = item.val.int64;
+        break;
+
+      case WHACK_OPT_CRASHPEER:
+        wm->whack_crash = TRUE;
+        whack_cbor_decode_ipaddress(&qdc, "crash", &item, &wm->whack_crash_peer);
+        break;
+
+      case WHACK_OPT_LISTEN:
+        wm->whack_listen = TRUE;
+        break;
+
+      case WHACK_OPT_UNLISTEN:
+        wm->whack_unlisten = TRUE;
+        break;
+
+      case WHACK_OPT_REREAD:
+        wm->whack_reread = item.val.int64;
+        break;
+
+      case WHACK_OPT_LIST:
+        wm->whack_list = item.val.int64;
+        break;
+
+      case WHACK_OPT_PURGE_OCSP:
+        wm->whack_list = item.val.int64;
+        break;
+
+      case WHACK_ROUTE:
+        whack_cbor_process_route(&qdc, wm, &item);
+        break;
+
+      case WHACK_UNROUTE:
+        whack_cbor_process_unroute(&qdc, wm, &item);
+        break;
+
+      case WHACK_INITIATE:
+        whack_cbor_process_initiate(&qdc, wm, &item);
+        break;
+
+      case WHACK_INITIATE_OPPO:
+        whack_cbor_process_initiate_oppo(&qdc, wm, &item);
+        break;
+
+      case WHACK_TERMINATE:
+        whack_cbor_process_terminate(&qdc, wm, &item);
+        break;
+
+      case WHACK_OPT_KEYID:
+        whack_cbor_string2c(&qdc, &item, &wm->keyid);
+        break;
+
+      case WHACK_OPT_IKE:
+        whack_cbor_string2c(&qdc, &item, &wm->ike);
+        break;
+
+      case WHACK_OPT_ESP:
+        whack_cbor_string2c(&qdc, &item, &wm->esp);
+        break;
+
+      case WHACK_OPT_CONNALIAS:
+        whack_cbor_string2c(&qdc, &item, &wm->connalias);
+        break;
+
+      case WHACK_OPT_POLICYLABEL:
+        whack_cbor_string2c(&qdc, &item, &wm->policy_label);
+        break;
+
+      default:
+        return "invalid whack key";
+      }
+
+      elemCount--;
+    }
+
+    if(elemCount != 0) {
+      CBOR_DEBUG("elemCount: %d uErr: %d\n", elemCount, uErr);
+      return "did not process message correctly";
+    }
+
+    /* success */
+    ugh = NULL;
+
+#if 0
+
+      case WHACK_OPT_DEBUGGING:
+      case WHACK_OPT_ASYNC:
+      case WHACK_OPT_SET:
+      case WHACK_OPT_RECORDFILE:
+      case WHACK_OPT_MYID:
+      case WHACK_OPT_DELETE:
+      case WHACK_OPT_DELETESTATE:
+      case WHACK_OPT_LISTEN:
+      case WHACK_OPT_UNLISTEN:
+      case WHACK_OPT_REREAD:
+      case WHACK_OPT_LIST:
+      case WHACK_OPT_PURGE_OCSP:
+      case WHACK_OPT_KEYID:
+      case WHACK_OPT_IKE:
+      case WHACK_OPT_ESP:
+      case WHACK_OPT_CONNALIAS:
+      case WHACK_OPT_POLICYLABEL:
+      case WHACK_OPT_OPPO_MY_CLIENT:
+      case WHACK_OPT_OPPO_PEER_CLIENT:
+#endif
+
 
     return ugh;
 }
-
-#endif
 
 void
 clear_end(struct whack_end *e)
