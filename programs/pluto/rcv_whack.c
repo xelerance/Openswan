@@ -605,7 +605,7 @@ void
 whack_handle(int whackctlfd)
 {
     unsigned char msg_buf[4096];
-    struct whack_message msg, msg_saved;
+    struct whack_message msg;
     struct sockaddr_un whackaddr;
     socklen_t whackaddrlen = sizeof(whackaddr);
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
@@ -656,12 +656,13 @@ whack_handle(int whackctlfd)
         }
 
         /* okay, check for CBOR sequence */
-        if(n <= 12 || memcpy(msg_buf, cbor_opsn_magic, 12) != 0) {
+        if(n <= 12 || memcmp(msg_buf, cbor_opsn_magic, 12) != 0) {
             u_int32_t *bu32 = (u_int32_t*)msg_buf;
-            ugh = builddiag("ignoring message from whack with bad magic %08x/%08x/%08x"
-                            , bu32[0], bu32[1], bu32[2]);
+            ugh = builddiag("ignoring message from whack[%ld] with bad magic %08x/%08x/%08x"
+                            , n
+                            , htonl(bu32[0]), htonl(bu32[1]), htonl(bu32[2]));
 	}
-        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf+12, n-12)) != NULL)
+        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf, n)) != NULL)
         {
             /* nothing, ugh is already set */
         }
