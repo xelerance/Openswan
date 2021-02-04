@@ -106,6 +106,7 @@ static int send_whack_msg_to_file(struct starter_config *cfg, struct whack_messa
     size_t msg_len;
 
     fprintf(stderr, "writing record %u to whack file\n", ++recno);
+    msg_len = sizeof(sendbuf);
     if(whack_cbor_encode_msg(msg, sendbuf, &msg_len) != NULL) {
         return -1;
     }
