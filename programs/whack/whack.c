@@ -1960,6 +1960,7 @@ main(int argc, char **argv)
 	    msg.esp=esp_buf;
     }
 
+    msg_len = sizeof(sendbuf);
     ugh = whack_cbor_encode_msg(&msg, sendbuf, &msg_len);
     if(ugh) {
         diag(ugh);

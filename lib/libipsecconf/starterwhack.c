@@ -203,6 +203,7 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	/* copy socket location */
 	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
 
+        len = sizeof(sendbuf);
         err_t ugh = whack_cbor_encode_msg(msg, sendbuf, &len);
         if(ugh) {
           starter_log(LOG_LEVEL_ERR, "error encoding: %s", ugh);
@@ -228,7 +229,7 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	/**
 	 * Send message
 	 */
-	if (write(sock, msg, len) != len) {
+	if (write(sock, sendbuf, len) != len) {
 		starter_log(LOG_LEVEL_ERR, "write(pluto_ctl) failed: %s",
 			strerror(errno));
 		close(sock);
