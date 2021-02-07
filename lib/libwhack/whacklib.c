@@ -107,7 +107,15 @@ enum whack_cbor_attributes {
       WHACK_OPT_DELETESTATE=145,
 
       WHACK_OPT_LEFT     = 3,
-      WHACK_OPT_RIGHT    = 4
+      WHACK_OPT_RIGHT    = 4,
+
+      WHACK_OPT_LIFETIME_IKE = 146,
+      WHACK_OPT_LIFETIME_IPSEC=147,
+      WHACK_OPT_LIFETIME_REKEY_MARGIN=148,
+      WHACK_OPT_LIFETIME_REKEY_FUZZ=149,
+      WHACK_OPT_LIFETIME_REKEY_TRIES=150,
+      WHACK_OPT_POLICY        = 151,
+
 };
 
 enum whack_cbor_end_attr {
@@ -275,6 +283,12 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     whack_cbor_encode_end(&qec, &wm->right);
     QCBOREncode_CloseMap(&qec);
 
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_POLICY, wm->policy);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_IKE, wm->sa_ike_life_seconds);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_IPSEC, wm->sa_ipsec_life_seconds);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_MARGIN, wm->sa_rekey_margin);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_FUZZ, wm->sa_rekey_fuzz);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_TRIES, wm->sa_keying_tries);
     QCBOREncode_CloseMap(&qec);
   }
 
@@ -696,6 +710,30 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
 
       case WHACK_OPT_RIGHT:
         whack_cbor_process_end(qdc, "right",&wm->right, &item);
+        break;
+
+      case WHACK_OPT_POLICY:
+        wm->policy = item.label.int64;
+        break;
+
+      case WHACK_OPT_LIFETIME_IKE:
+        wm->sa_ike_life_seconds = item.label.int64;
+        break;
+
+      case WHACK_OPT_LIFETIME_IPSEC:
+        wm->sa_ipsec_life_seconds = item.label.int64;
+        break;
+
+      case WHACK_OPT_LIFETIME_REKEY_MARGIN:
+        wm->sa_rekey_margin = item.label.int64;
+        break;
+
+      case WHACK_OPT_LIFETIME_REKEY_FUZZ:
+        wm->sa_rekey_fuzz = item.label.int64;
+        break;
+
+      case WHACK_OPT_LIFETIME_REKEY_TRIES:
+        wm->sa_keying_tries = item.label.int64;
         break;
 
       default:
