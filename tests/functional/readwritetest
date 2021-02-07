@@ -16,6 +16,6 @@ REFERR=${NAME}.err
 TEEOUT=OUTPUT/${REFOUT}
 TEEERR=OUTPUT/${REFERR}
 
-set -e -x
+#set -e -x
 ${READWRITE} --rootdir=${ROOTDIR} --config ${CONFIG} 2>${TEEERR} | tee ${TEEOUT} | diff - ${REFOUT}
 diff ${TEEERR} ${REFERR}
