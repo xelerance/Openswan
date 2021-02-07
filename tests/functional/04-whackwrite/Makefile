@@ -33,36 +33,30 @@ check:
 	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
 	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net 2>&1 | tee ${OUTPUTS}/dookuload.out | diff - dookuload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-	@strings ${OUTPUTS}/dookurecord.whack | grep pluto-whack-file >/dev/null
-	@strings ${OUTPUTS}/dookurecord.whack | grep dooku--cassidy-net >/dev/null
+	@cborseq2diag.rb ${OUTPUTS}/dookurecord.whack | tee ${OUTPUTS}/dookurecord.out | diff - dookurecord.txt
 	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj0
 	@echo >.gdbinit2  "file ${READWRITE} "
 	@echo >>.gdbinit2 "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj0 "
 	@${READWRITE} --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj0 2>&1 | tee ${OUTPUTS}/parker1load.out | diff - output2.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
+	@cborseq2diag.rb ${OUTPUTS}/parkerrecord.whack | tee ${OUTPUTS}/parkerrecord.out | diff - parkerrecord.txt
 	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj2
 	@echo >.gdbinit2b  "file ${READWRITE} "
 	@echo >>.gdbinit2b "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj "
 	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj 2>&1 | tee ${OUTPUTS}/parkerload.out | diff - parkerload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-	@strings ${OUTPUTS}/parkerrecord.whack | grep pluto-whack-file >/dev/null
-	@strings ${OUTPUTS}/parkerrecord.whack | grep parker1--jj2 >/dev/null
-	@strings ${OUTPUTS}/parkerrecord.whack | grep ikev2:parker--jj >/dev/null
-	@strings ${OUTPUTS}/parkerrecord.whack | grep parker01.emmjay.credil.org >/dev/null
 	@echo testing ${SAMPLEDIR}/parker.conf with --all
 	@echo >.gdbinit3 "file ${READWRITE} "
 	@echo >>.gdbinit3 "set args ${TEST3ARGS}"
 	@${READWRITE} ${TEST3ARGS} 2>&1 | tee ${OUTPUTS}/parkerload2.out | diff - parkerload2.txt
-	@strings ${OUTPUTS}/parkerrecord2.whack | grep pluto-whack-file >/dev/null
-	@strings ${OUTPUTS}/parkerrecord2.whack | grep parker1--jj2 >/dev/null
-	@strings ${OUTPUTS}/parkerrecord2.whack | grep ikev2:parker--jj >/dev/null
-	@strings ${OUTPUTS}/parkerrecord2.whack | grep parker01.emmjay.credil.org >/dev/null
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt
 	cp ../OUTPUTS/parkerload2.out  parkerload2.txt
 	cp ../OUTPUTS/dookuload.out    dookuload.txt
 	cp ../OUTPUTS/parkerload.out   parkerload.txt
+	cp ${OUTPUTS}/dookurecord.out  dookurecord.txt
+	cp ${OUTPUTS}/parkerrecord.out parkerrecord.txt
 
 
 
