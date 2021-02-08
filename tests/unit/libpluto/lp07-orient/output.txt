@@ -22,7 +22,6 @@ RC=0 "ikev2:parker--jj":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 AD
 RC=0 "ikev2:parker--jj":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 ./orienttest deleting connection
-./orienttest leak: whack string, item size: X
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
@@ -40,7 +39,6 @@ RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Ini
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: connection name, item size: X
 ./orienttest leak: struct connection, item size: X
-./orienttest leak: whack string, item size: X
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X

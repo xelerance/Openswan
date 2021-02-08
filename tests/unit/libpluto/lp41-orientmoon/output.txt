@@ -3,8 +3,6 @@
 ./orientmoon   loaded private key file '../samples/moon/private/moonKey.pem' (CERT bytes)
 ./orientmoon loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orientmoon   loading certificate from moonCert.pem
 ./orientmoon   loaded host cert file '../samples/moon/certs/moonCert.pem' (CERT bytes)
 ./orientmoon adding connection: "net-net"
@@ -50,5 +48,4 @@ RC=0 "net-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 ./orientmoon leak: default conf ipsecd_dir, item size: X
 ./orientmoon leak: default conf ipsec_conf_dir, item size: X
 ./orientmoon leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 processing net-net

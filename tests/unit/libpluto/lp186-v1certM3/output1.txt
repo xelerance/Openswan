@@ -18,8 +18,6 @@
 ./v1certM3 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./v1certM3 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
 | esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
