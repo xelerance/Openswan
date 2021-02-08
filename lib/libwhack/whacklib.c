@@ -471,6 +471,7 @@ void whack_free_msg(struct whack_message *msg)
      FREE_STRING(msg, left.virt);
      FREE_STRING(msg, left.xauth_name);
      FREE_STRING(msg, left.host_addr_name);
+     FREE_STRING(msg, right.id);
      FREE_STRING(msg, right.cert);
      FREE_STRING(msg, right.ca);
      FREE_STRING(msg, right.groups);
@@ -479,7 +480,6 @@ void whack_free_msg(struct whack_message *msg)
      FREE_STRING(msg, right.host_addr_name);
      FREE_STRING(msg, keyid);
      FREE_STRING(msg, myid);
-     FREE_STRING(msg, name);
      FREE_STRING(msg, ike);
      FREE_STRING(msg, esp);
      FREE_STRING(msg, connalias);
@@ -908,6 +908,15 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
     int elemCount = 0;
     bool foundMagic = FALSE;
 
+    memset(wm, 0, sizeof(struct whack_message));
+    unspecaddr(AF_INET, &wm->left.host_addr);
+    unspecaddr(AF_INET, &wm->left.host_nexthop);
+    unspecaddr(AF_INET, &wm->left.host_srcip);
+    unspecaddr(AF_INET, &wm->right.host_addr);
+    unspecaddr(AF_INET, &wm->right.host_nexthop);
+    unspecaddr(AF_INET, &wm->right.host_srcip);
+    unspecaddr(AF_INET, &wm->oppo_my_client);
+    unspecaddr(AF_INET, &wm->oppo_peer_client);
     QCBORDecode_Init(&qdc, todecode, QCBOR_DECODE_MODE_NORMAL);
 
     uErr = QCBORDecode_GetNext(&qdc, &item);
