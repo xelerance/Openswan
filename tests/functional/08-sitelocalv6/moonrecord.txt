@@ -1,0 +1,56 @@
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a5                                # map(5)
+         05                             # unsigned(5)
+         74                             # text(20)
+            406d6f6f6e2e7374726f6e677377616e2e6f7267 # "@moon.strongswan.org"
+         0a                             # unsigned(10)
+         67                             # text(7)
+            666563303a3a31              # "fec0::1"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0105                        # tag(261)
+            50                          # bytes(16)
+               fec00000000000000000000000000001 # "\xFE\xC0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01"
+      04                                # unsigned(4)
+      a5                                # map(5)
+         05                             # unsigned(5)
+         73                             # text(19)
+            4073756e2e7374726f6e677377616e2e6f7267 # "@sun.strongswan.org"
+         0a                             # unsigned(10)
+         67                             # text(7)
+            666563303a3a32              # "fec0::2"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0105                        # tag(261)
+            50                          # bytes(16)
+               fec00000000000000000000000000002 # "\xFE\xC0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02"
+      18 97                             # unsigned(151)
+      1b 0000000102000066               # unsigned(4328521830)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   69                                   # text(9)
+      686f73742d686f7374                # "host-host"
