@@ -97,7 +97,6 @@ enum whack_cbor_attributes {
       WHACK_OPT_REREAD   =135,
       WHACK_OPT_LIST     =136,
       WHACK_OPT_PURGE_OCSP=137,
-      WHACK_OPT_KEYID    = 138,
       WHACK_OPT_IKE      = 139,
       WHACK_OPT_ESP      = 140,
       WHACK_OPT_CONNALIAS= 141,
@@ -115,7 +114,9 @@ enum whack_cbor_attributes {
       WHACK_OPT_LIFETIME_REKEY_FUZZ=149,
       WHACK_OPT_LIFETIME_REKEY_TRIES=150,
       WHACK_OPT_POLICY        = 151,
-
+      WHACK_OPT_KEYVAL        = 15,
+      WHACK_OPT_KEYID         = 16,
+      WHACK_OPT_KEYALG        = 17,
 };
 
 enum whack_cbor_end_attr {
@@ -130,7 +131,6 @@ enum whack_cbor_end_attr {
       WHACK_OPT_END_HOST_NEXTHOP  = 12,
       WHACK_OPT_END_HOST_SRCIP    = 13,
       WHACK_OPT_END_CLIENT        = 14,
-      WHACK_OPT_KEYVAL            = 15,
 };
 
 #if 0
@@ -330,10 +330,6 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_PURGE_OCSP, wm->whack_purgeocsp);
   }
 
-  if(wm->whack_key) {
-    /* XXXX */
-  }
-
   if(wm->whack_route) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_ROUTE);
     if(wm->name) {
@@ -375,10 +371,6 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_OpenMapInMapN(&qec, WHACK_STATUS);
   }
 
-  if(wm->keyid) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_KEYID, wm->keyid);
-  }
-
   if(wm->ike) {
     QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
   }
@@ -393,11 +385,21 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_POLICYLABEL, wm->policy_label);
   }
 
-  if(wm->keyval.ptr && wm->keyval.len > 0) {
-    UsefulBufC ub;
-    ub.ptr = wm->keyval.ptr;
-    ub.len = wm->keyval.len;
-    QCBOREncode_AddBytesToMapN(&qec, WHACK_OPT_KEYVAL, ub);
+  if(wm->whack_key) {
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_ADD_KEY);
+
+    if(wm->keyid) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_KEYID, wm->keyid);
+    }
+
+    if(wm->keyval.ptr && wm->keyval.len > 0) {
+      UsefulBufC ub;
+      ub.ptr = wm->keyval.ptr;
+      ub.len = wm->keyval.len;
+      QCBOREncode_AddBytesToMapN(&qec, WHACK_OPT_KEYVAL, ub);
+    }
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KEYALG, wm->pubkey_alg);
+    QCBOREncode_CloseMap(&qec);
   }
 
   QCBOREncode_CloseMap(&qec);
@@ -683,6 +685,48 @@ void whack_cbor_process_end(QCBORDecodeContext *qdc
     }
 }
 
+void whack_cbor_process_addkey(QCBORDecodeContext *qdc
+                               , struct whack_message *wm
+                               , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing tag: %ld count: %d\n", first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_KEYVAL:
+        wm->whack_addkey = TRUE;
+        wm->keyval.ptr = clone_bytes(item.val.string.ptr, item.val.string.len, "whack keyval");
+        wm->keyval.len = item.val.string.len;
+        break;
+
+      case WHACK_OPT_KEYALG:
+        wm->pubkey_alg = item.val.int64;
+        break;
+
+      case WHACK_OPT_KEYID:
+        whack_cbor_string2c(qdc, &item, &wm->keyid);
+        break;
+
+      default:
+        whack_cbor_consume_item(qdc, &item);
+        return;
+      }
+    }
+}
+
 void whack_cbor_process_connection(QCBORDecodeContext *qdc
                                    , struct whack_message *wm
                                    , QCBORItem *first)
@@ -713,31 +757,31 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_POLICY:
-        wm->policy = item.label.int64;
+        wm->policy = item.val.int64;
         break;
 
       case WHACK_OPT_LIFETIME_IKE:
-        wm->sa_ike_life_seconds = item.label.int64;
+        wm->sa_ike_life_seconds = item.val.int64;
         break;
 
       case WHACK_OPT_LIFETIME_IPSEC:
-        wm->sa_ipsec_life_seconds = item.label.int64;
+        wm->sa_ipsec_life_seconds = item.val.int64;
         break;
 
       case WHACK_OPT_LIFETIME_REKEY_MARGIN:
-        wm->sa_rekey_margin = item.label.int64;
+        wm->sa_rekey_margin = item.val.int64;
         break;
 
       case WHACK_OPT_LIFETIME_REKEY_FUZZ:
-        wm->sa_rekey_fuzz = item.label.int64;
+        wm->sa_rekey_fuzz = item.val.int64;
         break;
 
       case WHACK_OPT_LIFETIME_REKEY_TRIES:
-        wm->sa_keying_tries = item.label.int64;
+        wm->sa_keying_tries = item.val.int64;
         break;
 
       default:
-        /* Set ERROR */
+        whack_cbor_consume_item(qdc, &item);
         return;
       }
     }
@@ -821,10 +865,10 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         whack_cbor_process_connection(&qdc, wm, &item);
         break;
 
-      case WHACK_OPT_KEYVAL:
-        wm->keyval.ptr = clone_bytes(item.val.string.ptr, item.val.string.len, "whack keyval");
-        wm->keyval.len = item.val.string.len;
-        break;
+      case WHACK_ADD_KEY:
+        wm->whack_key  = TRUE;
+        whack_cbor_process_addkey(&qdc, wm, &item);
+       break;
 
       case WHACK_OPT_ASYNC:
         wm->whack_async = item.val.int64;
@@ -889,10 +933,6 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         whack_cbor_process_terminate(&qdc, wm, &item);
         break;
 
-      case WHACK_OPT_KEYID:
-        whack_cbor_string2c(&qdc, &item, &wm->keyid);
-        break;
-
       case WHACK_OPT_IKE:
         whack_cbor_string2c(&qdc, &item, &wm->ike);
         break;
@@ -923,30 +963,6 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
     /* success */
     ugh = NULL;
-
-#if 0
-
-      case WHACK_OPT_DEBUGGING:
-      case WHACK_OPT_ASYNC:
-      case WHACK_OPT_SET:
-      case WHACK_OPT_RECORDFILE:
-      case WHACK_OPT_MYID:
-      case WHACK_OPT_DELETE:
-      case WHACK_OPT_DELETESTATE:
-      case WHACK_OPT_LISTEN:
-      case WHACK_OPT_UNLISTEN:
-      case WHACK_OPT_REREAD:
-      case WHACK_OPT_LIST:
-      case WHACK_OPT_PURGE_OCSP:
-      case WHACK_OPT_KEYID:
-      case WHACK_OPT_IKE:
-      case WHACK_OPT_ESP:
-      case WHACK_OPT_CONNALIAS:
-      case WHACK_OPT_POLICYLABEL:
-      case WHACK_OPT_OPPO_MY_CLIENT:
-      case WHACK_OPT_OPPO_PEER_CLIENT:
-#endif
-
 
     return ugh;
 }
