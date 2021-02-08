@@ -916,10 +916,8 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
     memset(wm, 0, sizeof(struct whack_message));
     unspecaddr(AF_INET, &wm->left.host_addr);
-    unspecaddr(AF_INET, &wm->left.host_nexthop);
     unspecaddr(AF_INET, &wm->left.host_srcip);
     unspecaddr(AF_INET, &wm->right.host_addr);
-    unspecaddr(AF_INET, &wm->right.host_nexthop);
     unspecaddr(AF_INET, &wm->right.host_srcip);
     unspecaddr(AF_INET, &wm->oppo_my_client);
     unspecaddr(AF_INET, &wm->oppo_peer_client);
