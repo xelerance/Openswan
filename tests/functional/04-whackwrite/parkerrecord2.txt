@@ -1,0 +1,712 @@
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a98335b2681b0110e4f69f5b51890013ad29fe191f6fb1f5ef327fb857bc4dd938ea8da1673644cd3e6befec8093c344fead1d89e7b0fdd593e34270254f2f9444249d7d123d43712ac29aa2dae0fa580bacd6253b70441e0b67135fc6f2db1be3ac75d1bbd435198e4e0330b3793d479cd77ebdf66fd22a72e70939cea99fc5ce4107111fe1b56c498444df13326accf15d34124271141f28299db0f12da550ba5e675de48770162dda50d1cc148e66e1dde466f25762bb385928c6da7aab2432a53011d383b27faf7bd2a8fa59fc681544df266e276c9e1de12cced372890f1ed0f90bece6eebe1b9b6fa9cf6514c1cc3c118b26fc4238913e5a94a9eab896f476487672e08885351bd9472cf66ff3107d # "\x01\x03\xA9\x835\xB2h\e\x01\x10\xE4\xF6\x9F[Q\x89\x00\x13\xAD)\xFE\x19\x1Fo\xB1\xF5\xEF2\x7F\xB8W\xBCM\xD98\xEA\x8D\xA1g6D\xCD>k\xEF\xEC\x80\x93\xC3D\xFE\xAD\x1D\x89\xE7\xB0\xFD\xD5\x93\xE3Bp%O/\x94D$\x9D}\x12=Cq*\xC2\x9A\xA2\xDA\xE0\xFAX\v\xAC\xD6%;pD\x1E\vg\x13_\xC6\xF2\xDB\e\xE3\xACu\xD1\xBB\xD45\x19\x8EN\x030\xB3y=G\x9C\xD7~\xBD\xF6o\xD2*r\xE7\t9\xCE\xA9\x9F\xC5\xCEA\a\x11\x1F\xE1\xB5lI\x84D\xDF\x132j\xCC\xF1]4\x12Bq\x14\x1F()\x9D\xB0\xF1-\xA5P\xBA^g]\xE4\x87p\x16-\xDAP\xD1\xCC\x14\x8Ef\xE1\xDD\xE4f\xF2Wb\xBB8Y(\xC6\xDAz\xAB$2\xA50\x11\xD3\x83\xB2\x7F\xAF{\xD2\xA8\xFAY\xFCh\x15D\xDF&n'l\x9E\x1D\xE1,\xCE\xD3r\x89\x0F\x1E\xD0\xF9\v\xEC\xE6\xEE\xBE\e\x9Bo\xA9\xCFe\x14\xC1\xCC<\x11\x8B&\xFCB8\x91>Z\x94\xA9\xEA\xB8\x96\xF4vHvr\xE0\x88\x855\e\xD9G,\xF6o\xF3\x10}"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1b                             # text(27)
+         407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         01036e0a9ac9fe2905b7a9c7ae959639cd3ad7a0c71b526ebd3c0a7dfaea4020cd25bd4fb5777a086cc9d7697c9b9e8906e57d1681a86c40551ed0051279a703d8ff0bdf9a9ba487fb6658ea92aa64046595d2dc397632bb45877b1e0cf3dc4d4c519ec354b31c241030459754eed0da04afdf20f3bc631db5aa190ce11c595c81c85d1918f4aa4ab6de438276f9a620795aa69ae5cf1930aff987dc710dc1e92600a2a9138a61f316f0392aa0040312cae302a789f143295d16c31de81cb1d2f2fb9ffd1d38ccf9222523e6ad296e448eb10c9434fc373cc168b97c8853fd6a1009f8a66e1fd056f4b425ccf55b725e84af5cc872cefc15b1d2f7015940b591b80ec8a0132b5e30b0735da8c950da441d996a7f # "\x01\x03n\n\x9A\xC9\xFE)\x05\xB7\xA9\xC7\xAE\x95\x969\xCD:\xD7\xA0\xC7\eRn\xBD<\n}\xFA\xEA@ \xCD%\xBDO\xB5wz\bl\xC9\xD7i|\x9B\x9E\x89\x06\xE5}\x16\x81\xA8l@U\x1E\xD0\x05\x12y\xA7\x03\xD8\xFF\v\xDF\x9A\x9B\xA4\x87\xFBfX\xEA\x92\xAAd\x04e\x95\xD2\xDC9v2\xBBE\x87{\x1E\f\xF3\xDCMLQ\x9E\xC3T\xB3\x1C$\x100E\x97T\xEE\xD0\xDA\x04\xAF\xDF \xF3\xBCc\x1D\xB5\xAA\x19\f\xE1\x1CY\\\x81\xC8]\x19\x18\xF4\xAAJ\xB6\xDEC\x82v\xF9\xA6 yZ\xA6\x9A\xE5\xCF\x190\xAF\xF9\x87\xDCq\r\xC1\xE9&\x00\xA2\xA9\x13\x8Aa\xF3\x16\xF09*\xA0\x04\x03\x12\xCA\xE3\x02\xA7\x89\xF1C)]\x16\xC3\x1D\xE8\x1C\xB1\xD2\xF2\xFB\x9F\xFD\x1D8\xCC\xF9\"%#\xE6\xAD)nD\x8E\xB1\f\x944\xFC7<\xC1h\xB9|\x88S\xFDj\x10\t\xF8\xA6n\x1F\xD0V\xF4\xB4%\xCC\xF5[r^\x84\xAF\\\xC8r\xCE\xFC\x15\xB1\xD2\xF7\x01Y@\xB5\x91\xB8\x0E\xC8\xA0\x13+^0\xB0s]\xA8\xC9P\xDAD\x1D\x99j\x7F"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36444637204537413220423031372032313138203635323520314139452046433330204636303320414444352036363938 # "6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a7                                # map(7)
+         05                             # unsigned(5)
+         78 1b                          # text(27)
+            407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            41443246204444463520374142452036313430203134414120423339452035304542204543373620434131322033433843 # "AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C"
+         0f                             # unsigned(15)
+         01                             # unsigned(1)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000066               # unsigned(4395630694)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   70                                   # text(16)
+      696b6576323a7061726b65722d2d6a6a  # "ikev2:parker--jj"
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a0e47ec0e033e841fcfa2ab2e7ff2fe158f1db81b69f19866509a4fad396e6d244cd109e29ce501f5baea37f84bacd839ced7683d4fc43a17644e221c5cbdb04e6e26be87e29586728a7a43c28a84b3aae158781a71568b7358ef23a3ae75bba2d0566dd30d65bfece3e47ab51330e43c5a00660cec20c5c247de881697f7ec0e1a61adfeb237adf971044440626a9f95fca5b052add5815614f0b798a6ad11bd9d66024dca87457dc09cf554c7c9344984620454217d352e83664618a7f2a0bc815f80b2a0fa5cf4725945bcedb9906561934fd6d816e4b85f5d9ee62ed7c6b474c3ecc26858e805878fa2764925cf4cc292c5de0f65ccac857378882e74b95bb31eb831897a2c987ad9f4e6173087f2abb # "\x01\x03\xA0\xE4~\xC0\xE03\xE8A\xFC\xFA*\xB2\xE7\xFF/\xE1X\xF1\xDB\x81\xB6\x9F\x19\x86e\t\xA4\xFA\xD3\x96\xE6\xD2D\xCD\x10\x9E)\xCEP\x1F[\xAE\xA3\x7F\x84\xBA\xCD\x83\x9C\xEDv\x83\xD4\xFCC\xA1vD\xE2!\xC5\xCB\xDB\x04\xE6\xE2k\xE8~)Xg(\xA7\xA4<(\xA8K:\xAE\x15\x87\x81\xA7\x15h\xB75\x8E\xF2::\xE7[\xBA-\x05f\xDD0\xD6[\xFE\xCE>G\xABQ3\x0EC\xC5\xA0\x06`\xCE\xC2\f\\$}\xE8\x81i\x7F~\xC0\xE1\xA6\x1A\xDF\xEB#z\xDF\x97\x10DD\x06&\xA9\xF9_\xCA[\x05*\xDDX\x15aO\vy\x8Aj\xD1\e\xD9\xD6`$\xDC\xA8tW\xDC\t\xCFUL|\x93D\x98F EB\x17\xD3R\xE86da\x8A\x7F*\v\xC8\x15\xF8\v*\x0F\xA5\xCFG%\x94[\xCE\xDB\x99\x06V\x194\xFDm\x81nK\x85\xF5\xD9\xEEb\xED|kGL>\xCC&\x85\x8E\x80Xx\xFA'd\x92\\\xF4\xCC),]\xE0\xF6\\\xCA\xC8W7\x88\x82\xE7K\x95\xBB1\xEB\x83\x18\x97\xA2\xC9\x87\xAD\x9FNas\b\x7F*\xBB"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1b                             # text(27)
+         407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0102                           # bytes(258)
+         01037bc147ab55703a7d238e79c771f1a5a201ccb715e45456f4da113802e7e15bb7fe8a7877f46ee442c5fe4dbe8d99ab40b34ae7205db5f4097cea25df9e15af124ee6f961e179b13410b5e7dc49e8c75026806d869c02e7ea28d54c4e04bde63a777eba73c98d8197bd0fdae1682e9ab402accb699b1cc232b56cec857c28b8539796decc4d29802fcfc6f8d62ed37cebea2febca22bcf25d22617887a2af81d0cd8c3024f591e05b7e9c1f4736259520666c7972514c18bd11178dfddcabd63295e876d14404093e33997307dfd0cd7f6429be58d6c1732f33538d2cf5d95d89b8b446533a3606c437b148a6c8a5a9a3ca18d1f48b7cda77a5fa2dcfad1b7545 # "\x01\x03{\xC1G\xABUp:}#\x8Ey\xC7q\xF1\xA5\xA2\x01\xCC\xB7\x15\xE4TV\xF4\xDA\x118\x02\xE7\xE1[\xB7\xFE\x8Axw\xF4n\xE4B\xC5\xFEM\xBE\x8D\x99\xAB@\xB3J\xE7 ]\xB5\xF4\t|\xEA%\xDF\x9E\x15\xAF\x12N\xE6\xF9a\xE1y\xB14\x10\xB5\xE7\xDCI\xE8\xC7P&\x80m\x86\x9C\x02\xE7\xEA(\xD5LN\x04\xBD\xE6:w~\xBAs\xC9\x8D\x81\x97\xBD\x0F\xDA\xE1h.\x9A\xB4\x02\xAC\xCBi\x9B\x1C\xC22\xB5l\xEC\x85|(\xB8S\x97\x96\xDE\xCCM)\x80/\xCF\xC6\xF8\xD6.\xD3|\xEB\xEA/\xEB\xCA\"\xBC\xF2]\"ax\x87\xA2\xAF\x81\xD0\xCD\x8C0$\xF5\x91\xE0[~\x9C\x1FG6%\x95 flyrQL\x18\xBD\x11\x17\x8D\xFD\xDC\xAB\xD62\x95\xE8v\xD1D\x04\t>3\x99s\a\xDF\xD0\xCD\x7Fd)\xBEX\xD6\xC1s/3S\x8D,\xF5\xD9]\x89\xB8\xB4FS:6\x06\xC47\xB1H\xA6\xC8\xA5\xA9\xA3\xCA\x18\xD1\xF4\x8B|\xDAw\xA5\xFA-\xCF\xAD\euE"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            32413341203932443420453046412035434437203844453120443133332030433632203639383520324236452044373031 # "2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1b                          # text(27)
+            407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36364136203730343620424241422045323846203331304520433643302038304543203739304520463535362032414239 # "66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9"
+         0a                             # unsigned(10)
+         6b                             # text(11)
+            3139322e3136382e312e31      # "192.168.1.1"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               c0a80101                 # "\xC0\xA8\x01\x01"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000066               # unsigned(4395630694)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   6c                                   # text(12)
+      7061726b6572312d2d6a6a32          # "parker1--jj2"
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a0e47ec0e033e841fcfa2ab2e7ff2fe158f1db81b69f19866509a4fad396e6d244cd109e29ce501f5baea37f84bacd839ced7683d4fc43a17644e221c5cbdb04e6e26be87e29586728a7a43c28a84b3aae158781a71568b7358ef23a3ae75bba2d0566dd30d65bfece3e47ab51330e43c5a00660cec20c5c247de881697f7ec0e1a61adfeb237adf971044440626a9f95fca5b052add5815614f0b798a6ad11bd9d66024dca87457dc09cf554c7c9344984620454217d352e83664618a7f2a0bc815f80b2a0fa5cf4725945bcedb9906561934fd6d816e4b85f5d9ee62ed7c6b474c3ecc26858e805878fa2764925cf4cc292c5de0f65ccac857378882e74b95bb31eb831897a2c987ad9f4e6173087f2abb # "\x01\x03\xA0\xE4~\xC0\xE03\xE8A\xFC\xFA*\xB2\xE7\xFF/\xE1X\xF1\xDB\x81\xB6\x9F\x19\x86e\t\xA4\xFA\xD3\x96\xE6\xD2D\xCD\x10\x9E)\xCEP\x1F[\xAE\xA3\x7F\x84\xBA\xCD\x83\x9C\xEDv\x83\xD4\xFCC\xA1vD\xE2!\xC5\xCB\xDB\x04\xE6\xE2k\xE8~)Xg(\xA7\xA4<(\xA8K:\xAE\x15\x87\x81\xA7\x15h\xB75\x8E\xF2::\xE7[\xBA-\x05f\xDD0\xD6[\xFE\xCE>G\xABQ3\x0EC\xC5\xA0\x06`\xCE\xC2\f\\$}\xE8\x81i\x7F~\xC0\xE1\xA6\x1A\xDF\xEB#z\xDF\x97\x10DD\x06&\xA9\xF9_\xCA[\x05*\xDDX\x15aO\vy\x8Aj\xD1\e\xD9\xD6`$\xDC\xA8tW\xDC\t\xCFUL|\x93D\x98F EB\x17\xD3R\xE86da\x8A\x7F*\v\xC8\x15\xF8\v*\x0F\xA5\xCFG%\x94[\xCE\xDB\x99\x06V\x194\xFDm\x81nK\x85\xF5\xD9\xEEb\xED|kGL>\xCC&\x85\x8E\x80Xx\xFA'd\x92\\\xF4\xCC),]\xE0\xF6\\\xCA\xC8W7\x88\x82\xE7K\x95\xBB1\xEB\x83\x18\x97\xA2\xC9\x87\xAD\x9FNas\b\x7F*\xBB"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1b                             # text(27)
+         407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0102                           # bytes(258)
+         01037bc147ab55703a7d238e79c771f1a5a201ccb715e45456f4da113802e7e15bb7fe8a7877f46ee442c5fe4dbe8d99ab40b34ae7205db5f4097cea25df9e15af124ee6f961e179b13410b5e7dc49e8c75026806d869c02e7ea28d54c4e04bde63a777eba73c98d8197bd0fdae1682e9ab402accb699b1cc232b56cec857c28b8539796decc4d29802fcfc6f8d62ed37cebea2febca22bcf25d22617887a2af81d0cd8c3024f591e05b7e9c1f4736259520666c7972514c18bd11178dfddcabd63295e876d14404093e33997307dfd0cd7f6429be58d6c1732f33538d2cf5d95d89b8b446533a3606c437b148a6c8a5a9a3ca18d1f48b7cda77a5fa2dcfad1b7545 # "\x01\x03{\xC1G\xABUp:}#\x8Ey\xC7q\xF1\xA5\xA2\x01\xCC\xB7\x15\xE4TV\xF4\xDA\x118\x02\xE7\xE1[\xB7\xFE\x8Axw\xF4n\xE4B\xC5\xFEM\xBE\x8D\x99\xAB@\xB3J\xE7 ]\xB5\xF4\t|\xEA%\xDF\x9E\x15\xAF\x12N\xE6\xF9a\xE1y\xB14\x10\xB5\xE7\xDCI\xE8\xC7P&\x80m\x86\x9C\x02\xE7\xEA(\xD5LN\x04\xBD\xE6:w~\xBAs\xC9\x8D\x81\x97\xBD\x0F\xDA\xE1h.\x9A\xB4\x02\xAC\xCBi\x9B\x1C\xC22\xB5l\xEC\x85|(\xB8S\x97\x96\xDE\xCCM)\x80/\xCF\xC6\xF8\xD6.\xD3|\xEB\xEA/\xEB\xCA\"\xBC\xF2]\"ax\x87\xA2\xAF\x81\xD0\xCD\x8C0$\xF5\x91\xE0[~\x9C\x1FG6%\x95 flyrQL\x18\xBD\x11\x17\x8D\xFD\xDC\xAB\xD62\x95\xE8v\xD1D\x04\t>3\x99s\a\xDF\xD0\xCD\x7Fd)\xBEX\xD6\xC1s/3S\x8D,\xF5\xD9]\x89\xB8\xB4FS:6\x06\xC47\xB1H\xA6\xC8\xA5\xA9\xA3\xCA\x18\xD1\xF4\x8B|\xDAw\xA5\xFA-\xCF\xAD\euE"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a3                                      # map(3)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            32413341203932443420453046412035434437203844453120443133332030433632203639383520324236452044373031 # "2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1b                          # text(27)
+            407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36364136203730343620424241422045323846203331304520433643302038304543203739304520463535362032414239 # "66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9"
+         0a                             # unsigned(10)
+         6b                             # text(11)
+            3139322e3136382e312e31      # "192.168.1.1"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               c0a80101                 # "\xC0\xA8\x01\x01"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000066               # unsigned(4395630694)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   73                                   # text(19)
+      7061726b6572312d2d6a6a322d2d77726f6e67 # "parker1--jj2--wrong"
+   18 8b                                # unsigned(139)
+   72                                   # text(18)
+      336465732d736861312d6d6f647031353336 # "3des-sha1-modp1536"
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a98335b2681b0110e4f69f5b51890013ad29fe191f6fb1f5ef327fb857bc4dd938ea8da1673644cd3e6befec8093c344fead1d89e7b0fdd593e34270254f2f9444249d7d123d43712ac29aa2dae0fa580bacd6253b70441e0b67135fc6f2db1be3ac75d1bbd435198e4e0330b3793d479cd77ebdf66fd22a72e70939cea99fc5ce4107111fe1b56c498444df13326accf15d34124271141f28299db0f12da550ba5e675de48770162dda50d1cc148e66e1dde466f25762bb385928c6da7aab2432a53011d383b27faf7bd2a8fa59fc681544df266e276c9e1de12cced372890f1ed0f90bece6eebe1b9b6fa9cf6514c1cc3c118b26fc4238913e5a94a9eab896f476487672e08885351bd9472cf66ff3107d # "\x01\x03\xA9\x835\xB2h\e\x01\x10\xE4\xF6\x9F[Q\x89\x00\x13\xAD)\xFE\x19\x1Fo\xB1\xF5\xEF2\x7F\xB8W\xBCM\xD98\xEA\x8D\xA1g6D\xCD>k\xEF\xEC\x80\x93\xC3D\xFE\xAD\x1D\x89\xE7\xB0\xFD\xD5\x93\xE3Bp%O/\x94D$\x9D}\x12=Cq*\xC2\x9A\xA2\xDA\xE0\xFAX\v\xAC\xD6%;pD\x1E\vg\x13_\xC6\xF2\xDB\e\xE3\xACu\xD1\xBB\xD45\x19\x8EN\x030\xB3y=G\x9C\xD7~\xBD\xF6o\xD2*r\xE7\t9\xCE\xA9\x9F\xC5\xCEA\a\x11\x1F\xE1\xB5lI\x84D\xDF\x132j\xCC\xF1]4\x12Bq\x14\x1F()\x9D\xB0\xF1-\xA5P\xBA^g]\xE4\x87p\x16-\xDAP\xD1\xCC\x14\x8Ef\xE1\xDD\xE4f\xF2Wb\xBB8Y(\xC6\xDAz\xAB$2\xA50\x11\xD3\x83\xB2\x7F\xAF{\xD2\xA8\xFAY\xFCh\x15D\xDF&n'l\x9E\x1D\xE1,\xCE\xD3r\x89\x0F\x1E\xD0\xF9\v\xEC\xE6\xEE\xBE\e\x9Bo\xA9\xCFe\x14\xC1\xCC<\x11\x8B&\xFCB8\x91>Z\x94\xA9\xEA\xB8\x96\xF4vHvr\xE0\x88\x855\e\xD9G,\xF6o\xF3\x10}"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1b                             # text(27)
+         407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         01036e0a9ac9fe2905b7a9c7ae959639cd3ad7a0c71b526ebd3c0a7dfaea4020cd25bd4fb5777a086cc9d7697c9b9e8906e57d1681a86c40551ed0051279a703d8ff0bdf9a9ba487fb6658ea92aa64046595d2dc397632bb45877b1e0cf3dc4d4c519ec354b31c241030459754eed0da04afdf20f3bc631db5aa190ce11c595c81c85d1918f4aa4ab6de438276f9a620795aa69ae5cf1930aff987dc710dc1e92600a2a9138a61f316f0392aa0040312cae302a789f143295d16c31de81cb1d2f2fb9ffd1d38ccf9222523e6ad296e448eb10c9434fc373cc168b97c8853fd6a1009f8a66e1fd056f4b425ccf55b725e84af5cc872cefc15b1d2f7015940b591b80ec8a0132b5e30b0735da8c950da441d996a7f # "\x01\x03n\n\x9A\xC9\xFE)\x05\xB7\xA9\xC7\xAE\x95\x969\xCD:\xD7\xA0\xC7\eRn\xBD<\n}\xFA\xEA@ \xCD%\xBDO\xB5wz\bl\xC9\xD7i|\x9B\x9E\x89\x06\xE5}\x16\x81\xA8l@U\x1E\xD0\x05\x12y\xA7\x03\xD8\xFF\v\xDF\x9A\x9B\xA4\x87\xFBfX\xEA\x92\xAAd\x04e\x95\xD2\xDC9v2\xBBE\x87{\x1E\f\xF3\xDCMLQ\x9E\xC3T\xB3\x1C$\x100E\x97T\xEE\xD0\xDA\x04\xAF\xDF \xF3\xBCc\x1D\xB5\xAA\x19\f\xE1\x1CY\\\x81\xC8]\x19\x18\xF4\xAAJ\xB6\xDEC\x82v\xF9\xA6 yZ\xA6\x9A\xE5\xCF\x190\xAF\xF9\x87\xDCq\r\xC1\xE9&\x00\xA2\xA9\x13\x8Aa\xF3\x16\xF09*\xA0\x04\x03\x12\xCA\xE3\x02\xA7\x89\xF1C)]\x16\xC3\x1D\xE8\x1C\xB1\xD2\xF2\xFB\x9F\xFD\x1D8\xCC\xF9\"%#\xE6\xAD)nD\x8E\xB1\f\x944\xFC7<\xC1h\xB9|\x88S\xFDj\x10\t\xF8\xA6n\x1F\xD0V\xF4\xB4%\xCC\xF5[r^\x84\xAF\\\xC8r\xCE\xFC\x15\xB1\xD2\xF7\x01Y@\xB5\x91\xB8\x0E\xC8\xA0\x13+^0\xB0s]\xA8\xC9P\xDAD\x1D\x99j\x7F"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36444637204537413220423031372032313138203635323520314139452046433330204636303320414444352036363938 # "6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a7                                # map(7)
+         05                             # unsigned(5)
+         78 1b                          # text(27)
+            407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            41443246204444463520374142452036313430203134414120423339452035304542204543373620434131322033433843 # "AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C"
+         0f                             # unsigned(15)
+         02                             # unsigned(2)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000066               # unsigned(4395630694)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   69                                   # text(9)
+      616e79312d2d6a6a32                # "any1--jj2"
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a98335b2681b0110e4f69f5b51890013ad29fe191f6fb1f5ef327fb857bc4dd938ea8da1673644cd3e6befec8093c344fead1d89e7b0fdd593e34270254f2f9444249d7d123d43712ac29aa2dae0fa580bacd6253b70441e0b67135fc6f2db1be3ac75d1bbd435198e4e0330b3793d479cd77ebdf66fd22a72e70939cea99fc5ce4107111fe1b56c498444df13326accf15d34124271141f28299db0f12da550ba5e675de48770162dda50d1cc148e66e1dde466f25762bb385928c6da7aab2432a53011d383b27faf7bd2a8fa59fc681544df266e276c9e1de12cced372890f1ed0f90bece6eebe1b9b6fa9cf6514c1cc3c118b26fc4238913e5a94a9eab896f476487672e08885351bd9472cf66ff3107d # "\x01\x03\xA9\x835\xB2h\e\x01\x10\xE4\xF6\x9F[Q\x89\x00\x13\xAD)\xFE\x19\x1Fo\xB1\xF5\xEF2\x7F\xB8W\xBCM\xD98\xEA\x8D\xA1g6D\xCD>k\xEF\xEC\x80\x93\xC3D\xFE\xAD\x1D\x89\xE7\xB0\xFD\xD5\x93\xE3Bp%O/\x94D$\x9D}\x12=Cq*\xC2\x9A\xA2\xDA\xE0\xFAX\v\xAC\xD6%;pD\x1E\vg\x13_\xC6\xF2\xDB\e\xE3\xACu\xD1\xBB\xD45\x19\x8EN\x030\xB3y=G\x9C\xD7~\xBD\xF6o\xD2*r\xE7\t9\xCE\xA9\x9F\xC5\xCEA\a\x11\x1F\xE1\xB5lI\x84D\xDF\x132j\xCC\xF1]4\x12Bq\x14\x1F()\x9D\xB0\xF1-\xA5P\xBA^g]\xE4\x87p\x16-\xDAP\xD1\xCC\x14\x8Ef\xE1\xDD\xE4f\xF2Wb\xBB8Y(\xC6\xDAz\xAB$2\xA50\x11\xD3\x83\xB2\x7F\xAF{\xD2\xA8\xFAY\xFCh\x15D\xDF&n'l\x9E\x1D\xE1,\xCE\xD3r\x89\x0F\x1E\xD0\xF9\v\xEC\xE6\xEE\xBE\e\x9Bo\xA9\xCFe\x14\xC1\xCC<\x11\x8B&\xFCB8\x91>Z\x94\xA9\xEA\xB8\x96\xF4vHvr\xE0\x88\x855\e\xD9G,\xF6o\xF3\x10}"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1d                             # text(29)
+         406d6172796a616e6530312e656d6d6a61792e63726564696c2e6f7267 # "@maryjane01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0102                           # bytes(258)
+         0103ae95433e8731f2662415d388aaeb3288a2f5bccb1715d473e7607826773c46eaaba94d757e29957219c814d49041555b2b7c5e903ca0eb080b6227f61ba71ef7efbe1dc07f2a348ada581f636b3a2e2fa281611e7998c4555cb5465896137f84c8b8639f309c3fdf8c58dd44cd91ab5ad7702ff2127d66396e3d409faa640b0f6003a15f10d0b00be5f113ed786ad910ff1ea159c3c649b81a7af6f22c7e349d4d4c0632df1cac2f6ae734033847a5490e852dc117933c3643c246ee69878d5b4f7bfd6230f857ae36aa984ddb1ea0ffc347f4f1643eab1a58b748ed9a7dd999ad217d823e628a2518f3a871d93ec63e608d03d8ba76cf56adab0c7cbb379fd5 # "\x01\x03\xAE\x95C>\x871\xF2f$\x15\xD3\x88\xAA\xEB2\x88\xA2\xF5\xBC\xCB\x17\x15\xD4s\xE7`x&w<F\xEA\xAB\xA9Mu~)\x95r\x19\xC8\x14\xD4\x90AU[+|^\x90<\xA0\xEB\b\vb'\xF6\e\xA7\x1E\xF7\xEF\xBE\x1D\xC0\x7F*4\x8A\xDAX\x1Fck:./\xA2\x81a\x1Ey\x98\xC4U\\\xB5FX\x96\x13\x7F\x84\xC8\xB8c\x9F0\x9C?\xDF\x8CX\xDDD\xCD\x91\xABZ\xD7p/\xF2\x12}f9n=@\x9F\xAAd\v\x0F`\x03\xA1_\x10\xD0\xB0\v\xE5\xF1\x13\xEDxj\xD9\x10\xFF\x1E\xA1Y\xC3\xC6I\xB8\x1Az\xF6\xF2,~4\x9DML\x062\xDF\x1C\xAC/j\xE74\x038G\xA5I\x0E\x85-\xC1\x17\x93<6C\xC2F\xEEi\x87\x8D[O{\xFDb0\xF8W\xAE6\xAA\x98M\xDB\x1E\xA0\xFF\xC3G\xF4\xF1d>\xAB\x1AX\xB7H\xED\x9A}\xD9\x99\xAD!}\x82>b\x8A%\x18\xF3\xA8q\xD9>\xC6>`\x8D\x03\xD8\xBAv\xCFV\xAD\xAB\f|\xBB7\x9F\xD5"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36444637204537413220423031372032313138203635323520314139452046433330204636303320414444352036363938 # "6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a7                                # map(7)
+         05                             # unsigned(5)
+         78 1d                          # text(29)
+            406d6172796a616e6530312e656d6d6a61792e63726564696c2e6f7267 # "@maryjane01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            43374645203530324220353542432032313131203539463220323631392043383341204436373020313044332045333837 # "C7FE 502B 55BC 2111 59F2 2619 C83A D670 10D3 E387"
+         0f                             # unsigned(15)
+         02                             # unsigned(2)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700030000000100000000 # "\xFDh\xC9\xF9AW\x00\x03\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000066               # unsigned(4395630694)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   6e                                   # text(14)
+      6d6172796a616e65312d2d6a6a32      # "maryjane1--jj2"
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1f                             # text(31)
+         406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103a0e47ec0e033e841fcfa2ab2e7ff2fe158f1db81b69f19866509a4fad396e6d244cd109e29ce501f5baea37f84bacd839ced7683d4fc43a17644e221c5cbdb04e6e26be87e29586728a7a43c28a84b3aae158781a71568b7358ef23a3ae75bba2d0566dd30d65bfece3e47ab51330e43c5a00660cec20c5c247de881697f7ec0e1a61adfeb237adf971044440626a9f95fca5b052add5815614f0b798a6ad11bd9d66024dca87457dc09cf554c7c9344984620454217d352e83664618a7f2a0bc815f80b2a0fa5cf4725945bcedb9906561934fd6d816e4b85f5d9ee62ed7c6b474c3ecc26858e805878fa2764925cf4cc292c5de0f65ccac857378882e74b95bb31eb831897a2c987ad9f4e6173087f2abb # "\x01\x03\xA0\xE4~\xC0\xE03\xE8A\xFC\xFA*\xB2\xE7\xFF/\xE1X\xF1\xDB\x81\xB6\x9F\x19\x86e\t\xA4\xFA\xD3\x96\xE6\xD2D\xCD\x10\x9E)\xCEP\x1F[\xAE\xA3\x7F\x84\xBA\xCD\x83\x9C\xEDv\x83\xD4\xFCC\xA1vD\xE2!\xC5\xCB\xDB\x04\xE6\xE2k\xE8~)Xg(\xA7\xA4<(\xA8K:\xAE\x15\x87\x81\xA7\x15h\xB75\x8E\xF2::\xE7[\xBA-\x05f\xDD0\xD6[\xFE\xCE>G\xABQ3\x0EC\xC5\xA0\x06`\xCE\xC2\f\\$}\xE8\x81i\x7F~\xC0\xE1\xA6\x1A\xDF\xEB#z\xDF\x97\x10DD\x06&\xA9\xF9_\xCA[\x05*\xDDX\x15aO\vy\x8Aj\xD1\e\xD9\xD6`$\xDC\xA8tW\xDC\t\xCFUL|\x93D\x98F EB\x17\xD3R\xE86da\x8A\x7F*\v\xC8\x15\xF8\v*\x0F\xA5\xCFG%\x94[\xCE\xDB\x99\x06V\x194\xFDm\x81nK\x85\xF5\xD9\xEEb\xED|kGL>\xCC&\x85\x8E\x80Xx\xFA'd\x92\\\xF4\xCC),]\xE0\xF6\\\xCA\xC8W7\x88\x82\xE7K\x95\xBB1\xEB\x83\x18\x97\xA2\xC9\x87\xAD\x9FNas\b\x7F*\xBB"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      78 1b                             # text(27)
+         407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+      0f                                # unsigned(15)
+      59 0102                           # bytes(258)
+         01037bc147ab55703a7d238e79c771f1a5a201ccb715e45456f4da113802e7e15bb7fe8a7877f46ee442c5fe4dbe8d99ab40b34ae7205db5f4097cea25df9e15af124ee6f961e179b13410b5e7dc49e8c75026806d869c02e7ea28d54c4e04bde63a777eba73c98d8197bd0fdae1682e9ab402accb699b1cc232b56cec857c28b8539796decc4d29802fcfc6f8d62ed37cebea2febca22bcf25d22617887a2af81d0cd8c3024f591e05b7e9c1f4736259520666c7972514c18bd11178dfddcabd63295e876d14404093e33997307dfd0cd7f6429be58d6c1732f33538d2cf5d95d89b8b446533a3606c437b148a6c8a5a9a3ca18d1f48b7cda77a5fa2dcfad1b7545 # "\x01\x03{\xC1G\xABUp:}#\x8Ey\xC7q\xF1\xA5\xA2\x01\xCC\xB7\x15\xE4TV\xF4\xDA\x118\x02\xE7\xE1[\xB7\xFE\x8Axw\xF4n\xE4B\xC5\xFEM\xBE\x8D\x99\xAB@\xB3J\xE7 ]\xB5\xF4\t|\xEA%\xDF\x9E\x15\xAF\x12N\xE6\xF9a\xE1y\xB14\x10\xB5\xE7\xDCI\xE8\xC7P&\x80m\x86\x9C\x02\xE7\xEA(\xD5LN\x04\xBD\xE6:w~\xBAs\xC9\x8D\x81\x97\xBD\x0F\xDA\xE1h.\x9A\xB4\x02\xAC\xCBi\x9B\x1C\xC22\xB5l\xEC\x85|(\xB8S\x97\x96\xDE\xCCM)\x80/\xCF\xC6\xF8\xD6.\xD3|\xEB\xEA/\xEB\xCA\"\xBC\xF2]\"ax\x87\xA2\xAF\x81\xD0\xCD\x8C0$\xF5\x91\xE0[~\x9C\x1FG6%\x95 flyrQL\x18\xBD\x11\x17\x8D\xFD\xDC\xAB\xD62\x95\xE8v\xD1D\x04\t>3\x99s\a\xDF\xD0\xCD\x7Fd)\xBEX\xD6\xC1s/3S\x8D,\xF5\xD9]\x89\xB8\xB4FS:6\x06\xC47\xB1H\xA6\xC8\xA5\xA9\xA3\xCA\x18\xD1\xF4\x8B|\xDAw\xA5\xFA-\xCF\xAD\euE"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1f                          # text(31)
+            406a616d65736a6f686e736f6e2e656d6d6a61792e63726564696c2e6f7267 # "@jamesjohnson.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            32413341203932443420453046412035434437203844453120443133332030433632203639383520324236452044373031 # "2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701"
+         0a                             # unsigned(10)
+         6d                             # text(13)
+            3133322e3231332e3233382e37  # "132.213.238.7"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               84d5ee07                 # "\x84\xD5\xEE\a"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 40                       # unsigned(64)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+      04                                # unsigned(4)
+      a9                                # map(9)
+         05                             # unsigned(5)
+         78 1b                          # text(27)
+            407061726b657230312e656d6d6a61792e63726564696c2e6f7267 # "@parker01.emmjay.credil.org"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            36364136203730343620424241422045323846203331304520433643302038304543203739304520463535362032414239 # "66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9"
+         0a                             # unsigned(10)
+         6b                             # text(11)
+            3139322e3136382e312e31      # "192.168.1.1"
+         0f                             # unsigned(15)
+         18 ff                          # unsigned(255)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         11                             # unsigned(17)
+         01                             # unsigned(1)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+         0b                             # unsigned(11)
+         d9 0104                        # tag(260)
+            44                          # bytes(4)
+               c0a80101                 # "\xC0\xA8\x01\x01"
+         0e                             # unsigned(14)
+         82                             # array(2)
+            18 60                       # unsigned(96)
+            d9 0105                     # tag(261)
+               50                       # bytes(16)
+                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      18 97                             # unsigned(151)
+      1b 0000000106000026               # unsigned(4395630630)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   73                                   # text(19)
+      7061726b6572312d2d6a6a322d2d6e6f706673 # "parker1--jj2--nopfs"
