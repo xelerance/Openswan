@@ -1,23 +1,11 @@
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 ./orienttest use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 ./orienttest adding connection: "parker1--jj2"
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 ./orienttest use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 ./orienttest adding connection: "ikev2:parker--jj"
@@ -34,6 +22,7 @@ RC=0 "ikev2:parker--jj":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 AD
 RC=0 "ikev2:parker--jj":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
 RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 ./orienttest deleting connection
+./orienttest leak: whack string, item size: X
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
@@ -51,10 +40,13 @@ RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Ini
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: connection name, item size: X
 ./orienttest leak: struct connection, item size: X
+./orienttest leak: whack string, item size: X
 ./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
 ./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
 ./orienttest leak: policies path, item size: X
@@ -70,6 +62,5 @@ RC=0 "ikev2:parker--jj":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Ini
 ./orienttest leak: default conf ipsecd_dir, item size: X
 ./orienttest leak: default conf ipsec_conf_dir, item size: X
 ./orienttest leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 processing parker1--jj2
 processing ikev2:parker--jj
