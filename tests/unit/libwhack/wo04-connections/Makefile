@@ -53,12 +53,14 @@ ${TESTNAME}: ${TESTNAME}.c
 
 check1: OUTPUT ${TESTNAME} .gdb1init
 	@echo "## CHECK 1 :: ${UNITTEST1ARGS}"
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} 2>&1 && cborseq2diag.rb OUTPUT/wm1.bin >OUTPUT/${TESTNAME}1.txt
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} 2>&1
+	@cborseq2pretty.rb OUTPUT/wm1.bin | tee OUTPUT/${TESTNAME}1.txt | diff - testconn.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 	@echo "## 1 OK"
 
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
+	cp OUTPUT/${TESTNAME}1.txt testconn.txt
 
 clean:
 	rm -rf OUTPUT ${TESTNAME}
