@@ -47,7 +47,7 @@ ${TESTNAME}: ${TESTNAME}.c
 
 # --- test 1 ---
 
-.gdb1init:
+.gdb1init: Makefile
 	@echo "file ${TESTNAME}"          >$@
 	@echo "set args "${UNITTEST1ARGS} >>$@
 
