@@ -456,6 +456,38 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
 **
 */
 
+/*
+ * previously whack message strings all pointed to within the whack body,
+ * but now they are alloc_bytes'ed.
+ */
+#define FREE_STRING(msg, name) if((msg)->name != NULL) { pfree((msg)->name); (msg)->name= NULL; }
+void whack_free_msg(struct whack_message *msg)
+{
+     FREE_STRING(msg, name);
+     FREE_STRING(msg, left.id);
+     FREE_STRING(msg, left.cert);
+     FREE_STRING(msg, left.ca);
+     FREE_STRING(msg, left.groups);
+     FREE_STRING(msg, left.virt);
+     FREE_STRING(msg, left.xauth_name);
+     FREE_STRING(msg, left.host_addr_name);
+     FREE_STRING(msg, right.cert);
+     FREE_STRING(msg, right.ca);
+     FREE_STRING(msg, right.groups);
+     FREE_STRING(msg, right.virt);
+     FREE_STRING(msg, right.xauth_name);
+     FREE_STRING(msg, right.host_addr_name);
+     FREE_STRING(msg, keyid);
+     FREE_STRING(msg, myid);
+     FREE_STRING(msg, name);
+     FREE_STRING(msg, ike);
+     FREE_STRING(msg, esp);
+     FREE_STRING(msg, connalias);
+     FREE_STRING(msg, policy_label);
+     FREE_STRING(msg, keyval.ptr);
+     msg->keyval.len = 0;
+}
+
 void whack_cbor_string2c(QCBORDecodeContext *qdc, QCBORItem *item, char **where)
 {
   if(*where) pfree(*where);
