@@ -352,6 +352,7 @@ extern void clear_end(struct whack_end *e);
 
 extern err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
 extern err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern void  whack_free_msg(struct whack_message *wm);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);

@@ -610,7 +610,7 @@ whack_handle(int whackctlfd)
     socklen_t whackaddrlen = sizeof(whackaddr);
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
-    ssize_t n;
+    size_t n;
     /* static int msgnum=0; */
 
     if (whackfd < 0)
@@ -685,6 +685,7 @@ whack_handle(int whackctlfd)
     writewhackrecord(msg_buf, n);
 
     whack_process(whackfd, msg);
+    whack_free_msg(&msg);
 }
 
 /*

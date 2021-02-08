@@ -27,9 +27,9 @@ int readwhackmsg(char *infile)
 
         DBG_log("processing whack message of size: %u", iocount);
 
-        memset(&m1, 0, sizeof(m1));
         while(iocount > 0) {
             plen = iocount;
+            memset(&m1, 0, sizeof(m1));
             if ((ugh = whack_cbor_decode_msg(&m1, where, &plen)) != NULL)
                 {
                     fprintf(stderr, "failed to parse whack msg: %s\n", ugh);
@@ -41,6 +41,7 @@ int readwhackmsg(char *infile)
              * message, and call whack_handle.
              */
             whack_process(NULL_FD, m1);
+            whack_free_msg(&m1);
             msgcount++;
 
             where   += plen;
