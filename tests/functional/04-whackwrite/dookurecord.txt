@@ -1,1 +1,96 @@
-55799(1330664270(h'424F52')), {138: "@dooku.sandelman.ca", 15: h'0103BB3E4CEA01D6EB83A54B7805B5437CC04B91E0D747B4EED90F704DCFDE7C714DABE82EFD90B0D4E3FCF7615BDBA548732918E29F33278826E05ADD0CBE8EC3E2E2AE97E1667EDEEF08D9ED75F4E286840F9D6345FEF265DE621A83376B45148427BAF2AA7E9663B71F0A00E8E775C37666FBA5DD8F467395DA33D9E47B08BAA255FBC7A3F4A1C97A432598CA31A55494D10E7C1A7086E60A14F16B5CB7A4D2DEB4DBEE74A40D4ACA5AFB97841D07BC11561A7931A3FC60647C1A438394B5C60F60792446465559EFE61428DB2D2C6D55BB720ED43E70917FA498C84CE1975F0281EFE4E74A03185BE9F704D2662EEE7E14CE668D91AB9EC713904500686FC8D5E65731322F00483CDE21A5FDEF5BA2C2C8FD'}, 55799(1330664270(h'424F52')), {138: "@cassidy.sandelman.ca", 15: h'0103B4E687F3159BF088A2D22E057B6E592D36F04C36B979C35BE5AEE0715044B6076EEEDB8BE11DD114ACF3CCAB3F89718439E319E7955770E8F36B495E3E0DA0802A6DAC4C137A22260616A946A33CEE846EC5DCD5734CB4A050871E0E499EC6E0B19D1124C97230F043A96DA5903AE2636589ECA5677BEEB61EC21BBEBBC8F8138F9934F8CC6DDA805DC88A81AFED6C00CB285B3CC3DE35E36474B50E2C71EBB9BC8E42BC5791F31DB1D0BC402D43D9D003F2039D59EAD3AE5CE7937D24F2B9E28BA01D2D4AECC938F5FEEE793E39F73F89BDB0196354D866C9A46E483E0B38D0FD134193CDC1D64D0F0B66A2563DC56917F67DCCE60C8B3258DF58FC66CF58ED'}, 55799(1330664270(h'424F52')), {4: {3: {5: "@dooku.sandelman.ca", 6: "A148 7238 72EC 099B F419 ED52 3FD6 15FD 426D 2165", 10: "%myip"}, 4: {5: "@cassidy.sandelman.ca", 6: "BF64 C32C B320 0E4F 2AAE DE3F A730 2D6C ED5F 63F0", 10: "cassidy.sandelman.ca"}, 151: 4328521830, 146: 3600, 147: 28800, 148: 540, 149: 100, 150: 0}, 27: "dooku--cassidy-net"}
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      73                                # text(19)
+         40646f6f6b752e73616e64656c6d616e2e6361 # "@dooku.sandelman.ca"
+      0f                                # unsigned(15)
+      59 0114                           # bytes(276)
+         0103bb3e4cea01d6eb83a54b7805b5437cc04b91e0d747b4eed90f704dcfde7c714dabe82efd90b0d4e3fcf7615bdba548732918e29f33278826e05add0cbe8ec3e2e2ae97e1667edeef08d9ed75f4e286840f9d6345fef265de621a83376b45148427baf2aa7e9663b71f0a00e8e775c37666fba5dd8f467395da33d9e47b08baa255fbc7a3f4a1c97a432598ca31a55494d10e7c1a7086e60a14f16b5cb7a4d2deb4dbee74a40d4aca5afb97841d07bc11561a7931a3fc60647c1a438394b5c60f60792446465559efe61428db2d2c6d55bb720ed43e70917fa498c84ce1975f0281efe4e74a03185be9f704d2662eee7e14ce668d91ab9ec713904500686fc8d5e65731322f00483cde21a5fdef5ba2c2c8fd # "\x01\x03\xBB>L\xEA\x01\xD6\xEB\x83\xA5Kx\x05\xB5C|\xC0K\x91\xE0\xD7G\xB4\xEE\xD9\x0FpM\xCF\xDE|qM\xAB\xE8.\xFD\x90\xB0\xD4\xE3\xFC\xF7a[\xDB\xA5Hs)\x18\xE2\x9F3'\x88&\xE0Z\xDD\f\xBE\x8E\xC3\xE2\xE2\xAE\x97\xE1f~\xDE\xEF\b\xD9\xEDu\xF4\xE2\x86\x84\x0F\x9DcE\xFE\xF2e\xDEb\x1A\x837kE\x14\x84'\xBA\xF2\xAA~\x96c\xB7\x1F\n\x00\xE8\xE7u\xC3vf\xFB\xA5\xDD\x8FFs\x95\xDA3\xD9\xE4{\b\xBA\xA2U\xFB\xC7\xA3\xF4\xA1\xC9zC%\x98\xCA1\xA5T\x94\xD1\x0E|\x1Ap\x86\xE6\n\x14\xF1k\\\xB7\xA4\xD2\xDE\xB4\xDB\xEEt\xA4\rJ\xCAZ\xFB\x97\x84\x1D\a\xBC\x11V\x1Ay1\xA3\xFC`d|\x1AC\x83\x94\xB5\xC6\x0F`y$FFUY\xEF\xE6\x14(\xDB-,mU\xBBr\x0E\xD4>p\x91\x7F\xA4\x98\xC8L\xE1\x97_\x02\x81\xEF\xE4\xE7J\x03\x18[\xE9\xF7\x04\xD2f.\xEE~\x14\xCEf\x8D\x91\xAB\x9E\xC7\x13\x90E\x00ho\xC8\xD5\xE6W12/\x00H<\xDE!\xA5\xFD\xEF[\xA2\xC2\xC8\xFD"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   0a                                   # unsigned(10)
+   a3                                   # map(3)
+      10                                # unsigned(16)
+      75                                # text(21)
+         40636173736964792e73616e64656c6d616e2e6361 # "@cassidy.sandelman.ca"
+      0f                                # unsigned(15)
+      59 0102                           # bytes(258)
+         0103b4e687f3159bf088a2d22e057b6e592d36f04c36b979c35be5aee0715044b6076eeedb8be11dd114acf3ccab3f89718439e319e7955770e8f36b495e3e0da0802a6dac4c137a22260616a946a33cee846ec5dcd5734cb4a050871e0e499ec6e0b19d1124c97230f043a96da5903ae2636589eca5677beeb61ec21bbebbc8f8138f9934f8cc6dda805dc88a81afed6c00cb285b3cc3de35e36474b50e2c71ebb9bc8e42bc5791f31db1d0bc402d43d9d003f2039d59ead3ae5ce7937d24f2b9e28ba01d2d4aecc938f5feee793e39f73f89bdb0196354d866c9a46e483e0b38d0fd134193cdc1d64d0f0b66a2563dc56917f67dcce60c8b3258df58fc66cf58ed # "\x01\x03\xB4\xE6\x87\xF3\x15\x9B\xF0\x88\xA2\xD2.\x05{nY-6\xF0L6\xB9y\xC3[\xE5\xAE\xE0qPD\xB6\an\xEE\xDB\x8B\xE1\x1D\xD1\x14\xAC\xF3\xCC\xAB?\x89q\x849\xE3\x19\xE7\x95Wp\xE8\xF3kI^>\r\xA0\x80*m\xACL\x13z\"&\x06\x16\xA9F\xA3<\xEE\x84n\xC5\xDC\xD5sL\xB4\xA0P\x87\x1E\x0EI\x9E\xC6\xE0\xB1\x9D\x11$\xC9r0\xF0C\xA9m\xA5\x90:\xE2ce\x89\xEC\xA5g{\xEE\xB6\x1E\xC2\e\xBE\xBB\xC8\xF8\x13\x8F\x994\xF8\xCCm\xDA\x80]\xC8\x8A\x81\xAF\xEDl\x00\xCB([<\xC3\xDE5\xE3dt\xB5\x0E,q\xEB\xB9\xBC\x8EB\xBCW\x91\xF3\x1D\xB1\xD0\xBC@-C\xD9\xD0\x03\xF2\x03\x9DY\xEA\xD3\xAE\\\xE7\x93}$\xF2\xB9\xE2\x8B\xA0\x1D-J\xEC\xC98\xF5\xFE\xEEy>9\xF7?\x89\xBD\xB0\x19cT\xD8f\xC9\xA4nH>\v8\xD0\xFD\x13A\x93\xCD\xC1\xD6M\x0F\vf\xA2V=\xC5i\x17\xF6}\xCC\xE6\f\x8B2X\xDFX\xFCf\xCFX\xED"
+      11                                # unsigned(17)
+      01                                # unsigned(1)
+
+,
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a2                                      # map(2)
+   04                                   # unsigned(4)
+   a8                                   # map(8)
+      03                                # unsigned(3)
+      a6                                # map(6)
+         05                             # unsigned(5)
+         73                             # text(19)
+            40646f6f6b752e73616e64656c6d616e2e6361 # "@dooku.sandelman.ca"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            41313438203732333820373245432030393942204634313920454435322033464436203135464420343236442032313635 # "A148 7238 72EC 099B F419 ED52 3FD6 15FD 426D 2165"
+         0a                             # unsigned(10)
+         65                             # text(5)
+            256d796970                  # "%myip"
+         0f                             # unsigned(15)
+         03                             # unsigned(3)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+      04                                # unsigned(4)
+      a6                                # map(6)
+         05                             # unsigned(5)
+         75                             # text(21)
+            40636173736964792e73616e64656c6d616e2e6361 # "@cassidy.sandelman.ca"
+         06                             # unsigned(6)
+         78 31                          # text(49)
+            42463634204333324320423332302030453446203241414520444533462041373330203244364320454435462036334630 # "BF64 C32C B320 0E4F 2AAE DE3F A730 2D6C ED5F 63F0"
+         0a                             # unsigned(10)
+         74                             # text(20)
+            636173736964792e73616e64656c6d616e2e6361 # "cassidy.sandelman.ca"
+         0f                             # unsigned(15)
+         07                             # unsigned(7)
+         10                             # unsigned(16)
+         18 ff                          # unsigned(255)
+         14                             # unsigned(20)
+         19 01f4                        # unsigned(500)
+      18 97                             # unsigned(151)
+      1b 0000000102000066               # unsigned(4328521830)
+      18 92                             # unsigned(146)
+      19 0e10                           # unsigned(3600)
+      18 93                             # unsigned(147)
+      19 7080                           # unsigned(28800)
+      18 94                             # unsigned(148)
+      19 021c                           # unsigned(540)
+      18 95                             # unsigned(149)
+      18 64                             # unsigned(100)
+      18 96                             # unsigned(150)
+      00                                # unsigned(0)
+   18 1b                                # unsigned(27)
+   72                                   # text(18)
+      646f6f6b752d2d636173736964792d6e6574 # "dooku--cassidy-net"
