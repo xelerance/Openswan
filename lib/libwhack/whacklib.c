@@ -131,6 +131,21 @@ enum whack_cbor_end_attr {
       WHACK_OPT_END_HOST_NEXTHOP  = 12,
       WHACK_OPT_END_HOST_SRCIP    = 13,
       WHACK_OPT_END_CLIENT        = 14,
+
+      WHACK_OPT_HOST_TYPE = 15,
+      WHACK_OPT_KEYTYPE   = 16,
+      WHACK_OPT_HAS_CLIENT= 17,
+      WHACK_OPT_HAS_CLIENT_WILDCARD=18,
+      WHACK_OPT_HAS_PORT_WILDCARD=19,
+      WHACK_OPT_HOST_PORT=20,
+      WHACK_OPT_PORT=138,
+      WHACK_OPT_XAUTH_SERVER=139,
+      WHACK_OPT_XAUTH_CLIENT=140,
+      WHACK_OPT_MODECFG_SERVER=141,
+      WHACK_OPT_MODECFG_CLIENT=142,
+      WHACK_OPT_CERTPOLICY=143,
+      WHACK_OPT_CERTTYPE=144,
+      WHACK_OPT_TUNDEV=145
 };
 
 #if 0
@@ -194,6 +209,8 @@ static void whack_cbor_encode_some_ipsubnet_ToMapN(QCBOREncodeContext *qec
   }
 }
 
+#define ADDIntIfNotZero(qec, tag, value) if(value != 0) QCBOREncode_AddInt64ToMapN(qec,tag,value)
+
 static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
 {
   if(we->id) {
@@ -217,6 +234,21 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   if(we->host_addr_name) {
     QCBOREncode_AddSZStringToMapN(qec, WHACK_OPT_END_HOST_ADDRNAME, we->host_addr_name);
   }
+
+  ADDIntIfNotZero(qec, WHACK_OPT_HOST_TYPE, we->host_type);
+  ADDIntIfNotZero(qec, WHACK_OPT_KEYTYPE,   we->keytype);
+  ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT, we->has_client);
+  ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT_WILDCARD, we->has_client_wildcard);
+  ADDIntIfNotZero(qec, WHACK_OPT_HAS_PORT_WILDCARD, we->has_port_wildcard);
+  ADDIntIfNotZero(qec, WHACK_OPT_HOST_PORT, we->host_port);
+  ADDIntIfNotZero(qec, WHACK_OPT_PORT,      we->protocol);
+  ADDIntIfNotZero(qec, WHACK_OPT_XAUTH_SERVER, we->xauth_server);
+  ADDIntIfNotZero(qec, WHACK_OPT_XAUTH_CLIENT, we->xauth_client);
+  ADDIntIfNotZero(qec, WHACK_OPT_MODECFG_SERVER, we->modecfg_server);
+  ADDIntIfNotZero(qec, WHACK_OPT_MODECFG_CLIENT, we->modecfg_client);
+  ADDIntIfNotZero(qec, WHACK_OPT_CERTPOLICY, we->sendcert);
+  ADDIntIfNotZero(qec, WHACK_OPT_CERTTYPE,   we->certtype);
+  ADDIntIfNotZero(qec, WHACK_OPT_TUNDEV,     we->tundev);
 
   /* host_addr */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_ADDR
@@ -289,6 +321,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_MARGIN, wm->sa_rekey_margin);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_FUZZ, wm->sa_rekey_fuzz);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_TRIES, wm->sa_keying_tries);
+
     QCBOREncode_CloseMap(&qec);
   }
 
@@ -677,6 +710,48 @@ void whack_cbor_process_end(QCBORDecodeContext *qdc
         break;
       case WHACK_OPT_END_CLIENT:
         whack_cbor_decode_ipsubnet(qdc, endtype, &item, &end->client);
+        break;
+      case WHACK_OPT_HOST_TYPE:
+        end->host_type=item.val.int64;
+        break;
+      case WHACK_OPT_KEYTYPE:
+        end->keytype= item.val.int64;
+        break;
+      case WHACK_OPT_HAS_CLIENT:
+        end->has_client= item.val.int64;
+        break;
+      case WHACK_OPT_HAS_CLIENT_WILDCARD:
+        end->has_client_wildcard= item.val.int64;
+        break;
+      case WHACK_OPT_HAS_PORT_WILDCARD:
+        end->has_port_wildcard= item.val.int64;
+        break;
+      case WHACK_OPT_HOST_PORT:
+        end->host_port = item.val.int64;
+        break;
+      case WHACK_OPT_PORT:
+        end->protocol= item.val.int64;
+        break;
+      case WHACK_OPT_XAUTH_SERVER:
+        end->xauth_server= item.val.int64;
+        break;
+      case WHACK_OPT_XAUTH_CLIENT:
+        end->xauth_client= item.val.int64;
+        break;
+      case WHACK_OPT_MODECFG_SERVER:
+        end->modecfg_server= item.val.int64;
+        break;
+      case WHACK_OPT_MODECFG_CLIENT:
+        end->modecfg_client= item.val.int64;
+        break;
+      case WHACK_OPT_CERTPOLICY:
+        end->sendcert= item.val.int64;
+        break;
+      case WHACK_OPT_CERTTYPE:
+        end->certtype= item.val.int64;
+        break;
+      case WHACK_OPT_TUNDEV:
+        end->tundev= item.val.int64;
         break;
       default:
         whack_cbor_consume_item(qdc, &item);
