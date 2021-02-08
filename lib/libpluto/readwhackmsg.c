@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
@@ -12,14 +13,25 @@ int readwhackmsg(char *infile)
     int   iocount;
     int   msgcount=0;
     FILE *record;
-    u_char  b1[8192];
+    u_char  *b1;
+    struct stat sbuf;
 
     if((record = fopen(infile, "r")) == NULL) {
 	    perror(infile);
 	    exit(9);
     }
 
-    while((iocount=fread(b1, 1, sizeof(b1), record)) > 0) {
+    if(fstat(fileno(record), &sbuf) != 0) {
+        perror(infile);
+        exit(8);
+    }
+
+    b1 = alloca(sbuf.st_size);
+    if(b1 == NULL) {
+        exit(7);
+    }
+
+    while((iocount=fread(b1, 1, sbuf.st_size, record)) > 0) {
 	err_t ugh = NULL;
 	struct whack_message m1;
         u_char *where = b1;
@@ -29,7 +41,6 @@ int readwhackmsg(char *infile)
 
         while(iocount > 0) {
             plen = iocount;
-            memset(&m1, 0, sizeof(m1));
             if ((ugh = whack_cbor_decode_msg(&m1, where, &plen)) != NULL)
                 {
                     fprintf(stderr, "failed to parse whack msg: %s\n", ugh);
