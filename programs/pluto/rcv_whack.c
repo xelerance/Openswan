@@ -655,6 +655,8 @@ whack_handle(int whackctlfd)
             return;
         }
 
+
+
         /* okay, check for CBOR sequence */
         if(n <= 12 || memcmp(msg_buf, cbor_opsn_magic, 12) != 0) {
             u_int32_t *bu32 = (u_int32_t*)msg_buf;

@@ -18,8 +18,6 @@
 ./certreplyselfR2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./certreplyselfR2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -1775,4 +1773,3 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplyselfR2 leak: default conf ipsecd_dir, item size: X
 ./certreplyselfR2 leak: default conf ipsec_conf_dir, item size: X
 ./certreplyselfR2 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

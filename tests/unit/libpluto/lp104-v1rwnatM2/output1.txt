@@ -17,14 +17,8 @@
 ./v1rwnatM2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./v1rwnatM2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./v1rwnatM2 loaded key: 55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./v1rwnatM2 loaded key: D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -49,9 +43,9 @@ processing whack msg time: X size: Y
 |   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
 |   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
-| find_host_pair: looking for me=<invalid>:500 %address him=192.168.0.2:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %address him=192.168.0.2:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %address 192.168.0.2:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %address 192.168.0.2:500 -> hp:none
 | find_ID_host_pair: looking for me=@alice him=@sun (exact)
 |   concluded with <none>
 ./v1rwnatM2 adding connection: "bobnet-ikev1"
@@ -63,7 +57,7 @@ RC=0 "bobnet-ikev1":     myip=unset; hisip=unset;
 RC=0 "bobnet-ikev1":   keys: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none...
 RC=0 "bobnet-ikev1":        ....1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none
 RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
 RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
