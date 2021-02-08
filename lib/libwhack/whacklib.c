@@ -400,10 +400,6 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_CloseMap(&qec);
   }
 
-  if(wm->whack_status) {
-    QCBOREncode_OpenMapInMapN(&qec, WHACK_STATUS);
-  }
-
   if(wm->ike) {
     QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
   }
