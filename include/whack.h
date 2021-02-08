@@ -111,6 +111,7 @@ enum whack_CBOR_actions {
     WHACK_INITIATE =7,
     WHACK_INITIATE_OPPO=8,
     WHACK_TERMINATE=9,
+    WHACK_ADD_KEY  =10,
 };
 
 /* this is the historic message from Openswan < 3.1 */
