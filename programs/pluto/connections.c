@@ -774,20 +774,26 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
         addr    = aftoinfo(addrtypeof(&this->host_addr));
         nexthop = aftoinfo(addrtypeof(&this->host_nexthop));
 
-	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
+	loglog(RC_CLASH, "%s: address family inconsistency in this connection=%s host=%s/nexthop=%s"
+               , wm->name
 	       , (wm->end_addr_family) ? aftoinfo(wm->end_addr_family)->name             : "NULL"
 	       , (addr)    ? addr->name    : "NULL"
 	       , (nexthop) ? nexthop->name : "NULL");
 	return FALSE;
     }
 
-    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR
-	&& subnettypeof(&this->client) != subnettypeof(&that->client))
+    if ((this->host_type == KH_IPADDR && that->host_type == KH_IPADDR)
+        && (this->has_client
+            && that->has_client
+            && subnettypeof(&this->client) != subnettypeof(&that->client)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
-	loglog(RC_CLASH, "address family inconsistency in this/that connection");
+	loglog(RC_CLASH, "\"%s\" address family inconsistency in connection, this=%d/%d that=%d/%d"
+               , wm->name
+               , this->host_type, subnettypeof(&this->client)
+               , that->host_type, subnettypeof(&that->client));
 	return FALSE;
     }
 
