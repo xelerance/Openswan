@@ -36,10 +36,11 @@ int main(int argc, char *argv[])
     memset(&wm1, 0, sizeof(wm1));
 
     /* should complain about missing magic tag */
-    err = whack_cbor_decode_msg(&wm1, wm_buf+12, insize-12);
+    size_t insize2 = insize-12;
+    err = whack_cbor_decode_msg(&wm1, wm_buf+12, &insize2);
     passert(err != NULL);
 
-    err = whack_cbor_decode_msg(&wm1, wm_buf, insize);
+    err = whack_cbor_decode_msg(&wm1, wm_buf, &insize);
     if(err) { printf("decode error: %s\n", err); exit(4); }
 
     /* encode it again, and write it out */
