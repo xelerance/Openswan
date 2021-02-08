@@ -117,6 +117,7 @@ enum whack_cbor_attributes {
       WHACK_OPT_KEYVAL        = 15,
       WHACK_OPT_KEYID         = 16,
       WHACK_OPT_KEYALG        = 17,
+      WHACK_OPT_END_ADDR_FAMILY=18,
 };
 
 enum whack_cbor_end_attr {
@@ -321,6 +322,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_MARGIN, wm->sa_rekey_margin);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_FUZZ, wm->sa_rekey_fuzz);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_REKEY_TRIES, wm->sa_keying_tries);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_END_ADDR_FAMILY, wm->end_addr_family);
 
     QCBOREncode_CloseMap(&qec);
   }
@@ -881,6 +883,10 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
 
       case WHACK_OPT_LIFETIME_REKEY_TRIES:
         wm->sa_keying_tries = item.val.int64;
+        break;
+
+      case WHACK_OPT_END_ADDR_FAMILY:
+        wm->end_addr_family = item.val.int64;
         break;
 
       default:
