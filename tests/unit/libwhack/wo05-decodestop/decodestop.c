@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     if(err) { printf("decode error: %s\n", err); exit(4); }
 
     /* encode it again, and write it out */
+    insize = sizeof(wm_buf);
     err = whack_cbor_encode_msg(&wm1, wm_buf, &insize);
     if(err) { printf("recode: error: %s\n", err); exit(5); }
 
