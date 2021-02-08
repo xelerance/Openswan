@@ -236,6 +236,10 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   }
 
   ADDIntIfNotZero(qec, WHACK_OPT_HOST_TYPE, we->host_type);
+  /* host_addr */
+  whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_ADDR
+                                            , &we->host_addr);
+
   ADDIntIfNotZero(qec, WHACK_OPT_KEYTYPE,   we->keytype);
   ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT, we->has_client);
   ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT_WILDCARD, we->has_client_wildcard);
@@ -249,10 +253,6 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   ADDIntIfNotZero(qec, WHACK_OPT_CERTPOLICY, we->sendcert);
   ADDIntIfNotZero(qec, WHACK_OPT_CERTTYPE,   we->certtype);
   ADDIntIfNotZero(qec, WHACK_OPT_TUNDEV,     we->tundev);
-
-  /* host_addr */
-  whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_ADDR
-                                         , &we->host_addr);
 
   /* host_nexthop */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_NEXTHOP
