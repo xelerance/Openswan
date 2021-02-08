@@ -662,7 +662,7 @@ whack_handle(int whackctlfd)
                             , n
                             , htonl(bu32[0]), htonl(bu32[1]), htonl(bu32[2]));
 	}
-        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf, n)) != NULL)
+        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf, &n)) != NULL)
         {
             /* nothing, ugh is already set */
         }

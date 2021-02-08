@@ -861,13 +861,15 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
 /**
  * Unpack a message whack received
  *
- * @param wp The whack message
+ * @param wm   The whack message that will be filled in
+ * @param buf  CBOR encoded whack message
+ * @param plen A pointer to a size_t that contains the length of the input, and upon successful return, will be filled in with the amount of the data that was consumed.
  * @return err_t
  */
-err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t plen)
+err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t *plen)
 {
     err_t ugh = "broken";
-    UsefulBufC todecode = {buf, (unsigned long)plen};
+    UsefulBufC todecode = {buf, (unsigned long)*plen};
     QCBORDecodeContext qdc;
     QCBORItem   item;
     QCBORError  uErr;
@@ -1031,6 +1033,10 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
       CBOR_DEBUG("elemCount: %d uErr: %d\n", elemCount, uErr);
       return "did not process message correctly";
     }
+
+    /* find out from qdc how much space was used */
+    size_t used = UsefulInputBuf_Tell(&qdc.InBuf);
+    *plen = used;
 
     /* success */
     ugh = NULL;
