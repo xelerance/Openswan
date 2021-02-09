@@ -60,6 +60,7 @@ install:
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi
+  - mkdir -p $HOME/stuff/sbin
   - cp tests/utils/cborseq2pretty.rb $HOME/stuff/sbin
 
 script:
