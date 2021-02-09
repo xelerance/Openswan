@@ -13,6 +13,8 @@
 #include "pluto/db2_ops.h"
 #include "pluto/state.h"
 #include "alg_info.h"
+#include "sysqueue.h"
+#include "pluto_crypt.h"
 
 #include "sysqueue.h"
 #include "pluto/connections.h"
