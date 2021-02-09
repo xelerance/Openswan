@@ -1211,7 +1211,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 | recv_pcap_packet2() call 1: exit
 RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I1 (sent v2I1, expected v2R1); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=-1; msgid=0; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_IKESA_DEL (PARENT SA scheduled for deletion); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=-1; msgid=2; idle; import:admin initiate
 ./rekeyParentSA deleting connection
 | pass 0: considering CHILD SAs to delete
 ./rekeyParentSA deleting state #3 (STATE_PARENT_I1)
