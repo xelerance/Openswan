@@ -18,6 +18,7 @@ die() {
 do_git_add=true
 do_clean=false
 do_pcapupdate=false
+die_on_failure=false
 make_options=
 
 while [ -n "$1" ] ; do
@@ -33,7 +34,7 @@ $(basename $0) <test> ...
  -a --no-git-add-p      skip the git add -p on a per test basis, run all tests
  -v --verbose           make build verbose
  -o --make-options ...  additional options for make
-
+ -e --die-on-failure    stop on non-zero exit from make check
 END
             exit 0
             ;;
@@ -42,6 +43,9 @@ END
             ;;
         -c|--clean)
             do_clean=true
+            ;;
+        -e|--die-on-failure)
+            die_on_failure=true
             ;;
         -p|--pcapupdate|--pcap-update)
             do_pcapupdate=true
@@ -100,7 +104,11 @@ run_make_check() {
         if [ -f core ] ; then
             die "$1: exit with $rc, test crashed creating a core file, halting!"
         fi
-        warn "$1: exit with $rc"
+        if $die_on_failure; then
+            die "$1: exit with $rc"
+        else
+            warn "$1: exit with $rc"
+        fi
     fi
     return $rc
 }
