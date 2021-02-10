@@ -389,16 +389,16 @@ RC=105 STATE_MAIN_I1: initiate
 0: output to OUTPUT/parentM2.pcap
 |   =========== input from pcap file parentN1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 500
-| *received 136 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 140 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
-|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
-|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
-|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
-|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
-|   5c 57 28 f2  0e 95 45 2f
+|   01 10 02 00  00 00 00 00  00 00 00 8c  0d 00 00 38
+|   00 00 00 01  00 00 00 01  00 00 00 2c  00 01 00 01
+|   00 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0e  0d 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30  0d 00 00 14  af ca d7 13  68 a1 f1 c9
+|   6b 86 96 fc  77 57 01 00  00 00 00 14  4a 13 1c 81
+|   07 03 58 45  5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -411,7 +411,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | v1 state object #1 found, in STATE_MAIN_I1
 | got payload 0x2(ISAKMP_NEXT_SA) needed: 0x2 opt: 0x2080
 | ***parse ISAKMP Security Association Payload:
-|    length: 52
+|    length: 56
 |    DOI: ISAKMP_DOI_IPSEC
 | got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
 | ***parse ISAKMP Vendor ID Payload:
@@ -427,7 +427,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | ****parse IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | ****parse ISAKMP Proposal Payload:
-|    length: 40
+|    length: 44
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
@@ -516,7 +516,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 15(OAKLEY_GROUP_MODP3072)
 | *****parse ISAKMP Transform Payload (ISAKMP):
-|    length: 32
+|    length: 36
 |    transform number: 0
 |    transform ID: KEY_IKE
 | ******parse ISAKMP Oakley attribute:
@@ -534,6 +534,10 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | ******parse ISAKMP Oakley attribute:
 |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
 |    length/value: 7
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+|    invalid oakley attr: 128
 | ******parse ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 4

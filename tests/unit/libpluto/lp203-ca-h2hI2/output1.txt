@@ -146,9 +146,9 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: output to OUTPUT/h2hI2.pcap
 |   =========== input from pcap file h2hR1.pcap ========
-| *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 457 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -171,9 +171,11 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   31 fb 82 ee  29 00 00 14  00 84 b6 7e  d1 b6 d1 52
 |   89 0e d7 1c  74 b9 26 e4  29 00 00 1c  00 00 40 04
 |   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
-|   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
+|   ec 7e 9b fe  26 00 00 1c  00 00 40 05  81 b5 74 15
 |   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
-|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
+|   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator
@@ -208,6 +210,9 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| has a v2CERTREQ payload going to decode it
+| requested CA keyID  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
+|   3a ed cd aa
 | selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
@@ -262,7 +267,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting length of IKEv2 Identification Payload: 84
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_ALWAYSSEND and I did not get a certificate request
+|  sendcert: CERT_ALWAYSSEND and I did get a certificate request
 |  so send cert.
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -939,6 +944,8 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 leak: calculated skey_dshared secret, item size: X
 ./h2hI2 leak: calculated sharedshared secret, item size: X
 ./h2hI2 leak: ikev2_inR1outI2 KE, item size: X
+./h2hI2 leak: ca keyid, item size: X
+./h2hI2 leak: generalName, item size: X
 ./h2hI2 leak: nonce, item size: X
 ./h2hI2 leak: Gr, item size: X
 ./h2hI2 leak: saved first packet, item size: X

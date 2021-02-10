@@ -57,10 +57,10 @@ RC=0 "t4901-wrongpolicy":   IKE algorithms wanted: aes_cbc(12)_256-hmac_sha2_256
 RC=0 "t4901-wrongpolicy":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_256_128(12)_256-prfsha2_256(5)-MODP3072(15)
 0: output to OUTPUT/parentN3.pcap
 |   =========== input from pcap file parentM1.pcap ========
-| *received 284 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 320 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 1c  0d 00 00 c8
-|   00 00 00 01  00 00 00 01  00 00 00 bc  00 01 00 05
+|   01 10 02 00  00 00 00 00  00 00 01 40  0d 00 00 ec
+|   00 00 00 01  00 00 00 01  00 00 00 e0  00 01 00 06
 |   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
 |   80 04 00 0e  03 00 00 24  01 01 00 00  80 0b 00 01
@@ -70,12 +70,14 @@ RC=0 "t4901-wrongpolicy":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_256
 |   80 0e 00 80  80 02 00 04  80 04 00 05  03 00 00 24
 |   03 01 00 00  80 0b 00 01  80 0c 0e 10  80 03 00 03
 |   80 01 00 07  80 0e 00 80  80 02 00 02  80 04 00 05
-|   00 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   03 00 00 24  04 01 00 00  80 0b 00 01  80 0c 0e 10
 |   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
-|   80 04 00 0f  0d 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30  0d 00 00 14  af ca d7 13  68 a1 f1 c9
-|   6b 86 96 fc  77 57 01 00  00 00 00 14  4a 13 1c 81
-|   07 03 58 45  5c 57 28 f2  0e 95 45 2f
+|   80 04 00 0f  00 00 00 24  05 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 03 00 03  80 01 00 07  80 0e 00 80
+|   80 02 00 02  80 04 00 0f  0d 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30  0d 00 00 14  af ca d7 13
+|   68 a1 f1 c9  6b 86 96 fc  77 57 01 00  00 00 00 14
+|   4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 ./parentN3 received Vendor ID payload [Dead Peer Detection]
 ./parentN3 received Vendor ID payload [RFC 3947] method set to=115
@@ -143,6 +145,11 @@ RC=0 "t4901-wrongpolicy":   IKE algorithms found:  aes_cbc(12)_256-hmac_sha2_256
 | proposal 4   succ integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha2_256_128)
 | proposal 4   succ prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha2-256)
 | proposal 4   succ dh=   (policy:OAKLEY_GROUP_MODP3072 vs offered:OAKLEY_GROUP_MODP3072)
+| emitting length of ISAKMP Security Association Payload: 8
+| proposal 5 failed encr= (policy:             aes_cbc[128] vs offered:aes_cbc[256]) [0,1]
+| proposal 5 failed integ=(policy:   hmac_sha2_256_128 vs offered:hmac_sha1_96)
+| proposal 5 failed prf=  (policy:   prf-hmac-sha2-256 vs offered:prf-hmac-sha1)
+| proposal 5   succ dh=   (policy:OAKLEY_GROUP_MODP3072 vs offered:OAKLEY_GROUP_MODP3072)
 | emitting length of ISAKMP Security Association Payload: 8
 ./parentN3 no acceptable Oakley Transform
 | complete state transition with STF_FAIL+14

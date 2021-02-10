@@ -346,16 +346,16 @@ RC=105 STATE_MAIN_I1: initiate
 0: input from parentN1.pcap
 |   =========== input from pcap file parentN1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 500
-| *received 136 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 140 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
-|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
-|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 03 00 03  80 01 00 07  80 02 00 04  80 04 00 0e
-|   0d 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
-|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
-|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
-|   5c 57 28 f2  0e 95 45 2f
+|   01 10 02 00  00 00 00 00  00 00 00 8c  0d 00 00 38
+|   00 00 00 01  00 00 00 01  00 00 00 2c  00 01 00 01
+|   00 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 07  80 0e 00 80  80 02 00 04
+|   80 04 00 0e  0d 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30  0d 00 00 14  af ca d7 13  68 a1 f1 c9
+|   6b 86 96 fc  77 57 01 00  00 00 00 14  4a 13 1c 81
+|   07 03 58 45  5c 57 28 f2  0e 95 45 2f
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
