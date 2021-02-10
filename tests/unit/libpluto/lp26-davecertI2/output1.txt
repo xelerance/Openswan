@@ -140,9 +140,9 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: output to OUTPUT/davecertI2.pcap
 |   =========== input from pcap file certreplydaveR1.pcap ========
-| *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 457 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 c9  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
 |   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -165,9 +165,11 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   e9 3c 0e 8b  29 00 00 14  20 98 9d 37  a8 14 a6 4d
 |   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
 |   f3 71 b6 36  19 32 87 fc  7f b2 9b 73  de 8a d0 75
-|   d9 71 fc c6  2b 00 00 1c  00 00 40 05  64 2a d2 2a
+|   d9 71 fc c6  26 00 00 1c  00 00 40 05  64 2a d2 2a
 |   dc 2f fc 41  eb 93 5f 7b  44 d8 3f 95  fd c3 8c 0f
-|   00 00 00 10  4f 45 ab ab  ab ab ab ab  ab ab ab ab
+|   2b 00 00 19  04 86 cb 59  12 06 07 df  3f 00 36 b9
+|   64 c6 c5 14  1f 3a ed cd  aa 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am the IKE SA Initiator
 | I am this exchange's Initiator
@@ -202,6 +204,9 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   5d b8 d8 23  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| has a v2CERTREQ payload going to decode it
+| requested CA keyID  86 cb 59 12  06 07 df 3f  00 36 b9 64  c6 c5 14 1f
+|   3a ed cd aa
 | selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
@@ -249,7 +254,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | emitting length of IKEv2 Identification Payload: 84
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_ALWAYSSEND and I did not get a certificate request
+|  sendcert: CERT_ALWAYSSEND and I did get a certificate request
 |  so send cert.
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -902,6 +907,8 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2 leak: calculated skey_dshared secret, item size: X
 ./davecertI2 leak: calculated sharedshared secret, item size: X
 ./davecertI2 leak: ikev2_inR1outI2 KE, item size: X
+./davecertI2 leak: ca keyid, item size: X
+./davecertI2 leak: generalName, item size: X
 ./davecertI2 leak: nonce, item size: X
 ./davecertI2 leak: Gr, item size: X
 ./davecertI2 leak: saved first packet, item size: X
