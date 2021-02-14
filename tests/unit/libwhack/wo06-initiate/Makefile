@@ -37,7 +37,7 @@ export EF_DISABLE_BANNER
 
 check: check1
 update: update1
-programs: ${TESTNAME}
+programs: ${TESTNAME} .gdb1init
 
 OUTPUT:
 	@mkdir -p OUTPUT
@@ -48,7 +48,7 @@ ${TESTNAME}: ${TESTNAME}.c
 
 # --- test 1 ---
 
-.gdb1init:
+.gdb1init: Makefile
 	@echo "file ${TESTNAME}"          >$@
 	@echo "set args "${UNITTEST1ARGS} >>$@
 

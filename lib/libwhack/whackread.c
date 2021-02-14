@@ -252,6 +252,7 @@ void whack_cbor_process_route(QCBORDecodeContext *qdc
                               , struct whack_message *wm
                               , QCBORItem *first)
 {
+  wm->whack_route = TRUE;
   whack_cbor_process_namemap(qdc, "route", wm, first);
 }
 
@@ -259,6 +260,7 @@ void whack_cbor_process_unroute(QCBORDecodeContext *qdc
                               , struct whack_message *wm
                               , QCBORItem *first)
 {
+  wm->whack_unroute = TRUE;
   whack_cbor_process_namemap(qdc, "unroute", wm, first);
 }
 
@@ -266,6 +268,7 @@ void whack_cbor_process_initiate(QCBORDecodeContext *qdc
                                  , struct whack_message *wm
                                  , QCBORItem *first)
 {
+  wm->whack_initiate = TRUE;
   whack_cbor_process_namemap(qdc, "initiate", wm, first);
 }
 
@@ -273,6 +276,7 @@ void whack_cbor_process_terminate(QCBORDecodeContext *qdc
                                  , struct whack_message *wm
                                  , QCBORItem *first)
 {
+  wm->whack_terminate = TRUE;
   whack_cbor_process_namemap(qdc, "terminate", wm, first);
 }
 

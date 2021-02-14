@@ -28,10 +28,6 @@ int main(int argc, char *argv[])
     }
     tool_init_log();
 
-    FILE *fin = fopen("wm04.bin", "rb");
-    if(fin==NULL) { perror("wm04"); exit(4); }
-    insize = fread(wm_buf, 1, sizeof(wm_buf), fin);
-
     /* */
     memset(&wm1, 0, sizeof(wm1));
 
@@ -48,6 +44,18 @@ int main(int argc, char *argv[])
     if(omsg == NULL) { perror("output"); exit(4); }
     fwrite(wm_buf, outsize, 1, omsg);
     fclose(omsg);
+
+    FILE *fin = fopen("OUTPUT/wm06.bin", "rb");
+    if(fin==NULL) { perror("wm06"); exit(4); }
+    insize = fread(wm_buf, 1, sizeof(wm_buf), fin);
+
+    /* clear it all out */
+    memset(&wm1, 0, sizeof(wm1));
+
+    err = whack_cbor_decode_msg(&wm1, wm_buf, &insize);
+    passert(err == NULL);
+
+    passert(wm1.whack_initiate == TRUE);
 
     report_leaks();
 
