@@ -4,9 +4,9 @@ d9 d9f7         # tag(55799)
          424f52 # "BOR"
 
 ,
-a1                                # map(1)
-   07                             # unsigned(7)
-   a1                             # map(1)
-      01                          # unsigned(1)
-      6c                          # text(12)
-         61626364655f61626364655f # "abcde_abcde_"
+a1                        # map(1)
+   07                     # unsigned(7)
+   a1                     # map(1)
+      01                  # unsigned(1)
+      68                  # text(8)
+         6d7974756e6e656c # "mytunnel"
