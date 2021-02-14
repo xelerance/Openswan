@@ -2,9 +2,17 @@
 CONNNAME=mytunnel
 ENDNAME=h2h
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
-WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+WHACKREFFILE=loadandgo.record
 TESTNAME=initiateI1
+
+${WHACKREFFILE}: OUTPUT wm06.bin
+	${READWRITE} --rootdir=${SAMPLEDIR}${ENDNAME} --config ${SAMPLEDIR}${ENDNAME}.conf --whackout=${WHACKFILE}.p1 ${CONNNAME}
+	cat ${WHACKFILE}.p1 wm06.bin >${WHACKREFFILE}
+
+wm06.bin:
+	cp ../../libwhack/wo06-initiate/OUTPUT/wm06.bin wm06.bin
 
 pcapupdate:
 	@true
