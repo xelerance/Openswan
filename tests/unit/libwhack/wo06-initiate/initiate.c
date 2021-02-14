@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 
     wm1.magic = WHACK_MAGIC;
     wm1.whack_initiate = TRUE;
-    wm1.name_len = 12;
-    wm1.name     = "abcde_abcde_";
+    wm1.name_len = 8;
+    wm1.name     = "mytunnel";
 
     outsize = sizeof(wm_buf);
     err_t ugh = whack_cbor_encode_msg(&wm1, wm_buf, &outsize);
