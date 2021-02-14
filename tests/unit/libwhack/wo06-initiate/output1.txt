@@ -1,0 +1,12 @@
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                # map(1)
+   07                             # unsigned(7)
+   a1                             # map(1)
+      01                          # unsigned(1)
+      6c                          # text(12)
+         61626364655f61626364655f # "abcde_abcde_"
