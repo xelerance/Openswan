@@ -78,6 +78,9 @@ UNITTESTS_R1+=lp37-h2hR1
 UNITTESTS_I2+=lp38-h2hI2
 UNITTESTS_R2+=lp39-h2hR2
 
+# this is to test --initiate
+UNITTESTS_I1+=lp136-initiateI1
+
 UNITTESTS_I1+=lp71-alg-h2hI1
 UNITTESTS_R1+=lp72-alg-h2hR1
 UNITTESTS_I2+=lp73-alg-h2hI2
