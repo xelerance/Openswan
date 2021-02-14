@@ -16,7 +16,7 @@ OPENSWANSRCDIR?=$(shell cd ../../../..; pwd)
 srcdir?=${OPENSWANSRCDIR}/tests/unit/libwhack/wo03-msgstop
 include $(OPENSWANSRCDIR)/Makefile.inc
 
-EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
+EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I.. -DDEBUG
 EXTRAFLAGS+=-I../../libpluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
