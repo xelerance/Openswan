@@ -1,0 +1,18 @@
+This test case is an IKEv2 initiator.
+It tests crypto operations along the entire path, and it shows the
+Virtual Tunnel Interface (VTI) value sent into the kernel.
+The VTI or "tundev" value is a fwmark value that helps determine the policy.
+
+This test specifically captures the netlink commands which are sent
+and validates that the IPsec (CHILD, phase2) derived keys and algorithms are
+sane.
+It differs from XF13-parentI3, in that the tunnel dev value is forced in.
+
+
+
+
+
+
+
+
+
