@@ -273,6 +273,9 @@ struct state
     ipsec_spi_t        st_tunnel_in_spi;          /* KLUDGE */
     ipsec_spi_t        st_tunnel_out_spi;         /* KLUDGE */
 
+    uint32_t           st_vti_mark;          /* an integer: fwmark */
+    uint32_t           st_vti_markmask;      /* almost always 0xfffffff */
+
     IPsecSAref_t       st_ref;	   /* our kernel name for our incoming SA */
     IPsecSAref_t       st_refhim;     /* our kernel name for our outgoing SA */
     bool               st_outbound_done;         /* if true, then outgoing SA already installed */

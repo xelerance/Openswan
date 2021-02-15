@@ -37,6 +37,7 @@
 #include <linux/pfkeyv2.h>
 #include <unistd.h>
 #include <sysqueue.h>
+#include <linux/xfrm.h>
 
 #include "kameipsec.h"
 #include "linux26/rtnetlink.h"
@@ -553,6 +554,8 @@ netlink_raw_eroute(const ip_address *this_host
 		   , enum pluto_sadb_operations sadb_op
 		   , const char *text_said
 		   , char *policy_label UNUSED
+                   , uint32_t vti_mark
+                   , uint32_t vti_markmask
 		   )
 {
     struct {
@@ -774,6 +777,24 @@ netlink_raw_eroute(const ip_address *this_host
 	memcpy(RTA_DATA(attr), tmpl, attr->rta_len);
 	attr->rta_len = RTA_LENGTH(attr->rta_len);
 	req.n.nlmsg_len += attr->rta_len;
+    }
+
+    if(vti_mark != 0) {
+        struct rtattr *attr = (struct rtattr *)
+            ((char *)&req + req.n.nlmsg_len);
+        struct xfrm_mark *mark;
+
+        attr->rta_type = XFRMA_MARK;
+
+        DBG(DBG_NETKEY
+            , DBG_log("passing xfrm mark/mask=%08x/%08x"
+                    , vti_mark, vti_markmask));
+        attr->rta_len =
+            RTA_LENGTH(sizeof(struct xfrm_mark));
+        mark = RTA_DATA(attr);
+        mark->v = vti_mark;
+        mark->m = vti_markmask;
+        req.n.nlmsg_len += attr->rta_len;
     }
 
 #ifdef HAVE_LABELED_IPSEC
@@ -1934,7 +1955,8 @@ netlink_shunt_eroute(struct connection *c
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
 			      , c->policy_label
-			      ) )
+                               , 0, 0
+                               ) )
       { return FALSE; }
 
       switch (op)
@@ -1961,6 +1983,7 @@ netlink_shunt_eroute(struct connection *c
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
                               , c->policy_label
+                                , 0, 0
 			      );
     }
 }

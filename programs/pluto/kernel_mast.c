@@ -461,6 +461,8 @@ mast_raw_eroute(const ip_address *this_host UNUSED
                , enum pluto_sadb_operations op UNUSED
                , const char *text_said UNUSED
 	       , char *policy_label UNUSED
+                , uint32_t vti_mark
+                , uint32_t vti_markmask
 	       )
 {
     /* actually, we did all the work with iptables in _updown */
@@ -469,6 +471,7 @@ mast_raw_eroute(const ip_address *this_host UNUSED
 		    spi, proto, transport_proto, satype,
 		    proto_info, use_lifetime, op, text_said
 		    , policy_label
+                            , vti_mark, vti_markmask
 		    );
 }
 

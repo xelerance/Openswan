@@ -876,6 +876,8 @@ pfkey_raw_eroute(const ip_address *this_host
 		 , enum pluto_sadb_operations op
 		 , const char *text_said
 		 , char *policy_label UNUSED
+                 , uint32_t vti_mark UNUSED
+                 , uint32_t vti_markmask UNUSED
 		 )
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
@@ -1314,7 +1316,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , ET_INT, null_proto_info
 			      , 0      /* use lifetime */
 			      , inop
-			      , opname);
+			      , opname, 0, 0);
 	if(!ok) { return FALSE; }
     }
 #endif
@@ -1340,6 +1342,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
 			      , c->policy_label
+                              , 0, 0
 			      );
     }
 }

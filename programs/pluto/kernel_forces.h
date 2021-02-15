@@ -33,7 +33,9 @@ extern bool netlink_raw_eroute(const ip_address *this_host
 		   , time_t use_lifetime UNUSED
 		   , enum pluto_sadb_operations sadb_op
 		   , const char *text_said
-		   , char *policy_label UNUSED
+		   , char *policy_label
+                   , uint32_t vti_mark
+                   , uint32_t vti_markmask
 		   );
 
 extern bool netlink_add_sa(struct kernel_sa *sa, bool replace);

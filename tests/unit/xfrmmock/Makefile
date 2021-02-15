@@ -31,6 +31,8 @@ UNITTESTS+=xf13-parentI3
 # disabled due to #7554
 #UNITTESTS+=xf109-v1rwnatQR1
 
+UNITTESTS+=xf113-vtiI3
+
 programs pcapupdate clean check:
 	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
