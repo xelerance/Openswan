@@ -22,7 +22,7 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 MANDIR=$(MANTREE)/man3
 
 QCB=${OPENSWANSRCDIR}/lib/libwhack/qcbor
-SRCS=whackread.c whackwrite.c aliascomp.c
+SRCS=whackwrite.c aliascomp.c
 
 SRCS+=UsefulBuf.c qcbor_encode.c qcbor_decode.c qcbor_err_to_str.c
 SRCS+=ieee754.c
@@ -74,8 +74,8 @@ MANS=
 .PHONY:	all install clean l t lt tar check depend checkprograms
 
 # we can't do tests with two conditions, but we can concatenate the strings
-SHOULDWERESTART=${USE_OBJDIR}$(wildcard whackread.c)
-ifeq ($(SHOULDWERESTART),truewhackread.c)
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard whackwrite.c)
+ifeq ($(SHOULDWERESTART),truewhackwrite.c)
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libwhack && make $@
 else
