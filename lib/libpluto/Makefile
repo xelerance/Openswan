@@ -30,11 +30,15 @@ LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
 CFLAGS+=-DLEAK_DETECTIVE
 
+# for access to qcbor code, submodule of libwhack
+CFLAGS+=-I${OPENSWANSRCDIR}/lib/libwhack/qcbor/inc
+
 ONEFILE=pluto_constants.c
 SRCS=defs.c db_ops.c db2_ops.c ai2db.c spdb_print.c
 SRCS+=pluto_constants.c x509support.c packet.c
 SRCS+=readwhackmsg.c rnd.c rndchunk.c writewhackmsg.c orient.c spd_format.c
 SRCS+=endclienttot.c setproctitle.c iface.c
+SRCS+=plutoctrl_cbor.c
 
 #enable to get lots more debugging about semantics.
 #CFLAGS+=-DPARSER_TYPE_DEBUG
