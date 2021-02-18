@@ -353,43 +353,7 @@ struct whack_message {
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
-    char *string1;
-    char *string2;
-    char *string3;
-
-    /* space for strings (hope there is enough room):
-     * Note that pointers don't travel on wire.
-     *  1 connection name [name_len]
-     *  2 left's name [left.host.name.len]
-     *  3 left's cert
-     *  4 left's ca
-     *  5 left's groups
-     *  6 left's updown
-     *  7 left's virt
-     *  8 right's name [left.host.name.len]
-     *  9 right's cert
-     * 10 right's ca
-     * 11 right's groups
-     * 12 right's updown
-     * 13 right's virt
-     * 14 keyid
-     * 15 myid
-     * 16 ike
-     * 17 esp
-     * 18 tpmeval
-     * 19 left.xauth_name
-     * 20 right.xauth_name
-     * 21 connalias
-     * 22 left.host_addr_name
-     * 23 right.host_addr_name
-     * 24 genstring1  - used with opt_set
-     * 25 genstring2
-     * 26 genstring3
-     * 27 genstring4
-     * plus keyval (limit: 8K bits + overhead), a chunk.
-     */
-    u_int32_t str_size;
-    unsigned char string[4096];
+    char *string1;               /* for whackrecord file */
 };
 
 /* options of whack --list*** command */

@@ -44,14 +44,6 @@
 #include "qcbor/qcbor_encode.h"
 #include "qcbor/qcbor_decode.h"
 
-struct whackpacker {
-    struct whack_message *msg;
-    unsigned char        *str_roof;
-    unsigned char        *str_next;
-    int                   n;
-    int                   cnt;
-};
-
 /*
  * The WhackMessage consists of a map embedded into an array.
  * This is done so that the initial ~8 bytes are typically identical.
@@ -585,8 +577,8 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
        item.uDataType != QCBOR_TYPE_MAP) {
       return "malformed map at level 0";
     }
-    //whack_cbor_consume_item(&qdc, &item);
-    //return "fun";
+
+
 
     /* keep track of how many items */
     elemCount = item.val.uCount;
