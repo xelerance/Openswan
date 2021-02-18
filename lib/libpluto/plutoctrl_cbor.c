@@ -703,7 +703,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         break;
 
       default:
-        return "invalid whack key";
+        return builddiag("invalid whack key: %ld", item.label.int64);
       }
 
       elemCount--;
