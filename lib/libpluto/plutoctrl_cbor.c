@@ -588,8 +588,10 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
       if(item.uLabelType != QCBOR_TYPE_INT64) {
         return "map key must be integer";
       }
-      CBOR_DEBUG("%u found map with labeled: %ld\n", elemCount, item.label.int64);
+      CBOR_DEBUG("%u found map %d with labeled: %ld\n", elemCount, item.uDataType, item.label.int64);
       switch(item.label.int64) {
+      case WHACK_NOOP:
+        break;
       case WHACK_STATUS:
         wm->whack_status = TRUE;
         /* consume value, which is probably empty map */

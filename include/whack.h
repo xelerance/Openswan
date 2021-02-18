@@ -112,6 +112,7 @@ enum whack_CBOR_actions {
     WHACK_INITIATE_OPPO=8,
     WHACK_TERMINATE=9,
     WHACK_ADD_KEY  =10,
+    WHACK_NOOP     =23,
 };
 
 #define CborSignatureTag 55799

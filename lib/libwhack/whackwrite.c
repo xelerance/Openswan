@@ -303,7 +303,10 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_OpenMapInMapN(&qec, WHACK_ROUTE);
     if(wm->name) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    } else {
+      QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
+
     QCBOREncode_CloseMap(&qec);
   }
 
@@ -311,6 +314,8 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_OpenMapInMapN(&qec, WHACK_UNROUTE);
     if(wm->name) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    } else {
+      QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
     QCBOREncode_CloseMap(&qec);
   }
@@ -318,6 +323,8 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_OpenMapInMapN(&qec, WHACK_INITIATE);
     if(wm->name) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    } else {
+      QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
     QCBOREncode_CloseMap(&qec);
   }
@@ -332,6 +339,8 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_OpenMapInMapN(&qec, WHACK_TERMINATE);
     if(wm->name) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    } else {
+      QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
     QCBOREncode_CloseMap(&qec);
   }
@@ -367,6 +376,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     QCBOREncode_CloseMap(&qec);
   }
 
+  //QCBOREncode_AddInt64ToMapN(&qec, WHACK_NOOP, 1);
   QCBOREncode_CloseMap(&qec);
 
   /* close the array */
