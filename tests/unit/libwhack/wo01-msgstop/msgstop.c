@@ -78,6 +78,13 @@ int main(int argc, char *argv[])
     fwrite(wm_buf, outsize, 1, omsg);
     fclose(omsg);
 
+    /* now decode it again */
+    memset(&wm1, 0, sizeof(wm1));
+    err = whack_cbor_decode_msg(&wm1, wm_buf, &outsize);
+    if(err) { printf("decode error: %s\n", err); exit(6); }
+
+    passert(wm1.whack_shutdown == TRUE);
+
     report_leaks();
 
     tool_close_log();

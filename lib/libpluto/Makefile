@@ -32,6 +32,8 @@ CFLAGS+=-DLEAK_DETECTIVE
 
 # for access to qcbor code, submodule of libwhack
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libwhack/qcbor/inc
+CFLAGS+= -DQCBOR_DISABLE_FLOAT_HW_USE
+CFLAGS+= -DQCBOR_CONFIG_DISABLE_EXP_AND_MANTISSA
 
 ONEFILE=pluto_constants.c
 SRCS=defs.c db_ops.c db2_ops.c ai2db.c spdb_print.c
