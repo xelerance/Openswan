@@ -1,0 +1,11 @@
+This test case is an IKEv2 initiator -- where initiation occurs from the
+whack file rather than from the unit test case.
+
+
+
+
+
+
+
+
+

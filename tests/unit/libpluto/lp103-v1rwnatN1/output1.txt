@@ -17,14 +17,8 @@
 ./v1rwnatN1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./v1rwnatN1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./v1rwnatN1 loaded key: 55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./v1rwnatN1 loaded key: D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -254,4 +248,3 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 93.184
 ./v1rwnatN1 leak: default conf ipsecd_dir, item size: X
 ./v1rwnatN1 leak: default conf ipsec_conf_dir, item size: X
 ./v1rwnatN1 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

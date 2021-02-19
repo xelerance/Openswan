@@ -16,14 +16,8 @@
 ./childTSwrong registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./childTSwrong registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./childTSwrong loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./childTSwrong loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -41,14 +35,14 @@ processing whack msg time: X size: Y
 |   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient parker-wrong-TS matching on public/private keys: this=no[%any] that=no[%defaultroute]
 |   orient parker-wrong-TS matched on that being defaultroute, and this lacking private key
-| pick_if looking for port: 500, family: 0
+| pick_if looking for port: 500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: <none>/0 0
-|   picking maching interface for family[0,0]: <family:0> resulted in: 132.213.238.7
+|   picking maching interface for family[2,2]: AF_INET resulted in: 132.213.238.7
 |   orient parker-wrong-TS finished with: 1 [132.213.238.7]
-| find_host_pair: looking for me=<invalid>:500 %any him=<invalid>:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %any <invalid>:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %any 0.0.0.0:500 -> hp:none
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (exact)
 |   concluded with <none>
 ./childTSwrong adding connection: "parker-wrong-TS"
@@ -125,7 +119,7 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 | now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:55044 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:55044 any-match
-| find_host_pair: comparing to me=<invalid>:500 %any him=<invalid>:500
+| find_host_pair: comparing to me=0.0.0.0:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with parker-wrong-TS
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:55044 -> hp:parker-wrong-TS
 | searching for connection with policy = IKEv2ALLOW/-
@@ -139,10 +133,10 @@ RC=0 "parker-wrong-TS":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRAC
 |   trusted_ca_by_name called with a=(empty) b=(empty)
 | orient parker-wrong-TS matching on public/private keys: this=no[%defaultroute] that=no[%any]
 |   orient parker-wrong-TS matched on this being defaultroute, and that lacking private key
-| pick_if looking for port: 500, family: 0
+| pick_if looking for port: 500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: <none>/0 0
-|   picking maching interface for family[0,0]: <family:0> resulted in: 132.213.238.7
+|   picking maching interface for family[2,2]: AF_INET resulted in: 132.213.238.7
 |   orient parker-wrong-TS finished with: 1 [132.213.238.7]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
@@ -578,7 +572,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | pick_if looking for port: 4500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0
-|   picking maching interface for family[2,0]: AF_INET resulted in: 132.213.238.7
+|   picking maching interface for family[2,2]: AF_INET resulted in: 132.213.238.7
 ./childTSwrong nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -783,4 +777,3 @@ sending 320 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 
 ./childTSwrong leak: default conf ipsecd_dir, item size: X
 ./childTSwrong leak: default conf ipsec_conf_dir, item size: X
 ./childTSwrong leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

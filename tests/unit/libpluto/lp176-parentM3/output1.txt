@@ -16,14 +16,8 @@
 ./parentM3 loading secrets from "../samples/parker.secrets"
 ./parentM3 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./parentM3 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./parentM3 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none

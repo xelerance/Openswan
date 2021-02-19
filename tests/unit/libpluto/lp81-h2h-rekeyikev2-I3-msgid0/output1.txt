@@ -16,14 +16,8 @@
 ./rekeyChildSA-msgInI3 loading secrets from "../samples/parker.secrets"
 ./rekeyChildSA-msgInI3 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./rekeyChildSA-msgInI3 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./rekeyChildSA-msgInI3 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./rekeyChildSA-msgInI3 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0

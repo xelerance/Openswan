@@ -8,14 +8,8 @@
 ./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./parentI2duplicate loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./parentI2duplicate loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./parentI2duplicate use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0

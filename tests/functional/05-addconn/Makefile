@@ -18,6 +18,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
 ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 WHACKBIN=${OBJDIRTOP}/programs/whack/whack
 SAMPLES=${OPENSWANSRCDIR}/tests/unit/libpluto/samples
 CTLBASE=--ctlbase OUTPUT/base
@@ -33,10 +34,13 @@ step1:
 step2:
 	@${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any        >&2
 
+step2X:
+	@${READWRITE} --verbose --config ${SAMPLES}/rw.conf --rootdir=${SAMPLES}/rw --whackout=${OUTPUTS}/rw.whackout gateway--any        >&2
+
 step2b:
 	@${ADDCONN} --verbose ${CTLBASE} --config ../07-sourceipv6/green.conf --rootdir ../07-sourceipv6 green   >&2
 
-step3:
+stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
 step4:

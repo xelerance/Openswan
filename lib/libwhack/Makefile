@@ -21,29 +21,32 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-SRCS=whacklib.c aliascomp.c
+QCB=${OPENSWANSRCDIR}/lib/libwhack/qcbor
+SRCS=whackwrite.c aliascomp.c
+
+SRCS+=UsefulBuf.c qcbor_encode.c qcbor_decode.c qcbor_err_to_str.c
+SRCS+=ieee754.c
 
 OBJS=${SRCS:.c=.o}
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
-
-VPATH+= ${KLIPSSRCDIR}
+VPATH+= ${QCB}/src
 
 LIB=libwhack.a
 
 # Original flags
-INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
+INCLUDES=-I. -I${OPENSWANSRCDIR} -I${QCB}/inc
 INCLUDES+=-I${OPENSWANSRCDIR}/include
 CFLAGS+=${PORTINCLUDE} ${INCLUDES}
 CFLAGS+=-DDEBUG
+CFLAGS+= -DQCBOR_DISABLE_FLOAT_HW_USE
+CFLAGS+= -DQCBOR_CONFIG_DISABLE_EXP_AND_MANTISSA
 CFLAGS+= $(USERCOMPILE)
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
 CFLAGS+= -Wpointer-arith
-CFLAGS+= -Wcast-qual
+CFLAGS+= -Wno-cast-qual
 #CFLAGS+= -Wmissing-declarations
 CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
@@ -69,8 +72,8 @@ MANS=
 .PHONY:	all install clean l t lt tar check depend checkprograms
 
 # we can't do tests with two conditions, but we can concatenate the strings
-SHOULDWERESTART=${USE_OBJDIR}$(wildcard whacklib.c)
-ifeq ($(SHOULDWERESTART),truewhacklib.c)
+SHOULDWERESTART=${USE_OBJDIR}$(wildcard whackwrite.c)
+ifeq ($(SHOULDWERESTART),truewhackwrite.c)
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libwhack && make $@
 else
@@ -113,6 +116,10 @@ $(LIB): $(OBJS)
 $(OBJS):	$(HDRS)
 
 %.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+%.o: ${TC}/src/%.c
 	@echo CC $(notdir $<)
 	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
