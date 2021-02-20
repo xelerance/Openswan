@@ -40,7 +40,6 @@ extern void report_leaks(void);
 #define pfreeany(p) { if ((p) != NULL) pfree(p); }
 #define replace(p, q) { pfreeany(p); (p) = (q); }
 
-
 /* chunk is a simple pointer-and-size abstraction */
 
 struct chunk {
@@ -68,6 +67,7 @@ typedef struct const_chunk constchunk_t;
 		.ptr = clone_bytes((OLD).ptr, (OLD).len, NAME), \
 		.len = (OLD).len,				\
 	}
+#define alloc_chunk(ch, size, name) setchunk(ch, alloc_bytes(size, name), size)
 
 #define clonereplacechunk(ch, addr, size, name) \
     { pfreeany((ch).ptr); clonetochunk(ch, addr, size, name); }
