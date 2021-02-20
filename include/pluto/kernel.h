@@ -18,11 +18,6 @@
 #include <net/if.h>
 #include "alg_info.h"
 
-/* global variables */
-extern u_int16_t pluto_port500;	        /* Pluto's port (usually 500) */
-extern u_int16_t pluto_port4500;	/* Pluto's NAT port (usually 4500) */
-extern bool can_do_IPcomp;  /* can system actually perform IPCOMP? */
-
 /*
  * Declare eroute things early enough for uses.
  * Some of these things, while they seem like they are KLIPS-only, the

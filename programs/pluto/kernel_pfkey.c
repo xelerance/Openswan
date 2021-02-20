@@ -45,6 +45,7 @@
 #include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "id.h"
@@ -376,6 +377,8 @@ pfkey_get_response(pfkey_buf *buf, pfkey_seq_t seq)
 void
 klips_pfkey_register_response(const struct sadb_msg *msg)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
     /* Find out what the kernel can support.
      * In fact, the only question at the moment
      * is whether it can support IPcomp.
@@ -395,7 +398,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 	 * list one for IPcomp.  KLIPS uses K_SADB_X_CALG_DEFLATE.
 	 * Since we only implement deflate, we'll assume this.
 	 */
-	can_do_IPcomp = TRUE;
+	oco->can_do_IPcomp = TRUE;
 	break;
     case K_SADB_X_SATYPE_IPIP:
 	break;
@@ -631,6 +634,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		 , const char *text_said
 		 , pfkey_buf *response)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct sadb_msg *pfkey_msg;
     bool success = TRUE;
     int error;
@@ -654,7 +658,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		, description, text_said);
 	    DBG_dump(NULL, (void *) pfkey_msg, len));
 
-	if (kern_interface != NO_KERNEL)
+	if (oco->kern_interface != NO_KERNEL)
 	{
 	    ssize_t r = write(pfkeyfd, pfkey_msg, len);
 	    int e1 = errno;
@@ -848,9 +852,11 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 #ifdef KLIPS
 void klips_pfkey_register(void)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
     klips_register_proto(K_SADB_SATYPE_AH, "AH");
     klips_register_proto(K_SADB_SATYPE_ESP, "ESP");
-    can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
+    oco->can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
     klips_register_proto(K_SADB_X_SATYPE_COMP, "IPCOMP");
     klips_register_proto(K_SADB_X_SATYPE_IPIP, "IPIP");
 }

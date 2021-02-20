@@ -729,11 +729,11 @@ verify_x509acert(x509acert_t *ac, bool strict)
 void
 load_acerts(void)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     char buf[BUF_LEN];
 
     /* change directory to specified path */
     char *save_dir = getcwd(buf, BUF_LEN);
-    const struct osw_conf_options *oco = osw_init_options();
 
     if (!chdir(oco->acerts_dir))
     {
@@ -763,7 +763,7 @@ load_acerts(void)
 		    *ac = empty_ac;
 
 		    if (parse_ac(blob, ac)
-		    && verify_x509acert(ac, strict_crl_policy))
+		    && verify_x509acert(ac, oco->strict_crl_policy))
 			add_acert(ac);
 		    else
 			free_acert(ac);

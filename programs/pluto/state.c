@@ -38,6 +38,8 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "oswconf.h"
+
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -1870,9 +1872,11 @@ void copy_quirks(struct isakmp_quirks *dq
 void set_state_ike_endpoints(struct state *st
 			     , struct connection *c)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* reset our choice of interface */
     c->interface = NULL;
-    orient(c, pluto_port500);
+    orient(c, oco->pluto_port500);
 
     st->st_localaddr  = c->spd.this.host_addr;
     st->st_localport  = c->spd.this.host_port;

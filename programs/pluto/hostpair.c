@@ -45,6 +45,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswtime.h"
+#include "oswconf.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -150,6 +151,7 @@ find_host_pair(bool exact
 	       , const ip_address *hisaddr
 	       , u_int16_t hisport)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct IPhost_pair *p, *prev;
     struct IPhost_pair *bestpair = NULL;
     struct IPhost_pair *bestpair_prev = NULL;
@@ -165,8 +167,8 @@ find_host_pair(bool exact
      * but other ports are not.
      * So if any port==4500, then set it to 500.
      */
-    if(myport == pluto_port4500)   myport=pluto_port500;
-    if(hisport== pluto_port4500)   hisport=pluto_port500;
+    if(myport == oco->pluto_port4500)   myport=oco->pluto_port500;
+    if(hisport== oco->pluto_port4500)   hisport=oco->pluto_port500;
 
     DBG(DBG_CONTROLMORE,
         char b1[ADDRTOT_BUF];
@@ -339,6 +341,8 @@ find_host_pair_connections(const char *func, bool exact
 void
 connect_to_IPhost_pair(struct connection *c)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     if (oriented(*c))
     {
 	struct IPhost_pair *hp= find_host_pair(EXACT_MATCH, &c->spd.this.host_addr
@@ -368,8 +372,8 @@ connect_to_IPhost_pair(struct connection *c)
 	    hp->him.addr = c->spd.that.host_addr;
 	    hp->him.host_type = c->spd.that.host_type;
 #ifdef NAT_TRAVERSAL
-	    hp->me.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.this.host_port;
-	    hp->him.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.that.host_port;
+	    hp->me.host_port = nat_traversal_enabled ? oco->pluto_port500 : c->spd.this.host_port;
+	    hp->him.host_port = nat_traversal_enabled ? oco->pluto_port500 : c->spd.that.host_port;
 #else
 	    hp->me.host_port = c->spd.this.host_port;
  	    hp->him.host_port = c->spd.that.host_port;

@@ -471,7 +471,7 @@ void whack_process(int whackfd, struct whack_message msg)
 
     if (msg.whack_list & LIST_CRLS)
     {
-	list_crls(msg.whack_utc, strict_crl_policy);
+	list_crls(msg.whack_utc, oco->strict_crl_policy);
 #ifdef HAVE_THREADS
 	list_crl_fetch_requests(msg.whack_utc);
 #endif
@@ -480,7 +480,7 @@ void whack_process(int whackfd, struct whack_message msg)
 #ifdef HAVE_OCSP
     if (msg.whack_list & LIST_OCSP)
     {
-       list_ocsp_cache(msg.whack_utc, strict_crl_policy);
+       list_ocsp_cache(msg.whack_utc, oco->strict_crl_policy);
        list_ocsp_fetch_requests(msg.whack_utc);
     }
 #endif

@@ -34,6 +34,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "log.h"
@@ -56,7 +57,6 @@
 #include "kernel.h"
 #include "x509more.h"
 #include "oswkeys.h"
-
 /*
  * Decode the CERT payload of Phase 1.
  */
@@ -64,6 +64,7 @@ void
 decode_cert(struct msg_digest *md)
 {
     struct payload_digest *p;
+    const struct osw_conf_options *oco = osw_init_options();
 
     for (p = md->chain[ISAKMP_NEXT_CERT]; p != NULL; p = p->next)
     {
@@ -78,7 +79,7 @@ decode_cert(struct msg_digest *md)
 	    x509cert_t cert2 = empty_x509cert;
 	    if (parse_x509cert(blob, 0, &cert2))
 	    {
-		if (verify_x509cert(&cert2, strict_crl_policy, &valid_until))
+		if (verify_x509cert(&cert2, oco->strict_crl_policy, &valid_until))
 		{
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
@@ -100,7 +101,7 @@ decode_cert(struct msg_digest *md)
 	    x509cert_t *cert2 = NULL;
 
 	    if (parse_pkcs7_cert(blob, &cert2))
-		store_x509certs(&cert2, strict_crl_policy);
+		store_x509certs(&cert2, oco->strict_crl_policy);
 	    else
 		plog("Syntax error in PKCS#7 wrapped X.509 certificates");
 	}
@@ -121,6 +122,7 @@ ikev2_decode_cert(struct msg_digest *md)
     struct payload_digest *p;
     struct state *st = md->st;
     unsigned certnum = 0;
+    const struct osw_conf_options *oco = osw_init_options();
 
     if (st->st_clonedfrom != 0) {
         st = state_with_serialno(st->st_clonedfrom);
@@ -138,7 +140,7 @@ ikev2_decode_cert(struct msg_digest *md)
 	    x509cert_t cert2 = empty_x509cert;
 	    if (parse_x509cert(blob, 0, &cert2))
 	    {
-		if (verify_x509cert(&cert2, strict_crl_policy, &valid_until))
+		if (verify_x509cert(&cert2, oco->strict_crl_policy, &valid_until))
 		{
                     char sbuf[ASN1_BUF_LEN];
                     dntoa(sbuf, ASN1_BUF_LEN, cert2.subject);
@@ -170,7 +172,7 @@ ikev2_decode_cert(struct msg_digest *md)
                 dntoa(sbuf, ASN1_BUF_LEN, cert2->subject);
                 openswan_log("%u: validated pkcs7 certificate: '%s', added to trusted database"
                              , certnum, sbuf);
-		store_x509certs(&cert2, strict_crl_policy);
+		store_x509certs(&cert2, oco->strict_crl_policy);
             }
 	    else
 		plog("Syntax error in PKCS#7 wrapped X.509 certificates");
@@ -352,8 +354,9 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t keyIDs, pb_stream *outs, u_int8_t
 bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct connection *d = find_host_connection(ANY_MATCH, &md->iface->ip_addr
-                                                , pluto_port500
+                                                , oco->pluto_port500
                                                 , KH_ANY
                                                 ,(ip_address*)NULL, md->sender_port, LEMPTY, LEMPTY, NULL);
 

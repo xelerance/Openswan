@@ -37,6 +37,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "log.h"
@@ -66,29 +67,15 @@
 /* close one per-peer log */
 static void perpeer_logclose(struct connection *c);	/* forward */
 
+bool log_did_something = TRUE;
 
-bool
-    log_to_stderr = TRUE,	/* should log go to stderr? */
-    log_to_syslog = TRUE,	/* should log go to syslog? */
-    log_to_perpeer= FALSE,	/* should log go to per-IP file? */
-    log_did_something=TRUE,     /* set if we wrote something recently */
-    log_with_timestamp= FALSE; /* some people want timestamps, but we
-				   don't want those in our test output */
+/* rate limits certain warnings, reset once a day */
+bool   logged_myid_fqdn_txt_warning = FALSE;
+bool   logged_myid_ip_txt_warning   = FALSE;
+bool   logged_myid_fqdn_key_warning = FALSE;
+bool   logged_myid_ip_key_warning   = FALSE;
+bool   logged_txt_warning = FALSE;
 
-
-bool
-    logged_txt_warning = FALSE;  /* should we complain about finding KEY? */
-
-/* should we complain when we find no local id */
-bool
-    logged_myid_fqdn_txt_warning = FALSE,
-    logged_myid_ip_txt_warning   = FALSE,
-    logged_myid_fqdn_key_warning = FALSE,
-    logged_myid_ip_key_warning   = FALSE;
-
-/* may include trailing / */
-const char *base_perpeer_logdir = PERPEERLOGDIR;
-static int perpeer_count = 0;
 
 /* what to put in front of debug output */
 char debug_prefix = '|';
@@ -102,8 +89,8 @@ char debug_prefix = '|';
  */
 const char *pluto_ifn_inst = "";
 
-/* from sys/queue.h -> NOW private sysdep.h. */
-static CIRCLEQ_HEAD(,connection) perpeer_list;
+static int perpeer_count = 0;
+static CIRCLEQ_HEAD(,connection) perpeer_list;  /* sysqueue.h */
 
 
 /* Context for logging.
@@ -121,10 +108,12 @@ u_int16_t cur_from_port;	/* host order */
 void
 pluto_init_log(void)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     set_exit_log_func(exit_log);
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	setbuf(stderr, NULL);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	openlog("pluto", LOG_CONS | LOG_NDELAY | LOG_PID, LOG_AUTHPRIV);
 
     CIRCLEQ_INIT(&perpeer_list);
@@ -201,7 +190,8 @@ close_peerlog(void)
 void
 close_log(void)
 {
-    if (log_to_syslog)
+    const struct osw_conf_options *oco = osw_init_options();
+    if (oco->log_to_syslog)
 	closelog();
 
     close_peerlog();
@@ -303,6 +293,7 @@ ensure_writeable_parent_directory(char *path)
 static void
 open_peerlog(struct connection *c)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     /* syslog(LOG_INFO, "opening log file for conn %s", c->name); */
 
     if (c->log_file_name == NULL)
@@ -328,17 +319,17 @@ open_peerlog(struct connection *c)
 	}
 
 	lf_len = peernamelen * 2
-	    + strlen(base_perpeer_logdir)
+	    + strlen(oco->base_perpeer_logdir)
 	    + sizeof("//.log")
 	    + 1;
 	c->log_file_name = alloc_bytes(lf_len, "per-peer log file name");
 
 #if 0
 	fprintf(stderr, "base dir |%s| dname |%s| peername |%s|"
-		, base_perpeer_logdir, dname, peername);
+		, oco->base_perpeer_logdir, dname, peername);
 #endif
 	snprintf(c->log_file_name, lf_len, "%s/%s/%s.log"
-		 , base_perpeer_logdir, dname, peername);
+		 , oco->base_perpeer_logdir, dname, peername);
 
 	/* syslog(LOG_DEBUG, "conn %s logfile is %s", c->name, c->log_file_name); */
     }
@@ -419,6 +410,7 @@ peerlog(const char *prefix, const char *m)
 int
 openswan_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -428,8 +420,8 @@ openswan_log(const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr) {
-	if (log_with_timestamp) {
+    if (oco->log_to_stderr) {
+	if (oco->log_with_timestamp) {
 		struct tm *timeinfo;
 		char fmt[32];
 		time_t rtime;
@@ -441,9 +433,9 @@ openswan_log(const char *message, ...)
 		fprintf(stderr, "%s\n", m);
 	}
     }
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
 	peerlog("", m);
 
     whack_log(RC_LOG, "~%s", m);
@@ -454,6 +446,7 @@ openswan_log(const char *message, ...)
 void
 loglog(int mess_no, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -463,8 +456,8 @@ loglog(int mess_no, const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr) {
-	if (log_with_timestamp) {
+    if (oco->log_to_stderr) {
+	if (oco->log_with_timestamp) {
 		struct tm *timeinfo;
 		char fmt[32];
 		time_t rtime;
@@ -476,9 +469,9 @@ loglog(int mess_no, const char *message, ...)
 		fprintf(stderr, "%s\n", m);
 	}
     }
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
 	peerlog("", m);
 
     whack_log(mess_no, "~%s", m);
@@ -487,6 +480,7 @@ loglog(int mess_no, const char *message, ...)
 void
 openswan_log_errno_routine(int e, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -496,11 +490,11 @@ openswan_log_errno_routine(int e, const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "ERROR: %s. Errno %d: %s\n", m, e, strerror(e));
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "ERROR: %s. Errno %d: %s", m, e, strerror(e));
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
     {
 	peerlog(strerror(e), m);
     }
@@ -512,6 +506,7 @@ openswan_log_errno_routine(int e, const char *message, ...)
 void
 exit_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -521,11 +516,11 @@ exit_log(const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "FATAL ERROR: %s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "FATAL ERROR: %s", m);
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
 	peerlog("FATAL ERROR: ", m);
 
     whack_log(RC_LOG_SERIOUS, "~FATAL ERROR: %s", m);
@@ -536,6 +531,7 @@ exit_log(const char *message, ...)
 void
 openswan_exit_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -545,11 +541,11 @@ openswan_exit_log(const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "FATAL ERROR: %s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "FATAL ERROR: %s", m);
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
 	peerlog("FATAL ERROR: ", m);
 
     whack_log(RC_LOG_SERIOUS, "~FATAL ERROR: %s", m);
@@ -560,6 +556,7 @@ openswan_exit_log(const char *message, ...)
 void
 openswan_exit_log_errno_routine(int e, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -569,11 +566,11 @@ openswan_exit_log_errno_routine(int e, const char *message, ...)
 
     log_did_something=TRUE;
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "FATAL ERROR: %s. Errno %d: %s\n", m, e, strerror(e));
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "FATAL ERROR: %s. Errno %d: %s", m, e, strerror(e));
-    if (log_to_perpeer)
+    if (oco->log_to_perpeer)
 	peerlog(strerror(e), m);
 
     whack_log(RC_LOG_SERIOUS
@@ -601,6 +598,7 @@ static volatile sig_atomic_t dying_breath = FALSE;
 void
 whack_log(int mess_no, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     int wfd = whack_log_fd != NULL_FD ? whack_log_fd
 	: cur_state != NULL ? cur_state->st_whack_sock
 	: NULL_FD;
@@ -625,11 +623,11 @@ whack_log(int mess_no, const char *message, ...)
 	if (dying_breath)
 	{
 	    /* status output copied to log */
-	    if (log_to_stderr)
+	    if (oco->log_to_stderr)
 		fprintf(stderr, "%s\n", m + prelen);
-	    if (log_to_syslog)
+	    if (oco->log_to_syslog)
 		syslog(LOG_WARNING, "%s", m + prelen);
-	    if (log_to_perpeer)
+	    if (oco->log_to_perpeer)
 		peerlog("", m);
 	}
 #endif
@@ -745,6 +743,7 @@ set_debugging(lset_t deb)
 int
 DBG_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -755,8 +754,8 @@ DBG_log(const char *message, ...)
     /* then sanitize anything else that is left. */
     (void)sanitize_string(m, sizeof(m));
 
-    if (log_to_stderr) {
-	if (log_with_timestamp) {
+    if (oco->log_to_stderr) {
+	if (oco->log_with_timestamp) {
 		struct tm *timeinfo;
 		char fmt[32];
 		time_t rtime;
@@ -768,9 +767,9 @@ DBG_log(const char *message, ...)
 		fprintf(stderr, "%c %s\n", debug_prefix, m);
 	}
     }
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_DEBUG, "%c %s", debug_prefix, m);
-    if (log_to_perpeer) {
+    if (oco->log_to_perpeer) {
 	char prefix[3];
 	prefix[0]=debug_prefix;
 	prefix[1]=' ';

@@ -77,6 +77,7 @@
 #include "md5.h"
 #include "pluto/ike_alg.h"
 #include "pluto/crypto.h" /* requires sha1.h and md5.h */
+#include "oswconf.h"
 
 #include "kernel_alg.h"
 #include "pluto/plutoalg.h"
@@ -582,6 +583,8 @@ static unsigned long _dm_initialized = 0;
 stf_status
 main_inI1_outR1(struct msg_digest *md)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
 #ifdef DMALLOC
      if (_dm_initialized != 0) {
 	/* log unfreed pointers that have been added to the heap since mark */
@@ -637,7 +640,7 @@ main_inI1_outR1(struct msg_digest *md)
 
 
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, oco->pluto_port500
                              , KH_IPADDR
 			     , &md->sender
 			     , md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE, &policy_hint);
@@ -665,7 +668,7 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, oco->pluto_port500
                                      , KH_ANY
 				     , (ip_address*)NULL
 				     , md->sender_port, policy, POLICY_IKEV1_DISABLE, &policy_hint);
@@ -713,7 +716,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but \"%s\" forbids connection"
-		, ip_str(&md->iface->ip_addr), pluto_port500, c->name);
+		, ip_str(&md->iface->ip_addr), oco->pluto_port500, c->name);
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -723,7 +726,7 @@ main_inI1_outR1(struct msg_digest *md)
 	     * His ID isn't declared yet.
 	     */
 	   DBG(DBG_CONTROL, DBG_log("instantiating \"%s\" for initial Main Mode message received on %s:%u"
-		, c->name, ip_str(&md->iface->ip_addr), pluto_port500));
+		, c->name, ip_str(&md->iface->ip_addr), oco->pluto_port500));
 	    c = rw_instantiate(c, &md->sender
 			       , NULL, NULL);
 	}
@@ -1276,12 +1279,15 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct state *st = md->st;
 
+    const struct osw_conf_options *oco;
+    oco = osw_init_options();
+
     /* send CR if auth is RSA and no preloaded RSA public key exists*/
     bool send_cr = FALSE;
 
     /**************** build output packet HDR;KE;Nr ****************/
 
-    send_cr = !no_cr_send
+    send_cr = !oco->no_cr_send
 	&& (st->st_oakley.auth == OAKLEY_RSA_SIG)
 	&& !has_preloaded_public_key(st)
 	&& st->st_connection->spd.that.ca.ptr != NULL;
@@ -1497,6 +1503,7 @@ main_inR2_outI3_continue(struct msg_digest *md
     bool send_cr = FALSE;
     generalName_t *requested_ca = NULL;
     cert_t mycert = st->st_connection->spd.this.cert;
+    const struct osw_conf_options *oco = osw_init_options();
 
     finish_dh_secretiv(st, r);
     if(!r->pcr_success) {
@@ -1534,7 +1541,7 @@ main_inR2_outI3_continue(struct msg_digest *md
 			  , send_cert);
 
     /* send certificate request, if we don't have a preloaded RSA public key */
-    send_cr = !no_cr_send && send_cert && !has_preloaded_public_key(st);
+    send_cr = !oco->no_cr_send && send_cert && !has_preloaded_public_key(st);
 
     DBG(DBG_CONTROL
 	, DBG_log(" I am %ssending a certificate request"

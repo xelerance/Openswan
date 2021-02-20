@@ -330,9 +330,6 @@ extern stf_status ikev2_encrypt_msg(struct msg_digest *md,
 extern stf_status ikev2_decrypt_msg(struct msg_digest *md
                                     , enum phase1_role init);
 
-
-extern bool force_busy;  /* config option to emulate responder under DOS */
-
 /* allocate a transmit slot */
 extern stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p);
 

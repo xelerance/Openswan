@@ -37,6 +37,7 @@
 #include "id.h"
 #include "pluto/connections.h"
 #include "hostpair.h"
+#include "oswconf.h"
 
 #include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -501,14 +502,16 @@ static stf_status ikev2_send_auth(struct connection *c
 static void
 ikev2_update_nat_ports(struct state *st)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     if(st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
-        if(st->st_remoteport == pluto_port500) {
+        if(st->st_remoteport == oco->pluto_port500) {
             loglog(RC_COMMENT, "NAT-T detected, moving to port 4500");
-            st->st_remoteport = pluto_port4500;
+            st->st_remoteport = oco->pluto_port4500;
         }
 
         /* now pick a new local interface definition for sending traffic out of */
-        st->st_interface = pick_matching_interfacebyfamily(interfaces, pluto_port4500
+        st->st_interface = pick_matching_interfacebyfamily(interfaces, oco->pluto_port4500
                                                            , st->st_remoteaddr.u.v4.sin_family
                                                            , &st->st_connection->spd);
         if(st->st_interface) {

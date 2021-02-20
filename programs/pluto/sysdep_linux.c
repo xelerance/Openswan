@@ -41,6 +41,7 @@
 #include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "rnd.h"
@@ -235,6 +236,7 @@ find_raw_ifaces4(void)
     struct ifreq *buf;	     /* for list of interfaces -- arbitrary limit */
     struct raw_iface *rifaces = NULL;
     int master_sock = safe_socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);    /* Get a UDP socket */
+    const struct osw_conf_options *oco = osw_init_options();
 
     /* get list of interfaces with assigned IPv4 addresses from system */
 
@@ -250,7 +252,7 @@ find_raw_ifaces4(void)
 	ip_address any;
 
 	happy(anyaddr(AF_INET, &any));
-	setportof(htons(pluto_port500), &any);
+	setportof(htons(oco->pluto_port500), &any);
 	if (bind(master_sock, sockaddrof(&any), sockaddrlenof(&any)) < 0)
 	    exit_log_errno((e, "bind() failed in find_raw_ifaces4()"));
     }

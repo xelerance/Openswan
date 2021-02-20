@@ -333,7 +333,6 @@ struct connection {
 };
 
 #define oriented(c) ((c).interface != NULL)
-extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,

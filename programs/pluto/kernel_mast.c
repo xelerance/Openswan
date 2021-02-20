@@ -36,6 +36,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "id.h"
@@ -194,16 +195,17 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
     struct iface_port *firstq=NULL;
+    struct osw_conf_options *oco = osw_init_options();
     char useful_mast_name[256];
     bool found_mast=FALSE;
     ip_address lip; /* --listen filter option */
 
-    if(pluto_listen) {
+    if(oco->pluto_listen) {
 	err_t e;
-	e = ttoaddr(pluto_listen,0,0,&lip);
+	e = ttoaddr(oco->pluto_listen,0,0,&lip);
 	if (e) {
 		DBG_log("invalid listen= option ignored: %s\n", e);
-		pluto_listen = NULL;
+		oco->pluto_listen = NULL;
 	}
     }
 
@@ -240,7 +242,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	    continue;
 
 	/* ignore if --listen is specified and we do not match */
-	if (pluto_listen!=NULL) {
+	if (oco->pluto_listen!=NULL) {
 	   if (!sameaddr(&lip, &ifp->addr)) {
 		openswan_log("skipping interface %s with %s"
 			     , ifp->name , ip_str(&ifp->addr));
@@ -301,7 +303,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 
 		vname = clone_str(useful_mast_name
 				  , "virtual device name mast");
-		fd = create_socket(ifp, vname, pluto_port500);
+		fd = create_socket(ifp, vname, oco->pluto_port500);
 
 		if (fd < 0)
 		    break;
@@ -323,7 +325,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		q->ip_addr = ifp->addr;
                 init_iface_port(q);
 		q->change = IFN_ADD;
-		q->port = pluto_port500;
+		q->port   = oco->pluto_port500;
 		q->ike_float = FALSE;
 
 #ifdef NAT_TRAVERSAL

@@ -52,6 +52,8 @@
 #include "defs.h"
 #include "id.h"
 #include "state.h"
+#include "oswconf.h"
+
 #include "pluto/connections.h"
 #include "kernel.h"
 #include "pluto/server.h"
@@ -1340,6 +1342,8 @@ linux_pfkey_add_aead(void)
 void
 linux_pfkey_register_response(const struct sadb_msg *msg)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
     switch (msg->sadb_msg_satype)
     {
     case SADB_SATYPE_ESP:
@@ -1348,7 +1352,7 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
 	    linux_pfkey_add_aead();
 	    break;
     case SADB_X_SATYPE_IPCOMP:
-	can_do_IPcomp = TRUE;
+	oco->can_do_IPcomp = TRUE;
 	break;
     default:
 	break;
@@ -1964,14 +1968,15 @@ netlink_shunt_eroute(struct connection *c
 void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
 {
+    struct osw_conf_options *oco = osw_init_options();
     struct raw_iface *ifp;
     ip_address lip; /* --listen filter option */
-    if(pluto_listen) {
+    if(oco->pluto_listen) {
 	err_t e;
-	e = ttoaddr(pluto_listen,0,0,&lip);
+	e = ttoaddr(oco->pluto_listen,0,0,&lip);
 	if (e) {
 		DBG_log("invalid listen= option ignored: %s\n", e);
-		pluto_listen = NULL;
+		oco->pluto_listen = NULL;
 	}
 	DBG(DBG_CONTROL, DBG_log("Only looking to listen on %s\n", ip_str(&lip)));
     }
@@ -2025,7 +2030,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 		    /* ugh: a second real interface with the same IP address
 		     * "after" allows us to avoid double reporting.
 		     */
-		    if (kern_interface == USE_NETKEY)
+		    if (oco->kern_interface == USE_NETKEY)
 		    {
 			if (after)
 			{
@@ -2048,7 +2053,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	if (bad)
 	    continue;
 
-	if (kern_interface == USE_NETKEY)
+	if (oco->kern_interface == USE_NETKEY)
 	{
 	    v = ifp;
 	    goto add_entry;
@@ -2057,7 +2062,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	/* what if we didn't find a virtual interface? */
 	if (v == NULL)
 	{
-	    if (kern_interface == NO_KERNEL)
+	    if (oco->kern_interface == NO_KERNEL)
 	    {
 		/* kludge for testing: invent a virtual device */
 		static const char fvp[] = "virtual";
@@ -2084,7 +2089,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 add_entry:
 	/* last check before we actually add the entry due to ugly goto code */
 	/* ignore if --listen is specified and we do not match */
-	if (pluto_listen!=NULL) {
+	if (oco->pluto_listen!=NULL) {
 	    if (!sameaddr(&lip, &ifp->addr)) {
 		openswan_log("skipping interface %s with %s"
 		, ifp->name , ip_str(&ifp->addr));
@@ -2104,7 +2109,7 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, v->name, pluto_port500);
+		    int fd = create_socket(ifp, v->name, oco->pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -2131,7 +2136,7 @@ add_entry:
                     init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port500;
+		    q->port   = oco->pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;

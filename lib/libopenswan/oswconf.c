@@ -21,6 +21,8 @@
 #include "oswlog.h"
 #include "oswconf.h"
 #include "oswalloc.h"
+#include "secrets.h"
+#include "pluto/log.h"
 
 #ifdef HAVE_LIBNSS
 # include <string.h>
@@ -123,6 +125,22 @@ void osw_conf_setdefault(void)
     global_oco.confdir = ipsec_conf_dir;
     global_oco.conffile = conffile;
 
+    global_oco.fork_desired = TRUE;
+    global_oco.kern_interface = AUTO_PICK;
+    global_oco.nat_t_spf    = TRUE;
+    global_oco.nhelpers     = -1;
+
+    global_oco.log_to_stderr = TRUE;
+    global_oco.log_to_syslog = TRUE;
+
+    global_oco.pluto_port500  = 500;
+    global_oco.pluto_port4500 = 4500;
+
+    strcpy(global_oco.pluto_lock, DEFAULT_CTLBASE LOCK_SUFFIX);
+
+    global_oco.pluto_shared_secrets_file = SHARED_SECRETS_FILE;
+    global_oco.base_perpeer_logdir = PERPEERLOGDIR;
+
 #ifdef HAVE_LIBNSS
     /* path to NSS password file */
     snprintf(buf, sizeof(buf), "%s/nsspassword", global_oco.confddir);
@@ -152,7 +170,7 @@ void osw_conf_free_oco(void)
     pfree(global_oco.ocspcerts_dir);
 }
 
-const struct osw_conf_options *osw_init_options(void)
+struct osw_conf_options *osw_init_options(void)
 {
     if(setup) return &global_oco;
     setup = TRUE;

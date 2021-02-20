@@ -43,6 +43,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswtime.h"
+#include "oswconf.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -371,6 +372,7 @@ cannot_oppo(struct connection *c
 {
     char pcb[ADDRTOT_BUF];
     char ocb[ADDRTOT_BUF];
+    const struct osw_conf_options *oco = osw_init_options();
 
     addrtot(&b->peer_client, 0, pcb, sizeof(pcb));
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
@@ -463,7 +465,7 @@ cannot_oppo(struct connection *c
      * NETKEY default for level param in tmpl is required, so no traffic will
      * transmitted until an SA is fully up
      */
-    if (b->held && kern_interface != USE_NETKEY)
+    if (b->held && oco->kern_interface != USE_NETKEY)
     {
 	int failure_shunt = b->failure_shunt;
 
@@ -710,6 +712,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
                        , err_t ac_ugh
                        , struct xfrm_user_sec_ctx_ike *uctx)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct connection *c;
     struct spd_route *sr;
     char ours[ADDRTOT_BUF];
@@ -721,7 +724,9 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     int work = 0;
 
     /* on klips/mast assume we will do something */
-    work = (kern_interface == USE_KLIPS || kern_interface == USE_MASTKLIPS || kern_interface == USE_NETKEY);
+    work = (oco->kern_interface == USE_KLIPS
+            || oco->kern_interface == USE_MASTKLIPS
+            || oco->kern_interface == USE_NETKEY);
 
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
@@ -810,7 +815,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
 
-	if (b->held && kern_interface != USE_NETKEY)
+	if (b->held && oco->kern_interface != USE_NETKEY)
 	{
 	    /* what should we do on failure? */
 	    (void) assign_hold(c, sr, b->transport_proto, &b->our_client, &b->peer_client);
@@ -1503,18 +1508,15 @@ initiate_ondemand_body(struct find_oppo_bundle *b
  */
 #endif /* NEVER */
 
-/* an ISAKMP SA has been established.
- * Note the serial number, and release any connections with
- * the same peer ID but different peer IP address.
- */
-bool uniqueIDs = FALSE;	/* --uniqueids? */
+/* an ISAKMP SA has been established. */
 
 void
 ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     c->newest_isakmp_sa = serial;
 
-    if (uniqueIDs
+    if (oco->uniqueIDs
 #ifdef XAUTH
 	 && (!c->spd.this.xauth_server)
 #endif

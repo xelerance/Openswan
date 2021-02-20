@@ -41,6 +41,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "rnd.h"
@@ -71,14 +72,6 @@
 #include "packet.h"  /* for pb_stream in nat_traversal.h */
 #include "nat_traversal.h"
 #endif
-
-/*
- * Global variables: had to go somewhere, might as well be this file.
- */
-
-u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
-u_int16_t pluto_port4500 = NAT_IKE_UDP_PORT;	/* Pluto's port NAT */
-bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 /* test if the routes required for two different connections agree
  * It is assumed that the destination subnets agree; we are only
@@ -359,7 +352,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
-	connmtu_str[sizeof("PLUTO_MTU")+5+1],  
+	connmtu_str[sizeof("PLUTO_MTU")+5+1],
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -612,6 +605,7 @@ could_route(struct connection *c, struct spd_route *dsr)
 {
     struct spd_route *esr, *rosr;
     struct connection *ero, *ro;
+    const struct osw_conf_options *oco = osw_init_options();
 
     /* who, if anyone, owns our eroute? */
     ro = route_owner(c, dsr, &rosr, &ero, &esr); /* who owns our route? */
@@ -658,7 +652,7 @@ could_route(struct connection *c, struct spd_route *dsr)
 #endif
 
     /* if routing would affect IKE messages, reject */
-    if (kern_interface != NO_KERNEL
+    if (oco->kern_interface != NO_KERNEL
 #ifdef NAT_TRAVERSAL
 	&& c->spd.this.host_port != NAT_T_IKE_FLOAT_PORT
 #endif
@@ -2877,8 +2871,9 @@ install_ipsec_sa(struct state *parent_st
 void
 delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct connection *c = st->st_connection;
-    switch (kern_interface) {
+    switch (oco->kern_interface) {
     case USE_MASTKLIPS:
     case USE_KLIPS:
     case USE_NETKEY:
@@ -2930,7 +2925,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 
 #ifdef KLIPS_MAST
 		    /* in mast mode we must also delete the iptables rule */
-		    if (kern_interface == USE_MASTKLIPS)
+		    if (oco->kern_interface == USE_MASTKLIPS)
 			    (void) sag_eroute(st, sr, ERO_DELETE, "delete");
 #endif
 		}

@@ -67,6 +67,7 @@
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "timer.h"
 #include "mpzfuncs.h"
+#include "oswconf.h"
 
 #include "fetch.h"
 #include "x509more.h"
@@ -98,11 +99,11 @@
 # include "oswconf.h"
 #endif
 
-const char *pluto_shared_secrets_file = SHARED_SECRETS_FILE;
 struct secret *pluto_secrets = NULL;
 
 void load_preshared_secrets(int whackfd)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     prompt_pass_t pass;
 
     pass.prompt = whack_log;
@@ -113,7 +114,7 @@ void load_preshared_secrets(int whackfd)
 #else
 			       , TRUE
 #endif
-			       , pluto_shared_secrets_file
+			       , oco->pluto_shared_secrets_file
 			       , &pass, NULL);
 }
 
@@ -124,7 +125,8 @@ void free_preshared_secrets(void)
 
 void show_secrets_status(void)
 {
-    whack_log(RC_COMMENT, "using secrets file: %s", pluto_shared_secrets_file);
+    struct osw_conf_options *oco = osw_init_options();
+    whack_log(RC_COMMENT, "using secrets file: %s", oco->pluto_shared_secrets_file);
 }
 
 static int print_secrets(struct secret *secret
@@ -167,7 +169,9 @@ static int print_secrets(struct secret *secret
 
 void list_psks(void)
 {
-    whack_log(RC_COMMENT, "List of Pre-shared secrets (from %s)", pluto_shared_secrets_file);
+    const struct osw_conf_options *oco = osw_init_options();
+
+    whack_log(RC_COMMENT, "List of Pre-shared secrets (from %s)", oco->pluto_shared_secrets_file);
     osw_foreach_secret(pluto_secrets, print_secrets, NULL);
 }
 

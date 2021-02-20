@@ -46,6 +46,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "log.h"
@@ -782,6 +783,7 @@ struct _new_mapp_nfo {
 
 static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
 {
+  const struct osw_conf_options *oco = osw_init_options();
   struct _new_mapp_nfo *nfo = (struct _new_mapp_nfo *)data;
 
   if((nfo->st->st_clonedfrom &&
@@ -801,7 +803,7 @@ static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
 
     /* only log it if the remoteaddr was not 0.0.0.0, or the ports were not normal ones */
     if(!isanyaddr(&st->st_remoteaddr)
-       || (nfo->port != pluto_port500 && nfo->port != pluto_port4500)) {
+       || (nfo->port != oco->pluto_port500 && nfo->port != oco->pluto_port4500)) {
       addrtot(&st->st_remoteaddr, 0, b1, ADDRTOT_BUF);
       addrtot(&nfo->addr,         0, b2, ADDRTOT_BUF);
 

@@ -305,6 +305,7 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 bool
 insert_crl(chunk_t blob, chunk_t crl_uri)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     x509crl_t *crl = alloc_thing(x509crl_t, "x509crl");
 
     *crl = empty_x509crl;
@@ -389,7 +390,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 		    DBG_log("thisUpdate is not newer - existing crl not replaced");
 		)
 		free_crl(crl);
-		return oldcrl->nextUpdate - time(NULL) > 2*crl_check_interval;
+		return oldcrl->nextUpdate - time(NULL) > 2*oco->crl_check_interval;
 	    }
 	}
 
@@ -400,7 +401,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 	unlock_crl_list("insert_crl");
 
 	/* is the fetched crl valid? */
-	return crl->nextUpdate - time(NULL) > 2*crl_check_interval;
+	return crl->nextUpdate - time(NULL) > 2*oco->crl_check_interval;
     }
     else
     {

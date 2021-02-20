@@ -33,6 +33,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
+#include "oswconf.h"
 #include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
@@ -218,6 +219,8 @@ static stf_status
 aggr_inI1_outR1_common(struct msg_digest *md
 		       , int authtype)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* With Aggressive Mode, we get an ID payload in this, the first
      * message, so we can use it to index the preshared-secrets
      * when the IP address would not be meaningful (i.e. Road
@@ -256,7 +259,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	/* see if a wildcarded connection can be found */
  	pb_stream pre_sa_pbs = sa_pd->pbs;
  	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs) | POLICY_AGGRESSIVE;
-	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, oco->pluto_port500
 				 , KH_ANY, (ip_address*)NULL, md->sender_port, policy, POLICY_IKEV1_DISABLE, &policy_hint);
 	if (c == NULL || (c->policy & POLICY_AGGRESSIVE) == 0) {
 	    loglog(RC_LOG_SERIOUS, "initial Aggressive Mode message from %s"

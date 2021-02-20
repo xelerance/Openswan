@@ -65,6 +65,8 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
+#include "oswconf.h"
+
 #include "pluto/connections.h"	/* needs id.h */
 #include "kernel.h"  /* for no_klips; needs connections.h */
 #include "log.h"
@@ -96,8 +98,6 @@
  */
 
 static const int on = TRUE;	/* by-reference parameter; constant, we hope */
-
-bool no_retransmits = FALSE;
 
 /* list of interface devices */
 struct iface_list interface_dev;
@@ -326,6 +326,7 @@ struct raw_iface *static_ifn=NULL;
 int
 create_socket(struct raw_iface *ifp, const char *v_name, int port)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     int fd = socket(addrtypeof(&ifp->addr), SOCK_DGRAM, IPPROTO_UDP);
     int fcntl_flags;
 
@@ -387,7 +388,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 #endif
 
 #if defined(linux) && defined(NETKEY_SUPPORT)
-    if (kern_interface == USE_NETKEY)
+    if (oco->kern_interface == USE_NETKEY)
     {
 	struct sadb_x_policy policy;
 	int level, opt;
@@ -439,7 +440,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 	close(fd);
 	return -1;
     }
-    setportof(htons(pluto_port500), &ifp->addr);
+    setportof(htons(oco->pluto_port500), &ifp->addr);
 
 #if defined(HAVE_UDPFROMTO)
     /* we are going to use udpfromto.c, so initialize it */
@@ -554,6 +555,7 @@ reapchildren(void)
 void
 call_server(void)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct iface_port *ifp;
 
     /* catch SIGHUP and SIGTERM */
@@ -636,7 +638,7 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (kern_interface != NO_KERNEL)
+	    if (oco->kern_interface != NO_KERNEL)
 	    {
 		int fd = *kernel_ops->async_fdp;
 
@@ -663,7 +665,7 @@ call_server(void)
 	    /* see if helpers need attention */
 	    pluto_crypto_helper_sockets(&readfds);
 
-	    if (no_retransmits || next_time < 0)
+	    if (oco->no_retransmits || next_time < 0)
 	    {
 		/* select without timer */
 
@@ -702,7 +704,7 @@ call_server(void)
 	 * we log the time when we are about to do something so that
 	 * we know what time things happened, when not using syslog
 	 */
-	if(log_to_stderr_desired) {
+	if(oco->log_to_stderr_desired) {
 	    time_t n;
 
 	    static time_t lastn = 0;
@@ -744,7 +746,7 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (kern_interface != NO_KERNEL
+	    if (oco->kern_interface != NO_KERNEL
 		&& OSW_FD_ISSET(*kernel_ops->async_fdp, &readfds))
 	    {
 		passert(ndes > 0);
@@ -803,7 +805,7 @@ call_server(void)
 
 	    passert(ndes == 0);
 	}
-	if (next_event() == 0 && !no_retransmits)
+	if (next_event() == 0 && !oco->no_retransmits)
 	{
 	    /* timer event ready */
 	    DBG(DBG_CONTROL, DBG_log("*time to handle event"));

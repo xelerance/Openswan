@@ -74,6 +74,7 @@
 #include "dpd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
+#include "oswconf.h"
 
 enum smf2_flags {
     SMF2_INITIATOR      = LELEM(1),
