@@ -110,6 +110,8 @@ struct osw_conf_options {
     char *coredir;
     int nhelpers;
     char *pluto_listen;
+
+    bool pluto_listen_on_link_scope;
 };
 
 #ifdef HAVE_LIBNSS

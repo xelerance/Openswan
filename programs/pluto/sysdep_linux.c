@@ -387,6 +387,7 @@ find_raw_ifaces6(void)
     {
 	for (;;)
 	{
+          const struct osw_conf_options *oco = osw_init_options();
 	    struct raw_iface ri;
 	    unsigned short xb[8];	/* IPv6 address as 8 16-bit chunks */
 	    char sb[8*5];	/* IPv6 address as string-with-colons */
@@ -405,13 +406,15 @@ find_raw_ifaces6(void)
 	    if (r != 13)
 		break;
 
-	    /* ignore addresses with link local scope.
-	     * From linux-2.4.9-13/include/net/ipv6.h:
-	     * IPV6_ADDR_LINKLOCAL	0x0020U
-	     * IPV6_ADDR_SCOPE_MASK	0x00f0U
-	     */
-	    if ((scope & 0x00f0U) == 0x0020U)
+            if(!oco->pluto_listen_on_link_scope) {
+              /* ignore addresses with link local scope.
+               * From linux-2.4.9-13/include/net/ipv6.h:
+               * IPV6_ADDR_LINKLOCAL	0x0020U
+               * IPV6_ADDR_SCOPE_MASK	0x00f0U
+               */
+              if ((scope & 0x00f0U) == 0x0020U)
 		continue;
+            }
 
 	    snprintf(sb, sizeof(sb)
 		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"

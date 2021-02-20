@@ -94,7 +94,14 @@
 #include "osw_select.h"
 
 /*
- *  Server main loop and socket initialization routines.
+ * Server main loop and socket initialization routines.
+ *
+ * Also, all global policy settings will migrate to the "osw_conf_options"
+ * structure.
+ *
+ * Changes to Server can occur by whack, and cause pluto to act as if "--listen"
+ * was just called.  Sockets and Logs may get opened/closed, etc.
+ *
  */
 
 static const int on = TRUE;	/* by-reference parameter; constant, we hope */
