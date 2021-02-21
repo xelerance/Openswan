@@ -38,15 +38,16 @@ unsigned short outside_port4500= 55045;
 bool
 send_packet(struct state *st, const char *where, bool verbose)
 {
+    struct osw_conf_options *oco = osw_init_options();
     ip_address outsideoffirewall;
 
     /* example.com: 93.184.216.34 */
     outsideoffirewall = st->st_interface->ip_addr;
     inet_pton(AF_INET, "93.184.216.34", &outsideoffirewall.u.v4.sin_addr);
 
-    if(ntohs(outsideoffirewall.u.v4.sin_port) == pluto_port500) {
+    if(ntohs(outsideoffirewall.u.v4.sin_port) == oco->pluto_port500) {
       outsideoffirewall.u.v4.sin_port = htons(outside_port500);
-    } else if(ntohs(outsideoffirewall.u.v4.sin_port) == pluto_port4500) {
+    } else if(ntohs(outsideoffirewall.u.v4.sin_port) == oco->pluto_port4500) {
       outsideoffirewall.u.v4.sin_port = htons(outside_port4500);
     }
 

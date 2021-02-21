@@ -43,9 +43,5 @@ RC=0 "net-net":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 ./orientmoon leak: cacert path, item size: X
 ./orientmoon leak: acert path, item size: X
 ./orientmoon leak: override ipsec.d, item size: X
-./orientmoon leak: default conf var_dir, item size: X
-./orientmoon leak: default conf conffile, item size: X
-./orientmoon leak: default conf ipsecd_dir, item size: X
-./orientmoon leak: default conf ipsec_conf_dir, item size: X
 ./orientmoon leak detective found Z leaks, total size X
 processing net-net

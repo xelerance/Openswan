@@ -450,10 +450,10 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting length of IKEv2 Encryption Payload: 1540
 | emitting length of ISAKMP Message: 1568
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:270: v2 encryptor 'aes' expects keylen 16/128, SA #2 INITIATOR keylen is 24
-| WARNING: ikev2_encrypt_msg:270: v2 encryptor 'aes' expects keylen 16/128, SA #2 RESPONDER keylen is 24
-| WARNING: ikev2_encrypt_msg:270: v2 hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 16
-| WARNING: ikev2_encrypt_msg:270: v2 hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 16
+| WARNING: ikev2_encrypt_msg:271: v2 encryptor 'aes' expects keylen 16/128, SA #2 INITIATOR keylen is 24
+| WARNING: ikev2_encrypt_msg:271: v2 encryptor 'aes' expects keylen 16/128, SA #2 RESPONDER keylen is 24
+| WARNING: ikev2_encrypt_msg:271: v2 hasher 'sha256' expects keylen 32/32, SA #2 INITIATOR keylen is 16
+| WARNING: ikev2_encrypt_msg:271: v2 hasher 'sha256' expects keylen 32/32, SA #2 RESPONDER keylen is 16
 | data before encryption:
 |   25 00 00 54  09 00 00 00  30 4a 31 0b  30 09 06 03
 |   55 04 06 13  02 43 41 31  0b 30 09 06  03 55 04 08
@@ -884,10 +884,10 @@ sending 1568 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132
 | emitting length of IKEv2 Encryption Payload: 52
 | emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR, parent SA #1
-| WARNING: ikev2_encrypt_msg:270: v2 encryptor 'aes' expects keylen 16/128, SA #1 INITIATOR keylen is 24
-| WARNING: ikev2_encrypt_msg:270: v2 encryptor 'aes' expects keylen 16/128, SA #1 RESPONDER keylen is 24
-| WARNING: ikev2_encrypt_msg:270: v2 hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 16
-| WARNING: ikev2_encrypt_msg:270: v2 hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 16
+| WARNING: ikev2_encrypt_msg:271: v2 encryptor 'aes' expects keylen 16/128, SA #1 INITIATOR keylen is 24
+| WARNING: ikev2_encrypt_msg:271: v2 encryptor 'aes' expects keylen 16/128, SA #1 RESPONDER keylen is 24
+| WARNING: ikev2_encrypt_msg:271: v2 hasher 'sha256' expects keylen 32/32, SA #1 INITIATOR keylen is 16
+| WARNING: ikev2_encrypt_msg:271: v2 hasher 'sha256' expects keylen 32/32, SA #1 RESPONDER keylen is 16
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:

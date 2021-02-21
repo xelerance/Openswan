@@ -22,10 +22,11 @@
 
 #define TESTNAME "v1certM2"
 
-bool no_cr_send = 0;
-
 static void init_local_interface(void)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
+    oco->no_cr_send = FALSE;
     nat_traversal_support_non_ike = TRUE;
     nat_traversal_support_port_floating = TRUE;
     nat_traversal_enabled = TRUE;

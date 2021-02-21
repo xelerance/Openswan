@@ -24,8 +24,13 @@
 
 static void init_local_interface(void)
 {
-    init_parker_interface(TRUE);
+    struct osw_conf_options *oco = osw_init_options();
+
+    oco->no_cr_send = TRUE;
+    nat_traversal_support_non_ike = TRUE;
+    nat_traversal_support_port_floating = TRUE;
     nat_traversal_enabled = TRUE;
+    init_parker_interface(TRUE);
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_EMITTING;
 }
 

@@ -72,9 +72,5 @@ RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 1
 ./loadbob leak: cacert path, item size: X
 ./loadbob leak: acert path, item size: X
 ./loadbob leak: override ipsec.d, item size: X
-./loadbob leak: default conf var_dir, item size: X
-./loadbob leak: default conf conffile, item size: X
-./loadbob leak: default conf ipsecd_dir, item size: X
-./loadbob leak: default conf ipsec_conf_dir, item size: X
 ./loadbob leak detective found Z leaks, total size X
 processing nat-t

@@ -24,8 +24,6 @@
 
 #define TESTNAME "v1certM2"
 
-bool no_cr_send = 0;
-
 static void init_local_interface(void)
 {
     nat_traversal_support_non_ike = TRUE;

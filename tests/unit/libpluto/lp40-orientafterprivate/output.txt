@@ -139,16 +139,4 @@ RC=2 ID hostpairs:
 ./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
-./orienttest leak: policies path, item size: X
-./orienttest leak: ocspcerts path, item size: X
-./orienttest leak: aacerts path, item size: X
-./orienttest leak: certs path, item size: X
-./orienttest leak: private path, item size: X
-./orienttest leak: crls path, item size: X
-./orienttest leak: cacert path, item size: X
-./orienttest leak: acert path, item size: X
-./orienttest leak: default conf var_dir, item size: X
-./orienttest leak: default conf conffile, item size: X
-./orienttest leak: default conf ipsecd_dir, item size: X
-./orienttest leak: default conf ipsec_conf_dir, item size: X
 ./orienttest leak detective found Z leaks, total size X
