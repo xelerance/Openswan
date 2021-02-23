@@ -12,6 +12,7 @@
  * for more details.
  */
 
+extern err_t whack_decode_and_process(int whack_fd, chunk_t *encode_msg);
 extern void whack_process(int whackfd, struct whack_message msg);
 extern void whack_handle(int kernelfd);
 extern void whack_listen(void);

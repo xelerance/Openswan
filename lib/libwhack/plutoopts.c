@@ -37,6 +37,13 @@
 #include "pluto/server.h"
 #include "pluto/log.h"
 
+#include "qcbor/qcbor_encode.h"
+#include "qcbor/qcbor_decode.h"
+
+extern err_t whack_cbor_magic_header(QCBOREncodeContext *qec);
+
+#define OK(x) ugh = (x); if(ugh) goto bad
+
 /** usage - print help messages
  *
  * @param mess String - alternate message to print
@@ -138,7 +145,17 @@ void pluto_usage(const char *mess)
 
 err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
 {
-    struct osw_conf_options *oco = osw_init_options();
+    QCBOREncodeContext qec;
+    QCBORError e;
+    err_t ugh;
+
+    UsefulBuf into = {encode_opts->ptr, (unsigned long)encode_opts->len};
+    QCBOREncode_Init(&qec, into);
+
+    OK(whack_cbor_magic_header(&qec));
+
+    QCBOREncode_OpenMap(&qec);
+    QCBOREncode_OpenMapInMapN(&qec, WHACK_OPTIONS);
 
     /* handle arguments */
     for (;;)  {
@@ -257,7 +274,7 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                 return "";
 
             case 'C':
-                oco->coredir = clone_str(optarg, "coredir");
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_COREDIR, optarg);
                 break;
 
             case 'v':	/* --version */
@@ -267,11 +284,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                 }
                 exit(0);	/* not exit_pluto because we are not initialized yet */
                 break;	/* not actually reached */
-
-            case '+':	/* --optionsfrom <filename> */
-                optionsfrom(optarg, &argc, &argv, optind, stderr);
-                /* does not return on error */
-                continue;
 
             case 'j':	/* --nhelpers */
                 if (optarg == NULL || !(isdigit(optarg[0]) || optarg[0]=='-')) {
@@ -286,7 +298,7 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                         || count < -1) {
                         return "<nhelpers> must be a positive number, 0 or -1";
                     }
-                    oco->nhelpers = count;
+                    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NHELPERS, count);
                 }
                 continue;
 
@@ -299,36 +311,32 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                     char *endptr;
                     long value = strtol(optarg, &endptr, 0);
 
-#ifdef HAVE_LABELED_IPSEC
                     if (*endptr != '\0' || endptr == optarg
                         || (value != SECCTX && value !=10) ) {
                         return "<secctx_attr_value> must be a positive number (32001 by default, 10 for backward compatibility, or any other future number assigned by IANA)";
                     }
-                    oco->secctx_attr_value = (u_int16_t)value;
-#else
-                    openswan_log("Labelled IPsec not enabled; value %ld ignored.", value);
-#endif
+                    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SECCTX, value);
                 }
                 continue;
 
             case 'd':	/* --nofork*/
-                oco->fork_desired = FALSE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_FORKDESIRED, FALSE);
                 continue;
 
             case 'e':	/* --stderrlog */
-                oco->log_to_stderr_desired = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_STDERR_DESIRED, TRUE);
                 continue;
 
             case 't':	/* --plutostderrlogtime */
-                oco->log_with_timestamp_desired = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LOG_WITH_TIMESTAMP, TRUE);
                 continue;
 
             case 'G':       /* --use-auto */
-                oco->kern_interface = AUTO_PICK;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, AUTO_PICK);
                 continue;
 
             case 'k':       /* --use-klips */
-                oco->kern_interface = USE_KLIPS;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, USE_KLIPS);
                 continue;
 
             case 'L':	/* --listen ip_addr */
@@ -338,51 +346,51 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                     if(e) {
                         openswan_log("invalid listen argument ignored: %s\n",e);
                     } else {
-                        oco->pluto_listen = clone_str(optarg, "pluto_listen");
-                        openswan_log("bind() will be filtered for %s\n",oco->pluto_listen);
+                        QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_LISTENADDR, optarg);
+                        openswan_log("bind() will be filtered for %s\n", optarg);
                     }
                 }
                 continue;
 
             case 'M':       /* --use-mast */
-                oco->kern_interface = USE_MASTKLIPS;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, USE_MASTKLIPS);
                 continue;
 
             case 'F':       /* --use-bsdkame */
-                oco->kern_interface = USE_BSDKAME;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, USE_BSDKAME);
                 continue;
 
             case 'K':       /* --use-netkey */
-                oco->kern_interface = USE_NETKEY;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, USE_NETKEY);
                 continue;
 
             case 'n':	/* --use-nostack */
-                oco->kern_interface = NO_KERNEL;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_KERN_INTERFACE, NO_KERNEL);
 
                 /* this permits interfaces to match even if ports do not, so
                  * that pluto can be tested against another pluto, all on
                  * 127.0.0.1
                  */
-                oco->orient_same_addr_ok = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SAME_ADDR_OK, TRUE);
                 continue;
 
             case 'D':	/* --force_busy */
-                oco->force_busy = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_FORCE_BUSY, TRUE);
                 continue
                     ;
 
             case 'c':	/* --nocrsend */
-                oco->no_cr_send = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_CERT_SEND, TRUE);
                 continue
                     ;
 
             case 'r':	/* --strictcrlpolicy */
-                oco->strict_crl_policy = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_STRICT_CRL_POLICY, TRUE);
                 continue
                     ;
 
             case 'R':
-                oco->no_retransmits = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NO_RETRANSMITS, TRUE);
                 continue;
 
             case 'x':	/* --crlcheckinterval <time>*/
@@ -398,23 +406,21 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                         || interval <= 0) {
                         return "<interval-time> must be a positive number";
                     }
-                    oco->crl_check_interval = interval;
+                    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_CRL_CHECK_INTERVAL, interval);
                 }
                 continue
                     ;
 
             case 'o':	/* --ocspuri */
-                oco->ocspuri = optarg;
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_OCSPURI, optarg);
                 continue;
 
             case 'u':	/* --uniqueids */
-                oco->uniqueIDs = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_UNIQUE_IDS, TRUE);
                 continue;
 
             case 'i':	/* --interface <ifname|ifaddr> */
-                if (!use_interface(optarg)) {
-                    return "too many --interface specifications";
-                }
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_USE_INTERFACE, optarg);
                 continue;
 
                 /*
@@ -434,99 +440,88 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                         || port <= 0 || port > (0x10000-4000)) {
                         return "<port-number> must be a number between 1 and 61535 (nat port: port-number+4000)";
                     }
-                    oco->pluto_port500  = port;
-                    oco->pluto_port4500 = port+4000;
+                    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_IKE_PORT, port);
                 }
                 continue;
 
             case 'b':	/* --ctlbase <path> */
-                oco->ctlbase = optarg;
-                if (snprintf(ctl_addr.sun_path, sizeof(ctl_addr.sun_path)
-                             , "%s%s", oco->ctlbase, CTL_SUFFIX) == -1) {
-                    return "<path>" CTL_SUFFIX " too long for sun_path";
-                }
-                if (snprintf(info_addr.sun_path, sizeof(info_addr.sun_path)
-                             , "%s%s", oco->ctlbase, INFO_SUFFIX) == -1) {
-                    return "<path>" INFO_SUFFIX " too long for sun_path";
-                }
-                if (snprintf(oco->pluto_lock, sizeof(oco->pluto_lock)
-                             , "%s%s", oco->ctlbase, LOCK_SUFFIX) == -1) {
-                    return "<path>" LOCK_SUFFIX " must fit";
-                }
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_CTRL_BASE, optarg);
                 continue;
 
             case 's':	/* --secretsfile <secrets-file> */
-                oco->pluto_shared_secrets_file = optarg;
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_SHARED_SECRETS_FILE, optarg);
                 continue;
 
             case 'f':	/* --ipsecdir <ipsec-dir> */
-                (void)osw_init_ipsecdir(optarg);
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IPSEC_DIR, optarg);
                 continue;
 
-#ifdef DEBUG
             case 'N':	/* --debug-none */
-                base_debugging = DBG_NONE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SET_DEBUGGING, DBG_NONE);
                 continue;
 
             case 'A':	/* --debug-all */
-                base_debugging = DBG_ALL;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SET_DEBUGGING, DBG_ALL);
                 continue;
-#endif
 
             case 'P':       /* --perpeerlogbase */
-                oco->base_perpeer_logdir = optarg;
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_PERPEER_LOGDIR, optarg);
                 continue;
 
             case 'l':
-                oco->log_to_perpeer = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_PERPEER_ENABLED,TRUE);
                 continue;
 
-#ifdef NAT_TRAVERSAL
             case '1':	/* --nat_traversal */
-                oco->nat_traversal = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NAT_TRAVERSAL, TRUE);
                 continue;
             case '2':	/* --keep_alive */
-                oco->keep_alive = atoi(optarg);
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NAT_KEEP_ALIVE, atoi(optarg));
                 continue;
             case '3':	/* --force_keepalive */
-                oco->force_keepalive = TRUE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NAT_FORCE_KEEP_ALIVE, TRUE);
                 continue;
             case '4':	/* --disable_port_floating */
-                oco->nat_t_spf = FALSE;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_NAT_PORT_FLOAT, FALSE);
                 continue;
-#ifdef DEBUG
             case '5':	/* --debug-nat_t */
-                base_debugging |= DBG_NATT;
-                continue;
-#endif
-#endif
-            case '6':	/* --virtual_private */
-                oco->virtual_private = optarg;
+                QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING, DBG_NATT);
                 continue;
 
-            case '7':	/* --built-withlibnss */
-#ifdef HAVE_LIBNSS
-                exit(0);
-#else
-                exit(1);
-#endif
+            case '6':	/* --virtual_private */
+                QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_VIRTUAL_PRIVATE, optarg);
                 continue;
 
             default:
-#ifdef DEBUG
                 if (c >= DBG_OFFSET)
                     {
-                        base_debugging |= c - DBG_OFFSET;
+                        QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING,
+                                                   (c - DBG_OFFSET));
                         continue;
                     }
-#	undef DBG_OFFSET
-#endif
                 bad_case(c);
             }
 	break;
     }
-    if (optind != argc)
+    if (optind != argc) {
+    bad:
 	return "unexpected argument";
+    }
+
+    QCBOREncode_CloseMap(&qec);    /* closes the WHACK_OPTIONS MAP */
+    QCBOREncode_CloseMap(&qec);
+
+    {
+        size_t outlen = 0;
+
+        /* close the array */
+        e = QCBOREncode_FinishGetSize(&qec, &outlen);
+        if(e != QCBOR_SUCCESS) {
+            ugh = builddiag("encoding failed: qcbor error %d", e);
+            return ugh;
+        }
+        encode_opts->len = outlen;
+    }
 
     return NULL;
 }

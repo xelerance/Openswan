@@ -123,7 +123,7 @@ enum whack_CBOR_actions {
 /* values < 24 get encoded in one byte, < 256 in two bytes */
 enum whack_cbor_attributes {
       WHACK_OPT_NAME = 1,
-      WHACK_OPT_DEBUGGING = 2,
+      WHACK_OPT_DEBUGGING = 2,         /* debug values are OR'ed in */
       WHACK_OPT_ASYNC = 128,
       WHACK_OPT_SET   = 129,
       WHACK_OPT_RECORDFILE=130,
@@ -157,10 +157,42 @@ enum whack_cbor_attributes {
       WHACK_OPT_KEYALG        = 17,
       WHACK_OPT_END_ADDR_FAMILY=18,
 
+      WHACK_OPT_COREDIR    = 151,
+      WHACK_OPT_NHELPERS   = 152,
+      WHACK_OPT_SECCTX     = 153,
+      WHACK_OPT_FORKDESIRED= 154,
+      WHACK_OPT_STDERR_DESIRED=155,
+      WHACK_OPT_LOG_WITH_TIMESTAMP=156,
+      WHACK_OPT_KERN_INTERFACE=157,
+      WHACK_OPT_SET_DEBUGGING =158,     /* set debuging to absolute value */
+      WHACK_OPT_LISTENADDR = 159,
+      WHACK_OPT_ADD_DEBUGGING =160,     /* set debuging to or in value */
+      WHACK_OPT_SAME_ADDR_OK = 161,
+      WHACK_OPT_FORCE_BUSY = 162,
+      WHACK_OPT_CERT_SEND  = 163,
+      WHACK_OPT_STRICT_CRL_POLICY = 164,
+      WHACK_OPT_NO_RETRANSMITS = 165,
+      WHACK_OPT_CRL_CHECK_INTERVAL = 166,
+      WHACK_OPT_OCSPURI    = 167,
+      WHACK_OPT_UNIQUE_IDS = 168,
+      WHACK_OPT_USE_INTERFACE = 169,
+      WHACK_OPT_IKE_PORT   = 170,
+      WHACK_OPT_CTRL_BASE  = 171,
+      WHACK_OPT_SHARED_SECRETS_FILE = 172,
+      WHACK_OPT_IPSEC_DIR  = 173,
+      WHACK_OPT_PERPEER_LOGDIR = 174,
+      WHACK_OPT_PERPEER_ENABLED= 175,
+      WHACK_OPT_NAT_TRAVERSAL  = 176,
+      WHACK_OPT_NAT_KEEP_ALIVE = 177,
+      WHACK_OPT_NAT_FORCE_KEEP_ALIVE = 178,
+      WHACK_OPT_NAT_PORT_FLOAT = 179,
+      WHACK_OPT_VIRTUAL_PRIVATE= 180,
+
       WHACK_OPT_DPD_DELAY      = 181,
       WHACK_OPT_DPD_TIMEOUT    = 182,
       WHACK_OPT_DPD_ACTION     = 183,
       WHACK_OPT_DPD_COUNT      = 184,
+
 };
 
 enum whack_cbor_end_attr {
@@ -394,7 +426,7 @@ extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
 extern void clear_end(struct whack_end *e);
 
-extern err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern err_t whack_cbor_encode_msg(struct whack_message *wm, chunk_t *encode_opts);
 extern err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
 extern void  whack_free_msg(struct whack_message *wm);
 

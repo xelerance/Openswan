@@ -80,6 +80,7 @@
 #include "pluto/crypto.h"	/* requires sha1.h and md5.h */
 #include "vendor.h"
 #include "pluto_crypt.h"
+#include "rcv_whack.h"
 
 #include "pluto/virtual.h"
 
@@ -287,6 +288,9 @@ main(int argc, char **argv)
 	   openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
                     e, strerror(e));
     }
+
+    /* now process the command line options encoded to option_encoded */
+    whack_decode_and_process(-1, &option_encoded);
 
     lockfd = create_lock();
 

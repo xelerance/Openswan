@@ -86,7 +86,7 @@ static void whack_cbor_encode_empty_map(QCBOREncodeContext *qec)
 }
 #endif
 
-static err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
+err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
 {
   UsefulBufC bor = UsefulBuf_FROM_SZ_LITERAL("BOR");
   QCBOREncode_AddTag(qec, CborSignatureTag);
@@ -198,14 +198,15 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
 
 }
 
-err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *plen)
+err_t whack_cbor_encode_msg(struct whack_message *wm
+                            , chunk_t *encode_opts)
 {
   size_t outlen;
   QCBOREncodeContext qec;
   err_t ugh= NULL;
   QCBORError e;
 
-  UsefulBuf into = {buf, (unsigned long)*plen};
+  UsefulBuf into = {encode_opts->ptr, (unsigned long)encode_opts->len};
   QCBOREncode_Init(&qec, into);
 
   OK(whack_cbor_magic_header(&qec));
@@ -386,9 +387,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     return ugh;
   }
 
-  if(plen) {
-    *plen = outlen;
-  }
+  encode_opts->len = outlen;
   return NULL;
 
  bad:

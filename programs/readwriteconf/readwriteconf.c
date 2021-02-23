@@ -103,14 +103,15 @@ static int send_whack_msg_to_file(struct starter_config *cfg, struct whack_messa
 {
     static int recno = 0;
     unsigned char sendbuf[4096];
-    size_t msg_len;
+    chunk_t sendchunk;
 
     fprintf(stderr, "writing record %u to whack file\n", ++recno);
-    msg_len = sizeof(sendbuf);
-    if(whack_cbor_encode_msg(msg, sendbuf, &msg_len) != NULL) {
+    sendchunk.ptr = sendbuf;
+    sendchunk.len = sizeof(sendbuf);
+    if(whack_cbor_encode_msg(msg, &sendchunk) != NULL) {
         return -1;
     }
-    writewhackrecord(sendbuf, msg_len);
+    writewhackrecord(sendchunk.ptr, sendchunk.len);
     return 0;
 }
 

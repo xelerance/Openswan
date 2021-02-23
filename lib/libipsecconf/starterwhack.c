@@ -196,15 +196,16 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	struct sockaddr_un ctl_addr =
 	    { .sun_family = AF_UNIX };
 	int sock;
-	size_t len;
         unsigned char sendbuf[4096];
 	int ret;
+        chunk_t sendchunk;
 
 	/* copy socket location */
 	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path)-1);
 
-        len = sizeof(sendbuf);
-        err_t ugh = whack_cbor_encode_msg(msg, sendbuf, &len);
+        sendchunk.ptr = sendbuf;
+        sendchunk.len = sizeof(sendbuf);
+        err_t ugh = whack_cbor_encode_msg(msg, &sendchunk);
         if(ugh) {
           starter_log(LOG_LEVEL_ERR, "error encoding: %s", ugh);
           return -1;
@@ -229,7 +230,7 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	/**
 	 * Send message
 	 */
-	if (write(sock, sendbuf, len) != len) {
+	if (write(sock, sendchunk.ptr, sendchunk.len) != sendchunk.len) {
 		starter_log(LOG_LEVEL_ERR, "write(pluto_ctl) failed: %s",
 			strerror(errno));
 		close(sock);

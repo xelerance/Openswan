@@ -918,7 +918,6 @@ main(int argc, char **argv)
     bool gotxauthname = FALSE, gotxauthpass = FALSE;
     const char *ugh;
     unsigned char sendbuf[4096];
-    size_t msg_len;
 
     progname = argv[0];
 
@@ -1960,8 +1959,10 @@ main(int argc, char **argv)
 	    msg.esp=esp_buf;
     }
 
-    msg_len = sizeof(sendbuf);
-    ugh = whack_cbor_encode_msg(&msg, sendbuf, &msg_len);
+    chunk_t sendchunk;
+    sendchunk.ptr = sendbuf;
+    sendchunk.len = sizeof(sendbuf);
+    ugh = whack_cbor_encode_msg(&msg, &sendchunk);
     if(ugh) {
         diag(ugh);
     }
@@ -2017,7 +2018,7 @@ main(int argc, char **argv)
 	    exit(RC_WHACK_PROBLEM);
 	}
 
-	if (write(sock, sendbuf, msg_len) != msg_len)
+	if (write(sock, sendchunk.ptr, sendchunk.len) != sendchunk.len)
 	{
 	    int e = errno;
 

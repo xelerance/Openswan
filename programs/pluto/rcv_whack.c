@@ -640,6 +640,7 @@ whack_handle(int whackctlfd)
     /* sanity check message */
     {
 	err_t ugh = NULL;
+        chunk_t emsg;
         struct legacy_whack_message *lwm = (struct legacy_whack_message *)msg_buf;
 
         if(lwm->magic == WHACK_BASIC_MAGIC) {
@@ -655,7 +656,8 @@ whack_handle(int whackctlfd)
             return;
         }
 
-
+        emsg.ptr = msg_buf;
+        emsg.len = n;
 
         /* okay, check for CBOR sequence */
         if(n <= 12 || memcmp(msg_buf, cbor_opsn_magic, 12) != 0) {
@@ -664,13 +666,8 @@ whack_handle(int whackctlfd)
                             , n
                             , htonl(bu32[0]), htonl(bu32[1]), htonl(bu32[2]));
 	}
-        else if ((ugh = whack_cbor_decode_msg(&msg, msg_buf, &n)) != NULL)
-        {
-            /* nothing, ugh is already set */
-        }
-        else
-        {
-            /* everything decoded fine */
+        else {
+            ugh = whack_decode_and_process(whackfd, &emsg);
         }
 
 	if (ugh != NULL)
@@ -683,12 +680,27 @@ whack_handle(int whackctlfd)
 	}
     }
 
+    return;
+}
+
+err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
+{
+    err_t ugh;
+    struct whack_message msg;
+
+    memset(&msg, 0, sizeof(msg));
+
     /* dump record if necessary */
-    writewhackrecord(msg_buf, n);
+    writewhackrecord(encoded_msg->ptr, encoded_msg->len);
+
+    ugh = whack_cbor_decode_msg(&msg, encoded_msg->ptr, &encoded_msg->len);
+    if(ugh) return ugh;
 
     whack_process(whackfd, msg);
     whack_free_msg(&msg);
+    return ugh;
 }
+
 
 /*
  * interactive input from the whack user, using current whack_fd
