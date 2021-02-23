@@ -1,0 +1,27 @@
+d9 d9f7         # tag(55799)
+   da 4f50534e  # tag(1330664270)
+      43        # bytes(3)
+         424f52 # "BOR"
+
+,
+a1                                      # map(1)
+   03                                   # unsigned(3)
+   a7                                   # map(7)
+      18 a9                             # unsigned(169)
+      66                                # text(6)
+         68656c6c6f30                   # "hello0"
+      18 ab                             # unsigned(171)
+      70                                # text(16)
+         2f7661722f746d702f6578616d706c65 # "/var/tmp/example"
+      18 ac                             # unsigned(172)
+      75                                # text(21)
+         2f7661722f746d702f736563726574732e66696c65 # "/var/tmp/secrets.file"
+      18 aa                             # unsigned(170)
+      19 1d4c                           # unsigned(7500)
+      18 ae                             # unsigned(174)
+      6e                                # text(14)
+         2f7661722f6c6f672f706c75746f   # "/var/log/pluto"
+      18 a0                             # unsigned(160)
+      19 0800                           # unsigned(2048)
+      18 9a                             # unsigned(154)
+      00                                # unsigned(0)

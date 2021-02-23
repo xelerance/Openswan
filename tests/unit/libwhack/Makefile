@@ -24,6 +24,7 @@ UNITTESTS+=wo03-options
 UNITTESTS+=wo04-connections
 UNITTESTS+=wo05-decodestop
 UNITTESTS+=wo06-initiate
+UNITTESTS+=wo07-plutoopts
 
 # running 'make check KEEPGOING=1' will run through all tests w/o stopping
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
