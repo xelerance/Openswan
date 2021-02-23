@@ -165,7 +165,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
              /* name, has_arg, flag, val */
              { "help", no_argument, NULL, 'h' },
              { "version", no_argument, NULL, 'v' },
-             { "optionsfrom", required_argument, NULL, '+' },
              { "nofork", no_argument, NULL, 'd' },
              { "stderrlog", no_argument, NULL, 'e' },
              { "plutostderrlogtime", no_argument, NULL, 't' },
@@ -199,7 +198,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
              { "coredir", required_argument, NULL, 'C' },
              { "ipsecdir", required_argument, NULL, 'f' },
              { "ipsec_dir", required_argument, NULL, 'f' },
-#ifdef NAT_TRAVERSAL
              { "nat_traversal", no_argument, NULL, '1' },
              { "keep_alive", required_argument, NULL, '2' },
              { "force_keepalive", no_argument, NULL, '3' },
@@ -207,7 +205,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
              { "debug-nat_t", no_argument, NULL, '5' },
              { "debug-nattraversal", no_argument, NULL, '5' },
              { "debug-nat-t", no_argument, NULL, '5' },
-#endif
              { "virtual_private", required_argument, NULL, '6' },
              { "nhelpers", required_argument, NULL, 'j' },
 
@@ -215,7 +212,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
 
              /* might not be enabled, but always accept the option */
              { "secctx_attr_value", required_argument, NULL, 'w' },
-#ifdef DEBUG
              { "debug-none", no_argument, NULL, 'N' },
              { "debug-all", no_argument, NULL, 'A' },
 
@@ -248,7 +244,6 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
              { "impair-minor-version-bump", no_argument, NULL, IMPAIR_MINOR_VERSION_BUMP + DBG_OFFSET },
              { "impair-retransmits", no_argument, NULL, IMPAIR_RETRANSMITS + DBG_OFFSET },
              { "impair-send-bogus-isakmp-flag", no_argument, NULL, IMPAIR_SEND_BOGUS_ISAKMP_FLAG + DBG_OFFSET },
-#endif
              { 0,0,0,0 }
 	    };
 	/* Note: we don't like the way short options get parsed
