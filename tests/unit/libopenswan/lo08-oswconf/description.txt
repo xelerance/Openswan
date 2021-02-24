@@ -1,0 +1,4 @@
+This tests allocation, cloning and freeing of the osw_conf_options structure.
+There should be NO LEAKS.
+
+

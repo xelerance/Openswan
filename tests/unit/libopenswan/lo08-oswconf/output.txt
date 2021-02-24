@@ -1,0 +1,1 @@
+./oswconftest leak detective found no leaks

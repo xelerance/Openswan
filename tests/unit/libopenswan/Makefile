@@ -24,6 +24,7 @@ UNITTESTS+=lo04-verifypubkeys
 UNITTESTS+=lo05-datatot
 UNITTESTS+=lo06-verifybadsigs
 UNITTESTS+=lo07-bleichenbacher-attack
+UNITTESTS+=lo08-oswconf
 
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
 
