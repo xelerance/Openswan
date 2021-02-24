@@ -124,7 +124,8 @@ typedef struct {
 #endif
 
 extern struct osw_conf_options *osw_init_options(void);
-extern void osw_conf_free_oco(void);
+struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old);
+extern void osw_conf_free_oco(struct osw_conf_options *oco);
 extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
 extern const struct osw_conf_options *osw_init_rootdir(const char *root_dir);
 

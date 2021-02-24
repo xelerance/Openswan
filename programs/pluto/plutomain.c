@@ -273,6 +273,7 @@ main(int argc, char **argv)
     reset_debugging();
 
     oco = osw_init_options();
+
     /* see if there is an environment variable */
     oco->coredir = getenv("PLUTO_CORE_DIR");
 
@@ -644,6 +645,7 @@ main(int argc, char **argv)
 void
 exit_pluto(int status)
 {
+    struct osw_conf_options *oco = osw_init_options();
     reset_globals();	/* needed because we may be called in odd state */
     free_preshared_secrets();
     free_remembered_public_keys();
@@ -667,7 +669,7 @@ exit_pluto(int status)
     free_acerts();             /* free chain of X.509 attribute certificates */
     free_ocsp();               /* free ocsp cache */
 
-    osw_conf_free_oco();	/* free global_oco containing path names */
+    osw_conf_free_oco(oco);	/* free global_oco containing path names */
 
     free_myFQDN();	    /* free myid FQDN */
 

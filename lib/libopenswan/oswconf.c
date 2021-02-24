@@ -45,6 +45,62 @@ static secuPWData NSSPassword;
 #define SUBDIRNAME(X) X
 #endif
 
+/* this is used to make a copy of options, when changes are processed */
+struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old)
+{
+    struct osw_conf_options *nconf = clone_thing(old, "conf_clone");
+
+    nconf->rootdir = clone_str(old->rootdir, "conf_clone");
+    nconf->confdir = clone_str(old->confdir, "conf_clone");
+    nconf->conffile= clone_str(old->conffile, "conf_clone");
+    nconf->confddir= clone_str(old->confddir, "conf_clone");
+    nconf->vardir  = clone_str(old->vardir, "conf_clone");
+    nconf->policies_dir=clone_str(old->policies_dir, "conf_clone");
+    nconf->acerts_dir = clone_str(old->acerts_dir, "conf_clone");
+    nconf->cacerts_dir= clone_str(old->cacerts_dir, "conf_clone");
+    nconf->crls_dir   = clone_str(old->crls_dir, "conf_clone");
+    nconf->private_dir= clone_str(old->private_dir, "conf_clone");
+    nconf->certs_dir  = clone_str(old->certs_dir, "conf_clone");
+    nconf->aacerts_dir= clone_str(old->aacerts_dir, "conf_clone");
+    nconf->ocspcerts_dir=clone_str(old->ocspcerts_dir, "conf_clone");
+    nconf->ctlbase    = clone_str(old->ctlbase, "conf_clone");
+    nconf->ocspuri    = clone_str(old->ocspuri, "conf_clone");
+    nconf->virtual_private=clone_str(old->virtual_private, "conf_clone");
+    nconf->pluto_shared_secrets_file=clone_str(old->pluto_shared_secrets_file, "conf_clone");
+    nconf->base_perpeer_logdir      =clone_str(old->base_perpeer_logdir, "conf_clone");
+    nconf->coredir    = clone_str(old->coredir, "conf_clone");
+    nconf->pluto_listen = clone_str(old->pluto_listen, "conf_clone");
+
+    return nconf;
+}
+
+/* no longer just for fun, as conf get cloned above */
+void osw_conf_free_oco(struct osw_conf_options *oco)
+{
+    pfree(oco->rootdir);
+    pfree(oco->confdir); /* there is one more alloc that did not get freed? */
+    pfree(oco->conffile);
+    pfree(oco->confddir);
+    pfree(oco->vardir);
+    pfree(oco->policies_dir);
+    pfree(oco->crls_dir);
+    pfree(oco->acerts_dir);
+    pfree(oco->cacerts_dir);
+    // wrong leak magic? pfree(global_oco.crls_dir);
+    pfree(oco->private_dir);
+    pfree(oco->certs_dir);
+    pfree(oco->aacerts_dir);
+    pfree(oco->ocspcerts_dir);
+    pfree(oco->ctlbase);
+    pfree(oco->ocspuri);
+    pfree(oco->virtual_private);
+    pfree(oco->pluto_shared_secrets_file);
+    pfree(oco->base_perpeer_logdir);
+    pfree(oco->coredir);
+    pfree(oco->pluto_listen);
+}
+
+
 static void osw_conf_calculate(struct osw_conf_options *oco)
 {
     char buf[PATH_MAX];
@@ -148,26 +204,6 @@ void osw_conf_setdefault(void)
     NSSPassword.source =  PW_FROMFILE;
 #endif
     /* DBG_log("default setting of ipsec.d to %s", global_oco.confddir); */
-}
-
-/* mostly estatic value, to surpress within LEAK_DETECTIVE */
-void osw_conf_free_oco(void)
-{
-    /* Must be a nicer way to loop over this? */
-    pfree(global_oco.crls_dir);
-    /* pfree(global_oco.rootdir); */
-    pfree(global_oco.confdir); /* there is one more alloc that did not get freed? */
-    pfree(global_oco.conffile);
-    pfree(global_oco.confddir);
-    pfree(global_oco.vardir);
-    pfree(global_oco.policies_dir);
-    pfree(global_oco.acerts_dir);
-    pfree(global_oco.cacerts_dir);
-    // wrong leak magic? pfree(global_oco.crls_dir);
-    pfree(global_oco.private_dir);
-    pfree(global_oco.certs_dir);
-    pfree(global_oco.aacerts_dir);
-    pfree(global_oco.ocspcerts_dir);
 }
 
 struct osw_conf_options *osw_init_options(void)
