@@ -457,3 +457,14 @@ whack_get_secret(char *buf, size_t bufsize)
     return len;
 }
 
+void
+clear_end(struct whack_end *e)
+{
+    zero(e);
+    e->id = NULL;
+    e->cert = NULL;
+    e->ca = NULL;
+    e->updown = NULL;
+    e->host_port = IKE_UDP_PORT;
+}
+

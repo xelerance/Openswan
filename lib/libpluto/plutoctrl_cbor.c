@@ -723,14 +723,3 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
     return ugh;
 }
 
-void
-clear_end(struct whack_end *e)
-{
-    zero(e);
-    e->id = NULL;
-    e->cert = NULL;
-    e->ca = NULL;
-    e->updown = NULL;
-    e->host_port = IKE_UDP_PORT;
-}
-
