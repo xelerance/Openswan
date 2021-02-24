@@ -39,6 +39,8 @@
 #include "oswlog.h"
 #include "whack.h"
 #include "oswlog.h"
+#include "oswconf.h"
+#include "pluto/server.h"  /* for use_interface(), which should move to libpluto */
 
 #include "secrets.h"
 #include "qcbor/qcbor_encode.h"
@@ -522,6 +524,162 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
     }
 }
 
+void whack_cbor_process_options(QCBORDecodeContext *qdc
+                                , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+    struct osw_conf_options *oco = osw_init_options();
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing tag: %ld count: %d\n", first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+
+      case WHACK_OPT_COREDIR:
+        whack_cbor_string2c(qdc, &item, &oco->coredir);
+        break;
+
+      case WHACK_OPT_NHELPERS:
+        oco->nhelpers = item.val.int64;
+        break;
+
+      case WHACK_OPT_SECCTX:
+        oco->secctx_attr_value = item.val.int64;
+        break;
+
+      case WHACK_OPT_FORKDESIRED:
+        oco->fork_desired = item.val.int64;
+        break;
+
+      case WHACK_OPT_STDERR_DESIRED:
+        oco->log_to_stderr_desired = item.val.int64;
+        break;
+
+      case WHACK_OPT_LOG_WITH_TIMESTAMP:
+        oco->log_with_timestamp_desired = item.val.int64;
+        break;
+
+      case WHACK_OPT_KERN_INTERFACE:
+        oco->kern_interface = item.val.int64;
+        break;
+
+      case WHACK_OPT_LISTENADDR:
+        whack_cbor_string2c(qdc, &item, &oco->pluto_listen);
+        break;
+
+      case WHACK_OPT_SAME_ADDR_OK:
+        oco->orient_same_addr_ok = item.val.int64;
+        break;
+
+      case WHACK_OPT_FORCE_BUSY:
+        oco->force_busy = item.val.int64;
+        break;
+
+      case WHACK_OPT_CERT_SEND:
+        oco->no_cr_send = item.val.int64;
+        break;
+
+      case WHACK_OPT_STRICT_CRL_POLICY:
+        oco->strict_crl_policy = item.val.int64;
+        break;
+
+      case WHACK_OPT_NO_RETRANSMITS:
+        oco->no_retransmits = item.val.int64;
+        break;
+
+      case WHACK_OPT_CRL_CHECK_INTERVAL:
+        oco->crl_check_interval = item.val.int64;
+        break;
+
+      case WHACK_OPT_OCSPURI:
+        whack_cbor_string2c(qdc, &item, &oco->ocspuri);
+        break;
+
+      case WHACK_OPT_UNIQUE_IDS:
+        oco->uniqueIDs = item.val.int64;
+        break;
+
+      case WHACK_OPT_USE_INTERFACE:
+        /* direct call out of library to use_interface is annoying. */
+        /* should move use_interface() array into libpluto XXXX */
+        {
+          char *temp_string = NULL;
+          whack_cbor_string2c(qdc, &item, &temp_string);
+          use_interface(temp_string);
+          pfree(temp_string);
+        }
+        break;
+
+      case WHACK_OPT_IKE_PORT:
+        oco->pluto_port500 = item.val.int64;
+        oco->pluto_port4500 = item.val.int64+4000;
+        break;
+
+      case WHACK_OPT_CTRL_BASE:
+        whack_cbor_string2c(qdc, &item, &oco->ctlbase);
+        break;
+
+      case WHACK_OPT_SHARED_SECRETS_FILE:
+        whack_cbor_string2c(qdc, &item, &oco->pluto_shared_secrets_file);
+        break;
+
+      case WHACK_OPT_IPSEC_DIR:
+        whack_cbor_string2c(qdc, &item, &oco->confddir);
+        break;
+
+      case WHACK_OPT_SET_DEBUGGING:
+        base_debugging = item.val.int64;
+        break;
+
+      case WHACK_OPT_ADD_DEBUGGING:
+        base_debugging |= item.val.int64;
+        break;
+
+      case WHACK_OPT_PERPEER_ENABLED:
+        oco->log_to_perpeer = item.val.int64;
+        break;
+
+      case WHACK_OPT_PERPEER_LOGDIR:
+        whack_cbor_string2c(qdc, &item, &oco->base_perpeer_logdir);
+        break;
+
+      case WHACK_OPT_NAT_TRAVERSAL:
+        oco->nat_traversal = item.val.int64;
+        break;
+
+      case WHACK_OPT_NAT_KEEP_ALIVE:
+        oco->keep_alive = item.val.int64;
+        break;
+
+      case WHACK_OPT_NAT_FORCE_KEEP_ALIVE:
+        oco->force_keepalive = item.val.int64;
+        break;
+
+      case WHACK_OPT_NAT_PORT_FLOAT:
+        oco->nat_t_spf = item.val.int64;
+        break;
+
+      case WHACK_OPT_VIRTUAL_PRIVATE:
+        whack_cbor_string2c(qdc, &item, &oco->virtual_private);
+        break;
+
+      default:
+        whack_cbor_consume_item(qdc, &item);
+        return;
+      }
+    }
+}
 
 /**
  * Unpack a message whack received
@@ -604,7 +762,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
       case WHACK_OPTIONS:
         wm->whack_options  = TRUE;
-        whack_cbor_consume_item(&qdc, &item);
+        whack_cbor_process_options(&qdc, &item);
         break;
 
       case WHACK_CONNECTION:
