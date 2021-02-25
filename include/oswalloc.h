@@ -28,6 +28,7 @@ extern void *clone_bytes2(const void *orig, size_t size
 extern int leak_detective;
 extern void report_leaks(void);
 # define pfree(ptr) leak_pfree(ptr, leak_detective)
+#define pfree_z(ptr)  do { pfree(ptr); ptr = NULL; } while(0)
 # define alloc_bytes(size, name) (alloc_bytes2(size, name, leak_detective))
 # define clone_bytes(orig, size, name) (clone_bytes2(orig,size,name,leak_detective))
 

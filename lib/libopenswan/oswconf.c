@@ -77,27 +77,27 @@ struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old)
 /* no longer just for fun, as conf get cloned above */
 void osw_conf_free_oco(struct osw_conf_options *oco)
 {
-    pfree(oco->rootdir);
-    pfree(oco->confdir); /* there is one more alloc that did not get freed? */
-    pfree(oco->conffile);
-    pfree(oco->confddir);
-    pfree(oco->vardir);
-    pfree(oco->policies_dir);
-    pfree(oco->crls_dir);
-    pfree(oco->acerts_dir);
-    pfree(oco->cacerts_dir);
+    pfree_z(oco->rootdir);
+    pfree_z(oco->confdir); /* there is one more alloc that did not get freed? */
+    pfree_z(oco->conffile);
+    pfree_z(oco->confddir);
+    pfree_z(oco->vardir);
+    pfree_z(oco->policies_dir);
+    pfree_z(oco->crls_dir);
+    pfree_z(oco->acerts_dir);
+    pfree_z(oco->cacerts_dir);
     // wrong leak magic? pfree(global_oco.crls_dir);
-    pfree(oco->private_dir);
-    pfree(oco->certs_dir);
-    pfree(oco->aacerts_dir);
-    pfree(oco->ocspcerts_dir);
-    pfree(oco->ctlbase);
-    pfree(oco->ocspuri);
-    pfree(oco->virtual_private);
-    pfree(oco->pluto_shared_secrets_file);
-    pfree(oco->base_perpeer_logdir);
-    pfree(oco->coredir);
-    pfree(oco->pluto_listen);
+    pfree_z(oco->private_dir);
+    pfree_z(oco->certs_dir);
+    pfree_z(oco->aacerts_dir);
+    pfree_z(oco->ocspcerts_dir);
+    pfree_z(oco->ctlbase);
+    pfree_z(oco->ocspuri);
+    pfree_z(oco->virtual_private);
+    pfree_z(oco->pluto_shared_secrets_file);
+    pfree_z(oco->base_perpeer_logdir);
+    pfree_z(oco->coredir);
+    pfree_z(oco->pluto_listen);
 }
 
 
