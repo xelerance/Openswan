@@ -66,6 +66,8 @@ tool_close_log(void)
 {
     if (log_to_syslog)
 	closelog();
+
+    osw_free_options();
 }
 
 /* format a string for the log, with suitable prefixes.

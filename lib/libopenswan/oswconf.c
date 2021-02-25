@@ -136,10 +136,10 @@ void osw_conf_free_oco(struct osw_conf_options *oco)
 void osw_conf_setdefault(void)
 {
     char buf[PATH_MAX];
-    char *ipsec_conf_dir = clone_str(FINALCONFDIR, "default");
-    char *ipsecd_dir = clone_str(FINALCONFDDIR, "default");
-    char *conffile   = clone_str(FINALCONFFILE, "default");
-    char *var_dir    = clone_str(FINALVARDIR,   "default");
+    char *ipsec_conf_dir = FINALCONFDIR;
+    char *ipsecd_dir = FINALCONFDDIR;
+    char *conffile   = FINALCONFFILE;
+    char *var_dir    = FINALVARDIR;
     char *env;
 
     memset(&global_oco, 0, sizeof(global_oco));
@@ -212,6 +212,12 @@ struct osw_conf_options *osw_init_options(void)
     osw_conf_calculate(&global_oco);
 
     return &global_oco;
+}
+
+void osw_free_options(void)
+{
+    if(setup) osw_conf_free_oco(&global_oco);
+    setup = FALSE;
 }
 
 const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
