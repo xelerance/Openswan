@@ -223,7 +223,10 @@ void osw_free_options(void)
 const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
 {
     if(!setup) osw_conf_setdefault();
+
+    if(global_oco.rootdir) pfree(global_oco.rootdir);
     global_oco.rootdir = clone_str(root_dir, "override /");
+
     osw_conf_calculate(&global_oco);
     setup = TRUE;
 
