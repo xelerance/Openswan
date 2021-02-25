@@ -683,10 +683,60 @@ whack_handle(int whackctlfd)
     return;
 }
 
+err_t pluto_set_coredir(struct osw_conf_options *oco)
+{
+    /* if a core dir was set, chdir there */
+    if(oco->coredir) {
+	if(chdir(oco->coredir) == -1) {
+            int e = errno;
+            openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
+                         e, strerror(e));
+        }
+    }
+    return NULL;
+}
+
+static void
+whack_compare_options(struct osw_conf_options *old
+                           , struct osw_conf_options *new)
+{
+    /* check for changed core dir */
+    if((old->coredir == NULL && new->coredir != NULL)
+       || (old->coredir != NULL && new->coredir == NULL)
+       || strcmp(old->coredir, new->coredir) != 0) {  /* changed */
+        pluto_set_coredir(new);
+    }
+
+    /* fix up logging interactions */
+    if (new->log_to_stderr_desired) {
+	new->log_to_syslog = FALSE;
+	if (new->log_with_timestamp_desired)
+	   new->log_with_timestamp = TRUE;
+    }
+    else
+	new->log_to_stderr = FALSE;
+
+    /* check for changed control socket */
+    if((old->ctlbase == NULL && new->ctlbase != NULL)
+       || (old->ctlbase != NULL && new->ctlbase == NULL)
+       || strcmp(old->ctlbase, new->ctlbase) != 0) {  /* changed */
+        update_ctl_socket_name(new);
+        init_ctl_socket(new);
+    }
+
+
+
+
+}
+
+
+
 err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
 {
     err_t ugh;
     struct whack_message msg;
+    struct osw_conf_options *oco = osw_init_options();
+    struct osw_conf_options *old = osw_conf_clone(oco);
 
     memset(&msg, 0, sizeof(msg));
 
@@ -698,6 +748,12 @@ err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
 
     whack_process(whackfd, msg);
     whack_free_msg(&msg);
+
+    /* now, look and see if there are any changes between oco and old */
+
+    whack_compare_options(old, oco);
+    osw_conf_free_oco(old);
+
     return ugh;
 }
 

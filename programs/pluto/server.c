@@ -118,13 +118,36 @@ struct sockaddr_un info_addr= { .sun_family=AF_UNIX,
 #endif
 				.sun_path  =DEFAULT_CTLBASE INFO_SUFFIX };
 
+err_t update_ctl_socket_name(struct osw_conf_options *oco)
+{
+
+  if(oco->ctlbase == NULL) {
+    oco->ctlbase = clone_str(DEFAULT_CTLBASE, "default");
+  }
+
+  if (snprintf(ctl_addr.sun_path, sizeof(ctl_addr.sun_path)
+               , "%s%s", oco->ctlbase, CTL_SUFFIX) == -1) {
+    return "<path>" CTL_SUFFIX " too long for sun_path";
+  }
+  if (snprintf(info_addr.sun_path, sizeof(info_addr.sun_path)
+               , "%s%s", oco->ctlbase, INFO_SUFFIX) == -1) {
+    return "<path>" INFO_SUFFIX " too long for sun_path";
+  }
+  if (snprintf(oco->pluto_lock, sizeof(oco->pluto_lock)
+               , "%s%s", oco->ctlbase, LOCK_SUFFIX) == -1) {
+    return "<path>" LOCK_SUFFIX " must fit";
+  }
+
+  return NULL;
+}
+
 /* Initialize the control socket.
  * Note: this is called very early, so little infrastructure is available.
  * It is important that the socket is created before the original
  * Pluto process returns.
  */
 err_t
-init_ctl_socket(void)
+init_ctl_socket(struct osw_conf_options *oco UNUSED)
 {
     err_t failed = NULL;
 

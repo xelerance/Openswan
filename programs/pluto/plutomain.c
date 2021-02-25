@@ -275,20 +275,14 @@ main(int argc, char **argv)
     oco = osw_init_options();
 
     /* see if there is an environment variable */
-    oco->coredir = getenv("PLUTO_CORE_DIR");
+    oco->coredir = clone_str(getenv("PLUTO_CORE_DIR"), "coredir");
 
 #ifdef HAVE_NO_FORK
     oco->fork_desired = FALSE;
     oco->nhelpers = 0;
 #endif
 
-    /* if a core dir was set, chdir there */
-    if(oco->coredir)
-	if(chdir(oco->coredir) == -1) {
-	   int e = errno;
-	   openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
-                    e, strerror(e));
-    }
+    pluto_set_coredir(oco);
 
     /* now process the command line options encoded to option_encoded */
     whack_decode_and_process(-1, &option_encoded);
@@ -319,7 +313,7 @@ main(int argc, char **argv)
      * place to do this is before the daemon fork.
      */
     {
-	err_t ugh = init_ctl_socket();
+	err_t ugh = init_ctl_socket(oco);
 
 	if (ugh != NULL)
 	{
@@ -327,19 +321,6 @@ main(int argc, char **argv)
 	    exit_pluto(1);
 	}
     }
-
-#ifdef IPSECPOLICY
-    /* create info socket. */
-    {
-	err_t ugh = init_info_socket();
-
-	if (ugh != NULL)
-	{
-	    fprintf(stderr, "pluto: %s", ugh);
-	    exit_pluto(1);
-	}
-    }
-#endif
 
     /* If not suppressed, do daemon fork */
 

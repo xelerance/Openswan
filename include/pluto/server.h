@@ -16,6 +16,7 @@
 #ifndef _SERVER_H
 #define _SERVER_H
 
+#include "oswconf.h"
 #include <sysqueue.h>
 
 extern bool no_retransmits;
@@ -28,7 +29,8 @@ extern struct sockaddr_un ctl_addr;	/* address of control (whack) socket */
 extern int info_fd;	/* file descriptor of control (info) socket */
 extern struct sockaddr_un info_addr;	/* address of control (info) socket */
 
-extern err_t init_ctl_socket(void);
+extern err_t init_ctl_socket(struct osw_conf_options *oco);
+extern err_t update_ctl_socket_name(struct osw_conf_options *oco);
 extern void delete_ctl_socket(void);
 
 extern bool listening;	/* should we pay attention to IKE messages? */

@@ -134,16 +134,11 @@ static void osw_conf_calculate(struct osw_conf_options *oco)
 void osw_conf_setdefault(void)
 {
     char buf[PATH_MAX];
-    char *ipsec_conf_dir = FINALCONFDIR;
-    char *ipsecd_dir = FINALCONFDDIR;
-    char *conffile   = FINALCONFFILE;
-    char *var_dir    = FINALVARDIR;
+    char *ipsec_conf_dir = clone_str(FINALCONFDIR, "default");
+    char *ipsecd_dir = clone_str(FINALCONFDDIR, "default");
+    char *conffile   = clone_str(FINALCONFFILE, "default");
+    char *var_dir    = clone_str(FINALVARDIR,   "default");
     char *env;
-#if 0
-    char *exec_dir   = FINALLIBEXECDIR;
-    char *lib_dir    = FINALLIBDIR;
-    char *sbin_dir   = FINALSBINDIR;
-#endif
 
     memset(&global_oco, 0, sizeof(global_oco));
 
@@ -194,8 +189,8 @@ void osw_conf_setdefault(void)
 
     strcpy(global_oco.pluto_lock, DEFAULT_CTLBASE LOCK_SUFFIX);
 
-    global_oco.pluto_shared_secrets_file = SHARED_SECRETS_FILE;
-    global_oco.base_perpeer_logdir = PERPEERLOGDIR;
+    global_oco.pluto_shared_secrets_file = clone_str(SHARED_SECRETS_FILE, "defaults");
+    global_oco.base_perpeer_logdir = clone_str(PERPEERLOGDIR, "defaults");
 
 #ifdef HAVE_LIBNSS
     /* path to NSS password file */
