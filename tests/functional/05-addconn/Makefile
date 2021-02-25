@@ -25,7 +25,7 @@ CTLBASE=--ctlbase OUTPUT/base
 SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT
 OUTPUTS=OUTPUT
 
-step1:
+step1:	OUTPUT
 	@rm -f OUTPUT/base.pid
 	@echo "file ${PLUTOBIN}" >.gdbinit
 	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
