@@ -13,11 +13,11 @@ void perpeer_logfree(struct connection *c) {}
 void find_ifaces(void) {}
 
 void show_status(void) {}
+err_t update_ctl_socket_name(struct osw_conf_options *oco) { return NULL; }
+err_t init_ctl_socket(struct osw_conf_options *oco UNUSED) { return NULL; }
 
-
-
-
-
+/* sysdep_*.c */
+bool use_interface(const char *rifn) {}
 
 
 struct iface_port  *interfaces = NULL;	/* public interfaces */
