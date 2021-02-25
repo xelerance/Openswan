@@ -45,10 +45,40 @@ static secuPWData NSSPassword;
 #define SUBDIRNAME(X) X
 #endif
 
+static void osw_conf_calculate(struct osw_conf_options *oco)
+{
+    char buf[PATH_MAX];
+
+    /* calculate paths to certain subdirs */
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/acerts"), oco->confddir);
+    oco->acerts_dir = clone_str(buf, "acert path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/cacerts"), oco->confddir);
+    oco->cacerts_dir = clone_str(buf, "cacert path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/crls"), oco->confddir);
+    oco->crls_dir = clone_str(buf, "crls path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/private"), oco->confddir);
+    oco->private_dir = clone_str(buf, "private path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/certs"), oco->confddir);
+    oco->certs_dir = clone_str(buf, "certs path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/aacerts"), oco->confddir);
+    oco->aacerts_dir = clone_str(buf, "aacerts path");
+
+    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/ocspcerts"), oco->confddir);
+    oco->ocspcerts_dir = clone_str(buf, "ocspcerts path");
+
+    snprintf(buf, sizeof(buf), "%s/policies", oco->confddir);
+    oco->policies_dir = clone_str(buf, "policies path");
+}
+
 /* this is used to make a copy of options, when changes are processed */
 struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old)
 {
-    struct osw_conf_options *nconf = clone_thing(old, "conf_clone");
+    struct osw_conf_options *nconf = clone_bytes(old, sizeof(*old), "conf_clone");
 
     nconf->rootdir = clone_str(old->rootdir, "conf_clone");
     nconf->confdir = clone_str(old->confdir, "conf_clone");
@@ -70,6 +100,8 @@ struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old)
     nconf->base_perpeer_logdir      =clone_str(old->base_perpeer_logdir, "conf_clone");
     nconf->coredir    = clone_str(old->coredir, "conf_clone");
     nconf->pluto_listen = clone_str(old->pluto_listen, "conf_clone");
+
+    osw_conf_calculate(nconf);
 
     return nconf;
 }
@@ -100,36 +132,6 @@ void osw_conf_free_oco(struct osw_conf_options *oco)
     pfree_z(oco->pluto_listen);
 }
 
-
-static void osw_conf_calculate(struct osw_conf_options *oco)
-{
-    char buf[PATH_MAX];
-
-    /* calculate paths to certain subdirs */
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/acerts"), oco->confddir);
-    oco->acerts_dir = clone_str(buf, "acert path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/cacerts"), oco->confddir);
-    oco->cacerts_dir = clone_str(buf, "cacert path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/crls"), oco->confddir);
-    oco->crls_dir = clone_str(buf, "crls path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/private"), oco->confddir);
-    oco->private_dir = clone_str(buf, "private path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/certs"), oco->confddir);
-    oco->certs_dir = clone_str(buf, "certs path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/aacerts"), oco->confddir);
-    oco->aacerts_dir = clone_str(buf, "aacerts path");
-
-    snprintf(buf, sizeof(buf), "%s" SUBDIRNAME("/ocspcerts"), oco->confddir);
-    oco->ocspcerts_dir = clone_str(buf, "ocspcerts path");
-
-    snprintf(buf, sizeof(buf), "%s/policies", oco->confddir);
-    oco->policies_dir = clone_str(buf, "policies path");
-}
 
 void osw_conf_setdefault(void)
 {
