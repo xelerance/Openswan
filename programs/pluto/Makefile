@@ -29,7 +29,6 @@ FMANDIR=$(MANTREE)/man5
 PMANDIR=$(MANTREE)/man8
 
 BINNAMEPLUTO = pluto
-BINNAMEWHACKINIT = whackinit
 
 OSDEP?=$(shell uname -s | tr 'A-Z' 'a-z')
 SYSDEP_SRC=sysdep_${OSDEP}.c
@@ -125,7 +124,6 @@ DISTSRC = \
 	$(HAVE_THREADS_DIST_SRCS) \
 	vendor.c nat_traversal.c virtual.c \
 	adns.c adns.h \
-	whackinit.c \
 	security_selinux.c \
 	${XAUTH_DIST_SRCS} \
 	${AGGRESSIVE_DIST_SRCS}
@@ -162,16 +160,14 @@ OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
 OBJSPLUTO += adns.o
 
-OBJSWHACKINIT = whackinit.o
-
 # we can't do tests with two conditions, but we can concatenate the strings
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard plutomain.c)
 ifeq ($(SHOULDWERESTART),trueplutomain.c)
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && $(MAKE) $@
 else
-all: $(BINNAMEPLUTO) #$(BINNAMEWHACKINIT)
-programs: $(BINNAMEPLUTO) #$(BINNAMEWHACKINIT)
+all: $(BINNAMEPLUTO)
+programs: $(BINNAMEPLUTO)
 clean:	cleanall
 install: doinstall
 endif
@@ -187,7 +183,6 @@ doinstall: all
 	mkdir -p -m 700 $(CONFDIR)/ipsec.d/private
 	mkdir -p -m 700 $(VARDIR)/run/pluto
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(LIBEXECDIR)
-	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
 ifneq ($(USE_NOMANINSTALL),true)
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
@@ -226,10 +221,6 @@ ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard 
 $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM} ${LIBALGOPARSE} ${WHACKLIB} ${LIBPLUTO}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
-
-$(BINNAMEWHACKINIT): $(OBJSWHACKINIT)
-	@echo LD ${BINNAMEWHACKINIT}
-	@$(CC) -o $(BINNAMEWHACKINIT) $(LDFLAGS) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
 
 distlist:
 	@echo $(DIST)

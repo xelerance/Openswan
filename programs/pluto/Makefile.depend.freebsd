@@ -1591,19 +1591,6 @@ whack.o: whack.c \
   ../../include/oswalloc.h \
   ../../include/whack.h \
   ../../linux/include/openswan/ipsec_policy.h
-whackinit.o: whackinit.c \
-  ../../linux/include/openswan.h \
-  ../../include/constants.h \
-  ../../include/biglset.h \
-  ../../linux/include/openswan/passert.h \
-  ../../include/ietf_constants.h \
-  ../../include/pluto_constants.h \
-  ../../include/names_constant.h \
-  ../../include/oswlog.h \
-  ../../include/constants.h defs.h \
-  ../../include/oswalloc.h \
-  ../../include/whack.h \
-  ../../linux/include/openswan/ipsec_policy.h
 x509.o: x509.c \
   ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
