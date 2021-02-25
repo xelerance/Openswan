@@ -236,6 +236,7 @@ const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
 const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
 {
     if(!setup) osw_conf_setdefault();
+    pfree_z(global_oco.confddir);
     global_oco.confddir = clone_str(ipsec_dir, "override ipsec.d");
     osw_conf_calculate(&global_oco);
     setup = TRUE;
