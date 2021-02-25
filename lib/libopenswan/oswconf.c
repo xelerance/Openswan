@@ -170,7 +170,7 @@ void osw_conf_setdefault(void)
 	conffile = clone_str(env, "ipsec.conf");
     }
 
-    global_oco.rootdir = "";
+    global_oco.rootdir = clone_str("", "defaults");
     global_oco.confddir= ipsecd_dir;
     global_oco.vardir  = var_dir;
     global_oco.confdir = ipsec_conf_dir;
