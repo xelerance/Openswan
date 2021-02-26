@@ -31,12 +31,12 @@ check: ${OUTPUTS}
 	@${READWRITE} --config moon.conf --whackout=${OUTPUTS}/moon.whack host-host
 	@cborseq2pretty.rb ${OUTPUTS}/moon.whack | tee ${OUTPUTS}/moonrecord.out | diff - moonrecord.txt
 	${READWRITE} --debug --config moon.conf | tee ${OUTPUTS}/moon.conf.raw | diff - moon.conf.out
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.${TESTNAME}.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.${TESTNAME}.out;
 
 update:
 	cp ${OUTPUTS}/moon.conf.raw     moon.conf.out
 	cp ${OUTPUTS}/moonrecord.out    moonrecord.txt
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
 
 step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
