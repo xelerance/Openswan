@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
     wm1.left.certtype       = 1;
     wm1.left.host_addr_name = "example.com";
 
+    wm1.dpd_delay = 10;
+    wm1.dpd_timeout=60;
+
     wm1.right = wm1.left;
     char *ip4ex4r = "192.0.1.4";
     ttoaddr_num(ip4ex4r, strlen(ip4ex4r), AF_INET, &wm1.right.host_addr);
