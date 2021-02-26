@@ -567,7 +567,11 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_SECCTX:
+#ifdef HAVE_LABELED_IPSEC
         oco->secctx_attr_value = item.val.int64;
+#else
+        openswan_log("Labelled IPsec not enabled; value %ld ignored.", item.val.int64);
+#endif
         break;
 
       case WHACK_OPT_FORKDESIRED:
