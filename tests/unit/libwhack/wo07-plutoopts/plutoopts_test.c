@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
     fwrite(cborout.ptr, cborout.len, 1, omsg);
     fclose(omsg);
 
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

@@ -10,13 +10,15 @@ const char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 
+/* sysdep_*.c */
+bool use_interface(const char *rifn) {}
+
 int main(int argc, char *argv[])
 {
     err_t err = NULL;
     char  wm_buf[4096];
     char *conn_name;
     struct whack_message wm1;
-    size_t outsize = 0;
     size_t insize;
 
     progname = argv[0];
@@ -44,13 +46,13 @@ int main(int argc, char *argv[])
     if(err) { printf("decode error: %s\n", err); exit(4); }
 
     /* encode it again, and write it out */
-    insize = sizeof(wm_buf);
-    err = whack_cbor_encode_msg(&wm1, wm_buf, &insize);
+    chunk_t wmchunk = { wm_buf, sizeof(wm_buf) };
+    err = whack_cbor_encode_msg(&wm1, &wmchunk );
     if(err) { printf("recode: error: %s\n", err); exit(5); }
 
     FILE *omsg = fopen("OUTPUT/wm05o.bin", "wb");
     if(omsg == NULL) { perror("output"); exit(4); }
-    fwrite(wm_buf, insize, 1, omsg);
+    fwrite(wmchunk.ptr, wmchunk.len, 1, omsg);
     fclose(omsg);
 
     report_leaks();

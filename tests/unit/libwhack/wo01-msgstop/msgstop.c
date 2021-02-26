@@ -10,6 +10,9 @@ const char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 
+/* sysdep_*.c */
+bool use_interface(const char *rifn) {}
+
 int main(int argc, char *argv[])
 {
     err_t err = NULL;
@@ -69,25 +72,25 @@ int main(int argc, char *argv[])
     wm1.name_len = 12;
     wm1.name     = "abcde_abcde_";
 
-    outsize = sizeof(wm_buf);
-    err_t ugh = whack_cbor_encode_msg(&wm1, wm_buf, &outsize);
+    chunk_t wmchunk = { wm_buf, sizeof(wm_buf) };
+    err_t ugh = whack_cbor_encode_msg(&wm1, &wmchunk );
     if(ugh) { printf("error: %s\n", ugh); exit(3); }
 
     FILE *omsg = fopen("OUTPUT/wm1.bin", "wb");
     if(omsg == NULL) { perror("output"); exit(4); }
-    fwrite(wm_buf, outsize, 1, omsg);
+    fwrite(wmchunk.ptr, wmchunk.len, 1, omsg);
     fclose(omsg);
 
     /* now decode it again */
     memset(&wm1, 0, sizeof(wm1));
-    err = whack_cbor_decode_msg(&wm1, wm_buf, &outsize);
+    err = whack_cbor_decode_msg(&wm1, wmchunk.ptr, &wmchunk.len);
     if(err) { printf("decode error: %s\n", err); exit(6); }
 
     passert(wm1.whack_shutdown == TRUE);
 
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 
