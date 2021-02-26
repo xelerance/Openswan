@@ -487,6 +487,14 @@ err_t pluto_options_process(int argc, char **argv, chunk_t *encode_opts)
                 QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_VIRTUAL_PRIVATE, optarg);
                 continue;
 
+            case '7':	/* --built-withlibnss */
+#ifdef HAVE_LIBNSS
+                exit(0);
+#else
+                exit(1);
+#endif
+                continue;
+
             default:
                 if (c >= DBG_OFFSET)
                     {
