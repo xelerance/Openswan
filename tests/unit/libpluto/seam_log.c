@@ -45,4 +45,7 @@ bool
     logged_myid_fqdn_key_warning = FALSE,
     logged_myid_ip_key_warning   = FALSE;
 
+bool logged_txt_warning = FALSE;
+
+
 #endif
