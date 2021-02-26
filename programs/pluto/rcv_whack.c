@@ -701,9 +701,10 @@ whack_compare_options(struct osw_conf_options *old
                            , struct osw_conf_options *new)
 {
     /* check for changed core dir */
-    if((old->coredir == NULL && new->coredir != NULL)
-       || (old->coredir != NULL && new->coredir == NULL)
-       || strcmp(old->coredir, new->coredir) != 0) {  /* changed */
+    if(old->coredir != new->coredir
+       && ((old->coredir == NULL && new->coredir != NULL)
+           || (old->coredir != NULL && new->coredir == NULL)
+           || strcmp(old->coredir, new->coredir) != 0)) {  /* changed */
         pluto_set_coredir(new);
     }
 
@@ -717,16 +718,15 @@ whack_compare_options(struct osw_conf_options *old
 	new->log_to_stderr = FALSE;
 
     /* check for changed control socket */
-    if((old->ctlbase == NULL && new->ctlbase != NULL)
-       || (old->ctlbase != NULL && new->ctlbase == NULL)
-       || strcmp(old->ctlbase, new->ctlbase) != 0) {  /* changed */
+    if(old->ctlbase != new->ctlbase
+       && ((old->ctlbase == NULL && new->ctlbase != NULL)
+           || (old->ctlbase != NULL && new->ctlbase == NULL)
+           || strcmp(old->ctlbase, new->ctlbase) != 0)) {  /* changed */
         update_ctl_socket_name(new);
         init_ctl_socket(new);
     }
 
-
-
-
+    /* probably more checks to do */
 }
 
 
