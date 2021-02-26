@@ -61,6 +61,7 @@ adding connection: "rw2"
 000 "rw2":     myip=unset; hisip=unset;
 000 "rw2":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
 000 "rw2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: ; kind=CK_PERMANENT
+000 "rw2":   dpd: action:clear; delay:10; timeout:60;  
 000 "rw2":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  
