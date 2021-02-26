@@ -20,6 +20,7 @@ ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
 adding connection: "rw"
+adding connection: "rw2"
 000 using kernel interface: noklips
 000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
@@ -56,6 +57,12 @@ adding connection: "rw"
 000 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
 000 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: ; kind=CK_PERMANENT
 000 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
+000 "rw2": 10.2.0.0/16===192.0.1.2[@moon.strongswan.org]...%any[carol@strongswan.org]; unrouted; eroute owner: #0
+000 "rw2":     myip=unset; hisip=unset;
+000 "rw2":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0 
+000 "rw2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: ; kind=CK_PERMANENT
+000 "rw2":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  
+"rw2": deleting connection
 "rw": deleting connection
