@@ -115,7 +115,7 @@ a1                                      # map(1)
             d9 0105                     # tag(261)
                50                       # bytes(16)
                   20010db8000000010000000000000000 # " \x01\r\xB8\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00"
-      18 97                             # unsigned(151)
+      18 7f                             # unsigned(127)
       00                                # unsigned(0)
       18 92                             # unsigned(146)
       00                                # unsigned(0)
