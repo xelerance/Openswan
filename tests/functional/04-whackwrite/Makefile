@@ -44,13 +44,14 @@ check:
 	@echo >.gdbinit2b  "file ${READWRITE} "
 	@echo >>.gdbinit2b "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj "
 	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord3.whack parker1--jj2 ikev2:parker--jj 2>&1 | tee ${OUTPUTS}/parkerload.out | diff - parkerload.txt
+	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord3.whack | tee ${OUTPUTS}/parkerrecord3.out | diff - parkerrecord3.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@echo testing ${SAMPLEDIR}/parker.conf with --all
 	@echo >.gdbinit3 "file ${READWRITE} "
 	@echo >>.gdbinit3 "set args ${TEST3ARGS}"
-	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord3.whack | tee ${OUTPUTS}/parkerrecord3.out | diff - parkerrecord3.txt
 	@${READWRITE} ${TEST3ARGS} 2>&1 | tee ${OUTPUTS}/parkerload2.out | diff - parkerload2.txt
 	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord2.whack | tee ${OUTPUTS}/parkerrecord2.out | diff - parkerrecord2.txt
+	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt

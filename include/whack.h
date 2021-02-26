@@ -150,7 +150,7 @@ enum whack_cbor_attributes {
       WHACK_OPT_LIFETIME_REKEY_MARGIN=148,
       WHACK_OPT_LIFETIME_REKEY_FUZZ=149,
       WHACK_OPT_LIFETIME_REKEY_TRIES=150,
-      WHACK_OPT_POLICY        = 151,
+      WHACK_OPT_POLICY        = 127,
       WHACK_OPT_KEYVAL        = 15,
       WHACK_OPT_KEYID         = 16,
       WHACK_OPT_KEYALG        = 17,
@@ -236,10 +236,10 @@ struct whack_message {
     u_int32_t sa_keying_tries;
 
     /* For DPD 3706 - Dead Peer Detection */
-    time_t dpd_delay;
-    time_t dpd_timeout;
-    enum dpd_action dpd_action;
-    u_int32_t dpd_count;
+    time_t dpd_delay;              /* time between DPD messages */
+    time_t dpd_timeout;            /* timeout at which to give up */
+    enum dpd_action dpd_action;    /* what to do when it fails */
+    u_int32_t dpd_count;           /* how many attempts before failure */
 
     /*Cisco interop:  remote peer type*/
     enum keyword_remotepeertype remotepeertype;
