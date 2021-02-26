@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     {
         prompt_pass_t pass;
         memset(&pass, 0, sizeof(pass));
-        osw_init_ipsecdir("../samples/parker");
+        osw_init_ipsecdir_str("../samples/parker");
 
         osw_load_preshared_secrets(&pluto_secrets
                                    , TRUE

@@ -128,6 +128,7 @@ extern struct osw_conf_options *osw_init_options(void);
 struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old);
 extern void osw_conf_free_oco(struct osw_conf_options *oco);
 extern const struct osw_conf_options *osw_init_rootdir_str(const char *root_dir);
+extern const struct osw_conf_options *osw_init_ipsecdir_str(const char *ipsec_dir);
 extern const struct osw_conf_options *osw_init_ipsecdir(struct osw_conf_options *
                                                         , constchunk_t ipsecchunk);
 extern const struct osw_conf_options *osw_init_rootdir(struct osw_conf_options *

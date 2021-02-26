@@ -9,13 +9,11 @@ static void init_local_interface(bool doipv6)
     init_moon_interface(doipv6);
 }
 
-extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
-
 static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
-    osw_init_ipsecdir("../samples/moon");
+    osw_init_ipsecdir_str("../samples/moon");
 
     rnd_offset = 13;
 

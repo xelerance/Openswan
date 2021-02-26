@@ -243,6 +243,13 @@ const struct osw_conf_options *osw_init_rootdir(struct osw_conf_options *oco
     return &global_oco;
 }
 
+const struct osw_conf_options *osw_init_ipsecdir_str(const char *ipsec_dir)
+{
+    struct osw_conf_options *oco = osw_init_options();
+    constchunk_t dir = { (const unsigned char *)ipsec_dir, strlen((const char *)ipsec_dir) };
+    return osw_init_ipsecdir(oco, dir);
+}
+
 const struct osw_conf_options *osw_init_ipsecdir(struct osw_conf_options *oco
                                                  , constchunk_t root_dir_chunk)
 {
