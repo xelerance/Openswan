@@ -19,6 +19,7 @@
 #define _OSW_CONF_H
 
 #include "constants.h"
+#include "oswalloc.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -126,8 +127,11 @@ typedef struct {
 extern struct osw_conf_options *osw_init_options(void);
 struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old);
 extern void osw_conf_free_oco(struct osw_conf_options *oco);
-extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
-extern const struct osw_conf_options *osw_init_rootdir(const char *root_dir);
+extern const struct osw_conf_options *osw_init_rootdir_str(const char *root_dir);
+extern const struct osw_conf_options *osw_init_ipsecdir(struct osw_conf_options *
+                                                        , constchunk_t ipsecchunk);
+extern const struct osw_conf_options *osw_init_rootdir(struct osw_conf_options *
+                                                        , constchunk_t rootchunk);
 extern void osw_free_options(void);
 
 #ifdef HAVE_LIBNSS
@@ -136,7 +140,7 @@ extern char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg);
 extern bool Pluto_IsFIPS(void);
 #endif
 
-#endif /* _OSW_ALLOC_H_ */
+#endif /* _OSW_CONF_H_ */
 
 /*
  * Local Variables:

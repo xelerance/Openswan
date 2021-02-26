@@ -220,12 +220,22 @@ void osw_free_options(void)
     setup = FALSE;
 }
 
-const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
+const struct osw_conf_options *osw_init_rootdir_str(const char *root_dir)
+{
+    struct osw_conf_options *oco = osw_init_options();
+    constchunk_t dir = { (const unsigned char *)root_dir, strlen((const char *)root_dir) };
+    return osw_init_rootdir(oco, dir);
+}
+
+const struct osw_conf_options *osw_init_rootdir(struct osw_conf_options *oco
+                                                , constchunk_t root_dir_chunk)
 {
     if(!setup) osw_conf_setdefault();
 
     if(global_oco.rootdir) pfree(global_oco.rootdir);
-    global_oco.rootdir = clone_str(root_dir, "override /");
+    global_oco.rootdir = alloc_bytes(root_dir_chunk.len+1, "override /");
+    memcpy(global_oco.rootdir, root_dir_chunk.ptr, root_dir_chunk.len);
+    global_oco.rootdir[root_dir_chunk.len] = '\0';
 
     osw_conf_calculate(&global_oco);
     setup = TRUE;
@@ -233,11 +243,15 @@ const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
     return &global_oco;
 }
 
-const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
+const struct osw_conf_options *osw_init_ipsecdir(struct osw_conf_options *oco
+                                                 , constchunk_t root_dir_chunk)
 {
     if(!setup) osw_conf_setdefault();
     pfree_z(global_oco.confddir);
-    global_oco.confddir = clone_str(ipsec_dir, "override ipsec.d");
+    global_oco.confddir = alloc_bytes(root_dir_chunk.len+1, "override /");
+    memcpy(global_oco.confddir, root_dir_chunk.ptr, root_dir_chunk.len);
+    global_oco.confddir[root_dir_chunk.len] = '\0';
+
     osw_conf_calculate(&global_oco);
     setup = TRUE;
 

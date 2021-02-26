@@ -547,7 +547,19 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
       switch(item.label.int64) {
 
       case WHACK_OPT_COREDIR:
-        whack_cbor_string2c(qdc, &item, &oco->coredir);
+        {
+          /* need to call rootdir() directly to set */
+          constchunk_t dir = { item.val.string.ptr, item.val.string.len };
+          osw_init_rootdir(oco, dir);
+        }
+        break;
+
+      case WHACK_OPT_IPSEC_DIR:
+        {
+          /* need to call ipsecdir() directly to set */
+          constchunk_t dir = { item.val.string.ptr, item.val.string.len };
+          osw_init_ipsecdir(oco, dir);
+        }
         break;
 
       case WHACK_OPT_NHELPERS:
@@ -632,10 +644,6 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
 
       case WHACK_OPT_SHARED_SECRETS_FILE:
         whack_cbor_string2c(qdc, &item, &oco->pluto_shared_secrets_file);
-        break;
-
-      case WHACK_OPT_IPSEC_DIR:
-        whack_cbor_string2c(qdc, &item, &oco->confddir);
         break;
 
       case WHACK_OPT_SET_DEBUGGING:
