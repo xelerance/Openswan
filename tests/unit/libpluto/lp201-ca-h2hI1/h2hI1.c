@@ -22,7 +22,7 @@ static void init_local_interface(void)
 
 static void init_fake_secrets(void)
 {
-    osw_init_ipsecdir("../samples/davecert");
+    osw_init_ipsecdir_str("../samples/davecert");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/parker.secrets"
