@@ -245,6 +245,11 @@ err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t
     whack_cbor_encode_end(&qec, &wm->right);
     QCBOREncode_CloseMap(&qec);
 
+    ADDIntIfNotZero(&qec, WHACK_OPT_DPD_DELAY,  wm->dpd_delay);
+    ADDIntIfNotZero(&qec, WHACK_OPT_DPD_TIMEOUT,wm->dpd_timeout);
+    ADDIntIfNotZero(&qec, WHACK_OPT_DPD_ACTION, wm->dpd_action);
+    ADDIntIfNotZero(&qec, WHACK_OPT_DPD_COUNT,  wm->dpd_count);
+
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_POLICY, wm->policy);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_IKE, wm->sa_ike_life_seconds);
     QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIFETIME_IPSEC, wm->sa_ipsec_life_seconds);
