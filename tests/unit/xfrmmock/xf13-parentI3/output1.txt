@@ -1063,18 +1063,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 
 ./xf13-parentI3 leak: pubkey entry, item size: X
 ./xf13-parentI3 leak: rfc3110 format of public key, item size: X
 ./xf13-parentI3 leak: pubkey, item size: X
-./xf13-parentI3 leak: policies path, item size: X
-./xf13-parentI3 leak: ocspcerts path, item size: X
-./xf13-parentI3 leak: aacerts path, item size: X
-./xf13-parentI3 leak: certs path, item size: X
-./xf13-parentI3 leak: private path, item size: X
-./xf13-parentI3 leak: crls path, item size: X
-./xf13-parentI3 leak: cacert path, item size: X
-./xf13-parentI3 leak: acert path, item size: X
-./xf13-parentI3 leak: default conf var_dir, item size: X
-./xf13-parentI3 leak: default conf conffile, item size: X
-./xf13-parentI3 leak: default conf ipsecd_dir, item size: X
-./xf13-parentI3 leak: default conf ipsec_conf_dir, item size: X
 ./xf13-parentI3 leak: 2 * id list, item size: X
 ./xf13-parentI3 leak: rfc3110 format of public key [created], item size: X
 ./xf13-parentI3 leak: pubkey, item size: X

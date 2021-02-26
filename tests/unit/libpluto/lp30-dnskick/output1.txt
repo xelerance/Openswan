@@ -39,18 +39,6 @@ RC=0 "cpe":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SARE
 ./kickdns leak: keep id name, item size: X
 ./kickdns leak: connection name, item size: X
 ./kickdns leak: struct connection, item size: X
-./kickdns leak: policies path, item size: X
-./kickdns leak: ocspcerts path, item size: X
-./kickdns leak: aacerts path, item size: X
-./kickdns leak: certs path, item size: X
-./kickdns leak: private path, item size: X
-./kickdns leak: crls path, item size: X
-./kickdns leak: cacert path, item size: X
-./kickdns leak: acert path, item size: X
-./kickdns leak: default conf var_dir, item size: X
-./kickdns leak: default conf conffile, item size: X
-./kickdns leak: default conf ipsecd_dir, item size: X
-./kickdns leak: default conf ipsec_conf_dir, item size: X
 ./kickdns leak: 2 * id list, item size: X
 ./kickdns leak: rfc3110 format of public key [created], item size: X
 ./kickdns leak: pubkey, item size: X

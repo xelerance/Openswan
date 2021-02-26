@@ -516,16 +516,4 @@ should have found a continuation, but none was found
 ./parentR2 leak: secret, item size: X
 ./parentR2 leak: 4 * hasher name, item size: X
 ./parentR2 leak: 10 * group description, item size: X
-./parentR2 leak: policies path, item size: X
-./parentR2 leak: ocspcerts path, item size: X
-./parentR2 leak: aacerts path, item size: X
-./parentR2 leak: certs path, item size: X
-./parentR2 leak: private path, item size: X
-./parentR2 leak: crls path, item size: X
-./parentR2 leak: cacert path, item size: X
-./parentR2 leak: acert path, item size: X
-./parentR2 leak: default conf var_dir, item size: X
-./parentR2 leak: default conf conffile, item size: X
-./parentR2 leak: default conf ipsecd_dir, item size: X
-./parentR2 leak: default conf ipsec_conf_dir, item size: X
 ./parentR2 leak detective found Z leaks, total size X

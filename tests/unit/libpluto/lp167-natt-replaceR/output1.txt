@@ -976,16 +976,4 @@ should have found a continuation, but none was found
 ./rekeyParentSA leak: secret, item size: X
 ./rekeyParentSA leak: 4 * hasher name, item size: X
 ./rekeyParentSA leak: 10 * group description, item size: X
-./rekeyParentSA leak: policies path, item size: X
-./rekeyParentSA leak: ocspcerts path, item size: X
-./rekeyParentSA leak: aacerts path, item size: X
-./rekeyParentSA leak: certs path, item size: X
-./rekeyParentSA leak: private path, item size: X
-./rekeyParentSA leak: crls path, item size: X
-./rekeyParentSA leak: cacert path, item size: X
-./rekeyParentSA leak: acert path, item size: X
-./rekeyParentSA leak: default conf var_dir, item size: X
-./rekeyParentSA leak: default conf conffile, item size: X
-./rekeyParentSA leak: default conf ipsecd_dir, item size: X
-./rekeyParentSA leak: default conf ipsec_conf_dir, item size: X
 ./rekeyParentSA leak detective found Z leaks, total size X

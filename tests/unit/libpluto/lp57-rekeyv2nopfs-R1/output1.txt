@@ -1327,16 +1327,4 @@ should have found a continuation, but none was found
 ./rekeyv2nopfs-R1 leak: secret, item size: X
 ./rekeyv2nopfs-R1 leak: 4 * hasher name, item size: X
 ./rekeyv2nopfs-R1 leak: 10 * group description, item size: X
-./rekeyv2nopfs-R1 leak: policies path, item size: X
-./rekeyv2nopfs-R1 leak: ocspcerts path, item size: X
-./rekeyv2nopfs-R1 leak: aacerts path, item size: X
-./rekeyv2nopfs-R1 leak: certs path, item size: X
-./rekeyv2nopfs-R1 leak: private path, item size: X
-./rekeyv2nopfs-R1 leak: crls path, item size: X
-./rekeyv2nopfs-R1 leak: cacert path, item size: X
-./rekeyv2nopfs-R1 leak: acert path, item size: X
-./rekeyv2nopfs-R1 leak: default conf var_dir, item size: X
-./rekeyv2nopfs-R1 leak: default conf conffile, item size: X
-./rekeyv2nopfs-R1 leak: default conf ipsecd_dir, item size: X
-./rekeyv2nopfs-R1 leak: default conf ipsec_conf_dir, item size: X
 ./rekeyv2nopfs-R1 leak detective found Z leaks, total size X

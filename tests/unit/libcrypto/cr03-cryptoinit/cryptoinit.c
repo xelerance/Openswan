@@ -43,8 +43,9 @@ int main(int argc, char *argv[])
     /* register it! */
     init_crypto();
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

@@ -404,15 +404,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./h2hR1 leak: rfc3110 format of public key [created], item size: X
 ./h2hR1 leak: pubkey, item size: X
 ./h2hR1 leak: secret, item size: X
-./h2hR1 leak: policies path, item size: X
-./h2hR1 leak: ocspcerts path, item size: X
-./h2hR1 leak: aacerts path, item size: X
-./h2hR1 leak: certs path, item size: X
-./h2hR1 leak: private path, item size: X
-./h2hR1 leak: crls path, item size: X
-./h2hR1 leak: cacert path, item size: X
-./h2hR1 leak: acert path, item size: X
-./h2hR1 leak: override ipsec.d, item size: X
 ./h2hR1 leak: 4 * hasher name, item size: X
 ./h2hR1 leak: 10 * group description, item size: X
 ./h2hR1 leak: policies path, item size: X
@@ -423,8 +414,4 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./h2hR1 leak: crls path, item size: X
 ./h2hR1 leak: cacert path, item size: X
 ./h2hR1 leak: acert path, item size: X
-./h2hR1 leak: default conf var_dir, item size: X
-./h2hR1 leak: default conf conffile, item size: X
-./h2hR1 leak: default conf ipsecd_dir, item size: X
-./h2hR1 leak: default conf ipsec_conf_dir, item size: X
 ./h2hR1 leak detective found Z leaks, total size X

@@ -241,15 +241,6 @@ RC=105 STATE_MAIN_I1: initiate
 ./v1sha512M1 leak: rfc3110 format of public key [created], item size: X
 ./v1sha512M1 leak: pubkey, item size: X
 ./v1sha512M1 leak: secret, item size: X
-./v1sha512M1 leak: policies path, item size: X
-./v1sha512M1 leak: ocspcerts path, item size: X
-./v1sha512M1 leak: aacerts path, item size: X
-./v1sha512M1 leak: certs path, item size: X
-./v1sha512M1 leak: private path, item size: X
-./v1sha512M1 leak: crls path, item size: X
-./v1sha512M1 leak: cacert path, item size: X
-./v1sha512M1 leak: acert path, item size: X
-./v1sha512M1 leak: override ipsec.d, item size: X
 ./v1sha512M1 leak: 4 * hasher name, item size: X
 ./v1sha512M1 leak: 10 * group description, item size: X
 ./v1sha512M1 leak: policies path, item size: X
@@ -260,8 +251,4 @@ RC=105 STATE_MAIN_I1: initiate
 ./v1sha512M1 leak: crls path, item size: X
 ./v1sha512M1 leak: cacert path, item size: X
 ./v1sha512M1 leak: acert path, item size: X
-./v1sha512M1 leak: default conf var_dir, item size: X
-./v1sha512M1 leak: default conf conffile, item size: X
-./v1sha512M1 leak: default conf ipsecd_dir, item size: X
-./v1sha512M1 leak: default conf ipsec_conf_dir, item size: X
 ./v1sha512M1 leak detective found Z leaks, total size X

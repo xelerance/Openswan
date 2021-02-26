@@ -405,4 +405,17 @@ strong v1 (RSA):| sa disjunct cnt: 1
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 6(OAKLEY_SHA2_512) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 ./lp67-ike2ops leak: 2 * alg_info_ike, item size: 2064
-./lp67-ike2ops leak detective found 2 leaks, total size 2064
+./lp67-ike2ops leak: policies path, item size: 22
+./lp67-ike2ops leak: ocspcerts path, item size: 23
+./lp67-ike2ops leak: aacerts path, item size: 21
+./lp67-ike2ops leak: certs path, item size: 19
+./lp67-ike2ops leak: private path, item size: 21
+./lp67-ike2ops leak: crls path, item size: 18
+./lp67-ike2ops leak: cacert path, item size: 21
+./lp67-ike2ops leak: acert path, item size: 20
+./lp67-ike2ops leak: 3 * defaults, item size: 1
+./lp67-ike2ops leak: default conf var_dir, item size: 5
+./lp67-ike2ops leak: default conf conffile, item size: 16
+./lp67-ike2ops leak: default conf ipsecd_dir, item size: 13
+./lp67-ike2ops leak: default conf ipsec_conf_dir, item size: 5
+./lp67-ike2ops leak detective found 17 leaks, total size 2269

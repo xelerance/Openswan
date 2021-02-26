@@ -382,16 +382,4 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./nattI1 leak: secret, item size: X
 ./nattI1 leak: 4 * hasher name, item size: X
 ./nattI1 leak: 10 * group description, item size: X
-./nattI1 leak: policies path, item size: X
-./nattI1 leak: ocspcerts path, item size: X
-./nattI1 leak: aacerts path, item size: X
-./nattI1 leak: certs path, item size: X
-./nattI1 leak: private path, item size: X
-./nattI1 leak: crls path, item size: X
-./nattI1 leak: cacert path, item size: X
-./nattI1 leak: acert path, item size: X
-./nattI1 leak: default conf var_dir, item size: X
-./nattI1 leak: default conf conffile, item size: X
-./nattI1 leak: default conf ipsecd_dir, item size: X
-./nattI1 leak: default conf ipsec_conf_dir, item size: X
 ./nattI1 leak detective found Z leaks, total size X

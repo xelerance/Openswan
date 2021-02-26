@@ -953,16 +953,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 19
 ./deleteChildSA-fromR2 leak: secret, item size: X
 ./deleteChildSA-fromR2 leak: 4 * hasher name, item size: X
 ./deleteChildSA-fromR2 leak: 10 * group description, item size: X
-./deleteChildSA-fromR2 leak: policies path, item size: X
-./deleteChildSA-fromR2 leak: ocspcerts path, item size: X
-./deleteChildSA-fromR2 leak: aacerts path, item size: X
-./deleteChildSA-fromR2 leak: certs path, item size: X
-./deleteChildSA-fromR2 leak: private path, item size: X
-./deleteChildSA-fromR2 leak: crls path, item size: X
-./deleteChildSA-fromR2 leak: cacert path, item size: X
-./deleteChildSA-fromR2 leak: acert path, item size: X
-./deleteChildSA-fromR2 leak: default conf var_dir, item size: X
-./deleteChildSA-fromR2 leak: default conf conffile, item size: X
-./deleteChildSA-fromR2 leak: default conf ipsecd_dir, item size: X
-./deleteChildSA-fromR2 leak: default conf ipsec_conf_dir, item size: X
 ./deleteChildSA-fromR2 leak detective found Z leaks, total size X

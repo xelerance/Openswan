@@ -9336,18 +9336,6 @@ RC=2      OpenswanServer
 ./IDhostpair leak: pubkey entry, item size: X
 ./IDhostpair leak: rfc3110 format of public key, item size: X
 ./IDhostpair leak: pubkey, item size: X
-./IDhostpair leak: policies path, item size: X
-./IDhostpair leak: ocspcerts path, item size: X
-./IDhostpair leak: aacerts path, item size: X
-./IDhostpair leak: certs path, item size: X
-./IDhostpair leak: private path, item size: X
-./IDhostpair leak: crls path, item size: X
-./IDhostpair leak: cacert path, item size: X
-./IDhostpair leak: acert path, item size: X
-./IDhostpair leak: default conf var_dir, item size: X
-./IDhostpair leak: default conf conffile, item size: X
-./IDhostpair leak: default conf ipsecd_dir, item size: X
-./IDhostpair leak: default conf ipsec_conf_dir, item size: X
 ./IDhostpair leak: 2 * id list, item size: X
 ./IDhostpair leak: rfc3110 format of public key [created], item size: X
 ./IDhostpair leak: pubkey, item size: X

@@ -3568,15 +3568,6 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: pubkey, item size: X
 ./certreplydaveR2 leak: secret, item size: X
-./certreplydaveR2 leak: policies path, item size: X
-./certreplydaveR2 leak: ocspcerts path, item size: X
-./certreplydaveR2 leak: aacerts path, item size: X
-./certreplydaveR2 leak: certs path, item size: X
-./certreplydaveR2 leak: private path, item size: X
-./certreplydaveR2 leak: crls path, item size: X
-./certreplydaveR2 leak: cacert path, item size: X
-./certreplydaveR2 leak: acert path, item size: X
-./certreplydaveR2 leak: override ipsec.d, item size: X
 ./certreplydaveR2 leak: 4 * hasher name, item size: X
 ./certreplydaveR2 leak: 10 * group description, item size: X
 ./certreplydaveR2 leak: policies path, item size: X
@@ -3587,8 +3578,4 @@ sending 1440 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 ./certreplydaveR2 leak: crls path, item size: X
 ./certreplydaveR2 leak: cacert path, item size: X
 ./certreplydaveR2 leak: acert path, item size: X
-./certreplydaveR2 leak: default conf var_dir, item size: X
-./certreplydaveR2 leak: default conf conffile, item size: X
-./certreplydaveR2 leak: default conf ipsecd_dir, item size: X
-./certreplydaveR2 leak: default conf ipsec_conf_dir, item size: X
 ./certreplydaveR2 leak detective found Z leaks, total size X

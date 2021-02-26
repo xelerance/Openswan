@@ -3,7 +3,6 @@ int main(int argc, char *argv[])
     char *infile;
     char *conn_name;
     struct connection *c1 = NULL;
-    struct osw_conf_options *oco = osw_init_options();
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
@@ -11,7 +10,10 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
-    oco->pluto_shared_secrets_file = "/dev/null";
+
+    struct osw_conf_options *oco = osw_init_options();
+    pfree_z(oco->pluto_shared_secrets_file);
+    oco->pluto_shared_secrets_file = clone_str("/dev/null", "main");
 
     if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
@@ -47,10 +49,10 @@ int main(int argc, char *argv[])
     }
 
     delete_connection(c1, TRUE, FALSE);
+    tool_close_log();
 
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

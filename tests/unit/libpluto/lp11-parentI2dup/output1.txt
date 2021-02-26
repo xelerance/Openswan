@@ -535,18 +535,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI2duplicate leak: pubkey entry, item size: X
 ./parentI2duplicate leak: rfc3110 format of public key, item size: X
 ./parentI2duplicate leak: pubkey, item size: X
-./parentI2duplicate leak: policies path, item size: X
-./parentI2duplicate leak: ocspcerts path, item size: X
-./parentI2duplicate leak: aacerts path, item size: X
-./parentI2duplicate leak: certs path, item size: X
-./parentI2duplicate leak: private path, item size: X
-./parentI2duplicate leak: crls path, item size: X
-./parentI2duplicate leak: cacert path, item size: X
-./parentI2duplicate leak: acert path, item size: X
-./parentI2duplicate leak: default conf var_dir, item size: X
-./parentI2duplicate leak: default conf conffile, item size: X
-./parentI2duplicate leak: default conf ipsecd_dir, item size: X
-./parentI2duplicate leak: default conf ipsec_conf_dir, item size: X
 ./parentI2duplicate leak: 4 * hasher name, item size: X
 ./parentI2duplicate leak: 10 * group description, item size: X
 ./parentI2duplicate leak detective found Z leaks, total size X

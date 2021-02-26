@@ -114,6 +114,22 @@ RC=2 IP hostpairs:
 RC=2 ID hostpairs:
 ./orienttest leak: myid string, item size: X
 ./orienttest leak: my FQDN, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
+./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
+./orienttest leak: rfc3110 format of public key, item size: X
+./orienttest leak: pubkey, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X
@@ -122,21 +138,4 @@ RC=2 ID hostpairs:
 ./orienttest leak: crls path, item size: X
 ./orienttest leak: cacert path, item size: X
 ./orienttest leak: acert path, item size: X
-./orienttest leak: override ipsec.d, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: pubkey entry, item size: X
-./orienttest leak: rfc3110 format of public key, item size: X
-./orienttest leak: pubkey, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: pubkey entry, item size: X
-./orienttest leak: rfc3110 format of public key, item size: X
-./orienttest leak: pubkey, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: pubkey entry, item size: X
-./orienttest leak: rfc3110 format of public key, item size: X
-./orienttest leak: pubkey, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: pubkey entry, item size: X
-./orienttest leak: rfc3110 format of public key, item size: X
-./orienttest leak: pubkey, item size: X
 ./orienttest leak detective found Z leaks, total size X

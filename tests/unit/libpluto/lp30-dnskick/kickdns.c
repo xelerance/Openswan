@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
     kick_adns_connection_lookup(c1, &c1->spd.that, TRUE);
 
     tool_close_log();
-    report_leaks();
 
+    report_leaks();
     exit(0);
 }
 

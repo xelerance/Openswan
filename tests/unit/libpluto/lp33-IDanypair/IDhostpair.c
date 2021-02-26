@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     if(readwhackmsg(infile) == 0) exit(11);
 
     hostpair_list();
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

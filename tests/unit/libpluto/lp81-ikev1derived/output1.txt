@@ -236,16 +236,4 @@ RC=105 STATE_MAIN_I1: initiate
 ./ikev1derived leak: secret, item size: X
 ./ikev1derived leak: 4 * hasher name, item size: X
 ./ikev1derived leak: 10 * group description, item size: X
-./ikev1derived leak: policies path, item size: X
-./ikev1derived leak: ocspcerts path, item size: X
-./ikev1derived leak: aacerts path, item size: X
-./ikev1derived leak: certs path, item size: X
-./ikev1derived leak: private path, item size: X
-./ikev1derived leak: crls path, item size: X
-./ikev1derived leak: cacert path, item size: X
-./ikev1derived leak: acert path, item size: X
-./ikev1derived leak: default conf var_dir, item size: X
-./ikev1derived leak: default conf conffile, item size: X
-./ikev1derived leak: default conf ipsecd_dir, item size: X
-./ikev1derived leak: default conf ipsec_conf_dir, item size: X
 ./ikev1derived leak detective found Z leaks, total size X

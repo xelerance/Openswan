@@ -901,16 +901,4 @@ sending 400 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 93
 ./respondselfR2 leak: secret, item size: X
 ./respondselfR2 leak: 4 * hasher name, item size: X
 ./respondselfR2 leak: 10 * group description, item size: X
-./respondselfR2 leak: policies path, item size: X
-./respondselfR2 leak: ocspcerts path, item size: X
-./respondselfR2 leak: aacerts path, item size: X
-./respondselfR2 leak: certs path, item size: X
-./respondselfR2 leak: private path, item size: X
-./respondselfR2 leak: crls path, item size: X
-./respondselfR2 leak: cacert path, item size: X
-./respondselfR2 leak: acert path, item size: X
-./respondselfR2 leak: default conf var_dir, item size: X
-./respondselfR2 leak: default conf conffile, item size: X
-./respondselfR2 leak: default conf ipsecd_dir, item size: X
-./respondselfR2 leak: default conf ipsec_conf_dir, item size: X
 ./respondselfR2 leak detective found Z leaks, total size X

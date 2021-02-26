@@ -804,18 +804,6 @@ RC=0 #1: "t4901":500 IKEv1.0 STATE_MAIN_I3 (sent MI3, expecting MR3); none in -1
 ./parentM3 leak: pubkey entry, item size: X
 ./parentM3 leak: rfc3110 format of public key, item size: X
 ./parentM3 leak: pubkey, item size: X
-./parentM3 leak: policies path, item size: X
-./parentM3 leak: ocspcerts path, item size: X
-./parentM3 leak: aacerts path, item size: X
-./parentM3 leak: certs path, item size: X
-./parentM3 leak: private path, item size: X
-./parentM3 leak: crls path, item size: X
-./parentM3 leak: cacert path, item size: X
-./parentM3 leak: acert path, item size: X
-./parentM3 leak: default conf var_dir, item size: X
-./parentM3 leak: default conf conffile, item size: X
-./parentM3 leak: default conf ipsecd_dir, item size: X
-./parentM3 leak: default conf ipsec_conf_dir, item size: X
 ./parentM3 leak: 2 * id list, item size: X
 ./parentM3 leak: rfc3110 format of public key [created], item size: X
 ./parentM3 leak: pubkey, item size: X

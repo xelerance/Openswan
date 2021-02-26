@@ -224,15 +224,6 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 93.184
 ./v1rwnatN1 leak: rfc3110 format of public key [created], item size: X
 ./v1rwnatN1 leak: pubkey, item size: X
 ./v1rwnatN1 leak: secret, item size: X
-./v1rwnatN1 leak: policies path, item size: X
-./v1rwnatN1 leak: ocspcerts path, item size: X
-./v1rwnatN1 leak: aacerts path, item size: X
-./v1rwnatN1 leak: certs path, item size: X
-./v1rwnatN1 leak: private path, item size: X
-./v1rwnatN1 leak: crls path, item size: X
-./v1rwnatN1 leak: cacert path, item size: X
-./v1rwnatN1 leak: acert path, item size: X
-./v1rwnatN1 leak: override ipsec.d, item size: X
 ./v1rwnatN1 leak: 4 * hasher name, item size: X
 ./v1rwnatN1 leak: 10 * group description, item size: X
 ./v1rwnatN1 leak: policies path, item size: X
@@ -243,8 +234,4 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 93.184
 ./v1rwnatN1 leak: crls path, item size: X
 ./v1rwnatN1 leak: cacert path, item size: X
 ./v1rwnatN1 leak: acert path, item size: X
-./v1rwnatN1 leak: default conf var_dir, item size: X
-./v1rwnatN1 leak: default conf conffile, item size: X
-./v1rwnatN1 leak: default conf ipsecd_dir, item size: X
-./v1rwnatN1 leak: default conf ipsec_conf_dir, item size: X
 ./v1rwnatN1 leak detective found Z leaks, total size X

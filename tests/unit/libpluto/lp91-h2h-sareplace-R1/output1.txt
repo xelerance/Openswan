@@ -1367,18 +1367,6 @@ RC=0 #3: "mytunnel":500 IKEv2.0 STATE_PARENT_R1 (received v2I1, sent v2R1); none
 ./rekeyParentSA leak: pubkey entry, item size: X
 ./rekeyParentSA leak: rfc3110 format of public key, item size: X
 ./rekeyParentSA leak: pubkey, item size: X
-./rekeyParentSA leak: policies path, item size: X
-./rekeyParentSA leak: ocspcerts path, item size: X
-./rekeyParentSA leak: aacerts path, item size: X
-./rekeyParentSA leak: certs path, item size: X
-./rekeyParentSA leak: private path, item size: X
-./rekeyParentSA leak: crls path, item size: X
-./rekeyParentSA leak: cacert path, item size: X
-./rekeyParentSA leak: acert path, item size: X
-./rekeyParentSA leak: default conf var_dir, item size: X
-./rekeyParentSA leak: default conf conffile, item size: X
-./rekeyParentSA leak: default conf ipsecd_dir, item size: X
-./rekeyParentSA leak: default conf ipsec_conf_dir, item size: X
 ./rekeyParentSA leak: 2 * id list, item size: X
 ./rekeyParentSA leak: rfc3110 format of public key [created], item size: X
 ./rekeyParentSA leak: pubkey, item size: X

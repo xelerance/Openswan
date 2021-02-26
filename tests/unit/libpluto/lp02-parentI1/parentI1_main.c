@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
 
     delete_connection(c1, TRUE, FALSE);
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

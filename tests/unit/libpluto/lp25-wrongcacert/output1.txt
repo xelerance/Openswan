@@ -1079,15 +1079,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: rfc3110 format of public key [created], item size: X
 ./wrongcacert leak: pubkey, item size: X
 ./wrongcacert leak: secret, item size: X
-./wrongcacert leak: policies path, item size: X
-./wrongcacert leak: ocspcerts path, item size: X
-./wrongcacert leak: aacerts path, item size: X
-./wrongcacert leak: certs path, item size: X
-./wrongcacert leak: private path, item size: X
-./wrongcacert leak: crls path, item size: X
-./wrongcacert leak: cacert path, item size: X
-./wrongcacert leak: acert path, item size: X
-./wrongcacert leak: override ipsec.d, item size: X
 ./wrongcacert leak: 4 * hasher name, item size: X
 ./wrongcacert leak: 10 * group description, item size: X
 ./wrongcacert leak: policies path, item size: X
@@ -1098,8 +1089,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: crls path, item size: X
 ./wrongcacert leak: cacert path, item size: X
 ./wrongcacert leak: acert path, item size: X
-./wrongcacert leak: default conf var_dir, item size: X
-./wrongcacert leak: default conf conffile, item size: X
-./wrongcacert leak: default conf ipsecd_dir, item size: X
-./wrongcacert leak: default conf ipsec_conf_dir, item size: X
 ./wrongcacert leak detective found Z leaks, total size X

@@ -391,15 +391,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: rfc3110 format of public key [created], item size: X
 ./davecertI1-id leak: pubkey, item size: X
 ./davecertI1-id leak: secret, item size: X
-./davecertI1-id leak: policies path, item size: X
-./davecertI1-id leak: ocspcerts path, item size: X
-./davecertI1-id leak: aacerts path, item size: X
-./davecertI1-id leak: certs path, item size: X
-./davecertI1-id leak: private path, item size: X
-./davecertI1-id leak: crls path, item size: X
-./davecertI1-id leak: cacert path, item size: X
-./davecertI1-id leak: acert path, item size: X
-./davecertI1-id leak: override ipsec.d, item size: X
 ./davecertI1-id leak: 4 * hasher name, item size: X
 ./davecertI1-id leak: 10 * group description, item size: X
 ./davecertI1-id leak: policies path, item size: X
@@ -410,8 +401,4 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: crls path, item size: X
 ./davecertI1-id leak: cacert path, item size: X
 ./davecertI1-id leak: acert path, item size: X
-./davecertI1-id leak: default conf var_dir, item size: X
-./davecertI1-id leak: default conf conffile, item size: X
-./davecertI1-id leak: default conf ipsecd_dir, item size: X
-./davecertI1-id leak: default conf ipsec_conf_dir, item size: X
 ./davecertI1-id leak detective found Z leaks, total size X

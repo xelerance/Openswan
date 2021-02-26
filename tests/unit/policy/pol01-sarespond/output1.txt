@@ -64,18 +64,6 @@ RC=0 "mytunnel-byip":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv
 ./sarespond leak: pubkey entry, item size: X
 ./sarespond leak: rfc3110 format of public key, item size: X
 ./sarespond leak: pubkey, item size: X
-./sarespond leak: policies path, item size: X
-./sarespond leak: ocspcerts path, item size: X
-./sarespond leak: aacerts path, item size: X
-./sarespond leak: certs path, item size: X
-./sarespond leak: private path, item size: X
-./sarespond leak: crls path, item size: X
-./sarespond leak: cacert path, item size: X
-./sarespond leak: acert path, item size: X
-./sarespond leak: default conf var_dir, item size: X
-./sarespond leak: default conf conffile, item size: X
-./sarespond leak: default conf ipsecd_dir, item size: X
-./sarespond leak: default conf ipsec_conf_dir, item size: X
 ./sarespond leak: 4 * hasher name, item size: X
 ./sarespond leak: 10 * group description, item size: X
 ./sarespond leak detective found Z leaks, total size X

@@ -566,16 +566,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:500] to 13
 ./initiateselfI2 leak: secret, item size: X
 ./initiateselfI2 leak: 4 * hasher name, item size: X
 ./initiateselfI2 leak: 10 * group description, item size: X
-./initiateselfI2 leak: policies path, item size: X
-./initiateselfI2 leak: ocspcerts path, item size: X
-./initiateselfI2 leak: aacerts path, item size: X
-./initiateselfI2 leak: certs path, item size: X
-./initiateselfI2 leak: private path, item size: X
-./initiateselfI2 leak: crls path, item size: X
-./initiateselfI2 leak: cacert path, item size: X
-./initiateselfI2 leak: acert path, item size: X
-./initiateselfI2 leak: default conf var_dir, item size: X
-./initiateselfI2 leak: default conf conffile, item size: X
-./initiateselfI2 leak: default conf ipsecd_dir, item size: X
-./initiateselfI2 leak: default conf ipsec_conf_dir, item size: X
 ./initiateselfI2 leak detective found Z leaks, total size X

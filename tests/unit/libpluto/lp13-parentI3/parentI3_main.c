@@ -109,9 +109,9 @@ int main(int argc, char *argv[])
         free_state(st);
     }
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

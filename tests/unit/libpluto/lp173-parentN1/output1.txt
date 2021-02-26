@@ -257,16 +257,4 @@ sending 140 bytes for STATE_MAIN_R0 through eth0:500 [132.213.238.7:500] to 192.
 ./parentN1 leak: secret, item size: X
 ./parentN1 leak: 4 * hasher name, item size: X
 ./parentN1 leak: 10 * group description, item size: X
-./parentN1 leak: policies path, item size: X
-./parentN1 leak: ocspcerts path, item size: X
-./parentN1 leak: aacerts path, item size: X
-./parentN1 leak: certs path, item size: X
-./parentN1 leak: private path, item size: X
-./parentN1 leak: crls path, item size: X
-./parentN1 leak: cacert path, item size: X
-./parentN1 leak: acert path, item size: X
-./parentN1 leak: default conf var_dir, item size: X
-./parentN1 leak: default conf conffile, item size: X
-./parentN1 leak: default conf ipsecd_dir, item size: X
-./parentN1 leak: default conf ipsec_conf_dir, item size: X
 ./parentN1 leak detective found Z leaks, total size X

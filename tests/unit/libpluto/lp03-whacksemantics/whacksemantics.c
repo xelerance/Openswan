@@ -128,9 +128,9 @@ int main(int argc, char *argv[])
 
     confread_free(cfg);
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

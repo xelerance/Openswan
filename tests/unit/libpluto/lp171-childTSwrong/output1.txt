@@ -764,16 +764,4 @@ sending 320 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 
 ./childTSwrong leak: secret, item size: X
 ./childTSwrong leak: 4 * hasher name, item size: X
 ./childTSwrong leak: 10 * group description, item size: X
-./childTSwrong leak: policies path, item size: X
-./childTSwrong leak: ocspcerts path, item size: X
-./childTSwrong leak: aacerts path, item size: X
-./childTSwrong leak: certs path, item size: X
-./childTSwrong leak: private path, item size: X
-./childTSwrong leak: crls path, item size: X
-./childTSwrong leak: cacert path, item size: X
-./childTSwrong leak: acert path, item size: X
-./childTSwrong leak: default conf var_dir, item size: X
-./childTSwrong leak: default conf conffile, item size: X
-./childTSwrong leak: default conf ipsecd_dir, item size: X
-./childTSwrong leak: default conf ipsec_conf_dir, item size: X
 ./childTSwrong leak detective found Z leaks, total size X

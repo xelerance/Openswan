@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
     }
     free_x509cert(cacert.u.x509);
 
-    report_leaks();
     tool_close_log();
+    report_leaks();
     exit(0);
 }
 
