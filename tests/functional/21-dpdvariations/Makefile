@@ -32,7 +32,7 @@ step1:	OUTPUT
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
-	@${ADDCONN} --verbose ${CTLBASE} --config dpd1.conf --rootdir `pwd` rw >&2
+	@${ADDCONN} --verbose ${CTLBASE} --config dpd1.conf --rootdir `pwd` rw rw2 >&2
 
 stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
