@@ -688,9 +688,15 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
 
       default:
         whack_cbor_consume_item(qdc, &item);
-        return;
+        break;
       }
     }
+
+    if(uErr != QCBOR_SUCCESS) {
+      CBOR_DEBUG("  options at %d terminated with QCBOR error: %d\n", count
+                 , uErr);
+    }
+
 }
 
 /**
