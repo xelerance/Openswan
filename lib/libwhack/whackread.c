@@ -456,7 +456,7 @@ void whack_cbor_process_addkey(QCBORDecodeContext *qdc
 
       default:
         whack_cbor_consume_item(qdc, &item);
-        return;
+        break;
       }
     }
 }
@@ -520,10 +520,16 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
 
       default:
         whack_cbor_consume_item(qdc, &item);
-        return;
+        break;
       }
     }
+
+    if(uErr != QCBOR_SUCCESS) {
+      CBOR_DEBUG("  connection at %d terminated with QCBOR error: %d\n", count
+                 , uErr);
+    }
 }
+
 
 /**
  * Unpack a message whack received
@@ -701,6 +707,11 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
       }
 
       elemCount--;
+    }
+
+    uErr = QCBORDecode_Finish(&qdc);
+    if(uErr != QCBOR_SUCCESS && uErr != QCBOR_ERR_EXTRA_BYTES) {
+      return builddiag("decoded failed with error %d", uErr);
     }
 
     if(elemCount != 0) {
