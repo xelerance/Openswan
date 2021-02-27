@@ -512,6 +512,22 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
         wm->end_addr_family = item.val.int64;
         break;
 
+      case WHACK_OPT_DPD_DELAY:
+        wm->dpd_delay = item.val.int64;
+        break;
+
+      case WHACK_OPT_DPD_TIMEOUT:
+        wm->dpd_timeout = item.val.int64;
+        break;
+
+      case WHACK_OPT_DPD_ACTION:
+        wm->dpd_action = item.val.int64;
+        break;
+
+      case WHACK_OPT_DPD_COUNT:
+        wm->dpd_count =  item.val.int64;
+        break;
+
       default:
         whack_cbor_consume_item(qdc, &item);
         break;
