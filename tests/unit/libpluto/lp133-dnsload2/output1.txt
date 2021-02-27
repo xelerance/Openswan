@@ -10,8 +10,6 @@
 ./dnscpeI1 loading secrets from "../samples/parker.secrets"
 ./dnscpeI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -23,14 +21,14 @@ processing whack msg time: X size: Y
 | orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient cpenohint matching on public/private keys: this=no[%dns] that=no[%defaultroute]
 |   orient cpenohint matched on that being defaultroute, and this lacking private key
-| pick_if looking for port: 500, family: 0
+| pick_if looking for port: 500, family: 2
 |   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
 |   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
-|   picking maching interface for family[0,0]: <family:0> resulted in: 192.168.1.1
+|   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient cpenohint finished with: 1 [192.168.1.1]
-| find_host_pair: looking for me=<invalid>:500 %dns him=<invalid>:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %dns him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %dns <invalid>:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %dns 0.0.0.0:500 -> hp:none
 | find_ID_host_pair: looking for me=@cpe.example.com him=@example.com (exact)
 |   concluded with <none>
 ./dnscpeI1 adding connection: "cpenohint"
@@ -39,7 +37,7 @@ processing whack msg time: X size: Y
 RC=0 "cpenohint": %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "cpenohint":     myip=unset; hisip=unset;
 RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0
-RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 ./dnscpeI1 Can not initiate: no remote address available (yet)
 | ans 000 canonname=(null) protocol=17 family=2 len=16
 |         result=93.184.216.34

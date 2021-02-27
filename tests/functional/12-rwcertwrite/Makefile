@@ -30,8 +30,7 @@ check:
 	@echo >.gdbinit  "file ${READWRITE} "
 	@echo >>.gdbinit "set args ${TEST1ARGS}"
 	@${READWRITE} ${TEST1ARGS} 2>&1 | tee ${OUTPUTS}/rwcert.out | diff - output1.txt
-	@strings ${OUTPUTS}/rwcert.whack | grep pluto-whack-file >/dev/null
-	@strings ${OUTPUTS}/rwcert.whack | grep carolCert.pem    >/dev/null
+	@cborseq2pretty.rb ${OUTPUTS}/rwcert.whack | grep carolCert.pem    >/dev/null
 
 update:
 	cp ../OUTPUTS/rwcert.out          output1.txt

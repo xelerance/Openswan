@@ -223,7 +223,7 @@ endif
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM} ${LIBALGOPARSE}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM} ${LIBALGOPARSE} ${WHACKLIB} ${LIBPLUTO}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 

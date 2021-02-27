@@ -21,8 +21,6 @@
 ./v1sha512M1    port floating activation criteria nat_t=1/port_float=1
 ./v1sha512M1    NAT-Traversal support  [enabled]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection home512 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
 | esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict

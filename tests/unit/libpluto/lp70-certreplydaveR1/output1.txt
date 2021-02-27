@@ -18,8 +18,6 @@
 ./certreplydaveR1   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (CERT bytes)
 ./certreplydaveR1 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -43,8 +41,6 @@ processing whack msg time: X size: Y
 ./certreplydaveR1 adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection rw-carol with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certreplydaveR1   loading certificate from moonCert.pem
 ./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (CERT bytes)
@@ -68,8 +64,6 @@ processing whack msg time: X size: Y
 ./certreplydaveR1 adding connection: "rw-carol"
 | 10.2.0.0/16===132.213.238.7[@moon.testing.openswan.org]...93.184.216.34[@carol.testing.openswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection rw-dave with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certreplydaveR1   loading certificate from moonCert.pem
 ./certreplydaveR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (CERT bytes)
@@ -2239,4 +2233,3 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplydaveR1 leak: default conf ipsecd_dir, item size: X
 ./certreplydaveR1 leak: default conf ipsec_conf_dir, item size: X
 ./certreplydaveR1 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

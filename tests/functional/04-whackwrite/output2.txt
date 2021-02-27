@@ -11,6 +11,9 @@ Loading conn parker1--jj0
 Loading conn parker1--jj2--nopfs
 # conn parker1--jj2--nopfs processing alsos
 	while loading conn 'parker1--jj2--nopfs' also including 'parker1--jj2'
+Loading conn parker1--jj2--dpd
+# conn parker1--jj2--dpd processing alsos
+	while loading conn 'parker1--jj2--dpd' also including 'parker1--jj2'
 conn: "parker1--jj0" sending RSA keys for left
    looking for key1, result=0
    sending pubkey 1: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
@@ -33,3 +36,4 @@ processing conn: parker1--jj0 vs maryjane1--jj2
 processing conn: parker1--jj0 vs parker1--jj0
 parker1--jj0: right= end is not defined, conn not loaded
 processing conn: parker1--jj0 vs parker1--jj2--nopfs
+processing conn: parker1--jj0 vs parker1--jj2--dpd

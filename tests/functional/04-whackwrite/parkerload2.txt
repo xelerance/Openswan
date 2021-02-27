@@ -16,3 +16,6 @@ writing record 15 to whack file
 writing record 16 to whack file
 writing record 17 to whack file
 writing record 18 to whack file
+writing record 19 to whack file
+writing record 20 to whack file
+writing record 21 to whack file

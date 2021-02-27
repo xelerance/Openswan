@@ -35,6 +35,7 @@ FUNCTIONALTESTS+=15-certload
 FUNCTIONALTESTS+=16-v4inv6
 FUNCTIONALTESTS+=17-connclientfamily
 FUNCTIONALTESTS+=19-builtnss
+FUNCTIONALTESTS+=20-shuntdrop
 
 # running 'make check KEEPGOING=1' will run through all tests w/o stopping
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)

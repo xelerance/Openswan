@@ -1,23 +1,11 @@
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest use keyid: 1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 / 2:<>
 ./orienttest use keyid: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9 / 2:<>
 ./orienttest adding connection: "parker1--jj2"
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 ./orienttest use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
 |      FAILs -- himid mismatch
@@ -46,7 +34,6 @@ RC=2      parker1--jj2
 ./orienttest loading secrets from "../samples/parker.secrets"
 ./orienttest loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 listening now
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
 ./orienttest forgetting secrets
 ./orienttest loading secrets from "/dev/null"
@@ -64,9 +51,9 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient ikev2:parker--jj finished with: 1 [192.168.1.1]
 | connection ikev2:parker--jj is now oriented
-| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
 | find_ID_host_pair: looking for me=@parker01.emmjay.credil.org him=@jamesjohnson.emmjay.credil.org (exact)
 |                   comparing to me=@parker01.emmjay.credil.org him=@jamesjohnson.emmjay.credil.org (ikev2:parker--jj)
 |     now best match
@@ -78,7 +65,7 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 | connection parker1--jj2 is now oriented
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
-| find_host_pair: comparing to me=<invalid>:500 %address him=132.213.238.7:500
+| find_host_pair: comparing to me=0.0.0.0:500 %address him=132.213.238.7:500
 | find_host_pair: concluded with ikev2:parker--jj
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:ikev2:parker--jj
 | find_ID_host_pair: looking for me=@parker01.emmjay.credil.org him=@jamesjohnson.emmjay.credil.org (exact)
@@ -145,9 +132,11 @@ RC=2 ID hostpairs:
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
 ./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
 ./orienttest leak: keep id name, item size: X
+./orienttest leak: pubkey entry, item size: X
 ./orienttest leak: rfc3110 format of public key, item size: X
 ./orienttest leak: pubkey, item size: X
 ./orienttest leak: policies path, item size: X

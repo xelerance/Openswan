@@ -15,11 +15,7 @@
 ./sarespond registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 ./sarespond no secrets filename matched "../samples/parker.secrets"
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./sarespond loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection mytunnel-byip with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for 192.168.1.1 is 0
 ./sarespond use keyid: 1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C / 2:<>
@@ -83,5 +79,4 @@ RC=0 "mytunnel-byip":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv
 ./sarespond leak: 4 * hasher name, item size: X
 ./sarespond leak: 10 * group description, item size: X
 ./sarespond leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 test case 1: STF_OK

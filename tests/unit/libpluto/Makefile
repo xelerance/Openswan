@@ -78,6 +78,9 @@ UNITTESTS_R1+=lp37-h2hR1
 UNITTESTS_I2+=lp38-h2hI2
 UNITTESTS_R2+=lp39-h2hR2
 
+# this is to test --initiate
+UNITTESTS_I1+=lp136-initiateI1
+
 UNITTESTS_I1+=lp71-alg-h2hI1
 UNITTESTS_R1+=lp72-alg-h2hR1
 UNITTESTS_I2+=lp73-alg-h2hI2
@@ -155,7 +158,7 @@ UNITTESTS_R1+=lp62-nattR1
 UNITTESTS_I2+=lp63-nattI2
 UNITTESTS_R2+=lp64-nattR2
 UNITTESTS_I3+=lp65-nattI3
-UNITTESTS_I4+=lp166-natt-replaceI
+#UNITTESTS_I4+=lp166-natt-replaceI
 UNITTESTS_R4+=lp167-natt-replaceR
 
 UNITTESTS_I4+=lp171-childTSwrong

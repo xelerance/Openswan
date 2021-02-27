@@ -26,7 +26,7 @@ SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdi
 OUTPUTS=OUTPUT
 CONFBASE=../../unit/libpluto/samples/moon
 CONFFILE=${CONFBASE}.conf
-FILTERS=sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed -f ${TESTUTILS}/certsize-r.sed
+FILTERS=sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed -f ${TESTUTILS}/certsize-r.sed
 
 check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}

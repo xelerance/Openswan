@@ -16,14 +16,8 @@
 ./respondselfR1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./respondselfR1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./respondselfR1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./respondselfR1 loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -408,4 +402,3 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./respondselfR1 leak: default conf ipsecd_dir, item size: X
 ./respondselfR1 leak: default conf ipsec_conf_dir, item size: X
 ./respondselfR1 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
