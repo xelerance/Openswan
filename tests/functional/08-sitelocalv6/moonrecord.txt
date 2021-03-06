@@ -53,6 +53,6 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       0a                                # unsigned(10)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    69                                   # text(9)
       686f73742d686f7374                # "host-host"

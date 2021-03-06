@@ -110,7 +110,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    70                                   # text(16)
       696b6576323a7061726b65722d2d6a6a  # "ikev2:parker--jj"
 
@@ -234,7 +234,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    6c                                   # text(12)
       7061726b6572312d2d6a6a32          # "parker1--jj2"
 
@@ -283,9 +283,9 @@ d9 d9f7         # tag(55799)
          424f52 # "BOR"
 
 ,
-a3                                      # map(3)
+a2                                      # map(2)
    04                                   # unsigned(4)
-   a9                                   # map(9)
+   aa                                   # map(10)
       03                                # unsigned(3)
       a9                                # map(9)
          05                             # unsigned(5)
@@ -344,6 +344,9 @@ a3                                      # map(3)
             d9 0105                     # tag(261)
                50                       # bytes(16)
                   fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+      05                                # unsigned(5)
+      72                                # text(18)
+         336465732d736861312d6d6f647031353336 # "3des-sha1-modp1536"
       18 7f                             # unsigned(127)
       1b 0000000106000066               # unsigned(4395630694)
       18 92                             # unsigned(146)
@@ -358,12 +361,9 @@ a3                                      # map(3)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    73                                   # text(19)
       7061726b6572312d2d6a6a322d2d77726f6e67 # "parker1--jj2--wrong"
-   18 8b                                # unsigned(139)
-   72                                   # text(18)
-      336465732d736861312d6d6f647031353336 # "3des-sha1-modp1536"
 
 ,
 d9 d9f7         # tag(55799)
@@ -478,7 +478,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    69                                   # text(9)
       616e79312d2d6a6a32                # "any1--jj2"
 
@@ -595,7 +595,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    6e                                   # text(14)
       6d6172796a616e65312d2d6a6a32      # "maryjane1--jj2"
 
@@ -719,7 +719,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    73                                   # text(19)
       7061726b6572312d2d6a6a322d2d6e6f706673 # "parker1--jj2--nopfs"
 
@@ -847,6 +847,6 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    71                                   # text(17)
       7061726b6572312d2d6a6a322d2d647064 # "parker1--jj2--dpd"

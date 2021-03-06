@@ -93,6 +93,6 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       00                                # unsigned(0)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    72                                   # text(18)
       646f6f6b752d2d636173736964792d6e6574 # "dooku--cassidy-net"

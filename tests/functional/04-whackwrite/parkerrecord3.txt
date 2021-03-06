@@ -117,7 +117,7 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    6c                                   # text(12)
       7061726b6572312d2d6a6a32          # "parker1--jj2"
 
@@ -234,6 +234,6 @@ a2                                      # map(2)
       00                                # unsigned(0)
       12                                # unsigned(18)
       02                                # unsigned(2)
-   18 1b                                # unsigned(27)
+   0b                                   # unsigned(11)
    70                                   # text(16)
       696b6576323a7061726b65722d2d6a6a  # "ikev2:parker--jj"
