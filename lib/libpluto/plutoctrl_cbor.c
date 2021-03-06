@@ -330,7 +330,7 @@ void whack_cbor_process_end(QCBORDecodeContext *qdc
       CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", endtype, count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum whack_cbor_end_attr)item.label.int64) {
       case WHACK_OPT_END_ID:
         whack_cbor_string2c(qdc, &item, &end->id);
         break;
@@ -484,8 +484,20 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
         whack_cbor_process_end(qdc, "right",&wm->right, &item);
         break;
 
+      case WHACK_OPT_IKE:
+        whack_cbor_string2c(qdc, &item, &wm->ike);
+        break;
+
+      case WHACK_OPT_ESP:
+        whack_cbor_string2c(qdc, &item, &wm->esp);
+        break;
+
       case WHACK_OPT_POLICY:
         wm->policy = item.val.int64;
+        break;
+
+      case WHACK_OPT_POLICYLABEL:
+        whack_cbor_string2c(qdc, &item, &wm->policy_label);
         break;
 
       case WHACK_OPT_LIFETIME_IKE:
@@ -528,6 +540,10 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
         wm->dpd_count =  item.val.int64;
         break;
 
+      case WHACK_OPT_CONNALIAS:
+        whack_cbor_string2c(qdc, &item, &wm->connalias);
+        break;
+
       default:
         whack_cbor_consume_item(qdc, &item);
         break;
@@ -560,7 +576,7 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
       CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum whack_cbor_option_attributes)item.label.int64) {
 
       case WHACK_OPT_COREDIR:
         {
@@ -781,7 +797,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         return "map key must be integer";
       }
       CBOR_DEBUG("%u found map %d with labeled: %ld\n", elemCount, item.uDataType, item.label.int64);
-      switch(item.label.int64) {
+      switch((enum whack_CBOR_actions)item.label.int64) {
       case WHACK_NOOP:
         break;
       case WHACK_STATUS:
@@ -809,46 +825,46 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         whack_cbor_process_addkey(&qdc, wm, &item);
        break;
 
-      case WHACK_OPT_ASYNC:
+      case WHACK_ASYNC:
         wm->whack_async = item.val.int64;
         break;
 
-      case WHACK_OPT_MYID:
+      case WHACK_MYID:
         whack_cbor_string2c(&qdc, &item, &wm->myid);
         break;
 
-      case WHACK_OPT_DELETE:
+      case WHACK_DELETE:
         wm->whack_delete = TRUE;
         whack_cbor_string2c(&qdc, &item, &wm->name);
         break;
 
-      case WHACK_OPT_DELETESTATE:
+      case WHACK_DELETESTATE:
         wm->whack_deletestate = TRUE;
         wm->whack_deletestateno = item.val.int64;
         break;
 
-      case WHACK_OPT_CRASHPEER:
+      case WHACK_CRASHPEER:
         wm->whack_crash = TRUE;
         whack_cbor_decode_ipaddress(&qdc, "crash", &item, &wm->whack_crash_peer);
         break;
 
-      case WHACK_OPT_LISTEN:
+      case WHACK_LISTEN:
         wm->whack_listen = TRUE;
         break;
 
-      case WHACK_OPT_UNLISTEN:
+      case WHACK_UNLISTEN:
         wm->whack_unlisten = TRUE;
         break;
 
-      case WHACK_OPT_REREAD:
+      case WHACK_REREAD:
         wm->whack_reread = item.val.int64;
         break;
 
-      case WHACK_OPT_LIST:
+      case WHACK_LIST:
         wm->whack_list = item.val.int64;
         break;
 
-      case WHACK_OPT_PURGE_OCSP:
+      case WHACK_PURGE_OCSP:
         wm->whack_list = item.val.int64;
         break;
 
@@ -870,22 +886,6 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
       case WHACK_TERMINATE:
         whack_cbor_process_terminate(&qdc, wm, &item);
-        break;
-
-      case WHACK_OPT_IKE:
-        whack_cbor_string2c(&qdc, &item, &wm->ike);
-        break;
-
-      case WHACK_OPT_ESP:
-        whack_cbor_string2c(&qdc, &item, &wm->esp);
-        break;
-
-      case WHACK_OPT_CONNALIAS:
-        whack_cbor_string2c(&qdc, &item, &wm->connalias);
-        break;
-
-      case WHACK_OPT_POLICYLABEL:
-        whack_cbor_string2c(&qdc, &item, &wm->policy_label);
         break;
 
       default:

@@ -112,7 +112,17 @@ enum whack_CBOR_actions {
     WHACK_INITIATE_OPPO=8,
     WHACK_TERMINATE=9,
     WHACK_ADD_KEY  =10,
-    WHACK_NOOP     =23,
+    WHACK_DELETE   =11,
+    WHACK_LISTEN   =13,
+    WHACK_UNLISTEN =14,
+    WHACK_LIST     =15,
+    WHACK_PURGE_OCSP=16,
+    WHACK_REREAD   =17,
+    WHACK_MYID     = 22,
+    WHACK_DELETESTATE=23,
+    WHACK_CRASHPEER=24,
+    WHACK_ASYNC    =25,
+    WHACK_NOOP     =99,
 };
 
 #define CborSignatureTag 55799
@@ -124,27 +134,12 @@ enum whack_CBOR_actions {
 enum whack_cbor_attributes {
       WHACK_OPT_NAME = 1,
       WHACK_OPT_DEBUGGING = 2,         /* debug values are OR'ed in */
-      WHACK_OPT_ASYNC = 128,
-      WHACK_OPT_SET   = 129,
-      WHACK_OPT_RECORDFILE=130,
-      WHACK_OPT_MYID  = 131,
-      WHACK_OPT_DELETE= 27,
-      WHACK_OPT_CRASHPEER=132,
-      WHACK_OPT_LISTEN   =133,
-      WHACK_OPT_UNLISTEN =134,
-      WHACK_OPT_REREAD   =135,
-      WHACK_OPT_LIST     =136,
-      WHACK_OPT_PURGE_OCSP=137,
-      WHACK_OPT_IKE      = 139,
-      WHACK_OPT_ESP      = 140,
-      WHACK_OPT_CONNALIAS= 141,
-      WHACK_OPT_POLICYLABEL=142,
-      WHACK_OPT_OPPO_MY_CLIENT = 143,
-      WHACK_OPT_OPPO_PEER_CLIENT=144,
-      WHACK_OPT_DELETESTATE=145,
 
       WHACK_OPT_LEFT     = 3,
       WHACK_OPT_RIGHT    = 4,
+
+      WHACK_OPT_IKE      = 5,
+      WHACK_OPT_ESP      = 6,
 
       WHACK_OPT_LIFETIME_IKE = 146,
       WHACK_OPT_LIFETIME_IPSEC=147,
@@ -152,11 +147,25 @@ enum whack_cbor_attributes {
       WHACK_OPT_LIFETIME_REKEY_FUZZ=149,
       WHACK_OPT_LIFETIME_REKEY_TRIES=150,
       WHACK_OPT_POLICY        = 127,
+      WHACK_OPT_POLICYLABEL   = 128,
+      WHACK_OPT_SET           = 129,
+      WHACK_OPT_RECORDFILE    = 130,
+      WHACK_OPT_OPPO_MY_CLIENT = 143,
+      WHACK_OPT_OPPO_PEER_CLIENT=144,
       WHACK_OPT_KEYVAL        = 15,
       WHACK_OPT_KEYID         = 16,
       WHACK_OPT_KEYALG        = 17,
       WHACK_OPT_END_ADDR_FAMILY=18,
 
+      WHACK_OPT_CONNALIAS      = 20,
+
+      WHACK_OPT_DPD_DELAY      = 181,
+      WHACK_OPT_DPD_TIMEOUT    = 182,
+      WHACK_OPT_DPD_ACTION     = 183,
+      WHACK_OPT_DPD_COUNT      = 184,
+};
+
+enum whack_cbor_option_attributes {
       WHACK_OPT_COREDIR    = 151,
       WHACK_OPT_NHELPERS   = 152,
       WHACK_OPT_SECCTX     = 153,
@@ -187,12 +196,6 @@ enum whack_cbor_attributes {
       WHACK_OPT_NAT_FORCE_KEEP_ALIVE = 178,
       WHACK_OPT_NAT_PORT_FLOAT = 179,
       WHACK_OPT_VIRTUAL_PRIVATE= 180,
-
-      WHACK_OPT_DPD_DELAY      = 181,
-      WHACK_OPT_DPD_TIMEOUT    = 182,
-      WHACK_OPT_DPD_ACTION     = 183,
-      WHACK_OPT_DPD_COUNT      = 184,
-
 };
 
 enum whack_cbor_end_attr {

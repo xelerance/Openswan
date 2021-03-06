@@ -246,6 +246,21 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
     whack_cbor_encode_end(&qec, &wm->right);
     QCBOREncode_CloseMap(&qec);
 
+    if(wm->connalias) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_CONNALIAS, wm->connalias);
+    }
+
+    if(wm->ike) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
+    }
+    if(wm->esp) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_ESP, wm->esp);
+    }
+
+    if(wm->policy_label) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_POLICYLABEL, wm->policy_label);
+    }
+
     ADDIntIfNotZero(&qec, WHACK_OPT_DPD_DELAY,  wm->dpd_delay);
     ADDIntIfNotZero(&qec, WHACK_OPT_DPD_TIMEOUT,wm->dpd_timeout);
     ADDIntIfNotZero(&qec, WHACK_OPT_DPD_ACTION, wm->dpd_action);
@@ -263,41 +278,41 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
   }
 
   if(wm->whack_async) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ASYNC, wm->whack_async);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_ASYNC, wm->whack_async);
   }
 
   if(wm->whack_myid) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_MYID, wm->myid);
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_MYID, wm->myid);
   }
 
   if(wm->whack_delete) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_DELETE, wm->name);
+    QCBOREncode_AddSZStringToMapN(&qec, WHACK_DELETE, wm->name);
   }
 
   if(wm->whack_deletestate) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DELETESTATE, wm->whack_deletestateno);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_DELETESTATE, wm->whack_deletestateno);
   }
 
   if(wm->whack_crash) {
     /* open code the IPAddressToMap */
-    QCBOREncode_AddInt64(&qec, WHACK_OPT_CRASHPEER);
+    QCBOREncode_AddInt64(&qec, WHACK_CRASHPEER);
     whack_cbor_encode_ipaddress(&qec, &wm->whack_crash_peer);
   }
 
   if(wm->whack_listen) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LISTEN, 1);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_LISTEN, 1);
   }
   if(wm->whack_unlisten) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_UNLISTEN, 1);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_UNLISTEN, 1);
   }
   if(wm->whack_reread) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_REREAD, wm->whack_reread);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_REREAD, wm->whack_reread);
   }
   if(wm->whack_list) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LIST, wm->whack_list);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_LIST, wm->whack_list);
   }
   if(wm->whack_purgeocsp) {
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_PURGE_OCSP, wm->whack_purgeocsp);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_PURGE_OCSP, wm->whack_purgeocsp);
   }
 
   if(wm->whack_route) {
@@ -316,6 +331,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
     if(wm->name) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
     } else {
+      /* map must have something in it. */
       QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
     QCBOREncode_CloseMap(&qec);
@@ -344,20 +360,6 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
       QCBOREncode_AddInt64ToMapN(&qec, 0, 1);
     }
     QCBOREncode_CloseMap(&qec);
-  }
-
-  if(wm->ike) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
-  }
-  if(wm->esp) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_ESP, wm->esp);
-  }
-  if(wm->connalias) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_CONNALIAS, wm->connalias);
-  }
-
-  if(wm->policy_label) {
-    QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_POLICYLABEL, wm->policy_label);
   }
 
   if(wm->whack_key) {
