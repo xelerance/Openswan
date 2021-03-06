@@ -310,6 +310,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_CONNALIAS, wm->connalias);
     }
 
+    /* probably belongs within WHACK_CONNECTION */
     if(wm->ike) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_IKE, wm->ike);
     }
