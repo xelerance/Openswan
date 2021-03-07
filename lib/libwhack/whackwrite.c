@@ -45,11 +45,11 @@
 #include "qcbor/qcbor_decode.h"
 
 struct whackpacker {
-    struct whack_message *msg;
-    unsigned char        *str_roof;
-    unsigned char        *str_next;
-    int                   n;
-    int                   cnt;
+  struct whack_message *msg;
+  unsigned char        *str_roof;
+  unsigned char        *str_next;
+  int                   n;
+  int                   cnt;
 };
 
 /*
@@ -98,26 +98,37 @@ err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
 static void whack_cbor_encode_ipaddress(QCBOREncodeContext *qec, ip_address *addr)
 {
   UsefulBufC ub;
+  unsigned int nonzero;
+  const char *ptr = NULL;
 
   switch(ip_address_family(addr)) {
   case AF_INET:
     QCBOREncode_AddTag(qec, CborIPv4Tag);
-    ub.ptr = (const void *)&addr->u.v4.sin_addr.s_addr;
-    ub.len = 4;
-    QCBOREncode_AddBytes(qec, ub);
+    ptr = (const char *)&addr->u.v4.sin_addr.s_addr;
+    nonzero = 4;
     break;
   case AF_INET6:
     QCBOREncode_AddTag(qec, CborIPv6Tag);
-    ub.ptr = (const void *)addr->u.v6.sin6_addr.s6_addr;
-    ub.len = 16;
-    QCBOREncode_AddBytes(qec, ub);
+    ptr = (const char *)addr->u.v6.sin6_addr.s6_addr;
+    nonzero = 16;
     break;
+  default:
+    return;
   }
+
+  /* now, omit trailing zero bytes */
+  while(nonzero > 0 && ptr[nonzero-1]==0) {
+    nonzero--;
+  }
+
+  ub.ptr = (const void *)ptr;
+  ub.len = nonzero;
+  QCBOREncode_AddBytes(qec, ub);
 }
 
 static void whack_cbor_encode_some_ipaddress_ToMapN(QCBOREncodeContext *qec
-                                                   , u_int32_t   link
-                                                   , ip_address *addr)
+                                                    , u_int32_t   link
+                                                    , ip_address *addr)
 {
   if(!ip_address_isany(addr)) {
     QCBOREncode_AddInt64(qec, link);
@@ -126,17 +137,15 @@ static void whack_cbor_encode_some_ipaddress_ToMapN(QCBOREncodeContext *qec
 }
 
 static void whack_cbor_encode_some_ipsubnet_ToMapN(QCBOREncodeContext *qec
-                                                  , u_int32_t   link
-                                                  , ip_subnet  *net)
+                                                   , u_int32_t   link
+                                                   , ip_subnet  *net)
 {
   ip_address *addr = &net->addr;
 
-  if(!ip_address_isany(addr)) {
-    QCBOREncode_OpenArrayInMapN(qec, link);
-    QCBOREncode_AddInt64(qec, net->maskbits);
-    whack_cbor_encode_ipaddress(qec, addr);
-    QCBOREncode_CloseArray(qec);
-  }
+  QCBOREncode_OpenArrayInMapN(qec, link);
+  QCBOREncode_AddInt64(qec, net->maskbits);
+  whack_cbor_encode_ipaddress(qec, addr);
+  QCBOREncode_CloseArray(qec);
 }
 
 #define ADDIntIfNotZero(qec, tag, value) if(value != 0) QCBOREncode_AddInt64ToMapN(qec,tag,value)
@@ -168,7 +177,7 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   ADDIntIfNotZero(qec, WHACK_OPT_HOST_TYPE, we->host_type);
   /* host_addr */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_ADDR
-                                            , &we->host_addr);
+                                          , &we->host_addr);
 
   ADDIntIfNotZero(qec, WHACK_OPT_KEYTYPE,   we->keytype);
   ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT, we->has_client);
@@ -186,15 +195,15 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
 
   /* host_nexthop */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_NEXTHOP
-                                         , &we->host_nexthop);
+                                          , &we->host_nexthop);
 
   /* host_srcip */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_SRCIP
-                                         , &we->host_srcip);
+                                          , &we->host_srcip);
 
   /* client */
   whack_cbor_encode_some_ipsubnet_ToMapN(qec, WHACK_OPT_END_CLIENT
-                                       , &we->client);
+                                         , &we->client);
 
 }
 
