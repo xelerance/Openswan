@@ -8,6 +8,7 @@
 
 /* include to be able to get at static functions */
 #include "../../../lib/libwhack/whackwrite.c"
+#include "../../../lib/libpluto/plutoctrl_cbor.c"
 
 const char *progname=NULL;
 int verbose=0;
@@ -15,6 +16,26 @@ int warningsarefatal = 0;
 
 /* sysdep_*.c */
 bool use_interface(const char *rifn) {}
+
+void test_decode(const char *runname, const char *input1, unsigned int length)
+{
+    UsefulBufC todecode = {input1, (unsigned long)length};
+    QCBORDecodeContext qdc;
+    QCBORItem   item;
+    QCBORError e;
+    ip_subnet o1;
+    char b1[SUBNETTOT_BUF+1];
+
+    QCBORDecode_Init(&qdc, todecode, QCBOR_DECODE_MODE_NORMAL);
+    if((e = QCBORDecode_GetNext(&qdc, &item)) == QCBOR_SUCCESS) {
+        whack_cbor_decode_ipsubnet(&qdc, "right", &item, &o1);
+        subnettot(&o1, 0, b1, sizeof(b1));
+        printf("decoded %s: %s\n", runname, b1);
+    } else {
+        printf("failed to decode %s\n", runname);
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -91,6 +112,17 @@ int main(int argc, char *argv[])
     if(omsg == NULL) { perror("output"); exit(4); }
     fwrite(qcbuf, outsize, 1, omsg);
     fclose(omsg);
+
+    unsigned char input1[15] = {
+                                0xD9, 0x01, 0x05,   //   # tag(261)
+                                0x82,               //   # array(2)
+                                0x18, 0x31,         //   # unsigned(49)
+                                0x48,               //   # bytes(8)
+                                0x20,0x01,0x0D,0xB8,
+                                0x12,0x34,0xFE,0xDC //  # " \x01\r\xB8\x124\xFE\xDC"
+    };
+    unsigned   int length = sizeof(input1);
+    test_decode("input1", input1, sizeof(input1));
 
     tool_close_log();
 

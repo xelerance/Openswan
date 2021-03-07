@@ -152,10 +152,12 @@ void whack_cbor_consume_item(QCBORDecodeContext *qdc, QCBORItem *oitem)
   whack_cbor_consume_itemX(qdc, oitem, 1);
 }
 
-void whack_cbor_decode_ipaddress(QCBORDecodeContext *qdc
-                            , const char *endtype
-                            , QCBORItem *first
-                            , ip_address *ip)
+static void whack_cbor_decode_ipaddress1(QCBORDecodeContext *qdc
+                                 , const char *endtype
+                                 , QCBORItem *first
+                                 , unsigned int tagtype
+                                 , unsigned int maxbits
+                                 , ip_address *ip)
 {
   if(first->uDataType != QCBOR_TYPE_BYTE_STRING) {
     whack_cbor_consume_itemX(qdc, first, 1);
@@ -163,22 +165,62 @@ void whack_cbor_decode_ipaddress(QCBORDecodeContext *qdc
   }
 
   int len = first->val.string.len;
+
+  /* round up to number of bytes required */
+  unsigned int byteprefixlen = ((maxbits + 7) & ~0x7) >> 3;
   const unsigned char *bytes = first->val.string.ptr;
+  char *ptr = NULL;
   memset(ip, 0, sizeof(*ip));
 
-  switch(QCBORDecode_GetNthTag(qdc, first, 0)) {
+  if(len > byteprefixlen) len = byteprefixlen;
+
+  switch(tagtype) {
   case CborIPv4Tag:
     ip_address_family(ip) = AF_INET;
     if(len > 4) len = 4;
-    memcpy((void *)&ip->u.v4.sin_addr.s_addr, bytes, len);
+    ptr = (void *)&ip->u.v4.sin_addr.s_addr;
     break;
   case CborIPv6Tag:
     ip_address_family(ip) = AF_INET6;
     if(len > 16) len = 16;
-    memcpy((void *)ip->u.v6.sin6_addr.s6_addr, bytes, len);
+    ptr = (void *)ip->u.v6.sin6_addr.s6_addr;
     break;
+  default:
+    /* invalid */
+    return;
   }
+
+  memcpy((void *)ptr, bytes, len);
+  unsigned int lastbits = (maxbits & 0x07);
+  if(lastbits != 0) {
+    const unsigned char masks[8]={ 0,
+                                   0x7f,
+                                   0x3f,
+                                   0x1f,
+                                   0x0f,
+                                   0x07,
+                                   0x03,
+                                   0x01 };
+    /* clear trailing bits to zero */
+    ptr[len-1] = ptr[len-1] & masks[lastbits];
+  }
+
 }
+
+void whack_cbor_decode_ipaddress(QCBORDecodeContext *qdc
+                                 , const char *endtype
+                                 , QCBORItem *first
+                                 , ip_address *ip)
+{
+    unsigned int tagtype = QCBORDecode_GetNthTag(qdc, first, 0);
+    whack_cbor_decode_ipaddress1(qdc
+                                 , endtype
+                                 , first
+                                 , tagtype
+                                 , 128  /* will get lowered if IPv4 */
+                                 , ip);
+}
+
 
 void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
                                 , const char *endtype
@@ -192,6 +234,8 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
       return;
     }
 
+    unsigned int tagtype = QCBORDecode_GetNthTag(qdc, first, 0);
+
     if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
       ipn->maskbits = item.val.int64;
     }
@@ -202,7 +246,8 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
     }
 
     if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
-      whack_cbor_decode_ipaddress(qdc, endtype, &item, &ipn->addr);
+      whack_cbor_decode_ipaddress1(qdc, endtype, &item, tagtype
+                                   , ipn->maskbits, &ipn->addr);
     }
 
     /* here we really need to eat the rest of the array? */
