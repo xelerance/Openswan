@@ -44,7 +44,10 @@ d9 d9f7         # tag(55799)
 ,
 a2                                      # map(2)
    04                                   # unsigned(4)
-   a9                                   # map(9)
+   aa                                   # map(10)
+      01                                # unsigned(1)
+      72                                # text(18)
+         646f6f6b752d2d636173736964792d6e6574 # "dooku--cassidy-net"
       03                                # unsigned(3)
       a6                                # map(6)
          05                             # unsigned(5)

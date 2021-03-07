@@ -6,7 +6,10 @@ d9 d9f7         # tag(55799)
 ,
 a1                                      # map(1)
    04                                   # unsigned(4)
-   ab                                   # map(11)
+   ac                                   # map(12)
+      01                                # unsigned(1)
+      6c                                # text(12)
+         61626364655f61626364655f       # "abcde_abcde_"
       03                                # unsigned(3)
       b2                                # map(18)
          05                             # unsigned(5)

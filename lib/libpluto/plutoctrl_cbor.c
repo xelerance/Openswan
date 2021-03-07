@@ -484,6 +484,10 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
         whack_cbor_process_end(qdc, "right",&wm->right, &item);
         break;
 
+      case WHACK_OPT_NAME:
+        whack_cbor_string2c(qdc, &item, &wm->name);
+        break;
+
       case WHACK_OPT_IKE:
         whack_cbor_string2c(qdc, &item, &wm->ike);
         break;

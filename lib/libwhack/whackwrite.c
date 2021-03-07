@@ -238,6 +238,10 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
   if (wm->whack_connection) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_CONNECTION);
 
+    if(wm->name) {
+      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    }
+
     QCBOREncode_OpenMapInMapN(&qec, WHACK_OPT_LEFT);
     whack_cbor_encode_end(&qec, &wm->left);
     QCBOREncode_CloseMap(&qec);

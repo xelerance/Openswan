@@ -6,7 +6,10 @@ d9 d9f7         # tag(55799)
 ,
 a2                                      # map(2)
    04                                   # unsigned(4)
-   a9                                   # map(9)
+   aa                                   # map(10)
+      01                                # unsigned(1)
+      69                                # text(9)
+         686f73742d686f7374             # "host-host"
       03                                # unsigned(3)
       a5                                # map(5)
          05                             # unsigned(5)
