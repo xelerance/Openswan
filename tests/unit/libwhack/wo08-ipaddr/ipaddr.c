@@ -121,8 +121,17 @@ int main(int argc, char *argv[])
                                 0x20,0x01,0x0D,0xB8,
                                 0x12,0x34,0xFE,0xDC //  # " \x01\r\xB8\x124\xFE\xDC"
     };
-    unsigned   int length = sizeof(input1);
     test_decode("input1", input1, sizeof(input1));
+
+    unsigned char input2[15] = {
+                                0xD9, 0x01, 0x05,   //   # tag(261)
+                                0x82,               //   # array(2)
+                                0x18, 0x31,         //   # unsigned(49)
+                                0x46,               //   # bytes(8)
+                                0x20,0x01,0x0D,0xB8,
+                                0x12,0x34
+    };
+    test_decode("input2", input2, sizeof(input2));
 
     tool_close_log();
 
