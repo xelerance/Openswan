@@ -63,7 +63,6 @@
 #include "log.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
-#include "klips-crypto/aes_cbc.h"
 #include "pluto/ike_alg.h"
 
 /* required for Linux 2.6.26 kernel and later */

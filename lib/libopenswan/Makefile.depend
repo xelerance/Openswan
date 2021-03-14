@@ -2,94 +2,76 @@ addrtoa.o: addrtoa.c ../../include/openswan.h
 addrtot.o: addrtot.c ../../include/openswan.h
 addrtypeof.o: addrtypeof.c ../../include/openswan.h
 alloc.o: alloc.c ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswlog.h \
+ ../../include/names_constant.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/oswalloc.h
+ ../../include/constants.h ../../include/oswalloc.h
 anyaddr.o: anyaddr.c ../../include/openswan.h
 atoaddr.o: atoaddr.c internal.h ../../include/openswan.h
 atoasr.o: atoasr.c internal.h ../../include/openswan.h
 atosubnet.o: atosubnet.c internal.h ../../include/openswan.h
 atoul.o: atoul.c internal.h ../../include/openswan.h
 biglset.o: biglset.c internal.h ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/biglset.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
+ ../../include/names_constant.h ../../include/biglset.h \
+ ../../include/oswlog.h ../../include/openswan/passert.h \
  ../../include/constants.h
 constants.o: constants.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/enum_names.h \
- ../../include/constants.h ../../include/oswlog.h \
- ../../include/openswan/passert.h
+ ../../include/enum_names.h ../../include/constants.h \
+ ../../include/oswlog.h ../../include/openswan/passert.h
 copyright.o: copyright.c internal.h ../../include/openswan.h
 datatot.o: datatot.c ../../include/openswan.h
 diag.o: diag.c ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswlog.h \
+ ../../include/names_constant.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/constants.h
 familytot.o: familytot.c ../../include/openswan.h \
- ../../include/libopenswan.h \
- ../../include/openswan.h
+ ../../include/libopenswan.h ../../include/openswan.h
 goodmask.o: goodmask.c ../../include/openswan.h
 id.o: id.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
+ ../../include/sysqueue.h ../../include/constants.h \
+ ../../include/biglset.h ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswalloc.h \
+ ../../include/names_constant.h ../../include/oswalloc.h \
  ../../include/constants.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/openswan/passert.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h
 initaddr.o: initaddr.c ../../include/openswan.h
 initsaid.o: initsaid.c internal.h ../../include/openswan.h
-initsubnet.o: initsubnet.c internal.h \
- ../../include/openswan.h
+initsubnet.o: initsubnet.c internal.h ../../include/openswan.h
 iprange.o: iprange.c ../../include/openswan.h \
  ../../include/openswan/passert.h
-keyblobtoid.o: keyblobtoid.c internal.h \
- ../../include/openswan.h
+keyblobtoid.o: keyblobtoid.c internal.h ../../include/openswan.h
 lex.o: lex.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
+ ../../include/sysqueue.h ../../include/constants.h \
+ ../../include/biglset.h ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswlog.h \
+ ../../include/names_constant.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/constants.h ../../include/lex.h
 mpzfuncs.o: mpzfuncs.c ../../include/openswan.h \
@@ -97,20 +79,15 @@ mpzfuncs.o: mpzfuncs.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/constants.h \
- ../../include/oswalloc.h \
- ../../include/mpzfuncs.h
-optionsfrom.o: optionsfrom.c internal.h \
- ../../include/openswan.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/names_constant.h ../../include/constants.h \
+ ../../include/oswalloc.h ../../include/mpzfuncs.h
+optionsfrom.o: optionsfrom.c internal.h ../../include/openswan.h \
+ ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
@@ -118,66 +95,30 @@ optionsfrom.o: optionsfrom.c internal.h \
 oswconf.o: oswconf.c ../../include/oswlog.h \
  ../../include/openswan.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswconf.h ../../include/oswalloc.h
+ ../../include/names_constant.h ../../include/oswconf.h \
+ ../../include/oswalloc.h
 oswid.o: oswid.c ../../include/oswalloc.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
- ../../include/openswan.h \
- ../../include/ietf_constants.h \
+ ../../include/openswan.h ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/constants.h ../../include/id.h \
- ../../include/openswan/ipsec_policy.h \
+ ../../include/names_constant.h ../../include/constants.h \
+ ../../include/id.h ../../include/openswan/ipsec_policy.h \
  ../../include/sha2.h ../../include/secrets.h \
  ../../include/id.h ../../include/x509.h \
- ../../include/oswlog.h \
- ../../include/openswan/passert.h
-addrtoa.o: ../../linux/net/ipsec/addrtoa.c \
- ../../include/openswan.h
-addrtot.o: ../../linux/net/ipsec/addrtot.c \
- ../../include/openswan.h
-addrtypeof.o: ../../linux/net/ipsec/addrtypeof.c \
- ../../include/openswan.h
-anyaddr.o: ../../linux/net/ipsec/anyaddr.c \
- ../../include/openswan.h
-datatot.o: ../../linux/net/ipsec/datatot.c \
- ../../include/openswan.h
-goodmask.o: ../../linux/net/ipsec/goodmask.c \
- ../../include/openswan.h
-initaddr.o: ../../linux/net/ipsec/initaddr.c \
- ../../include/openswan.h
-prng.o: ../../linux/net/ipsec/prng.c \
- ../../include/openswan.h
-rangetoa.o: ../../linux/net/ipsec/rangetoa.c \
- ../../include/openswan.h
-satot.o: ../../linux/net/ipsec/satot.c \
- ../../include/openswan.h
-subnetof.o: ../../linux/net/ipsec/subnetof.c \
- ../../include/openswan.h
-subnettoa.o: ../../linux/net/ipsec/subnettoa.c \
- ../../include/openswan.h
-ultoa.o: ../../linux/net/ipsec/ultoa.c \
- ../../include/openswan.h
-ultot.o: ../../linux/net/ipsec/ultot.c \
- ../../include/openswan.h
+ ../../include/oswlog.h ../../include/openswan/passert.h
 oswtime.o: oswtime.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
+ ../../include/sysqueue.h ../../include/constants.h \
+ ../../include/biglset.h ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswtime.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
+ ../../include/names_constant.h ../../include/oswtime.h \
+ ../../include/oswlog.h ../../include/openswan/passert.h \
  ../../include/constants.h
 pfkey_error.o: pfkey_error.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
@@ -197,20 +138,17 @@ rangetoa.o: rangetoa.c ../../include/openswan.h
 rangetosubnet.o: rangetosubnet.c internal.h \
  ../../include/openswan.h
 sameaddr.o: sameaddr.c internal.h ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h
 sanitizestring.o: sanitizestring.c ../../include/openswan.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswlog.h \
+ ../../include/names_constant.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/constants.h
 satot.o: satot.c ../../include/openswan.h
@@ -219,19 +157,17 @@ secrets.o: secrets.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/constants.h \
+ ../../include/names_constant.h ../../include/constants.h \
  ../../include/oswalloc.h ../../include/oswtime.h \
  ../../include/id.h ../../include/x509.h \
- ../../include/secrets_int.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/oswkeys.h \
- ../../include/secrets.h ../../include/certs.h \
+ ../../include/secrets_int.h ../../include/secrets.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/oswkeys.h ../../include/secrets.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pgp.h ../../include/lex.h \
  ../../include/mpzfuncs.h
@@ -239,8 +175,7 @@ strlcat.o: strlcat.c
 subnetof.o: subnetof.c ../../include/openswan.h
 subnettoa.o: subnettoa.c ../../include/openswan.h
 subnettot.o: subnettot.c internal.h ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
+ ../../include/constants.h ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
