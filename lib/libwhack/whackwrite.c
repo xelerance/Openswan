@@ -70,10 +70,12 @@ struct whackpacker {
  *
  */
 
+#ifndef CBOR_DEBUG
 #if 0
 #define CBOR_DEBUG(fmt, ...)  printf(fmt, ##__VA_ARGS__)
 #else
 #define CBOR_DEBUG(fmt, ...)  do {} while(0)
+#endif
 #endif
 
 #define OK(x) ugh = (x); if(ugh) goto bad

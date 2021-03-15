@@ -64,10 +64,12 @@
  *
  */
 
-#if 0
+#ifndef CBOR_DEBUG
+#if 1
 #define CBOR_DEBUG(fmt, ...)  printf(fmt, ##__VA_ARGS__)
 #else
 #define CBOR_DEBUG(fmt, ...)  do {} while(0)
+#endif
 #endif
 
 #define OK(x) ugh = (x); if(ugh) goto bad
@@ -240,6 +242,8 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
       ipn->maskbits = item.val.int64;
     }
 
+    /* see if we got the length properly, if not stop. */
+    /* see if new nesting level is the same as when we started, otherwise array is done */
     if(uErr != QCBOR_SUCCESS
        || first->uNextNestLevel > item.uNextNestLevel) {
       return;
@@ -520,7 +524,7 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
       CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum whack_cbor_attributes)item.label.int64) {
       case WHACK_OPT_LEFT:
         whack_cbor_process_end(qdc, "left", &wm->left, &item);
         break;
