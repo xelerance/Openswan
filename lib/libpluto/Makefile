@@ -30,6 +30,9 @@ LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
 CFLAGS+=-DLEAK_DETECTIVE
 
+# helps with debugging
+#CFLAGS+=-Og
+
 # for access to qcbor code, submodule of libwhack
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libwhack/qcbor/inc
 CFLAGS+= -DQCBOR_DISABLE_FLOAT_HW_USE

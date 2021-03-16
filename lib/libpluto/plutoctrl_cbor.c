@@ -65,7 +65,7 @@
  */
 
 #ifndef CBOR_DEBUG
-#if 1
+#if 0
 #define CBOR_DEBUG(fmt, ...)  printf(fmt, ##__VA_ARGS__)
 #else
 #define CBOR_DEBUG(fmt, ...)  do {} while(0)
@@ -236,18 +236,24 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
       return;
     }
 
-    unsigned int tagtype = QCBORDecode_GetNthTag(qdc, first, 0);
+    int tagtype = QCBORDecode_GetNthTag(qdc, first, 0);
+    if(tagtype == -1) {
+      /* XXX fail */
+      return;
+    }
 
     if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
       ipn->maskbits = item.val.int64;
     }
 
     /* see if we got the length properly, if not stop. */
-    /* see if new nesting level is the same as when we started, otherwise array is done */
-    if(uErr != QCBOR_SUCCESS
-       || first->uNextNestLevel > item.uNextNestLevel) {
-      return;
-    }
+    if(uErr != QCBOR_SUCCESS) return;
+
+    /* see if new nesting level is still as big as when we started,
+     * otherwise array is done, and it's an error.
+     */
+    CBOR_DEBUG("first %d > item %d\n", first->uNextNestLevel, item.uNextNestLevel);
+    if(first->uNextNestLevel > item.uNextNestLevel) return;
 
     if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
       whack_cbor_decode_ipaddress1(qdc, endtype, &item, tagtype

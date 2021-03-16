@@ -118,11 +118,6 @@ static void whack_cbor_encode_ipaddress(QCBOREncodeContext *qec, ip_address *add
     return;
   }
 
-  /* now, omit trailing zero bytes */
-  while(nonzero > 0 && ptr[nonzero-1]==0) {
-    nonzero--;
-  }
-
   ub.ptr = (const void *)ptr;
   ub.len = nonzero;
   QCBOREncode_AddBytes(qec, ub);
@@ -142,11 +137,49 @@ static void whack_cbor_encode_some_ipsubnet_ToMapN(QCBOREncodeContext *qec
                                                    , u_int32_t   link
                                                    , ip_subnet  *net)
 {
-  ip_address *addr = &net->addr;
+  UsefulBufC ub;
+  unsigned int nonzero;
+  const char *ptr = NULL;
 
-  QCBOREncode_OpenArrayInMapN(qec, link);
+  /* if empty, then send nothing */
+  if(ip_address_isany(&net->addr)) return;
+
+  /* insert the map key manually */
+  QCBOREncode_AddInt64(qec, link);
+
+  unsigned int family = ip_address_family(&net->addr);
+
+  switch(family) {
+  case AF_INET:
+    QCBOREncode_AddTag(qec, CborIPv4Tag);
+    ptr = (const char *)&net->addr.u.v4.sin_addr.s_addr;
+    nonzero = 4;
+    break;
+  case AF_INET6:
+    QCBOREncode_AddTag(qec, CborIPv6Tag);
+    ptr = (const char *)net->addr.u.v6.sin6_addr.s6_addr;
+    nonzero = 16;
+    break;
+  default:
+    bad_case(family);
+    return;
+  }
+
+  unsigned int byteprefixlen = ((net->maskbits + 7) & ~0x7) >> 3;
+  if(nonzero > byteprefixlen) nonzero = byteprefixlen;
+
+  /* now, omit trailing zero bytes */
+  /* XXX need to copy to force bits to zero */
+  while(nonzero > 0 && ptr[nonzero-1]==0) {
+    nonzero--;
+  }
+
+  ub.ptr = (const void *)ptr;
+  ub.len = nonzero;
+
+  QCBOREncode_OpenArray(qec);
   QCBOREncode_AddInt64(qec, net->maskbits);
-  whack_cbor_encode_ipaddress(qec, addr);
+  QCBOREncode_AddBytes(qec, ub);
   QCBOREncode_CloseArray(qec);
 }
 
