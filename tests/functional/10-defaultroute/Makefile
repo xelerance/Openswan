@@ -32,13 +32,15 @@ check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}
 	-rm -f OUTPUT/base.pid core
 	${READWRITE} --debug --config ${CONFFILE} | tee ${OUTPUTS}/bob.conf.raw | diff - bob.conf.out
+	@${READWRITE} --config ${CONFFILE} --whackout=${OUTPUTS}/bob.whack nat-t
+	@cborseq2pretty.rb ${OUTPUTS}/bob.whack | tee ${OUTPUTS}/bob.whack.out | diff - bob.whack.out
 	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2c step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | ${FILTERS} | diff - pluto.${TESTNAME}.out;
 	@if [ -f core ]; then echo CORE DUMP; exit 1; fi
 
 update:
 	cp ${OUTPUTS}/bob.conf.raw     bob.conf.out
 	${FILTERS} ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
-
+	cp ${OUTPUTS}/bob.whack.out bob.whack.out
 step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} --ipsecdir ${CONFBASE} --secretsfile ${CONFBASE}.secrets 2>&1
 
@@ -51,7 +53,7 @@ step2b:
 step2c:
 	@${WHACKBIN} ${CTLBASE} --rereadsecrets >/dev/null
 
-step3:
+stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
 step4:

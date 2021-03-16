@@ -38,13 +38,13 @@ update:
 	cp ${OUTPUTS}/moonrecord.out    moonrecord.txt
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
 
-step1:
+start step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
 	@${ADDCONN} --verbose ${CTLBASE} --config moon.conf host-host
 
-step3:
+stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
 step4:
