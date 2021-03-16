@@ -2,8 +2,6 @@ d9 d9f7         # tag(55799)
    da 4f50534e  # tag(1330664270)
       43        # bytes(3)
          424f52 # "BOR"
-
-,
 a2                                      # map(2)
    04                                   # unsigned(4)
    aa                                   # map(10)
@@ -11,7 +9,7 @@ a2                                      # map(2)
       69                                # text(9)
          686f73742d686f7374             # "host-host"
       03                                # unsigned(3)
-      a6                                # map(6)
+      a5                                # map(5)
          05                             # unsigned(5)
          74                             # text(20)
             406d6f6f6e2e7374726f6e677377616e2e6f7267 # "@moon.strongswan.org"
@@ -26,14 +24,8 @@ a2                                      # map(2)
                fec00000000000000000000000000001 # "\xFE\xC0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01"
          14                             # unsigned(20)
          19 01f4                        # unsigned(500)
-         0e                             # unsigned(14)
-         82                             # array(2)
-            00                          # unsigned(0)
-            d9 0105                     # tag(261)
-               40                       # bytes(0)
-                                        # ""
       04                                # unsigned(4)
-      a6                                # map(6)
+      a5                                # map(5)
          05                             # unsigned(5)
          73                             # text(19)
             4073756e2e7374726f6e677377616e2e6f7267 # "@sun.strongswan.org"
@@ -48,12 +40,6 @@ a2                                      # map(2)
                fec00000000000000000000000000002 # "\xFE\xC0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02"
          14                             # unsigned(20)
          19 01f4                        # unsigned(500)
-         0e                             # unsigned(14)
-         82                             # array(2)
-            00                          # unsigned(0)
-            d9 0105                     # tag(261)
-               40                       # bytes(0)
-                                        # ""
       18 7f                             # unsigned(127)
       1b 0000000102000066               # unsigned(4328521830)
       18 92                             # unsigned(146)
