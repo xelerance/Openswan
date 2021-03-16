@@ -1,0 +1,6 @@
+This unit tests whack_cbor_decode_msg() to load CBOR whack record that was
+saved from lp30-dnskick, readwriteconf, of conn "cpe"
+
+
+
+
