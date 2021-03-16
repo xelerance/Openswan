@@ -75,8 +75,8 @@ a2                                      # map(2)
          82                             # array(2)
             18 40                       # unsigned(64)
             d9 0105                     # tag(261)
-               50                       # bytes(16)
-                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+               46                       # bytes(6)
+                  fd68c9f94157          # "\xFDh\xC9\xF9AW"
       04                                # unsigned(4)
       a9                                # map(9)
          05                             # unsigned(5)
@@ -104,8 +104,8 @@ a2                                      # map(2)
          82                             # array(2)
             18 60                       # unsigned(96)
             d9 0105                     # tag(261)
-               50                       # bytes(16)
-                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+               4c                       # bytes(12)
+                  fd68c9f94157000200000001 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01"
       18 7f                             # unsigned(127)
       1b 0000000106000066               # unsigned(4395630694)
       18 92                             # unsigned(146)
@@ -202,8 +202,8 @@ a2                                      # map(2)
          82                             # array(2)
             18 40                       # unsigned(64)
             d9 0105                     # tag(261)
-               50                       # bytes(16)
-                  fd68c9f9415700000000000000000000 # "\xFDh\xC9\xF9AW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+               46                       # bytes(6)
+                  fd68c9f94157          # "\xFDh\xC9\xF9AW"
       04                                # unsigned(4)
       a7                                # map(7)
          05                             # unsigned(5)
@@ -224,8 +224,8 @@ a2                                      # map(2)
          82                             # array(2)
             18 60                       # unsigned(96)
             d9 0105                     # tag(261)
-               50                       # bytes(16)
-                  fd68c9f9415700020000000100000000 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00"
+               4c                       # bytes(12)
+                  fd68c9f94157000200000001 # "\xFDh\xC9\xF9AW\x00\x02\x00\x00\x00\x01"
       18 7f                             # unsigned(127)
       1b 0000000106000066               # unsigned(4395630694)
       18 92                             # unsigned(146)

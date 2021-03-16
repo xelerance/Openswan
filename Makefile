@@ -63,8 +63,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 	moduleclean mod24clean module24clean mod26clean module26clean \
 	backup unpatch uninstall install_file_list \
 	snapready relready ready buildready devready uml check taroldinstall \
-	umluserland
-
+	umluserland updatecddl
 
 kpatch: unapplypatch applypatch klipsdefaults
 npatch: unapplynpatch applynpatch
@@ -558,4 +557,10 @@ env:
 war:
 	@echo "Not Love?"
 
+# needs "cddl" from "gem install cddl"
+updatecddl:
+	printf "/* generated from whack.cddl */\n" >include/whack_values.h
+	printf "#ifndef WHACKVALUES_H\n#define WHACKVALUES_H\n" >>include/whack_values.h
+	cddl docs/whack.cddl ep                  >>include/whack_values.h
+	printf "#endif /* WHACKVALUES_H */\n"    >>include/whack_values.h
 

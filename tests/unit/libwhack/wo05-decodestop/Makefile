@@ -60,6 +60,7 @@ check1: OUTPUT ${TESTNAME} .gdb1init
 	@echo "## 1 OK"
 
 update1:
+	cp ../wo04-connections/OUTPUT/wm1.bin wm04.bin
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
 	cp OUTPUT/${TESTNAME}1.txt testconn.txt
 
