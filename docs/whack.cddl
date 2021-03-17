@@ -109,6 +109,8 @@ OptionsCommand = {
   WHACK_OPT_NAT_FORCE_KEEP_ALIVE=> bool,
   WHACK_OPT_NAT_PORT_FLOAT=> bool,
   WHACK_OPT_VIRTUAL_PRIVATE=> tstr,
+  WHACK_OPT_SET            => uint,
+  WHACK_OPT_RECORDFILE     => tstr,
 }
 
 InitiateOppo = {

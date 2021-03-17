@@ -557,10 +557,10 @@ env:
 war:
 	@echo "Not Love?"
 
-# needs "cddl" from "gem install cddl"
+# needs "cddlc" from "gem install cddlc"
 updatecddl:
 	printf "/* generated from whack.cddl */\n" >include/whack_values.h
 	printf "#ifndef WHACKVALUES_H\n#define WHACKVALUES_H\n" >>include/whack_values.h
-	cddl docs/whack.cddl ep                  >>include/whack_values.h
+	cddlc -tenum docs/whack.cddl             >>include/whack_values.h
 	printf "#endif /* WHACKVALUES_H */\n"    >>include/whack_values.h
 

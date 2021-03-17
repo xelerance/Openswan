@@ -275,7 +275,7 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
     if(wm->string1) {
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_RECORDFILE, wm->string1);
     }
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_DEBUGGING, wm->debugging);
+    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING, wm->debugging);
     QCBOREncode_CloseMap(&qec);
   }
 

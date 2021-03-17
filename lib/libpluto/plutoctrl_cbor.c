@@ -286,7 +286,7 @@ void whack_cbor_process_namemap(QCBORDecodeContext *qdc
       CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", thingtype, count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum connection_keys)item.label.int64) {
       case WHACK_OPT_NAME:
         whack_cbor_string2c(qdc, &item, &wm->name);
         break;
@@ -349,7 +349,7 @@ void whack_cbor_process_initiate_oppo(QCBORDecodeContext *qdc
       CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", thingtype, count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum initiateoppo_keys)item.label.int64) {
       case WHACK_OPT_OPPO_MY_CLIENT:
         whack_cbor_decode_ipaddress(qdc, thingtype, &item, &wm->oppo_my_client);
         break;
@@ -385,7 +385,7 @@ void whack_cbor_process_end(QCBORDecodeContext *qdc
       CBOR_DEBUG("    %s %d key: %ld value_type: %d\n", endtype, count
              , item.label.int64
              , item.uDataType);
-      switch((enum whack_cbor_end_attr)item.label.int64) {
+      switch((enum connectionend_keys)item.label.int64) {
       case WHACK_OPT_END_ID:
         whack_cbor_string2c(qdc, &item, &end->id);
         break;
@@ -488,7 +488,7 @@ void whack_cbor_process_addkey(QCBORDecodeContext *qdc
       CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
              , item.label.int64
              , item.uDataType);
-      switch(item.label.int64) {
+      switch((enum publickey_keys)item.label.int64) {
       case WHACK_OPT_KEYVAL:
         wm->whack_addkey = TRUE;
         wm->keyval.ptr = clone_bytes(item.val.string.ptr, item.val.string.len, "whack keyval");
@@ -530,7 +530,7 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
       CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
              , item.label.int64
              , item.uDataType);
-      switch((enum whack_cbor_attributes)item.label.int64) {
+      switch((enum connection_keys)item.label.int64) {
       case WHACK_OPT_LEFT:
         whack_cbor_process_end(qdc, "left", &wm->left, &item);
         break;
@@ -635,7 +635,7 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
       CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
              , item.label.int64
              , item.uDataType);
-      switch((enum whack_cbor_option_attributes)item.label.int64) {
+      switch((enum optionscommand_keys)item.label.int64) {
 
       case WHACK_OPT_COREDIR:
         {
@@ -856,7 +856,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         return "map key must be integer";
       }
       CBOR_DEBUG("%u found map %d with labeled: %ld\n", elemCount, item.uDataType, item.label.int64);
-      switch((enum whack_CBOR_actions)item.label.int64) {
+      switch((enum whack_message_keys)item.label.int64) {
       case WHACK_NOOP:
         break;
       case WHACK_STATUS:
