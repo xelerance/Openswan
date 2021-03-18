@@ -66,7 +66,7 @@
 
 #ifndef CBOR_DEBUG
 #if 0
-#define CBOR_DEBUG(fmt, ...)  fprintf(stderr, fmt, ##__VA_ARGS__)
+#define CBOR_DEBUG(fmt, ...)  DBG_log(fmt, ##__VA_ARGS__)
 #else
 #define CBOR_DEBUG(fmt, ...)  do {} while(0)
 #endif
@@ -551,7 +551,7 @@ void whack_cbor_process_option_set(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_ADD_DEBUGGING:
-        DBG_log("debugging set to %lu\n", item.val.int64);
+        //DBG_log("debugging set to %lu\n", item.val.int64);
         wm->debugging = item.val.int64;
         break;
 
@@ -795,13 +795,13 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_SET_DEBUGGING:
-        DBG_log("debugging set to %lu\n", item.val.int64);
-        base_debugging = item.val.int64;
+        //DBG_log("debugging set to %lu\n", item.val.int64);
+        wm->debugging = item.val.int64;
         break;
 
       case WHACK_OPT_ADD_DEBUGGING:
-        DBG_log("debugging added with %lu\n", item.val.int64);
-        base_debugging |= item.val.int64;
+        //DBG_log("debugging added with %lu\n", item.val.int64);
+        wm->added_debugging = item.val.int64;
         break;
 
       case WHACK_OPT_PERPEER_ENABLED:

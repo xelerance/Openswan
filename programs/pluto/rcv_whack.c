@@ -290,12 +290,11 @@ void whack_process(int whackfd, struct whack_message msg)
 		/* we do a two-step so that if either old or new would
 		 * cause the message to print, it will be printed.
 		 */
-		set_debugging(cur_debugging | msg.debugging);
+		set_debugging(cur_debugging | msg.added_debugging);
 		DBG(DBG_CONTROL
 		    , DBG_log("base debugging = %s"
-			      , bitnamesof(debug_bit_names, msg.debugging)));
-		base_debugging = msg.debugging;
-		set_debugging(base_debugging);
+			      , bitnamesof(debug_bit_names, cur_debugging)));
+                base_debugging = cur_debugging;
 	    }
 	    else if (!msg.whack_connection)
 	    {
@@ -701,7 +700,8 @@ err_t pluto_set_coredir(struct osw_conf_options *oco)
 
 static void
 whack_compare_options(struct osw_conf_options *old
-                           , struct osw_conf_options *new)
+                      , struct osw_conf_options *new
+                      , lset_t old_debugging)
 {
     /* check for changed core dir */
     if(old->coredir != new->coredir
@@ -730,6 +730,11 @@ whack_compare_options(struct osw_conf_options *old
     }
 
     /* probably more checks to do */
+    if(old_debugging != base_debugging) {
+        openswan_log("Debugging changed from %s to %s"
+                     , bitnamesof(debug_bit_names, old_debugging)
+                     , bitnamesof(debug_bit_names, base_debugging));
+    }
 }
 
 
@@ -740,6 +745,7 @@ err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
     struct whack_message msg;
     struct osw_conf_options *oco = osw_init_options();
     struct osw_conf_options *old = osw_conf_clone(oco);
+    lset_t old_debugging = base_debugging;
 
     memset(&msg, 0, sizeof(msg));
 
@@ -754,7 +760,7 @@ err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
 
     /* now, look and see if there are any changes between oco and old */
 
-    whack_compare_options(old, oco);
+    whack_compare_options(old, oco, old_debugging);
     osw_conf_free_oco(old);
 
     return ugh;
