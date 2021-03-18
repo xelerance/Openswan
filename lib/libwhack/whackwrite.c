@@ -268,14 +268,12 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
 
   if(wm->whack_options) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_OPTIONS);
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SET, wm->opt_set);
     if(wm->name) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_SET, wm->opt_set);
       QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_NAME, wm->name);
+    } else {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING, wm->debugging);
     }
-    if(wm->string1) {
-      QCBOREncode_AddSZStringToMapN(&qec, WHACK_OPT_RECORDFILE, wm->string1);
-    }
-    QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING, wm->debugging);
     QCBOREncode_CloseMap(&qec);
   }
 

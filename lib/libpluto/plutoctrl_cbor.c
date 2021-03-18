@@ -521,6 +521,47 @@ void whack_cbor_process_addkey(QCBORDecodeContext *qdc
     }
 }
 
+void whack_cbor_process_option_set(QCBORDecodeContext *qdc
+                                   , struct whack_message *wm
+                                   , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing tag: %ld count: %d\n", first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
+             , item.label.int64
+             , item.uDataType);
+      switch(item.label.int64) {
+      case WHACK_OPT_NAME:
+        whack_cbor_string2c(qdc, &item, &wm->name);
+        break;
+
+      case WHACK_OPT_RECORDFILE:
+        whack_cbor_string2c(qdc, &item, &wm->string1);
+        break;
+
+      case WHACK_OPT_ADD_DEBUGGING:
+        DBG_log("debugging set to %lu\n", item.val.int64);
+        wm->debugging = item.val.int64;
+        break;
+
+      case WHACK_ADJUSTOPTIONS:
+        wm->opt_set = item.val.int64;
+        break;
+      }
+    }
+}
+
 void whack_cbor_process_connection(QCBORDecodeContext *qdc
                                    , struct whack_message *wm
                                    , QCBORItem *first)
@@ -627,6 +668,7 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
 }
 
 void whack_cbor_process_options(QCBORDecodeContext *qdc
+                                , struct whack_message *wm
                                 , QCBORItem *first)
 {
     QCBORItem   item;
@@ -753,10 +795,12 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_SET_DEBUGGING:
+        DBG_log("debugging set to %lu\n", item.val.int64);
         base_debugging = item.val.int64;
         break;
 
       case WHACK_OPT_ADD_DEBUGGING:
+        DBG_log("debugging added with %lu\n", item.val.int64);
         base_debugging |= item.val.int64;
         break;
 
@@ -788,7 +832,12 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         whack_cbor_string2c(qdc, &item, &oco->virtual_private);
         break;
 
+      case WHACK_OPT_SET:
+        whack_cbor_process_option_set(qdc, wm, &item);
+        break;
+
       default:
+        openswan_log("unknown option setting %ld", item.label.int64);
         whack_cbor_consume_item(qdc, &item);
         break;
       }
@@ -882,7 +931,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
 
       case WHACK_OPTIONS:
         wm->whack_options  = TRUE;
-        whack_cbor_process_options(&qdc, &item);
+        whack_cbor_process_options(&qdc, wm, &item);
         break;
 
       case WHACK_CONNECTION:
