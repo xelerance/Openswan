@@ -227,7 +227,7 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	int ret;
 
 	/* copy socket location */
-	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
+	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path)-1);
 
         len = serialize_whack_msg(msg);
         if(len == -1) return -1;   /* already logged error */

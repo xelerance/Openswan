@@ -1061,7 +1061,7 @@ aggr_outI1(int whack_sock,
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	if(sr->this.xauth_client) {
 	    if(sr->this.xauth_name) {
-		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username)-1);
 		break;
 	    }
 	}

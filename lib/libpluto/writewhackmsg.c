@@ -116,7 +116,7 @@ bool openwhackrecordfile(char *file)
     strcpy(FQDN, "unknown host");
     gethostname(FQDN, sizeof(FQDN));
 
-    strncpy(whackrecordname, file, sizeof(whackrecordname));
+    strncpy(whackrecordname, file, sizeof(whackrecordname)-1);
     whackrecordfile = fopen(whackrecordname, "w");
     if(whackrecordfile==NULL) {
 	openswan_log("Failed to open whack record file: '%s'\n"
