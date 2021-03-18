@@ -177,6 +177,7 @@ void osw_conf_setdefault(void)
     global_oco.vardir  = var_dir;
     global_oco.confdir = ipsec_conf_dir;
     global_oco.conffile = conffile;
+    global_oco.ctlbase  = clone_str(DEFAULT_CTLBASE, "defaults");
 
     global_oco.fork_desired = TRUE;
     global_oco.kern_interface = AUTO_PICK;
