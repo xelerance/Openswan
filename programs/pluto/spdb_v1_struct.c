@@ -1747,7 +1747,7 @@ init_am_st_oakley(struct state *st, lset_t policy)
 
     passert(hash->type.oakley == OAKLEY_HASH_ALGORITHM);
     ta.prf_hash = hash->val;               /* OAKLEY_HASH_ALGORITHM */
-    ta.prf_hasher = crypto_get_hasher(ta.prf_hash);
+    ta.prf_hasher = crypto_get_hasher((enum ikev2_trans_type_integ)ta.prf_hash);
     passert(ta.prf_hasher != NULL);
 
     passert(auth->type.oakley == OAKLEY_AUTHENTICATION_METHOD);
