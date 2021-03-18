@@ -646,14 +646,17 @@ whack_handle(int whackctlfd)
         if(lwm->magic == WHACK_BASIC_MAGIC) {
             /* we are dealing with a legacy situation */
             /* Only basic commands.  Simpler inter-version compatibility. */
-            if (lwm->whack_status)
+            if (lwm->whack_status) {
                 show_status();
+                whack_log_fd = NULL_FD;
+                close(whackfd);
+                return;
+            }
 
             if (lwm->whack_shutdown) {
                 openswan_log("shutting down");
                 exit_pluto(0);	/* delete lock and leave, with 0 status */
             }
-            return;
         }
 
         emsg.ptr = msg_buf;
