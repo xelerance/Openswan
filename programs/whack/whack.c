@@ -1959,18 +1959,24 @@ main(int argc, char **argv)
 	    msg.esp=esp_buf;
     }
 
-    chunk_t sendchunk;
-    sendchunk.ptr = sendbuf;
-    sendchunk.len = sizeof(sendbuf);
-    ugh = whack_cbor_encode_msg(&msg, &sendchunk);
-    if(ugh) {
-        diag(ugh);
-    }
-
     msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN) | LELEM(OPT_STATUS)))
 		| opts2_seen | lst_seen | cd_seen) != LEMPTY
 	    || msg.whack_options
 	? WHACK_MAGIC : WHACK_BASIC_MAGIC;
+
+    chunk_t sendchunk;
+    if(msg.magic == WHACK_MAGIC) {
+        sendchunk.ptr = sendbuf;
+        sendchunk.len = sizeof(sendbuf);
+        ugh = whack_cbor_encode_msg(&msg, &sendchunk);
+        if(ugh) {
+            diag(ugh);
+        }
+    } else {
+        /* use legacy whack message for a major version */
+        sendchunk.ptr = (void *)&msg;
+        sendchunk.len = sizeof(msg);
+    }
 
     /* send message to Pluto */
     if (access(ctl_addr.sun_path, R_OK | W_OK) < 0)
