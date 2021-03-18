@@ -169,8 +169,12 @@ klipsdefaults:
 
 # programs
 
+submodules:
+	git submodule init && git submodule update
+
 ifeq ($(strip $(OBJDIR)),.) # If OBJDIR is OPENSWANSRCDIR (ie dot) then the simple case:
 programs install clean::
+	@if [ ! -d lib/libwhack/qcbor/inc ]; then echo Please run "make submodule" first; exit 1; fi
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
@@ -182,6 +186,7 @@ export OBJDIRTOP
 
 programs install clean:: ${OBJDIR}/Makefile
 	@echo OBJDIR: ${OBJDIR}
+	@if [ ! -d lib/libwhack/qcbor/inc ]; then echo Please run "make submodule" first; exit 1; fi
 	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} ${MAKE} $@ )
 
 ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
