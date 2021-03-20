@@ -1,21 +1,29 @@
 debugging mode enabled
+Loading conn dooku-base
+Loading conn cassidy-base
 Loading conn dooku--cassidy-net
 	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
 	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
-Loading conn dooku-base
-Loading conn cassidy-base
-emitting conn dooku--cassidy-net with end-family: 0 and tunnel-family: 0
+Loading conn dooku-net
+	while loading conn 'dooku-net' also including 'dooku-base'
+Loading conn dooku--ipv6
+	while loading conn 'dooku--ipv6' also including 'dooku-base'
+	while loading conn 'dooku--ipv6' also including 'cassidy-base'
+emitting conn dooku--cassidy-net with end-family: 2 and tunnel-family: 10
 ./whacksemantics use keyid: 1:<> / 2:<>
 ./whacksemantics use keyid: 1:<> / 2:<>
 ./whacksemantics adding connection: "dooku--cassidy-net"
 ./whacksemantics leak: 2 * keep id name, item size: X
 ./whacksemantics leak: ID host_pair, item size: X
-./whacksemantics leak: host ip, item size: X
 ./whacksemantics leak: keep id name, item size: X
 ./whacksemantics leak: host ip, item size: X
 ./whacksemantics leak: keep id name, item size: X
 ./whacksemantics leak: connection name, item size: X
 ./whacksemantics leak: struct connection, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: 2 * new_list item, item size: X
 ./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: default base, item size: X
@@ -25,4 +33,4 @@ dooku--cassidy-net: was requested
 dooku--cassidy-net: was loaded
 dooku--cassidy-net: calling add_connection()
 dooku--cassidy-net: was added
-dooku--cassidy-net: policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+dooku--cassidy-net: policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
