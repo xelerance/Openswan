@@ -889,6 +889,7 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         break;
 
       case WHACK_OPT_LISTEN_ON_LINK_SCOPE:
+        CBOR_DEBUG("setting on_link_scope %u", item.val.int64);
         oco->pluto_listen_on_link_scope = item.val.int64;
         break;
 

@@ -511,6 +511,10 @@ void
 show_ifaces_status(void)
 {
     struct iface_port *p;
+    const struct osw_conf_options *oco = osw_init_options();
+
+    whack_log(RC_COMMENT, "link-local addresses are: %s"
+              , oco->pluto_listen_on_link_scope ? "included" : "ignored");
 
     for (p = interfaces; p != NULL; p = p->next)
 	whack_log(RC_COMMENT, "interface %s/%s %s (%s)"
