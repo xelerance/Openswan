@@ -888,6 +888,10 @@ void whack_cbor_process_options(QCBORDecodeContext *qdc
         whack_cbor_process_option_set(qdc, wm, &item);
         break;
 
+      case WHACK_OPT_LISTEN_ON_LINK_SCOPE:
+        oco->pluto_listen_on_link_scope = item.val.int64;
+        break;
+
       default:
         openswan_log("unknown option setting %ld", item.label.int64);
         whack_cbor_consume_item(qdc, &item);

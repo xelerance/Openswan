@@ -244,6 +244,7 @@ struct whack_message {
 
     /* for WHACK_LISTEN: */
     bool whack_listen, whack_unlisten;
+    bool on_link_scope;
 
     /* for WHACK_CRASH - note if a remote peer is known to have rebooted */
     bool whack_crash;

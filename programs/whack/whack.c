@@ -226,6 +226,7 @@ help(void)
 	"testcases: [--whackrecord file] [--whackstoprecord]\n"
 #endif
 	"listen: whack"
+	    " --on-link-scope"
 	    " (--listen | --unlisten)"
 	    "\n\n"
 	"list: whack [--utc]"
@@ -374,6 +375,7 @@ enum option_enums {
     OPT_TERMINATE,
     OPT_DELETE,
     OPT_DELETESTATE,
+    OPT_ON_LINK_SCOPE,
     OPT_LISTEN,
     OPT_UNLISTEN,
 
@@ -609,6 +611,7 @@ static const struct option long_opts[] = {
     { "delete", no_argument, NULL, OPT_DELETE + OO },
     { "deletestate", required_argument, NULL, OPT_DELETESTATE + OO + NUMERIC_ARG },
     { "crash", required_argument, NULL, OPT_DELETECRASH + OO },
+    { "on-link-scope", no_argument, NULL, OPT_ON_LINK_SCOPE + OO },
     { "listen", no_argument, NULL, OPT_LISTEN + OO },
     { "unlisten", no_argument, NULL, OPT_UNLISTEN + OO },
     { "purgeocsp", no_argument, NULL, OPT_PURGEOCSP + OO },
@@ -1203,6 +1206,10 @@ main(int argc, char **argv)
 	    diagq(ttoaddr(optarg, 0, msg.tunnel_addr_family, &msg.whack_crash_peer), optarg);
 	    if (isanyaddr(&msg.whack_crash_peer))
 		diagq("0.0.0.0 or 0::0 isn't a valid client address", optarg);
+	    continue;
+
+	case OPT_ON_LINK_SCOPE:	/* --on-link-scope */
+	    msg.on_link_scope = TRUE;
 	    continue;
 
 	case OPT_LISTEN:	/* --listen */

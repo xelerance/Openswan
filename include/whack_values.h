@@ -116,6 +116,7 @@ enum optionscommand_keys {
   WHACK_OPT_VIRTUAL_PRIVATE = 180,
   WHACK_OPT_SET = 129,
   WHACK_OPT_RECORDFILE = 130,
+  WHACK_OPT_LISTEN_ON_LINK_SCOPE = 181,
 };
 enum initiateoppo_keys {
   WHACK_OPT_OPPO_MY_CLIENT = 143,

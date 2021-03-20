@@ -288,6 +288,9 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
     } else {
       QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_ADD_DEBUGGING, wm->debugging);
     }
+    if(wm->on_link_scope) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_OPT_LISTEN_ON_LINK_SCOPE, wm->on_link_scope);
+    }
     QCBOREncode_CloseMap(&qec);
   }
 
