@@ -194,15 +194,15 @@ static void whack_cbor_decode_ipaddress1(QCBORDecodeContext *qdc
 
   memcpy((void *)ptr, bytes, len);
   unsigned int lastbits = (maxbits & 0x07);
-  if(lastbits != 0) {
+  if(lastbits != 0 && len > 0) {
     const unsigned char masks[8]={ 0,
-                                   0x7f,
-                                   0x3f,
-                                   0x1f,
-                                   0x0f,
-                                   0x07,
-                                   0x03,
-                                   0x01 };
+                                   0x80,
+                                   0xc0,
+                                   0xe0,
+                                   0xf0,
+                                   0xf8,
+                                   0xfc,
+                                   0xfe };
     /* clear trailing bits to zero */
     ptr[len-1] = ptr[len-1] & masks[lastbits];
   }
