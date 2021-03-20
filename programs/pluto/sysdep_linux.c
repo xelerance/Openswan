@@ -406,21 +406,25 @@ find_raw_ifaces6(void)
 	    if (r != 13)
 		break;
 
+	    snprintf(sb, sizeof(sb)
+		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
+		, xb[0], xb[1], xb[2], xb[3], xb[4], xb[5], xb[6], xb[7]);
+
+	    happy(ttoaddr(sb, 0, AF_INET6, &ri.addr));
+
             if(!oco->pluto_listen_on_link_scope) {
               /* ignore addresses with link local scope.
                * From linux-2.4.9-13/include/net/ipv6.h:
                * IPV6_ADDR_LINKLOCAL	0x0020U
                * IPV6_ADDR_SCOPE_MASK	0x00f0U
                */
-              if ((scope & 0x00f0U) == 0x0020U)
+              if ((scope & 0x00f0U) == 0x0020U) {
+		DBG(DBG_CONTROL
+		    , DBG_log("ignored %s with address %s"
+			, ri.name, sb));
 		continue;
+              }
             }
-
-	    snprintf(sb, sizeof(sb)
-		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
-		, xb[0], xb[1], xb[2], xb[3], xb[4], xb[5], xb[6], xb[7]);
-
-	    happy(ttoaddr(sb, 0, AF_INET6, &ri.addr));
 
 	    if (!isunspecaddr(&ri.addr))
 	    {
