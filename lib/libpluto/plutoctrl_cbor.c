@@ -667,6 +667,58 @@ void whack_cbor_process_connection(QCBORDecodeContext *qdc
     }
 }
 
+
+void whack_cbor_process_status(QCBORDecodeContext *qdc
+                                , struct whack_message *wm
+                                , QCBORItem *first)
+{
+    QCBORItem   item;
+    QCBORError  uErr;
+    int count = first->val.uCount;
+    //struct osw_conf_options *oco = osw_init_options();
+
+    /* must be a MAP within the connection */
+    if(first->uDataType != QCBOR_TYPE_MAP) return;
+
+    CBOR_DEBUG("processing tag: %ld count: %d\n", first->label.int64, count);
+
+    /* now process these items */
+    while(count-- > 0
+          && ((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS)) {
+
+      CBOR_DEBUG("  %d key: %ld value_type: %d\n", count
+             , item.label.int64
+             , item.uDataType);
+      switch((enum statusoptions_keys)item.label.int64) {
+      case WHACK_STAT_OPTIONS:
+        wm->whack_status |= LELEM(WHACK_STAT_OPTIONS);
+        break;
+      case WHACK_STAT_ALGORITHMS:
+        wm->whack_status |= LELEM(WHACK_STAT_ALGORITHMS);
+        break;
+      case WHACK_STAT_JSON:
+        wm->whack_status |= LELEM(WHACK_STAT_JSON);
+        break;
+      case WHACK_STAT_POLICY:
+        wm->whack_status |= LELEM(WHACK_STAT_POLICY);
+        break;
+      case WHACK_STAT_STATES:
+        wm->whack_status |= LELEM(WHACK_STAT_STATES);
+        break;
+      default:
+        openswan_log("unknown option setting %ld", item.label.int64);
+        whack_cbor_consume_item(qdc, &item);
+        break;
+      }
+    }
+
+    if(uErr != QCBOR_SUCCESS) {
+      CBOR_DEBUG("  status at %d terminated with QCBOR error: %d\n", count
+                 , uErr);
+    }
+}
+
+
 void whack_cbor_process_options(QCBORDecodeContext *qdc
                                 , struct whack_message *wm
                                 , QCBORItem *first)
@@ -921,8 +973,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
         break;
       case WHACK_STATUS:
         wm->whack_status = TRUE;
-        /* consume value, which is probably empty map */
-        whack_cbor_consume_item(&qdc, &item);
+        whack_cbor_process_status(&qdc, wm, &item);
         break;
       case WHACK_SHUTDOWN:
         wm->whack_shutdown = TRUE;

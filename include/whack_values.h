@@ -24,6 +24,13 @@ enum whack_message_keys {
   WHACK_ASYNC = 25,
   WHACK_NOOP = 99,
 };
+enum statusoptions_keys {
+  WHACK_STAT_OPTIONS = 1,
+  WHACK_STAT_ALGORITHMS = 2,
+  WHACK_STAT_JSON = 3,
+  WHACK_STAT_POLICY = 4,
+  WHACK_STAT_STATES = 5,
+};
 enum publickey_keys {
   WHACK_OPT_KEYID = 16,
   WHACK_OPT_KEYALG = 17,

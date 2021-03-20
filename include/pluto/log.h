@@ -158,7 +158,7 @@ extern void whack_log(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 extern void loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* show status, usually on whack log */
-extern void show_status(void);
+extern void show_status(lset_t whattoshow);
 extern void show_secrets_status(void);
 
 #define ip_str pluto_ip_str

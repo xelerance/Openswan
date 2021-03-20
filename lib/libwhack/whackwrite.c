@@ -258,6 +258,21 @@ err_t whack_cbor_encode_msg(struct whack_message *wm
   QCBOREncode_OpenMap(&qec);
   if(wm->whack_status) {
     QCBOREncode_OpenMapInMapN(&qec, WHACK_STATUS);
+    if(LHAS(wm->whack_status, WHACK_STAT_OPTIONS)) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_STAT_OPTIONS, TRUE);
+    }
+    if(LHAS(wm->whack_status, WHACK_STAT_ALGORITHMS)) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_STAT_ALGORITHMS, TRUE);
+    }
+    if(LHAS(wm->whack_status, WHACK_STAT_JSON)) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_STAT_JSON, TRUE);
+    }
+    if(LHAS(wm->whack_status, WHACK_STAT_POLICY)) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_STAT_POLICY, TRUE);
+    }
+    if(LHAS(wm->whack_status, WHACK_STAT_STATES)) {
+      QCBOREncode_AddInt64ToMapN(&qec, WHACK_STAT_STATES, TRUE);
+    }
     QCBOREncode_CloseMap(&qec);
   }
 

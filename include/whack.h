@@ -135,7 +135,7 @@ struct whack_message {
     u_int32_t magic;
 
     /* for WHACK_STATUS: */
-    bool whack_status;
+    lset_t whack_status;
 
     /* for WHACK_SHUTDOWN */
     bool whack_shutdown;

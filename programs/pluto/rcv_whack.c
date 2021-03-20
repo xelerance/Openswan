@@ -576,7 +576,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	terminate_connection(msg.name);
 
     if (msg.whack_status)
-	show_status();
+	show_status(msg.whack_status);
 
     if (msg.whack_shutdown)
     {
@@ -646,7 +646,7 @@ whack_handle(int whackctlfd)
             /* we are dealing with a legacy situation */
             /* Only basic commands.  Simpler inter-version compatibility. */
             if (lwm->whack_status) {
-                show_status();
+                show_status(~LEMPTY);
                 whack_log_fd = NULL_FD;
                 close(whackfd);
                 return;

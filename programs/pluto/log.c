@@ -681,7 +681,7 @@ passert_fail(const char *pred_str, const char *file_str, unsigned long line_no)
     if (!dying_breath)
     {
 	dying_breath = TRUE;
-	show_status();
+	show_status(~LEMPTY);
         timer_list();
     }
     /* exiting correctly doesn't always work */
@@ -849,27 +849,32 @@ openswan_DBG_dump(const char *label, const void *p, size_t len)
 #endif /* DEBUG */
 
 void
-show_status(void)
+show_status(lset_t whattoshow)
 {
-    show_kernel_interface();
-    show_secrets_status();
-    show_ifaces_status();
-    show_myid_status();
-    show_debug_status();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    show_virtual_private();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    kernel_alg_show_status();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    ike_alg_show_status();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    show_connections_status(whack_log);
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    show_states_status();
-#ifdef KLIPS
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-    show_shunt_status();
-#endif
+    if(LHAS(whattoshow, WHACK_STAT_OPTIONS)) {
+        show_kernel_interface();
+        show_secrets_status();
+        show_ifaces_status();
+        show_myid_status();
+        show_debug_status();
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+        show_virtual_private();
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+    }
+    if(LHAS(whattoshow, WHACK_STAT_ALGORITHMS)) {
+        kernel_alg_show_status();
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+        ike_alg_show_status();
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+    }
+    if(LHAS(whattoshow, WHACK_STAT_POLICY)) {
+        show_connections_status(whack_log);
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+    }
+    if(LHAS(whattoshow, WHACK_STAT_STATES)) {
+        show_states_status();
+        whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
+    }
 
 #if defined(ONGOING_LEAK_DETECTIVE) && defined(LEAK_DETECTIVE)
     report_leaks();

@@ -1,5 +1,5 @@
 whack-message = {
-  WHACK_STATUS     => { },
+  WHACK_STATUS     => StatusOptions,
   WHACK_SHUTDOWN   => { },
   WHACK_OPTIONS    => OptionsCommand,
   WHACK_CONNECTION => Connection,
@@ -21,6 +21,19 @@ whack-message = {
   WHACK_ASYNC      => uint,
   WHACK_NOOP       => {},
 }
+
+StatusOptions = {
+  WHACK_STAT_OPTIONS => bool,
+  WHACK_STAT_ALGORITHMS => bool,
+  WHACK_STAT_JSON => bool,
+  WHACK_STAT_POLICY => bool,
+  WHACK_STAT_STATES => bool
+}
+WHACK_STAT_OPTIONS    = 1
+WHACK_STAT_ALGORITHMS = 2
+WHACK_STAT_JSON       = 3
+WHACK_STAT_POLICY     = 4
+WHACK_STAT_STATES     = 5
 
 
 PublicKey = {

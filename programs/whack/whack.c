@@ -337,6 +337,8 @@ diagq(err_t ugh, const char *this)
     }
 }
 
+#define OPTION_OFFSET	256	/* to get out of the way of letter options */
+
 /**
  * complex combined operands return one of these enumerated values
  * Note: these become flags in an lset_t.  Since there are more than
@@ -382,6 +384,11 @@ enum option_enums {
     OPT_REREADALL,
 
     OPT_STATUS,
+    OPT_JSON_STATUS,
+    OPT_OPTION_STATUS,
+    OPT_STATE_STATUS,
+    OPT_ALGO_STATUS,
+    OPT_POLICY_STATUS,
     OPT_SHUTDOWN,
 
     OPT_OPPO_HERE,
@@ -560,6 +567,7 @@ enum option_enums {
 #   define DBGOPT_LAST DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG
 #endif
 
+    OPTION_END_OF_FLAGS = (EOF - OPTION_OFFSET)
 };
 
 /* Carve up space for result from getop_long.
@@ -567,7 +575,6 @@ enum option_enums {
  * Numeric arg is bit immediately left of basic value.
  *
  */
-#define OPTION_OFFSET	256	/* to get out of the way of letter options */
 #define NUMERIC_ARG (1 << 11)	/* expect a numeric argument */
 #define AUX_SHIFT   12	/* amount to shift for aux information */
 
@@ -611,6 +618,12 @@ static const struct option long_opts[] = {
     { "rereadcrls", no_argument, NULL, OPT_REREADCRLS + OO },
     { "rereadall", no_argument, NULL, OPT_REREADALL + OO },
     { "status", no_argument, NULL, OPT_STATUS + OO },
+    { "all-status", no_argument, NULL, OPT_STATUS + OO },          /* alias of above */
+    { "json-status",   no_argument, NULL, OPT_JSON_STATUS + OO },
+    { "option-status", no_argument, NULL, OPT_OPTION_STATUS + OO },
+    { "state-status",  no_argument, NULL, OPT_STATE_STATUS + OO },
+    { "algo-status",   no_argument, NULL, OPT_ALGO_STATUS + OO },
+    { "policy-status", no_argument, NULL, OPT_POLICY_STATUS + OO },
     { "shutdown", no_argument, NULL, OPT_SHUTDOWN + OO },
     { "xauthname", required_argument, NULL, OPT_XAUTHNAME + OO },
     { "xauthuser", required_argument, NULL, OPT_XAUTHNAME + OO },
@@ -1077,7 +1090,7 @@ main(int argc, char **argv)
 	 */
 	switch (c)
 	{
-	case EOF - OPTION_OFFSET:	/* end of flags */
+	case OPTION_END_OF_FLAGS:	/* end of flags */
 	    break;
 
 	case 0 - OPTION_OFFSET: /* long option already handled */
@@ -1214,10 +1227,30 @@ main(int argc, char **argv)
 	    continue;
 
 	case OPT_STATUS:	/* --status */
-	    msg.whack_status = TRUE;
+	    msg.whack_status   = 0xffff;
 	    continue;
 
-	case OPT_SHUTDOWN:	/* --shutdown */
+	case OPT_OPTION_STATUS:	/* --option-status */
+	    msg.whack_status   |= LELEM(WHACK_STAT_OPTIONS);
+	    continue;
+
+	case OPT_ALGO_STATUS:   /* --algo-status */
+	    msg.whack_status   |= LELEM(WHACK_STAT_ALGORITHMS);
+	    continue;
+
+	case OPT_JSON_STATUS:   /* --json-status */
+	    msg.whack_status   |= LELEM(WHACK_STAT_JSON);
+	    continue;
+
+	case OPT_STATE_STATUS:   /* --state-status */
+	    msg.whack_status   |= LELEM(WHACK_STAT_STATES);
+	    continue;
+
+	case OPT_POLICY_STATUS:  /* --policy-status */
+	    msg.whack_status   |= LELEM(WHACK_STAT_POLICY);
+	    continue;
+
+        case OPT_SHUTDOWN:	/* --shutdown */
 	    msg.whack_shutdown = TRUE;
 	    continue;
 
@@ -1959,7 +1992,8 @@ main(int argc, char **argv)
 	    msg.esp=esp_buf;
     }
 
-    msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN) | LELEM(OPT_STATUS)))
+    /* only do this for now for --shutdown, not --status */
+    msg.magic = ((opts_seen & ~(LELEM(OPT_SHUTDOWN)))
 		| opts2_seen | lst_seen | cd_seen) != LEMPTY
 	    || msg.whack_options
 	? WHACK_MAGIC : WHACK_BASIC_MAGIC;
