@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     char *ip6net6 = "2001:db8:0::/128";
     char *ip6net7 = "::/128";
     char *ip6net8 = "::/0";
+    char *ip6net9 = "2000::/3";
     progname = argv[0];
     leak_detective = 1;
 
@@ -100,6 +101,10 @@ int main(int argc, char *argv[])
     zero(&ipS);
     ttosubnet(ip6net8, strlen(ip6net8), AF_INET6, &ipS);
     whack_cbor_encode_some_ipsubnet_ToMapN(&qec, 8, &ipS);
+
+    zero(&ipS);
+    ttosubnet(ip6net9, strlen(ip6net9), AF_INET6, &ipS);
+    whack_cbor_encode_some_ipsubnet_ToMapN(&qec, 9, &ipS);
     QCBOREncode_CloseMap(&qec);
 
     e = QCBOREncode_FinishGetSize(&qec, &outsize);
@@ -132,6 +137,15 @@ int main(int argc, char *argv[])
                                 0x12,0x34
     };
     test_decode("input2", input2, sizeof(input2));
+
+    unsigned char input3[15] = {
+                                0xd9, 0x01, 0x05,
+                                0x82,
+                                0x03,
+                                0x41,
+                                0x20
+    };
+    test_decode("input3", input3, sizeof(input3));
 
     tool_close_log();
 
