@@ -1,0 +1,4 @@
+This test case starts pluto, and then turns on the listen-on-link-local
+setting.
+This setting will show up in the --status output.
+
