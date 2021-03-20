@@ -22,6 +22,7 @@ SAMPLEDIR=../01-confread
 SAMPLE2DIR=../../unit/libpluto/samples
 
 TEST3ARGS=--rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord2.whack --all
+TEST4ARGS=--rootdir=${SAMPLE2DIR}/dooku  --config ${SAMPLE2DIR}/dooku.conf  --whackout=${OUTPUTS}/dookurecord.whack --all
 
 # note may fail if core dumps are not named "core"
 
@@ -31,7 +32,7 @@ check:
 	@echo processing ${SAMPLEDIR}/dooku.conf
 	@echo >.gdbinit  "file ${READWRITE} "
 	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
-	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net 2>&1 | tee ${OUTPUTS}/dookuload.out | diff - dookuload.txt
+	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net dooku--ipv6 2>&1 | tee ${OUTPUTS}/dookuload.out | diff - dookuload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@cborseq2pretty.rb ${OUTPUTS}/dookurecord.whack | tee ${OUTPUTS}/dookurecord.out | diff - dookurecord.txt
 	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj0
@@ -53,16 +54,16 @@ check:
 	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord2.whack | tee ${OUTPUTS}/parkerrecord2.out | diff - parkerrecord2.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 
+
 update:
-	cp ../OUTPUTS/parker1load.out  output2.txt
-	cp ../OUTPUTS/parkerload2.out  parkerload2.txt
-	cp ../OUTPUTS/dookuload.out    dookuload.txt
-	cp ../OUTPUTS/parkerload.out   parkerload.txt
+	cp ${OUTPUTS}/parker1load.out  output2.txt
+	cp ${OUTPUTS}/parkerload2.out  parkerload2.txt
+	cp ${OUTPUTS}/dookuload.out    dookuload.txt
+	cp ${OUTPUTS}/parkerload.out   parkerload.txt
 	cp ${OUTPUTS}/dookurecord.out  dookurecord.txt
 	cp ${OUTPUTS}/parkerrecord.out parkerrecord.txt
 	cp ${OUTPUTS}/parkerrecord3.out parkerrecord3.txt
 	cp ${OUTPUTS}/parkerrecord2.out parkerrecord2.txt
-
 
 
 
