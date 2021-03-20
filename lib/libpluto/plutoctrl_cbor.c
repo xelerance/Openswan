@@ -66,7 +66,7 @@
 
 #ifndef CBOR_DEBUG
 #if 0
-#define CBOR_DEBUG(fmt, ...)  printf(fmt, ##__VA_ARGS__)
+#define CBOR_DEBUG(fmt, ...)  fprintf(stderr, fmt, ##__VA_ARGS__)
 #else
 #define CBOR_DEBUG(fmt, ...)  do {} while(0)
 #endif
@@ -231,14 +231,18 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
 {
     QCBORItem   item;
     QCBORError  uErr;
+    CBOR_DEBUG("decoding ipsubnet\n");
     if(first->uDataType != QCBOR_TYPE_ARRAY) {
+      CBOR_DEBUG("Expected subnet array, found something else\n");
       whack_cbor_consume_itemX(qdc, first, 1);
+      qdc->uLastError = QCBOR_ERR_APPLICATION_PROTOCOL_VIOLATED;
       return;
     }
 
     int tagtype = QCBORDecode_GetNthTag(qdc, first, 0);
     if(tagtype == -1) {
-      /* XXX fail */
+      CBOR_DEBUG("Expected v4/v6 tag, but found none\n");
+      qdc->uLastError = QCBOR_ERR_APPLICATION_PROTOCOL_VIOLATED;
       return;
     }
 
@@ -247,13 +251,20 @@ void whack_cbor_decode_ipsubnet(QCBORDecodeContext *qdc
     }
 
     /* see if we got the length properly, if not stop. */
-    if(uErr != QCBOR_SUCCESS) return;
+    if(uErr != QCBOR_SUCCESS) {
+      qdc->uLastError = QCBOR_ERR_APPLICATION_PROTOCOL_VIOLATED;
+      return;
+    }
 
     /* see if new nesting level is still as big as when we started,
      * otherwise array is done, and it's an error.
      */
     CBOR_DEBUG("first %d > item %d\n", first->uNextNestLevel, item.uNextNestLevel);
-    if(first->uNextNestLevel > item.uNextNestLevel) return;
+    if(first->uNextNestLevel > item.uNextNestLevel) {
+      CBOR_DEBUG("nesting level changed, array ended early\n");
+      qdc->uLastError = QCBOR_ERR_APPLICATION_PROTOCOL_VIOLATED;
+      return;
+    }
 
     if((uErr = QCBORDecode_GetNext(qdc, &item)) == QCBOR_SUCCESS) {
       whack_cbor_decode_ipaddress1(qdc, endtype, &item, tagtype
