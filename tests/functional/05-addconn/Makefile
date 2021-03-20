@@ -25,7 +25,7 @@ CTLBASE=--ctlbase OUTPUT/base
 SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT
 OUTPUTS=OUTPUT
 
-step1:	OUTPUT
+start step1:	OUTPUT
 	@rm -f OUTPUT/base.pid
 	@echo "file ${PLUTOBIN}" >.gdbinit
 	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
@@ -40,6 +40,9 @@ step2X:
 step2b:
 	@${ADDCONN} --verbose ${CTLBASE} --config ../07-sourceipv6/green.conf --rootdir ../07-sourceipv6 green   >&2
 
+step2c:
+	@${ADDCONN} --verbose ${CTLBASE} --config ../01-confread/dooku.conf --rootdir ../01-confread/dooku dooku--ipv6   >&2
+
 stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
@@ -47,7 +50,7 @@ step4:
 	@${WHACKBIN} ${CTLBASE} --status
 
 check: OUTPUT
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2b; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2b step2c; sleep 1; make --no-print-directory step4 step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
