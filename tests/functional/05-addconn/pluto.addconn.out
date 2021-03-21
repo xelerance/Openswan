@@ -36,6 +36,7 @@ use keyid: 1:5E26 80D3 0E2B B53F C059 EE51 1627 A858 9400 5A56 / 2:<>
 adding connection: "dooku--ipv6"
 000 using kernel interface: noklips
 000 using secrets file: /etc/ipsec.secrets
+000 link-local addresses are: ignored
 000 %myid = (none)
 000 debug none
 000  
