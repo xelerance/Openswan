@@ -1209,6 +1209,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case OPT_ON_LINK_SCOPE:	/* --on-link-scope */
+	    msg.whack_options = TRUE;
 	    msg.on_link_scope = TRUE;
 	    continue;
 
