@@ -1290,7 +1290,8 @@ bool eroute_connection(struct state *st
                       , sr->this.protocol
                       , esatype
                       , proto_info, 0, op, buf2
-		      , policy_label, 0,0
+		      , policy_label
+                      , st->st_vti_mark, st->st_vti_markmask
 		      );
 }
 

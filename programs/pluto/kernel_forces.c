@@ -581,8 +581,9 @@ netlink_raw_eroute(const ip_address *this_host
         addrtot(this_host, 0, sa_this, sizeof(sa_this));
         addrtot(that_host, 0, sa_that, sizeof(sa_that));
 
-        DBG_log("creating SPD to %s->spi=%08x@%s proto=%u"
-                , sa_this, htonl(spi), sa_that, proto);
+        DBG_log("%s SPD to %s->spi=%08x@%s proto=%u vti mark=%08x"
+                , (sadb_op == ERO_DELETE || sadb_op == ERO_DEL_INBOUND) ? "deleting" : "creating"
+                , sa_this, htonl(spi), sa_that, proto, vti_mark);
     }
 
     policy = IPSEC_POLICY_IPSEC;
