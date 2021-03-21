@@ -412,6 +412,8 @@ find_raw_ifaces6(void)
 
 	    happy(ttoaddr(sb, 0, AF_INET6, &ri.addr));
 
+            ri.addr.u.v6.sin6_scope_id = if_idx;
+
             if(!oco->pluto_listen_on_link_scope) {
               /* ignore addresses with link local scope.
                * From linux-2.4.9-13/include/net/ipv6.h:
