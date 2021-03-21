@@ -835,28 +835,28 @@ netlink_raw_eroute(const ip_address *this_host
     }
 
     ok = netlink_policy(&req.n, enoent_ok, text_said);
-    switch (dir)
-    {
-    case XFRM_POLICY_IN:
-	if (req.n.nlmsg_type == XFRM_MSG_DELPOLICY)
-	{
-	    req.u.id.dir = XFRM_POLICY_FWD;
-	}
-	else if (!ok)
-	{
-	    break;
-	}
-	else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
-	&& esatype != ET_INT)
-	{
-	    break;
-	}
-	else
-	{
-	    req.u.p.dir = XFRM_POLICY_FWD;
-	}
-	ok &= netlink_policy(&req.n, enoent_ok, text_said);
-	break;
+    if (!ok) {
+        switch (dir)
+            {
+            case XFRM_POLICY_IN:
+                if (req.n.nlmsg_type == XFRM_MSG_DELPOLICY)
+                    {
+                        req.u.id.dir = XFRM_POLICY_FWD;
+                    }
+                else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
+                         && esatype != ET_INT)
+                    {
+                        openswan_log("not adding FWD policy because Mode is not tunnel");
+                        /* then don't do it */
+                        break;
+                    }
+                else
+                    {
+                        req.u.p.dir = XFRM_POLICY_FWD;
+                    }
+                ok &= netlink_policy(&req.n, enoent_ok, text_said);
+                break;
+            }
     }
 
     return ok;
