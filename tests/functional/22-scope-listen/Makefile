@@ -26,7 +26,7 @@ SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdi
 OUTPUTS=OUTPUT
 CONFBASE=bob
 CONFFILE=${CONFBASE}.conf
-FILTERS=sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed -f ${TESTUTILS}/certsize-r.sed -f ${TESTUTILS}/pending_ddns.sed
+FILTERS=sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed -f ${TESTUTILS}/certsize-r.sed -f ${TESTUTILS}/pending_ddns.sed -f ${TESTUTILS}/removehelpers.sed
 
 check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}
@@ -47,7 +47,7 @@ stop step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
 step4:
-	@${WHACKBIN} ${CTLBASE} --status
+	@${WHACKBIN} ${CTLBASE} --option-status
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
