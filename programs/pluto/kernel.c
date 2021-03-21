@@ -2469,18 +2469,6 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     /* look along the chain of policies for one with the same name */
 
 
-#if 0
-    /* XXX - mcr this made sense before, and likely will make sense
-     * again, so I'l leaving this to remind me what is up */
-    if (ero!= NULL && ero->routing == RT_UNROUTED_KEYED)
-        ero = NULL;
-
-    for (ero2 = ero; ero2 != NULL; ero2 = ero->policy_next)
-        if ((ero2->kind == CK_TEMPLATE || ero2->kind==CK_SECONDARY)
-        && streq(ero2->name, c->name))
-            break;
-#endif
-
     bspp = (ero == NULL)
         ? bare_shunt_ptr(&sr->this.client, &sr->that.client, sr->this.protocol)
         : NULL;
@@ -2500,18 +2488,6 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
         else
             eroute_installed = sag_eroute(st, sr, ERO_REPLACE, "replace");
 
-#if 0
-        /* XXX - MCR. I previously felt that this was a bogus check */
-        if (ero != NULL && ero != c && esr != sr)
-        {
-            /* By elimination, we must be eclipsing ero.  Check. */
-            passert(ero->kind == CK_TEMPLATE && streq(ero->name, c->name));
-            passert(LHAS(LELEM(RT_ROUTED_PROSPECTIVE) | LELEM(RT_ROUTED_ECLIPSED)
-                , esr->routing));
-            passert(samesubnet(&esr->this.client, &sr->this.client)
-                && samesubnet(&esr->that.client, &sr->that.client));
-        }
-#endif
         /* remember to free bspp iff we make it out of here alive */
     }
     else
