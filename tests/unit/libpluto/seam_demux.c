@@ -8,7 +8,6 @@
 #include "pluto/log.h"
 #include "id.h"
 
-pb_stream      reply_stream;
 time_t         packet_time=0;
 pcap_dumper_t *packet_save = NULL;
 

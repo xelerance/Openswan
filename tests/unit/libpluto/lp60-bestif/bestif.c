@@ -35,11 +35,7 @@
 #include "seam_finish.c"
 #include "seam_natt.c"
 #include "seam_rsasig.c"
-
-
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
-
-
+#include "seam_io.c"
 #include "seam_iflist.c"
 
 /* include directly to get static functions */

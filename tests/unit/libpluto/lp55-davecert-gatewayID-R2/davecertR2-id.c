@@ -13,9 +13,6 @@ static void init_local_interface(void)
     init_jamesjohnson_interface();
 }
 
-bool now_regression;
-time_t regression_time;
-
 static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
