@@ -53,7 +53,7 @@ OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@${FILTERS} OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
-	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
+	@tcpdump -nn -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
 
 ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
