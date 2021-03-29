@@ -768,7 +768,7 @@ pfkey_register_proto(unsigned int sadb_register
 
     if (!(pfkey_msg_start(sadb_register
 			  , satype
-			  , satypename, NULL, extensions)
+			  , satypename, "pfkey_register_proto", extensions)
 	  && finish_pfkey_msg(extensions, satypename, "", &pfb)))
     {
 	/* ??? should this be loglog */
