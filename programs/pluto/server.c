@@ -464,9 +464,13 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
     setportof(htons(port), &ifp->addr);
     if (bind(fd, sockaddrof(&ifp->addr), sockaddrlenof(&ifp->addr)) < 0)
     {
-	log_errno((e, "bind() for %s/%s %s:%u in process_raw_ifaces()"
+	log_errno((e, "bind() for %s/%s [%s]:%u,%u in process_raw_ifaces()"
 	    , ifp->name, v_name
-	    , ip_str(&ifp->addr), (unsigned) port));
+                   , ip_str(&ifp->addr)
+                   , (unsigned) port
+                   , (ifp->addr.u.v6.sin6_family == AF_INET6 ?
+                      ifp->addr.u.v6.sin6_scope_id : 0));
+                  );
 	close(fd);
 	return -1;
     }

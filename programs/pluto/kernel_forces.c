@@ -2165,11 +2165,13 @@ add_entry:
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d (%s)"
+		    openswan_log("adding interface %s/%s [%s]:%d (%s:%u)"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
-				 , q->port, q->socktypename);
+				 , q->port, q->socktypename
+                                 , (q->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                                    q->ip_addr.u.v6.sin6_scope_id : 0));
 
 #ifdef NAT_TRAVERSAL
 		    /*
@@ -2198,11 +2200,14 @@ add_entry:
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d"
+			openswan_log("adding nat interface %s/%s [%s]:%d (%s:%u)"
 				     , q->ip_dev->id_vname, q->ip_dev->id_rname
 				     , ip_str(&q->ip_addr)
-				     , q->port);
-		    }
+				     , q->port
+                                     , q->socktypename
+                                     , (q->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                                        q->ip_addr.u.v6.sin6_scope_id : 0));
+                    }
 #endif
 		    break;
 		}
