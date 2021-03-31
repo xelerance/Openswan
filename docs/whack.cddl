@@ -5,7 +5,7 @@ whack-message = {
   WHACK_CONNECTION => Connection,
   WHACK_ROUTE      => { WHACK_OPT_NAME=> tstr },
   WHACK_UNROUTE    => { WHACK_OPT_NAME=> tstr },
-  WHACK_INITIATE   => { WHACK_OPT_NAME=> tstr },
+  WHACK_INITIATE   => { WHACK_OPT_NAME=> tstr, WHACK_OPT_TUNDEV => uint },
   WHACK_INITIATE_OPPO=> InitiateOppo,
   WHACK_TERMINATE  => { WHACK_OPT_NAME=> tstr },
   WHACK_ADD_KEY    => PublicKey,
@@ -61,6 +61,7 @@ Connection = {
   WHACK_OPT_LIFETIME_REKEY_FUZZ=>   uint,
   WHACK_OPT_LIFETIME_REKEY_TRIES=>  uint,
   WHACK_OPT_END_ADDR_FAMILY=> uint,
+  WHACK_OPT_TUNDEV         => uint,
 }
 
 ConnectionEnd = {
