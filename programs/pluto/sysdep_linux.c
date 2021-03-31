@@ -406,6 +406,9 @@ find_raw_ifaces6(void)
 	    if (r != 13)
 		break;
 
+            /* clear out the raw_iface structure, so it can get re-used */
+            zero(&ri);
+
 	    snprintf(sb, sizeof(sb)
 		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
 		, xb[0], xb[1], xb[2], xb[3], xb[4], xb[5], xb[6], xb[7]);
