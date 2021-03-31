@@ -521,9 +521,12 @@ show_ifaces_status(void)
               , oco->pluto_listen_on_link_scope ? "included" : "ignored");
 
     for (p = interfaces; p != NULL; p = p->next)
-	whack_log(RC_COMMENT, "interface %s/%s %s (%s)"
+	whack_log(RC_COMMENT, "interface %s/%s [%s%%%u] (%s)"
                   , p->ip_dev->id_vname, p->ip_dev->id_rname
-                  , p->addrname, p->socktypename);
+                  , p->addrname
+                  , (p->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                      p->ip_addr.u.v6.sin6_scope_id : 0)
+                  , p->socktypename);
 }
 
 
