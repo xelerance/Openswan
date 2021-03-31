@@ -395,7 +395,10 @@ find_raw_ifaces6(void)
 	    unsigned int plen;	/* proc field, not used */
 	    unsigned int scope;	/* proc field, used to exclude link-local */
 	    unsigned int dad_status;	/* proc field, not used */
-	    /* ??? I hate and distrust scanf -- DHR */
+
+            /* clear out the raw_iface structure, so it can get re-used */
+            zero(&ri);
+
 	    int r = fscanf(proc_sock
 		, "%4hx%4hx%4hx%4hx%4hx%4hx%4hx%4hx"
 		  " %02x %02x %02x %02x %20s\n"
@@ -405,9 +408,6 @@ find_raw_ifaces6(void)
 	    /* ??? we should diagnose any problems */
 	    if (r != 13)
 		break;
-
-            /* clear out the raw_iface structure, so it can get re-used */
-            zero(&ri);
 
 	    snprintf(sb, sizeof(sb)
 		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
