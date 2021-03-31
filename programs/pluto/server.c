@@ -389,6 +389,14 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 	return -1;
     }
 
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT
+    , (const void *)&on, sizeof(on)) < 0)
+    {
+	log_errno((e, "setsockopt SO_REUSEPORT in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+
     /* To improve error reporting.  See ip(7). */
 #if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
     if (setsockopt(fd, SOL_IP, IP_RECVERR
