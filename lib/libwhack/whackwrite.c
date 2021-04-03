@@ -91,7 +91,7 @@ static void whack_cbor_encode_empty_map(QCBOREncodeContext *qec)
 err_t whack_cbor_magic_header(QCBOREncodeContext *qec)
 {
   UsefulBufC bor = UsefulBuf_FROM_SZ_LITERAL("BOR");
-  QCBOREncode_AddTag(qec, CborSignatureTag);
+  QCBOREncode_AddTag(qec, CborSequenceTag);
   QCBOREncode_AddTag(qec, CborOpenSwanTag);
   QCBOREncode_AddBytes(qec, bor);
   return NULL;

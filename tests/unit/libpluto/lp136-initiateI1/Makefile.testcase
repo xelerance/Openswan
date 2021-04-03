@@ -11,7 +11,7 @@ ${WHACKREFFILE}: OUTPUT wm06.bin
 	${READWRITE} --rootdir=${SAMPLEDIR}${ENDNAME} --config ${SAMPLEDIR}${ENDNAME}.conf --whackout=${WHACKFILE}.p1 ${CONNNAME}
 	cat ${WHACKFILE}.p1 wm06.bin >${WHACKREFFILE}
 
-wm06.bin:
+wm06.bin: ../../libwhack/wo06-initiate/OUTPUT/wm06.bin
 	cp ../../libwhack/wo06-initiate/OUTPUT/wm06.bin wm06.bin
 
 pcapupdate:

@@ -118,18 +118,18 @@ int main(int argc, char *argv[])
     fwrite(qcbuf, outsize, 1, omsg);
     fclose(omsg);
 
-    unsigned char input1[15] = {
-                                0xD9, 0x01, 0x05,   //   # tag(261)
+    unsigned char input1[14] = {
+                                0xD8, 0x36,         //   # tag('6')
                                 0x82,               //   # array(2)
                                 0x18, 0x31,         //   # unsigned(49)
                                 0x48,               //   # bytes(8)
                                 0x20,0x01,0x0D,0xB8,
-                                0x12,0x34,0xFE,0xDC //  # " \x01\r\xB8\x124\xFE\xDC"
+                                0x12,0x34,0xFE,0xDC //
     };
     test_decode("input1", input1, sizeof(input1));
 
-    unsigned char input2[15] = {
-                                0xD9, 0x01, 0x05,   //   # tag(261)
+    unsigned char input2[14] = {
+                                0xD8, 0x36,         //   # tag('6')
                                 0x82,               //   # array(2)
                                 0x18, 0x31,         //   # unsigned(49)
                                 0x46,               //   # bytes(8)
@@ -138,8 +138,8 @@ int main(int argc, char *argv[])
     };
     test_decode("input2", input2, sizeof(input2));
 
-    unsigned char input3[15] = {
-                                0xd9, 0x01, 0x05,
+    unsigned char input3[6] = {
+                                0xd8, 0x36,
                                 0x82,
                                 0x03,
                                 0x41,

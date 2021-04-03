@@ -938,7 +938,7 @@ err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t
     if(item.uDataType == QCBOR_TYPE_BYTE_STRING && item.uNestingLevel == 0) {
       if(memcmp(item.val.string.ptr, "BOR", 3) == 0
          && QCBORDecode_GetNthTag(&qdc, &item, 0) == CborOpenSwanTag
-         && QCBORDecode_GetNthTag(&qdc, &item, 1) == CborSignatureTag) {
+         && QCBORDecode_GetNthTag(&qdc, &item, 1) == CborSequenceTag) {
         /* COOL, found Magic number */
         foundMagic = TRUE;
       }

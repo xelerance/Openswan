@@ -103,10 +103,10 @@ enum whack_opt_set {
     WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
-#define CborSignatureTag 55799
+#define CborSequenceTag  55800
 #define CborOpenSwanTag  0x4f50534e
-#define CborIPv4Tag      260            /* squatted */
-#define CborIPv6Tag      261
+#define CborIPv4Tag      '4'
+#define CborIPv6Tag      '6'
 
 /* The following enums are in whack_values.h, and are generated from CDDL.
  *
