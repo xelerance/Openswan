@@ -28,6 +28,7 @@ loading secrets from "ipsec.nss.secrets"
 loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
 000 using secrets file: "ipsec.nss.secrets"
+000 link-local addresses are: ignored
 000 %myid = (none)
 000 debug none
 000  
