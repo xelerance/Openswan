@@ -1,0 +1,4 @@
+This test case starts pluto, and loads a conn that should have a VTI mark
+attached to it.  It verifies that the mark is loaded into the policy section.
+
+
