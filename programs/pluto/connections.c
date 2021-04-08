@@ -608,7 +608,7 @@ extract_end(struct connection *conn
     {
 	dst->id.kind = ID_NONE;
     }
-    else if(strcasecmp(src->id, "%cert")==0) {
+    else if(strcasecmp(src->id, "%cert")==0 || strcasecmp(src->id, "%fromcert")==0) {
         dst->id.kind = ID_FROMCERT;
     }
     else
