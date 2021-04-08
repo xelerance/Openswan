@@ -19,6 +19,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
 ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
 WHACKBIN=${OBJDIRTOP}/programs/whack/whack
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLES=${OPENSWANSRCDIR}/tests/unit/libpluto/samples
 ifeq ($(USE_LIBNSS),true)
 NSS=.nss
@@ -47,6 +48,9 @@ step1:
 
 step2:
 	@${ADDCONN} --verbose ${CTLBASE} --config certone.conf green >&2
+
+step2b:
+	@${READWRITE} --verbose --config certone.conf --whackout=${OUTPUTS}/certone.whackout green >&2
 
 stepX:
 	@${WHACKBIN} ${CTLBASE} --debug-all
