@@ -87,6 +87,8 @@ format_end(char *buf
 	if(this->host_type == KH_IPHOSTNAME) {
 	    host = strcpy(host_space, "%dns");
 	    dohost_name=TRUE;
+	} else if (this->host_type == KH_ANY) {
+	    host = strcpy(host_space, "%any");
 	} else {
 	    switch (policy & (POLICY_GROUP | POLICY_OPPO))
 	    {
