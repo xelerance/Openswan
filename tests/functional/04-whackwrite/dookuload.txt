@@ -1,6 +1,54 @@
+debugging mode enabled
+1: including file '/etc/ipsec.d/conns/*.conn'(../01-confread/dooku/etc/ipsec.d/conns/*.conn) from line ../01-confread/dooku.conf:43
+end of file ../01-confread/dooku/etc/ipsec.d/conns/cassidy.conn
+resuming ../01-confread/dooku.conf line 43
+end of file ../01-confread/dooku.conf
+Loading conn dooku-base
+Loading conn cassidy-base
+Loading conn dooku--cassidy-net
+# conn dooku--cassidy-net processing alsos
+	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
+	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+Loading conn dooku-net
+# conn dooku-net processing alsos
+	while loading conn 'dooku-net' also including 'dooku-base'
+Loading conn dooku--ipv6
+# conn dooku--ipv6 processing alsos
+	while loading conn 'dooku--ipv6' also including 'dooku-base'
+	while loading conn 'dooku--ipv6' also including 'cassidy-base'
+conn: "dooku--cassidy-net" sending RSA keys for left
+   looking for key1, result=0
+   sending pubkey 1: 2D4F C8AC AE27 EA18 96C0 AEFD 9D6E D667 7520 8C30
 writing record 1 to whack file
+   looking for key2, result=2
+conn: "dooku--cassidy-net" sending RSA keys for right
+   looking for key1, result=0
+   sending pubkey 1: 5E26 80D3 0E2B B53F C059 EE51 1627 A858 9400 5A56
 writing record 2 to whack file
+   looking for key2, result=2
+emitting conn dooku--cassidy-net with end-family: 2 and tunnel-family: 10
 writing record 3 to whack file
+conn: "dooku--ipv6" sending RSA keys for left
+   looking for key1, result=0
+   sending pubkey 1: 2D4F C8AC AE27 EA18 96C0 AEFD 9D6E D667 7520 8C30
 writing record 4 to whack file
+   looking for key2, result=2
+conn: "dooku--ipv6" sending RSA keys for right
+   looking for key1, result=0
+   sending pubkey 1: 5E26 80D3 0E2B B53F C059 EE51 1627 A858 9400 5A56
 writing record 5 to whack file
+   looking for key2, result=2
+emitting conn dooku--ipv6 with end-family: 2 and tunnel-family: 10
 writing record 6 to whack file
+#setting rootdir=../01-confread/dooku
+opening file: ../01-confread/dooku.conf
+processing conn: dooku--cassidy-net vs dooku-base
+processing conn: dooku--cassidy-net vs cassidy-base
+processing conn: dooku--cassidy-net vs dooku--cassidy-net
+processing conn: dooku--cassidy-net vs dooku-net
+processing conn: dooku--cassidy-net vs dooku--ipv6
+processing conn: dooku--ipv6 vs dooku-base
+processing conn: dooku--ipv6 vs cassidy-base
+processing conn: dooku--ipv6 vs dooku--cassidy-net
+processing conn: dooku--ipv6 vs dooku-net
+processing conn: dooku--ipv6 vs dooku--ipv6

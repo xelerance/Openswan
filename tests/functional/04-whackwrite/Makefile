@@ -18,6 +18,8 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 OUTPUTS=../OUTPUTS
+export READWRITE
+export OUTPUTS
 SAMPLEDIR=../01-confread
 SAMPLE2DIR=../../unit/libpluto/samples
 
@@ -25,6 +27,7 @@ TEST3ARGS=--rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --wh
 TEST4ARGS=--rootdir=${SAMPLE2DIR}/dooku  --config ${SAMPLE2DIR}/dooku.conf  --whackout=${OUTPUTS}/dookurecord.whack --all
 
 # note may fail if core dumps are not named "core"
+
 
 check:
 	@mkdir -p ${OUTPUTS}
