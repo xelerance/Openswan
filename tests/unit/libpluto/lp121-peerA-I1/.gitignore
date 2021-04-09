@@ -1,0 +1,6 @@
+OUTPUT
+*.o
+core.*
+.gdb1init
+.gdbinit
+peerA-I1

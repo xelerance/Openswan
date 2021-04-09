@@ -1,0 +1,17 @@
+This test case is an IKEv2 initiator -- the client peerA will use it's
+certificate to authenticate.
+The other peer has an unknown identity, but it uses the same certificate authority.
+rightid=%fromcert
+rightca=%same
+
+
+
+
+
+
+
+
+
+
+
+
