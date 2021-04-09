@@ -141,9 +141,6 @@ static void whack_cbor_encode_some_ipsubnet_ToMapN(QCBOREncodeContext *qec
   unsigned int nonzero;
   const char *ptr = NULL;
 
-  /* if empty, then send nothing */
-  if(ip_address_isany(&net->addr)) return;
-
   /* insert the map key manually */
   QCBOREncode_AddInt64(qec, link);
 
@@ -216,8 +213,13 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
 
   ADDIntIfNotZero(qec, WHACK_OPT_KEYTYPE,   we->keytype);
   ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT, we->has_client);
-  ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT_WILDCARD, we->has_client_wildcard);
-  ADDIntIfNotZero(qec, WHACK_OPT_HAS_PORT_WILDCARD, we->has_port_wildcard);
+  if(we->has_client) {
+    /* client */
+    whack_cbor_encode_some_ipsubnet_ToMapN(qec, WHACK_OPT_END_CLIENT
+                                           , &we->client);
+    ADDIntIfNotZero(qec, WHACK_OPT_HAS_CLIENT_WILDCARD, we->has_client_wildcard);
+    ADDIntIfNotZero(qec, WHACK_OPT_HAS_PORT_WILDCARD, we->has_port_wildcard);
+  }
   ADDIntIfNotZero(qec, WHACK_OPT_HOST_PORT, we->host_port);
   ADDIntIfNotZero(qec, WHACK_OPT_PORT,      we->protocol);
   ADDIntIfNotZero(qec, WHACK_OPT_XAUTH_SERVER, we->xauth_server);
@@ -236,9 +238,6 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_SRCIP
                                           , &we->host_srcip);
 
-  /* client */
-  whack_cbor_encode_some_ipsubnet_ToMapN(qec, WHACK_OPT_END_CLIENT
-                                         , &we->client);
 
 }
 

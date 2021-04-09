@@ -28,42 +28,27 @@ TEST4ARGS=--rootdir=${SAMPLE2DIR}/dooku  --config ${SAMPLE2DIR}/dooku.conf  --wh
 
 check:
 	@mkdir -p ${OUTPUTS}
-	@rm -f core
-	@echo processing ${SAMPLEDIR}/dooku.conf
-	@echo >.gdbinit  "file ${READWRITE} "
-	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
-	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net dooku--ipv6 2>&1 | tee ${OUTPUTS}/dookuload.out | diff - dookuload.txt
-	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-	@cborseq2pretty.rb ${OUTPUTS}/dookurecord.whack | tee ${OUTPUTS}/dookurecord.out | diff - dookurecord.txt
-	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj0
-	@echo >.gdbinit2  "file ${READWRITE} "
-	@echo >>.gdbinit2 "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj0 "
-	@${READWRITE} --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj0 2>&1 | tee ${OUTPUTS}/parker1load.out | diff - output2.txt
-	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord.whack | tee ${OUTPUTS}/parkerrecord.out | diff - parkerrecord.txt
-	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj2
-	@echo >.gdbinit2b  "file ${READWRITE} "
-	@echo >>.gdbinit2b "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj "
-	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord3.whack parker1--jj2 ikev2:parker--jj 2>&1 | tee ${OUTPUTS}/parkerload.out | diff - parkerload.txt
-	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord3.whack | tee ${OUTPUTS}/parkerrecord3.out | diff - parkerrecord3.txt
-	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-	@echo testing ${SAMPLEDIR}/parker.conf with --all
-	@echo >.gdbinit3 "file ${READWRITE} "
-	@echo >>.gdbinit3 "set args ${TEST3ARGS}"
-	@${READWRITE} ${TEST3ARGS} 2>&1 | tee ${OUTPUTS}/parkerload2.out | diff - parkerload2.txt
-	@cborseq2pretty.rb ${OUTPUTS}/parkerrecord2.whack | tee ${OUTPUTS}/parkerrecord2.out | diff - parkerrecord2.txt
-	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
-
+	@./writetest dooku  ${SAMPLEDIR}/dooku.conf ${SAMPLEDIR}/dooku "dooku--cassidy-net dooku--ipv6"
+	@./writetest parker  ${SAMPLE2DIR}/parker.conf ${SAMPLE2DIR}/parker "parker1--jj0"
+	@./writetest parker2 ${SAMPLE2DIR}/parker.conf ${SAMPLE2DIR}/parker "ikev2:parker--jj"
+	@./writetest acppeer1 ${SAMPLE2DIR}/acppeers.conf ${SAMPLE2DIR}/acppeers "peerA--peerB"
 
 update:
-	cp ${OUTPUTS}/parker1load.out  output2.txt
-	cp ${OUTPUTS}/parkerload2.out  parkerload2.txt
+	# dooku
 	cp ${OUTPUTS}/dookuload.out    dookuload.txt
-	cp ${OUTPUTS}/parkerload.out   parkerload.txt
 	cp ${OUTPUTS}/dookurecord.out  dookurecord.txt
+
+	# parker
+	cp ${OUTPUTS}/parkerload.out   parkerload.txt
 	cp ${OUTPUTS}/parkerrecord.out parkerrecord.txt
-	cp ${OUTPUTS}/parkerrecord3.out parkerrecord3.txt
-	cp ${OUTPUTS}/parkerrecord2.out parkerrecord2.txt
+
+	# parker2
+	cp ${OUTPUTS}/parker2load.out   parker2load.txt
+	cp ${OUTPUTS}/parker2record.out parker2record.txt
+
+	# acppeers1
+	cp ${OUTPUTS}/acppeer1load.out    acppeer1load.txt
+	cp ${OUTPUTS}/acppeer1record.out  acppeer1record.txt
 
 
 

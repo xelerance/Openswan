@@ -1,0 +1,15 @@
+debugging mode enabled
+end of file ../../unit/libpluto/samples/acppeers.conf
+Loading default conn
+Loading conn peerA--peerB
+conn: "peerA--peerB" sending RSA keys for left
+   looking for key1, result=2
+   looking for key2, result=2
+conn: "peerA--peerB" sending RSA keys for right
+   looking for key1, result=2
+   looking for key2, result=2
+emitting conn peerA--peerB with end-family: 10 and tunnel-family: 10
+writing record 1 to whack file
+#setting rootdir=../../unit/libpluto/samples/acppeers
+opening file: ../../unit/libpluto/samples/acppeers.conf
+processing conn: peerA--peerB vs peerA--peerB
