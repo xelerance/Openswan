@@ -1,5 +1,4 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 680, bad cksum 0 (->7846)!)
-    0.0.0.0.500 > 0.0.0.0.500: isakmp 2.0 msgid 00000000: parent_sa ikev2_init[I]:
+IP6 (hlim 64, next-header UDP (17) payload length: 660) fe80::8054:3eff:fe9a:d3f4.500 > fe80::ec68:7cff:fe0c:9aa4.500: [bad udp cksum 0x0000 -> 0x4e25!] isakmp 2.0 msgid 00000000: parent_sa ikev2_init[I]:
     (sa: len=264
         (p: #1 protoid=isakmp transform=4 len=44
             (t: #1 type=encr id=aes (type=keylen value=0080))
