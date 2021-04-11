@@ -2,6 +2,7 @@
 #define __seam_demux_c__
 #include <pcap.h>
 #include <netinet/ip.h>
+#include <linux/ipv6.h>
 #include <netinet/udp.h>
 #include <arpa/inet.h>
 
@@ -62,11 +63,20 @@ send_packet(struct state *st, const char *where, bool verbose)
 
     /* just copy real values */
     outsideoffirewall = st->st_interface->ip_addr;
-    outsideoffirewall.u.v4.sin_port = htons(st->st_interface->port);
+    switch(outsideoffirewall.u.v4.sin_family) {
+    case AF_INET:
+      outsideoffirewall.u.v4.sin_port = htons(st->st_interface->port);
+      break;
+
+    case AF_INET6:
+      outsideoffirewall.u.v6.sin6_port = htons(st->st_interface->port);
+    }
 
     return send_packet_srcnat(st, where, verbose, outsideoffirewall);
 }
 #endif
+
+#define BSD_AFNUM_INET6_BSD	24	/* NetBSD, OpenBSD, BSD/OS, Npcap */
 
 bool
 send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address outsideoffirewall)
@@ -99,10 +109,11 @@ send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address
 	    char buf[9000];
 	    struct pcap_pkthdr pp;
 	    struct iphdr  *ip;
+            struct ipv6hdr *ipv6;
 	    struct udphdr *udp;
             u_char    *ulp;
 	    u_int32_t *dlt;
-	    int caplen = sizeof(struct iphdr)+sizeof(struct udphdr)+len;
+	    int caplen;
             int shimlen = 0;
 
             if ((st->st_interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
@@ -110,27 +121,54 @@ send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address
             }
 
 	    dlt = (u_int32_t*)buf;
-	    *dlt = PF_INET;
 
-	    ip  = (struct iphdr *)&buf[4];
-	    ip->version = 4;
-	    ip->ihl     = 5;
-	    ip->tos     = 0;
-	    ip->tot_len = htons(caplen+shimlen);
-	    ip->id      = 0;
-	    ip->frag_off= 0;
-	    ip->ttl     = 64;
-	    ip->protocol= IPPROTO_UDP;
-	    ip->check   = 0;
-	    ip->saddr   = outsideoffirewall.u.v4.sin_addr.s_addr;
-	    ip->daddr   = st->st_remoteaddr.u.v4.sin_addr.s_addr;
-	    udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
-	    udp->source = outsideoffirewall.u.v4.sin_port;
-	    udp->dest   = htons(st->st_remoteport);
-	    udp->len    = htons(sizeof(struct udphdr)+len+shimlen);
-	    udp->check  = 0;
+            switch(outsideoffirewall.u.v4.sin_family) {
+            case AF_INET:
+              *dlt = PF_INET;
+              caplen = sizeof(struct iphdr)+sizeof(struct udphdr)+len;
+              ip  = (struct iphdr *)&buf[4];
+              ip->version = 4;
+              ip->ihl     = 5;
+              ip->tos     = 0;
+              ip->tot_len = htons(caplen+shimlen);
+              ip->id      = 0;
+              ip->frag_off= 0;
+              ip->ttl     = 64;
+              ip->protocol= IPPROTO_UDP;
+              ip->check   = 0;
+              ip->saddr   = outsideoffirewall.u.v4.sin_addr.s_addr;
+              ip->daddr   = st->st_remoteaddr.u.v4.sin_addr.s_addr;
+              udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
+              udp->source = outsideoffirewall.u.v4.sin_port;
+              udp->dest   = htons(st->st_remoteport);
+              udp->len    = htons(sizeof(struct udphdr)+len+shimlen);
+              udp->check  = 0;
 
-            ulp = &buf[sizeof(struct iphdr)+sizeof(struct udphdr)+4];  /* +4 because of pcap_pkthdr */
+              ulp = &buf[sizeof(struct iphdr)+sizeof(struct udphdr)+4];  /* +4 because of pcap_pkthdr */
+              break;
+
+            case AF_INET6:
+              *dlt = BSD_AFNUM_INET6_BSD;
+              caplen = sizeof(struct ipv6hdr)+sizeof(struct udphdr)+len;
+              ipv6 = (struct ipv6hdr *)&buf[4];
+              ipv6->version = 6;
+              ipv6->priority = 0;
+              ipv6->flow_lbl[0]=0;
+              ipv6->flow_lbl[1]=0;
+              ipv6->flow_lbl[2]=0;
+              ipv6->payload_len = htons(sizeof(struct udphdr)+len+shimlen);
+              ipv6->nexthdr = IPPROTO_UDP;
+              ipv6->hop_limit = 64;
+              ipv6->saddr = outsideoffirewall.u.v6.sin6_addr;
+              ipv6->daddr = st->st_remoteaddr.u.v6.sin6_addr;
+
+              udp = (struct udphdr *)&buf[sizeof(struct ipv6hdr)+4];
+              udp->source = outsideoffirewall.u.v6.sin6_port;
+              udp->dest   = htons(st->st_remoteport);
+              udp->len    = htons(sizeof(struct udphdr)+len+shimlen);
+              udp->check  = 0;
+              ulp = &buf[sizeof(struct ipv6hdr)+sizeof(struct udphdr)+4];  /* +4 because of pcap_pkthdr */
+            }
             if ((st->st_interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
               /* insert UDP encap shim of 4 bytes of zeros, and advance pointer */
               ulp[0]=0; ulp[1]=0; ulp[2]=0; ulp[3]=0;

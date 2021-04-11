@@ -2,6 +2,8 @@
 #define __seam_commhandle_c__
 #include "demux.h"
 
+#include <linux/ipv6.h>
+
 unsigned int dlt_type;
 pcap_t *pt;
 
@@ -24,6 +26,10 @@ void recv_pcap_setup(char *file)
 extern unsigned short outside_port500;
 extern unsigned short outside_port4500;
 
+#ifndef BSD_AFNUM_INET6_BSD
+#define BSD_AFNUM_INET6_BSD	24	/* NetBSD, OpenBSD, BSD/OS, Npcap */
+#endif
+
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h
 			  , const u_char *bytes)
@@ -31,10 +37,12 @@ void recv_pcap_packet_gen(u_char *user
     struct msg_digest *md;
     u_int32_t *dlt;
     struct iphdr  *ip;
+    struct ipv6hdr *ipv6;
     struct udphdr *udp;
     u_char    *ike;
     const struct iface_port *ifp = interfaces;  /* take first interface */
     int packet_len;
+    int        ip_ver;
     err_t from_ugh;
     union
     {
@@ -47,7 +55,11 @@ void recv_pcap_packet_gen(u_char *user
     switch(dlt_type) {
     case DLT_NULL:
       dlt = (u_int32_t *)bytes;
-      if(*dlt != PF_INET) {
+      switch(*dlt) {
+      case PF_INET:
+      case BSD_AFNUM_INET6_BSD:
+        break;
+      default:
         fprintf(stderr, "DLT_NULL - can not process packet in DLT=%08x\n", *dlt);
         return;
       }
@@ -66,11 +78,27 @@ void recv_pcap_packet_gen(u_char *user
     }
 
     ip  = (struct iphdr *)(dlt);
-    udp = (struct udphdr *)(dlt + ip->ihl);
-    ike = (u_char *)(udp+1);
+    switch(ip->version) {
+    case 4:
+      udp = (struct udphdr *)(dlt + ip->ihl);  /* ihl in units of 4-bytes */
+      ike = (u_char *)(udp+1);
+      ip_ver = AF_INET;
 
-    from.sa_in4.sin_addr.s_addr = ip->saddr;
-    from.sa_in4.sin_port        = udp->source;
+      from.sa_in4.sin_addr.s_addr = ip->saddr;
+      from.sa_in4.sin_port        = udp->source;
+      break;
+    case 6:
+      ipv6 = (struct ipv6hdr *)(dlt);
+      udp = (struct udphdr *)(ipv6+1);
+      ike = (u_char *)(udp+1);
+      ip_ver = AF_INET6;
+
+      from.sa_in6.sin6_addr = ipv6->saddr;
+      from.sa_in6.sin6_port = udp->source;
+      break;
+    default:
+      bad_case(ip->version);
+    }
 
     while(ifp && (ifp->port != ntohs(udp->dest)
 
@@ -108,11 +136,23 @@ void recv_pcap_packet_gen(u_char *user
 
     happy(anyaddr(addrtypeof(&ifp->ip_addr), &md->sender));
 
-    from_ugh = initaddr((void *) &from.sa_in4.sin_addr
-			, sizeof(from.sa_in4.sin_addr)
-			, AF_INET, &md->sender);
+    switch(ip_ver) {
+    case AF_INET:
+      from_ugh = initaddr((void *) &from.sa_in4.sin_addr
+                          , sizeof(from.sa_in4.sin_addr)
+                          , AF_INET, &md->sender);
+      setportof(from.sa_in4.sin_port, &md->sender);
+      break;
+    case AF_INET6:
+      from_ugh = initaddr((void *) &from.sa_in6.sin6_addr
+                          , sizeof(from.sa_in6.sin6_addr)
+                          , AF_INET6, &md->sender);
+      setportof(from.sa_in6.sin6_port, &md->sender);
+      break;
+    default:
+      bad_case(ip_ver);
+    }
     (void)from_ugh;
-    setportof(from.sa_in4.sin_port, &md->sender);
     md->sender_port = ntohs(from.sa_in4.sin_port);
 
     cur_from      = &md->sender;
