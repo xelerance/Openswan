@@ -474,7 +474,7 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 	struct isakmp_ipsec_id id_hd;
 	chunk_t id_b;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = auth_payload;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &r_id_pbs)
 	|| !out_chunk(id_b, &r_id_pbs, "my identity"))
@@ -785,7 +785,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 	u_char hash_val[MAX_DIGEST_LEN];
 	size_t hash_len;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	init_pbs(&id_pbs, buffer, sizeof(buffer), "identity payload");
 	id_hd.isaiid_np = ISAKMP_NEXT_NONE;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &id_pbs, NULL)
@@ -900,7 +900,7 @@ aggr_inI2_tail(struct msg_digest *md
 	chunk_t id_b;
 	pb_stream pbs;
 	pb_stream id_pbs;
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.that);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.that, &st->st_connection->spd.that.id);
 	init_pbs(&pbs, buffer, sizeof(buffer), "identity payload");
 	id_hd.isaiid_np = ISAKMP_NEXT_NONE;
 
@@ -1212,7 +1212,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	chunk_t id_b;
 	pb_stream id_pbs;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = ISAKMP_NEXT_VID;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &id_pbs)
 	|| !out_chunk(id_b, &id_pbs, "my identity"))

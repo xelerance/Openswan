@@ -1578,7 +1578,7 @@ main_inR2_outI3_continue(struct msg_digest *md
 	struct isakmp_ipsec_id id_hd;
 	chunk_t id_b;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = (send_cert)? ISAKMP_NEXT_CERT : auth_payload;
 	if (!out_struct(&id_hd
 			, &isakmp_ipsec_identification_desc
@@ -2094,7 +2094,8 @@ main_inI3_outR3_tail(struct msg_digest *md
 	struct isakmp_ipsec_id id_hd;
 	chunk_t id_b;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b
+                         , &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = (send_cert)? ISAKMP_NEXT_CERT : auth_payload;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &r_id_pbs)
 	|| !out_chunk(id_b, &r_id_pbs, "my identity"))

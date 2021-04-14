@@ -72,8 +72,8 @@ extern int id_count_wildcards(const struct id *id);
 #define id_is_ipaddr(id) ((id)->kind == ID_IPV4_ADDR || (id)->kind == ID_IPV6_ADDR)
 
 struct isakmp_ipsec_id;	/* forward declaration of tag (defined in packet.h) */
-extern void
-    build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end);
+extern void build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl
+                             , struct end *end, const struct id *id);
 
 /* ip_str: a simple to use variant of addrtot.
  * It stores its result in a static buffer.

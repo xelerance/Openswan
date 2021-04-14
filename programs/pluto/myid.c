@@ -161,10 +161,13 @@ free_myFQDN(void)
  * stable datastructure.  It only needs to last a short time.
  */
 void
-build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
+build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl
+                 , struct end *end, const struct id *id)
 {
-    const struct id *id = resolve_myid(&end->id);
     unsigned char *tlcptr = tl->ptr;
+
+    /* maybe update it */
+    id = resolve_myid(id);
 
     zero(hd);
     zero(tl);
@@ -189,6 +192,10 @@ build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
 	tl->len = addrbytesptr(&id->ip_addr, &tlcptr);	/* sets tl->ptr too */
         tl->ptr = (unsigned char *)tlcptr;
 	break;
+
+    case ID_FROMCERT:
+        DBG_log("%%fromcert should been dealt with already\n");
+        break;
     default:
 	bad_case(id->kind);
     }
