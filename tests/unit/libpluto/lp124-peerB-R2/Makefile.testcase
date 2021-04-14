@@ -1,10 +1,10 @@
 # -*- makefile -*-
 CONNNAME=peerA--peerB
 ENDNAME=acppeers
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} peerA-I1.pcap peerA-I2.pcap OUTPUT/${TESTNAME}.pcap
 
 TESTNAME=peerB-R2
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap peerA-I1.pcap peerA-I2.pcap
 
 PCAPDEPENDENCIES = ../lp121-peerA-I1/OUTPUT/peerA-I1.pcap
 PCAPDEPENDENCIES +=../lp123-peerA-I2/OUTPUT/peerA-I2.pcap
