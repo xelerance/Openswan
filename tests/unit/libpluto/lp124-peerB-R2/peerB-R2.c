@@ -1,14 +1,14 @@
-/* repeats existing test case */
-#include "../lp08-parentR1/parentR1_head.c"
+#include "../lp12-parentR2/parentR2_head.c"
+#include "seam_natt.c"
+#include "seam_host_peerB.c"
+#include "seam_x509_list.c"
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
-#include "../seam_host_peerB.c"
-#include "seam_rsasig.c"
-#include "seam_x509_list.c"
+#include "seam_kernel.c"
 
-#define TESTNAME "peerB-R1"
+#define TESTNAME "peerB-R2"
 
-static inline void init_local_interface(void)
+static void init_local_interface(void)
 {
     init_peerB_interface();
 }
@@ -24,7 +24,9 @@ static void init_fake_secrets(void)
 			       , "../samples/carol.secrets"
 			       , &pass, NULL);
 }
-#include "../lp08-parentR1/parentR1_main.c"
+static void init_loaded(void) {}
+
+#include "../lp12-parentR2/parentR2_main.c"
 
  /*
  * Local Variables:
