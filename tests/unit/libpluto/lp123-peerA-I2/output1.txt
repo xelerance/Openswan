@@ -44,6 +44,23 @@ RC=0 "peerA--peerB":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; r
 RC=0 "peerA--peerB":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 0,0; interface: eth0; kind=CK_PERMANENT
 | Changed path to directory '../samples/davecert/cacerts'
 ./peerA-I2   loaded CA cert file 'rootCA.pem' (CERT bytes)
+|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
+|   authcert inserted
+| Changed path to directory '../samples/davecert/aacerts'
+| Changed path to directory '../samples/davecert/ocspcerts'
+| Found -1 items in directory '../samples/davecert/crls'
+|
+| List of X.509 End Certificates:
+|
+| NOW, count: 1
+|        subject: 'C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org'
+|        issuer:  'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+|        serial:   04
+|        pubkey:   2048 RSA Key AwEAAeOoT
+|        validity: not before Sep 03 04:15:59 UTC 2019 ok
+|                  not after  Dec 11 04:15:59 UTC 2021 ok
+|        subjkey:  c2:64:69:e8:dc:88:e3:23:58:47:07:86:4b:5e:d4:b3:ea:bc:a7:10
+|        authkey:  86:cb:59:12:06:07:df:3f:00:36:b9:64:c6:c5:14:1f:3a:ed:cd:aa
 | find_phase1_state: no SA found for conn 'peerA--peerB'
 | creating state object #1 at Z
 | orient peerA--peerB checking against if: eth0 (AF_INET6:fe80::8054:3eff:fe9a:d3f4:500)
@@ -317,6 +334,9 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 |   c4 b7 7f f0
 | emitting length of IKEv2 Certificate Payload: 1049
 | going to send a certreq
+|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
+|   flags: 00000001 & 00000001
+| keyid null 1 / 1
 | have CA 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA', send CERTREQ with CA's Key ID
 |    next-payload: ISAKMP_NEXT_v2CERTREQ [@84=0x26]
 | *****emit IKEv2 Certificate Request Payload:

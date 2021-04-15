@@ -18,30 +18,30 @@
 ./peerB-R1 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./peerB-R1 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| Added new connection peerA--peerB with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-./peerB-R1   loading certificate from daveCert.pem
-./peerB-R1   loaded host cert file '../samples/carol/certs/daveCert.pem' (CERT bytes)
-| certificate is valid
-| counting wild cards for C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org is 0
+| Added new connection peerB--peerA with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for %fromcert is 0
-| orient peerA--peerB checking against if: eth0 (AF_INET6:fe80::ec68:7cff:fe0c:9aa4:500)
+./peerB-R1   loading certificate from carolCert.pem
+./peerB-R1   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
+| certificate is valid
+| counting wild cards for C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org is 0
+| orient peerB--peerA checking against if: eth0 (AF_INET6:fe80::ec68:7cff:fe0c:9aa4:500)
 |     orient matched on IP
-|   orient peerA--peerB finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
+|   orient peerB--peerA finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
 | find_host_pair: looking for me=fe80::ec68:7cff:fe0c:9aa4:500 %address him=fe80::8054:3eff:fe9a:d3f4:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: fe80::ec68:7cff:fe0c:9aa4:500 %address fe80::8054:3eff:fe9a:d3f4:500 -> hp:none
-| find_ID_host_pair: looking for me=%fromcert him=C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org (exact)
+| find_ID_host_pair: looking for me=C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org him=%fromcert (exact)
 |   concluded with <none>
-./peerB-R1 adding connection: "peerA--peerB"
-| ::/0===fe80::ec68:7cff:fe0c:9aa4[%fromcert]...fe80::8054:3eff:fe9a:d3f4[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]===::/0
+./peerB-R1 adding connection: "peerB--peerA"
+| ::/0===fe80::ec68:7cff:fe0c:9aa4[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org]...fe80::8054:3eff:fe9a:d3f4[%fromcert]===::/0
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|   orient peerA--peerB finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
-RC=0 "peerA--peerB": ::/0===fe80::ec68:7cff:fe0c:9aa4[%fromcert]...fe80::8054:3eff:fe9a:d3f4[C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org]===::/0; unrouted; eroute owner: #0
-RC=0 "peerA--peerB":     myip=unset; hisip=unset; hiscert=daveCert.pem;
-RC=0 "peerA--peerB":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
-RC=0 "peerA--peerB":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
-RC=0 "peerA--peerB":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "peerA--peerB":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 0,0; interface: eth0; kind=CK_PERMANENT
+|   orient peerB--peerA finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
+RC=0 "peerB--peerA": ::/0===fe80::ec68:7cff:fe0c:9aa4[C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org]...fe80::8054:3eff:fe9a:d3f4[%fromcert]===::/0; unrouted; eroute owner: #0
+RC=0 "peerB--peerA":     myip=unset; hisip=unset; mycert=carolCert.pem;
+RC=0 "peerB--peerA":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'
+RC=0 "peerB--peerA":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
+RC=0 "peerB--peerA":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
+RC=0 "peerB--peerA":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 0,0; interface: eth0; kind=CK_PERMANENT
 |   =========== input from pcap file peerA-I1.pcap ========
 | *received 652 bytes from fe80::8054:3eff:fe9a:d3f4:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
@@ -107,16 +107,16 @@ RC=0 "peerA--peerB":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | find_host_connection2 called from ikev2parent_inI1outR1, me=fe80::ec68:7cff:fe0c:9aa4:500 him=fe80::8054:3eff:fe9a:d3f4:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=fe80::ec68:7cff:fe0c:9aa4:500 %address him=fe80::8054:3eff:fe9a:d3f4:500 any-match
 | find_host_pair: comparing to me=fe80::ec68:7cff:fe0c:9aa4:500 %address him=fe80::8054:3eff:fe9a:d3f4:500
-| find_host_pair: concluded with peerA--peerB
-| found_host_pair_conn (find_host_connection2): fe80::ec68:7cff:fe0c:9aa4:500 %address/fe80::8054:3eff:fe9a:d3f4:500 -> hp:peerA--peerB
+| find_host_pair: concluded with peerB--peerA
+| found_host_pair_conn (find_host_connection2): fe80::ec68:7cff:fe0c:9aa4:500 %address/fe80::8054:3eff:fe9a:d3f4:500 -> hp:peerB--peerA
 | searching for connection with policy = IKEv2ALLOW/-
-| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (peerA--peerB)
-| find_host_connection2 returns peerA--peerB (ike=none/none)
-./peerB-R1 tentatively considering connection: peerA--peerB
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (peerB--peerA)
+| find_host_connection2 returns peerB--peerA (ike=none/none)
+./peerB-R1 tentatively considering connection: peerB--peerA
 | creating state object #1 at Z
-| orient peerA--peerB checking against if: eth0 (AF_INET6:fe80::ec68:7cff:fe0c:9aa4:500)
+| orient peerB--peerA checking against if: eth0 (AF_INET6:fe80::ec68:7cff:fe0c:9aa4:500)
 |     orient matched on IP
-|   orient peerA--peerB finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
+|   orient peerB--peerA finished with: 1 [fe80::ec68:7cff:fe0c:9aa4]
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  78 5b 90 fe  dd d1 18 2d
 | state hash entry 6
