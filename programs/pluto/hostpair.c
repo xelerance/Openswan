@@ -477,8 +477,7 @@ find_ID_host_pair(const struct id me
     struct IDhost_pair *p, *pbest = NULL;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
     char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
-    bool exactmatch = FALSE;
-    bool pbestexact = FALSE;
+    int  wildcard_best = 999;
 
     /*
      * look for a host-pair that has the right set of local ID/remote ID.
@@ -502,6 +501,7 @@ find_ID_host_pair(const struct id me
 
     for (p = IDhost_pairs; p != NULL; p = p->next)
     {
+        int wildcards = 0;
 	DBG(DBG_CONTROLMORE,
             idtoa(&p->me_who, mewho, sizeof(mewho));
             idtoa(&p->him_who,himwho, sizeof(himwho));
@@ -511,33 +511,32 @@ find_ID_host_pair(const struct id me
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
-        exactmatch = TRUE;
-
-        if(!same_id(&him, &p->him_who)) {
+        if(!match_id(&him, &p->him_who, &wildcards)) {
             ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
             continue;
         }
+
         /* if him matched due to wildcard, mark it */
         if(p->him_who.kind == ID_NONE) {
-            exactmatch = FALSE;
+            wildcards++;
         }
 
         if(same_exact_id(&me,  &p->me_who)) {
             ID_DEBUG(DBG_log("    me matches exactly (wildcard)"));
 
         } else if(same_id(&me,  &p->me_who)) {
-            exactmatch = FALSE;
+            if(wildcards > 1) wildcards--;
             ID_DEBUG(DBG_log("    me wildcard match"));
         }
-        if((exactmatch==TRUE && pbestexact == FALSE) || pbest == NULL) {
+        if((wildcards < wildcard_best) || pbest == NULL) {
             pbest = p;
-            pbestexact = exactmatch;
-            ID_DEBUG(DBG_log("    now best match"));
+            wildcard_best = wildcards;
+            ID_DEBUG(DBG_log("    now best match at wildcards=%d", wildcards));
         }
         /* loop looking for better matches */
     }
     DBG(DBG_CONTROLMORE,
-        DBG_log("  concluded with %s", pbest && pbest->connections ? pbest->connections->name : "<none>"));
+        DBG_log("  concluded with %s [wildcard: %d]", pbest && pbest->connections ? pbest->connections->name : "<none>", wildcard_best));
     return pbest;
 }
 
