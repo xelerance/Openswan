@@ -177,6 +177,13 @@ UNITTESTS_I2+=lp203-ca-h2hI2
 # BROKEN UNITTESTS_R2+=lp204-ca-h2hR2
 # BROKEN UNITTESTS_I3+=lp205-ca-h2hI3
 
+# test cases for wildcards in DNs, IPv6-LL and IKEv2
+UNITTESTS_I1+=lp121-peerA-I1
+UNITTESTS_R1+=lp122-peerB-R1
+UNITTESTS_I2+=lp123-peerA-I2
+UNITTESTS_R2+=lp124-peerB-R2
+
+
 # first runs tests that have no interdependancies
 UNITTESTS=${UNITTESTS_0}
 # then run all the I1,R1,I2,R2,I3
