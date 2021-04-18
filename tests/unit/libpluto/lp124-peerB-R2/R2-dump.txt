@@ -1,3 +1,2 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 1468, bad cksum 0 (->cc78)!)
-    132.213.238.7.500 > 93.184.216.35.500: isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[R]:
-    (v2e: len=1408)
+IP6 (hlim 64, next-header UDP (17) payload length: 1560) fe80::ec68:7cff:fe0c:9aa4.500 > fe80::8054:3eff:fe9a:d3f4.500: [bad udp cksum 0x0000 -> 0xd5df!] isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[R]:
+    (v2e: len=1520)

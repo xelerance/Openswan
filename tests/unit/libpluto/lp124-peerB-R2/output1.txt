@@ -45,7 +45,6 @@ RC=0 "peerB--peerA":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; r
 RC=0 "peerB--peerA":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 0,0; interface: eth0; kind=CK_TEMPLATE
 | Changed path to directory '../samples/carol/cacerts'
 ./peerB-R2   loaded CA cert file 'rootCA.pem' (CERT bytes)
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
 |   authcert inserted
 ./peerB-R2 Could not change to directory '../samples/carol/aacerts': No such file or directory
 ./peerB-R2 Could not change to directory '../samples/carol/ocspcerts': No such file or directory
@@ -339,9 +338,6 @@ RC=0 "peerB--peerA":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   my next payload will be a certificate request
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
-|   flags: 00000001 & 00000001
-| keyid null 1 / 1
 | have CA 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA', send CERTREQ with CA's Key ID
 |    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
 | ***emit IKEv2 Certificate Request Payload:
@@ -871,8 +867,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |    match_id a=C=CA, ST=ON, O=Xelerance, CN=dave@openswan.org
 |             b=C=CA, ST=ON, O=Xelerance, CN=*
 |    results  matched
-|     me wildcard match
-|     now best match at wildcards=1
 |   concluded with peerB--peerA [wildcard: 1]
 | parent SA IDi pi verify
 |   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
@@ -985,9 +979,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 | L3 - algorithm:
 |   'sha256WithRSAEncryption'
 | L1 - signatureValue:
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
-|   flags: 00000001 & 00000001
-| keyid non-null 1
 | signature algorithm: 'sha256WithRSAEncryption'
 |   digest:  de 15 5e 95  a9 c3 d3 32  60 6a fe 9e  27 a1 07 6a
 |   04 bc 66 87  52 25 6d 21  78 35 66 15  57 5e a3 57
@@ -1010,9 +1001,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |   6a 04 bc 66  87 52 25 6d  21 78 35 66  15 57 5e a3
 |   57
 ./peerB-R2 no crl from issuer "C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA" found (strict=no)
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
-|   flags: 00000001 & 00000001
-| keyid non-null 1
 | signature algorithm: 'sha256WithRSAEncryption'
 |   digest:  30 12 7a 05  1c 95 e5 dc  39 8f 0f 62  57 4f f0 3b
 |   bb 28 e0 dd  7b d2 24 e8  3d bd 39 1f  2c 2d cb e1

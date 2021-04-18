@@ -9,13 +9,16 @@ a2                                      # map(2)
       6c                                # text(12)
          70656572412d2d7065657242       # "peerA--peerB"
       03                                # unsigned(3)
-      aa                                # map(10)
+      ab                                # map(11)
          05                             # unsigned(5)
          65                             # text(5)
             2563657274                  # "%cert"
          06                             # unsigned(6)
          6c                             # text(12)
             64617665436572742e70656d    # "daveCert.pem"
+         07                             # unsigned(7)
+         78 44                          # text(68)
+            433d43412c2053543d4f4e2c204c3d4f74746177612c204f3d58656c6572616e63652c20434e3d4f70656e7377616e20556e69742054657374696e6720526f6f74204341 # "C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA"
          0a                             # unsigned(10)
          78 19                          # text(25)
             666538303a3a383035343a336566663a666539613a64336634 # "fe80::8054:3eff:fe9a:d3f4"
@@ -40,10 +43,13 @@ a2                                      # map(2)
          18 8f                          # unsigned(143)
          03                             # unsigned(3)
       04                                # unsigned(4)
-      a7                                # map(7)
+      aa                                # map(10)
          05                             # unsigned(5)
          65                             # text(5)
             2563657274                  # "%cert"
+         07                             # unsigned(7)
+         65                             # text(5)
+            2573616d65                  # "%same"
          0a                             # unsigned(10)
          78 19                          # text(25)
             666538303a3a656336383a376366663a666530633a39616134 # "fe80::ec68:7cff:fe0c:9aa4"
@@ -53,6 +59,8 @@ a2                                      # map(2)
          d8 36                          # tag(54)
             50                          # bytes(16)
                fe80000000000000ec687cfffe0c9aa4 # "\xFE\x80\x00\x00\x00\x00\x00\x00\xECh|\xFF\xFE\f\x9A\xA4"
+         10                             # unsigned(16)
+         03                             # unsigned(3)
          11                             # unsigned(17)
          01                             # unsigned(1)
          0e                             # unsigned(14)
@@ -63,6 +71,8 @@ a2                                      # map(2)
                                         # ""
          14                             # unsigned(20)
          19 01f4                        # unsigned(500)
+         18 8f                          # unsigned(143)
+         03                             # unsigned(3)
       18 7f                             # unsigned(127)
       1b 0000000107000066               # unsigned(4412407910)
       18 92                             # unsigned(146)

@@ -44,7 +44,6 @@ RC=0 "peerA--peerB":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; r
 RC=0 "peerA--peerB":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 0,0; interface: eth0; kind=CK_PERMANENT
 | Changed path to directory '../samples/davecert/cacerts'
 ./peerA-I2   loaded CA cert file 'rootCA.pem' (CERT bytes)
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
 |   authcert inserted
 | Changed path to directory '../samples/davecert/aacerts'
 | Changed path to directory '../samples/davecert/ocspcerts'
@@ -334,9 +333,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 |   c4 b7 7f f0
 | emitting length of IKEv2 Certificate Payload: 1049
 | going to send a certreq
-|   looking for cert by keyid: C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA or serial
-|   flags: 00000001 & 00000001
-| keyid null 1 / 1
 | have CA 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA', send CERTREQ with CA's Key ID
 |    next-payload: ISAKMP_NEXT_v2CERTREQ [@84=0x26]
 | *****emit IKEv2 Certificate Request Payload:
