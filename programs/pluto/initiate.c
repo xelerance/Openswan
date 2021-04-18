@@ -120,23 +120,19 @@ initiate_a_connection(struct connection *c
 	loglog(RC_INITSHUNT
 	       , "cannot initiate an authby=never connection");
     }
-    else if (c->kind != CK_PERMANENT)
-    {
-	if (isanyaddr(&c->spd.that.host_addr)) {
-            if(c->spd.that.host_type == KH_IPHOSTNAME
-               && c->spd.that.host_address_list.address_list == NULL) {
-                loglog(RC_NOPEERIP, "dns resolution for %s not yet complete, still trying"
-                       , c->spd.that.host_addr_name);
-                success = 1;
-		c->policy |= POLICY_UP;
-            } else {
-		loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
-		       , enum_show(&connection_kind_names, c->kind));
-            }
-        } else
-            loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
+    else if (c->kind != CK_PERMANENT
+             && isanyaddr(&c->spd.that.host_addr)) {
+        if(c->spd.that.host_type == KH_IPHOSTNAME
+           && c->spd.that.host_address_list.address_list == NULL) {
+            loglog(RC_NOPEERIP, "dns resolution for %s not yet complete, still trying"
+                   , c->spd.that.host_addr_name);
+            success = 1;
+            c->policy |= POLICY_UP;
+        } else {
+            loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
                    , enum_show(&connection_kind_names, c->kind));
         }
+    }
     else
     {
 	/* We will only request an IPsec SA if policy isn't empty
