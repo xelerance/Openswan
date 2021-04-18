@@ -7,9 +7,9 @@
 ./v1certM2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ./v1certM2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./v1certM2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./v1certM2 adjusting ipsec.d to ../samples/carol
-./v1certM2 loading secrets from "../samples/carol.secrets"
-./v1certM2   loaded private key file '../samples/carol/private/carolKey.pem' (CERT bytes)
+./v1certM2 adjusting ipsec.d to ../../libpluto/samples/carol
+./v1certM2 loading secrets from "../../libpluto/samples/carol.secrets"
+./v1certM2   loaded private key file '../../libpluto/samples/carol/private/carolKey.pem' (CERT bytes)
 ./v1certM2 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
 ./v1certM2 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./v1certM2 registered kernel encr algorithm 3des [3, 192<=key<=192]
@@ -23,11 +23,11 @@
 | esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
 | ike (phase1) algorithm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 ./v1certM2   loading certificate from carolCert.pem
-./v1certM2   loaded host cert file '../samples/carol/certs/carolCert.pem' (CERT bytes)
+./v1certM2   loaded host cert file '../../libpluto/samples/carol/certs/carolCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org is 0
 ./v1certM2   loading certificate from moonCert.pem
-./v1certM2   loaded host cert file '../samples/carol/certs/moonCert.pem' (CERT bytes)
+./v1certM2   loaded host cert file '../../libpluto/samples/carol/certs/moonCert.pem' (CERT bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | alg_info_addref() alg_info->ref_cnt=1

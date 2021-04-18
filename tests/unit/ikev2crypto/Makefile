@@ -19,7 +19,9 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 UNITTESTS=
 UNITTESTS+=ct02-parentI1
 UNITTESTS+=ct10-parentI2
+UNITTESTS+=ct123-peerA-I2
 UNITTESTS+=ct12-parentR2
+UNITTESTS+=ct124-peerB-R2
 UNITTESTS+=ct13-parentI3
 UNITTESTS+=ct14-bigkeyI2
 

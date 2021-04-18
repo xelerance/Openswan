@@ -7,8 +7,8 @@
 ./v1rwnatM3 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
 ./v1rwnatM3 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./v1rwnatM3 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
-./v1rwnatM3 adjusting ipsec.d to ../samples/alice
-./v1rwnatM3 loading secrets from "../samples/alice.secrets"
+./v1rwnatM3 adjusting ipsec.d to ../../libpluto/samples/alice
+./v1rwnatM3 loading secrets from "../../libpluto/samples/alice.secrets"
 ./v1rwnatM3 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
 ./v1rwnatM3 registered kernel encr algorithm aes_cbc [12, 128<=key<=512]
 ./v1rwnatM3 registered kernel encr algorithm 3des [3, 192<=key<=192]
