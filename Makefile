@@ -551,6 +551,7 @@ tarpkg:
 	@rm /var/tmp/openswan-${USER}/etc/ipsec.conf
 	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz
 	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
+	@ln -f openswan${VENDOR}-${IPSECVERSION}.tgz openswan.tgz
 	@rm -rf /var/tmp/openswan-${USER}
 
 
