@@ -577,7 +577,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
 | idhash calc R2  01 00 00 00  c0 a8 01 01
 | assembled IDr payload -- CERT next
-| CHILD SA proposals received
+./deleteChildSA-fromR2 received CHILD SA proposal(s) will be processed
 | going to assemble AUTH payload
 |    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
 | *****emit IKEv2 Authentication Payload:

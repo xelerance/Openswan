@@ -580,7 +580,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | idhash calc R2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | assembled IDr payload -- CERT next
-| CHILD SA proposals received
+./rekeyv2nopfs-R1 received CHILD SA proposal(s) will be processed
 | going to assemble AUTH payload
 |    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
 | *****emit IKEv2 Authentication Payload:
@@ -1001,7 +1001,7 @@ sending 448 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./rekeyv2nopfs-R1 msgid=2 CHILD_SA no-PFS rekey message received from 192.168.1.1:500 on eth0 (port=500)
-| CHILD SA proposals received
+./rekeyv2nopfs-R1 received CHILD SA proposal(s) will be processed
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

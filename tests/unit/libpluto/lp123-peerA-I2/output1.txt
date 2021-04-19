@@ -259,7 +259,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 | Thinking about sending a certificate request (CERTREQ)
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   my next payload will be a certificate request
-| I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
 |    critical bit: none

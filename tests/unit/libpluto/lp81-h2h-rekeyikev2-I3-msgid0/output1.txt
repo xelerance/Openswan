@@ -1021,7 +1021,7 @@ sending 416 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
 |   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
 | ikev2 child inCI1: calculated g^{xy}, sending R2
-| CHILD SA proposals received
+./rekeyChildSA-msgInI3 received CHILD SA proposal(s) will be processed
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

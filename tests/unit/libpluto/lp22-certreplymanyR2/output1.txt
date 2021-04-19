@@ -1123,7 +1123,6 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
 |   already received a CERT from peer
-| I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
 |    critical bit: none
@@ -1196,7 +1195,7 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   53 d7 5d 72  17 e3 99 b5  12 bb 7e 6d  ee 48 9c f8
 |   6e fc 2c c0
 | emitting length of IKEv2 Certificate Payload: 1049
-| CHILD SA proposals received
+./certreplyR2 received CHILD SA proposal(s) will be processed
 | going to assemble AUTH payload
 |    next-payload: ISAKMP_NEXT_v2AUTH [@85=0x27]
 | *****emit IKEv2 Authentication Payload:
