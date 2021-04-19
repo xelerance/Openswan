@@ -1739,7 +1739,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             openswan_log("No CHILD SA proposals received.");
             e.isag_np = ISAKMP_NEXT_NONE;
         } else {
-            DBG_log("CHILD SA proposals received");
+            openswan_log("received CHILD SA proposal(s) will be processed");
             e.isag_np = ISAKMP_NEXT_v2Nr;
         }
 

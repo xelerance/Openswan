@@ -438,7 +438,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             child_SA_present = FALSE;
             //np = ISAKMP_NEXT_NONE;
         } else {
-            DBG_log("CHILD SA proposals received");
+            openswan_log("received CHILD SA proposal(s) will be processed");
             child_SA_present = TRUE;
             //np = ISAKMP_NEXT_v2SA;
         }
