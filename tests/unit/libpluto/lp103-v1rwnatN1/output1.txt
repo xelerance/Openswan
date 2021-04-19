@@ -42,15 +42,15 @@
 | find_ID_host_pair: looking for me=@sun him=@alice (exact)
 |   concluded with <none>
 ./v1rwnatN1 adding connection: "bobnet-ikev1"
-| 10.2.0.0/16===192.168.0.2[@sun]...%virtual[@alice]===?
+| 10.2.0.0/16===192.168.0.2[@sun]...%any[@alice]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 |   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
-RC=0 "bobnet-ikev1": 10.2.0.0/16===192.168.0.2[@sun]...%virtual[@alice]===?; unrouted; eroute owner: #0
+RC=0 "bobnet-ikev1": 10.2.0.0/16===192.168.0.2[@sun]...%any[@alice]; unrouted; eroute owner: #0
 RC=0 "bobnet-ikev1":     myip=unset; hisip=unset;
 RC=0 "bobnet-ikev1":   keys: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none...
 RC=0 "bobnet-ikev1":        ....1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none
 RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "bobnet-ikev1":   IKE algorithms wanted: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP2048(14); flags=-strict
 RC=0 "bobnet-ikev1":   IKE algorithms found:  3des(3)_192-hmac_md5_96(1)_128-prfmd5(1)-MODP2048(14)
 RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
@@ -86,20 +86,12 @@ RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 | searching for connection with policy = /!IKEv1
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK (bobnet-ikev1)
 | find_host_connection2 returns bobnet-ikev1 (ike=none/none)
-| local endpoint has virt (vnet/vhost) set without wildcards - needs instantiation
-| alg_info_addref() alg_info->ref_cnt=2
-| alg_info_addref() alg_info->ref_cnt=2
-| find_host_pair: looking for me=192.168.0.2:500 %any him=93.184.216.34:500 exact-match
-| find_host_pair: comparing to me=192.168.0.2:500 %any him=0.0.0.0:500
-| find_host_pair: concluded with bobnet-ikev1
-| connect_to_host_pair: 192.168.0.2:500 %any 93.184.216.34:500 -> hp:bobnet-ikev1
-| instantiated "bobnet-ikev1" for 93.184.216.34
 | creating state object #1 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | inserting state object #1 bucket: 5
-./v1rwnatN1 responding to Main Mode from unknown peer 93.184.216.34
+./v1rwnatN1 responding to Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -179,11 +171,6 @@ sending 136 bytes for STATE_MAIN_R0 through eth0:500 [192.168.0.2:500] to 93.184
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
-./v1rwnatN1 deleting connection "bobnet-ikev1" [whackfd=4294967295] instance with peer 93.184.216.34 {isakmp=#0/ipsec=#0}
-| pass 0: considering CHILD SAs to delete
-| pass 1: considering PARENT SAs to delete
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
-| alg_info_delref(ADDRESS) alg_info->ref_cnt=2
 | freeing state object #1
 ./v1rwnatN1 deleting connection
 | pass 0: considering CHILD SAs to delete

@@ -294,6 +294,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* good, things checked out!. now create child state */
     DBG(DBG_CONTROL, DBG_log("PARENT SA now authenticated, building child and reply"));
 
+    st->st_vti_mark       = c->spd.this.vtinum;
+    st->st_vti_markmask   = 0xffffffff;
+
     /* now that we now who they are, give them a higher crypto priority! */
     st->st_import = pcim_known_crypto;
 

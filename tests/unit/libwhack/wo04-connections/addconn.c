@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     wm1.left.xauth_name   = "hello";
     wm1.left.modecfg_server = TRUE;
     wm1.left.modecfg_client = FALSE;
-    wm1.left.tundev         = 1234;
+    wm1.left.vtinum         = 1234;
     wm1.left.sendcert       = 0;
     wm1.left.certtype       = 1;
     wm1.left.host_addr_name = "example.com";

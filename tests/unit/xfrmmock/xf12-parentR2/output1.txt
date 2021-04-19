@@ -980,7 +980,7 @@ writing netlink policy for tun.10000@132.213.238.7
 00d0: 32 00 00 00  02 00 00 00  c0 a8 01 01  00 00 00 00
 00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
 00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff  0c 00 15 00
-0100: 02 00 00 00  ff ff ff ff
+0100: 00 04 00 00  00 00 00 00
 ./xf12-parentR2 add inbound eroute fd68:c9f9:4157:2:0:1::/96:0 --0-> fd68:c9f9:4157::/64:0 => tun.10000@132.213.238.7 succeeded
 | sr for #2: unrouted (eroute_owner: #0)
 | route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
@@ -998,7 +998,7 @@ writing netlink policy for tun.0@192.168.1.1
 00d0: 32 00 00 00  02 00 00 00  84 d5 ee 07  00 00 00 00
 00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
 00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff  0c 00 15 00
-0100: 02 00 00 00  ff ff ff ff
+0100: 00 04 00 00  00 00 00 00
 ./xf12-parentR2 eroute_connection add eroute fd68:c9f9:4157::/64:0 --0-> fd68:c9f9:4157:2:0:1::/96:0 => tun.0@192.168.1.1 succeeded
 | command executing up-client
 | executing up

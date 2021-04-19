@@ -198,6 +198,9 @@ struct end {
 
     struct ietfAttrList *groups;/* access control groups */
 
+    /* if a Virtual Interface value should be configured */
+    unsigned int vtinum;
+
 /*#ifdef XAUTH*/
     bool xauth_server;
     bool xauth_client;

@@ -178,8 +178,6 @@ state_hash(const u_char *icookie, const u_char *rcookie, unsigned *state_bucket)
     return &statetable[bucket];
 }
 
-static uint32_t vti_counter = 1;
-
 /* Get a state object.
  * Caller must schedule an event for this object so that it doesn't leak.
  * Caller must insert_state().
@@ -206,9 +204,6 @@ new_state(void)
     DBG(DBG_CONTROL, DBG_log("creating state object #%lu at %p"
 			     , st->st_serialno, (void *) st));
 
-    /* ugly hack to validate kernel code is doing right thing */
-    st->st_vti_mark = vti_counter++;
-    st->st_vti_markmask = 0xffffffff;
     return st;
 }
 
@@ -1011,6 +1006,9 @@ duplicate_state(struct state *st)
     nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
+    nst->st_vti_mark     = st->st_vti_mark;
+    nst->st_vti_markmask = st->st_vti_markmask;
+
     nst->st_event      = NULL;
     nst->st_sa_logged  = FALSE;
 

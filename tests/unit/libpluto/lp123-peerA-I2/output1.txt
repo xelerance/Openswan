@@ -415,7 +415,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 | emitting 16 raw bytes of ipv6 low into IKEv2 Traffic Selector
 | ipv6 low  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 | emitting 16 raw bytes of ipv6 high into IKEv2 Traffic Selector
-| ipv6 high  ff ff ff ff  f5 ff ff ff  ff ff ff ff  ff ff ff ff
+| ipv6 high  ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
 |    next-payload: ISAKMP_NEXT_v2TSr [@1442=0x2d]
@@ -430,7 +430,7 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 | emitting 16 raw bytes of ipv6 low into IKEv2 Traffic Selector
 | ipv6 low  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 | emitting 16 raw bytes of ipv6 high into IKEv2 Traffic Selector
-| ipv6 high  ff ff ff ff  f5 ff ff ff  ff ff ff ff  ff ff ff ff
+| ipv6 high  ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
 | emitting 14 raw bytes of padding and length into cleartext
@@ -532,10 +532,10 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 |   00 80 03 00  00 08 03 00  00 02 00 00  00 08 05 00
 |   00 00 2d 00  00 30 01 00  00 00 08 00  00 28 00 00
 |   ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 ff ff  ff ff f5 ff  ff ff ff ff  ff ff ff ff
+|   00 00 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff 00 00  00 30 01 00  00 00 08 00  00 28 00 00
 |   ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 ff ff  ff ff f5 ff  ff ff ff ff  ff ff ff ff
+|   00 00 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff 00 01  02 03 04 05  06 07 08 09  0a 0b 0c 0d
 | data after encryption:
 |   67 a7 d9 8f  d5 3a c4 a5  01 f5 8f f2  15 07 1f 4b
@@ -630,11 +630,11 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 |   22 61 22 3d  da 9a 55 87  05 9c 0f 35  d4 6d 71 d4
 |   be a5 3b 8a  b2 5a 2a 28  9a a6 2a fa  5b 9b ac c9
 |   b6 f6 46 10  4a 4d 79 5b  80 13 1b dc  e6 b8 53 90
-|   aa f9 86 35  c6 aa 3c 45  fb 89 ce 38  7d 2d 3c ea
-|   59 7f 9b 5b  ae cf 16 bf  b3 08 92 11  20 15 fa 56
-|   a9 38 32 7d  99 a2 fa fb  c1 03 7f 69  29 ee 6b 5a
-|   11 bb b5 11  91 26 3e c6  ce 16 d4 63  66 37 a5 29
-|   13 f3 74 77  e7 fe aa fc  49 02 16 67  53 88 23 6e
+|   e1 d9 54 eb  ed 94 ff 9d  c2 09 b9 d1  f8 1e af ac
+|   a1 8c c6 63  d4 9e d8 d4  e1 6d 4b 36  01 6f 9d 79
+|   c5 66 54 cc  73 1f 00 2d  d4 05 eb b9  99 f3 38 39
+|   30 fb 92 a1  a4 e0 05 ec  fa 8c 43 97  86 be 67 34
+|   ba 25 fb 76  f7 36 b4 3e  9a 2d f5 62  9c 14 b4 bf
 | data being hmac:  8d 0e 0f 10  11 12 13 14  78 5b 90 fe  dd d1 18 2d
 |   2e 20 23 08  00 00 00 01  00 00 06 50  23 00 06 34
 |   8d 0e 0f 10  11 12 13 14  15 16 17 18  19 1a 1b 1c
@@ -730,13 +730,13 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [fe80::8054:3ef
 |   22 61 22 3d  da 9a 55 87  05 9c 0f 35  d4 6d 71 d4
 |   be a5 3b 8a  b2 5a 2a 28  9a a6 2a fa  5b 9b ac c9
 |   b6 f6 46 10  4a 4d 79 5b  80 13 1b dc  e6 b8 53 90
-|   aa f9 86 35  c6 aa 3c 45  fb 89 ce 38  7d 2d 3c ea
-|   59 7f 9b 5b  ae cf 16 bf  b3 08 92 11  20 15 fa 56
-|   a9 38 32 7d  99 a2 fa fb  c1 03 7f 69  29 ee 6b 5a
-|   11 bb b5 11  91 26 3e c6  ce 16 d4 63  66 37 a5 29
-|   13 f3 74 77  e7 fe aa fc  49 02 16 67  53 88 23 6e
+|   e1 d9 54 eb  ed 94 ff 9d  c2 09 b9 d1  f8 1e af ac
+|   a1 8c c6 63  d4 9e d8 d4  e1 6d 4b 36  01 6f 9d 79
+|   c5 66 54 cc  73 1f 00 2d  d4 05 eb b9  99 f3 38 39
+|   30 fb 92 a1  a4 e0 05 ec  fa 8c 43 97  86 be 67 34
+|   ba 25 fb 76  f7 36 b4 3e  9a 2d f5 62  9c 14 b4 bf
 | out calculated auth:
-|   76 c7 6b 11  de 6d b2 dd  59 3c 0f 85  f5 2a 0a 6f
+|   5e 83 48 a5  26 f6 96 b8  db 16 59 ed  21 2d d9 06
 | #2 complete v2 state transition with STF_OK
 ./peerA-I2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -838,12 +838,12 @@ sending 1616 bytes for STATE_PARENT_I1 through eth0:500 [fe80::8054:3eff:fe9a:d3
 |   22 61 22 3d  da 9a 55 87  05 9c 0f 35  d4 6d 71 d4
 |   be a5 3b 8a  b2 5a 2a 28  9a a6 2a fa  5b 9b ac c9
 |   b6 f6 46 10  4a 4d 79 5b  80 13 1b dc  e6 b8 53 90
-|   aa f9 86 35  c6 aa 3c 45  fb 89 ce 38  7d 2d 3c ea
-|   59 7f 9b 5b  ae cf 16 bf  b3 08 92 11  20 15 fa 56
-|   a9 38 32 7d  99 a2 fa fb  c1 03 7f 69  29 ee 6b 5a
-|   11 bb b5 11  91 26 3e c6  ce 16 d4 63  66 37 a5 29
-|   13 f3 74 77  e7 fe aa fc  49 02 16 67  53 88 23 6e
-|   76 c7 6b 11  de 6d b2 dd  59 3c 0f 85  f5 2a 0a 6f
+|   e1 d9 54 eb  ed 94 ff 9d  c2 09 b9 d1  f8 1e af ac
+|   a1 8c c6 63  d4 9e d8 d4  e1 6d 4b 36  01 6f 9d 79
+|   c5 66 54 cc  73 1f 00 2d  d4 05 eb b9  99 f3 38 39
+|   30 fb 92 a1  a4 e0 05 ec  fa 8c 43 97  86 be 67 34
+|   ba 25 fb 76  f7 36 b4 3e  9a 2d f5 62  9c 14 b4 bf
+|   5e 83 48 a5  26 f6 96 b8  db 16 59 ed  21 2d d9 06
 1: output closed
 ./peerA-I2 deleting connection
 | pass 0: considering CHILD SAs to delete

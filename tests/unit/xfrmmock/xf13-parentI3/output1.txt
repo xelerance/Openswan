@@ -856,8 +856,8 @@ writing netlink for esp.12345678@192.168.1.1
 0160: 61 65 73 00  35 36 00 00  00 00 00 00  00 00 00 00
 01a0: 80 00 00 00  36 99 5c dd  82 37 91 bd  af 84 94 1e
 01b0: fd 34 cd 52
-| creating SPD to 132.213.238.7->spi=00010000@192.168.1.1 proto=4 vti mark=00000002
-| passing xfrm mark/mask=00000002/ffffffff
+| creating SPD to 132.213.238.7->spi=00010000@192.168.1.1 proto=4 vti mark=00000801
+| passing xfrm mark/mask=00000801/00000000
 writing netlink policy for tun.10000@192.168.1.1
 0000: 08 01 00 00  19 00 05 00  00 00 00 00  00 00 00 00
 0010: fd 68 c9 f9  41 57 00 02  00 00 00 01  00 00 00 00
@@ -871,15 +871,15 @@ writing netlink policy for tun.10000@192.168.1.1
 00d0: 32 00 00 00  02 00 00 00  84 d5 ee 07  00 00 00 00
 00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
 00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff  0c 00 15 00
-0100: 02 00 00 00  ff ff ff ff
+0100: 01 08 00 00  00 00 00 00
 ./xf13-parentI3 add inbound eroute fd68:c9f9:4157::/64:0 --0-> fd68:c9f9:4157:2:0:1::/96:0 => tun.10000@192.168.1.1 succeeded
 | state #2: set up incoming SA, ref=0/4294901761
 | sr for #2: unrouted (eroute_owner: #0)
 | route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
 | route_and_eroute with c: parker1--jj2 (next: none) ero:null esr:{(nil)} ro:null rosr:{(nil)} and state: 2
 | eroute_connection: between 192.168.1.1<->132.213.238.7
-| creating SPD to 192.168.1.1->spi=00000000@132.213.238.7 proto=4 vti mark=00000002
-| passing xfrm mark/mask=00000002/ffffffff
+| creating SPD to 192.168.1.1->spi=00000000@132.213.238.7 proto=4 vti mark=00000801
+| passing xfrm mark/mask=00000801/00000000
 writing netlink policy for tun.0@132.213.238.7
 0000: 08 01 00 00  19 00 05 00  00 00 00 00  00 00 00 00
 0010: fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
@@ -893,7 +893,7 @@ writing netlink policy for tun.0@132.213.238.7
 00d0: 32 00 00 00  02 00 00 00  c0 a8 01 01  00 00 00 00
 00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
 00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff  0c 00 15 00
-0100: 02 00 00 00  ff ff ff ff
+0100: 01 08 00 00  00 00 00 00
 ./xf13-parentI3 eroute_connection add eroute fd68:c9f9:4157:2:0:1::/96:0 --0-> fd68:c9f9:4157::/64:0 => tun.0@132.213.238.7 succeeded
 | command executing up-client
 | executing up

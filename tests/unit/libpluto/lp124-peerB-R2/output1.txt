@@ -1228,14 +1228,14 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |   startport: 0
 |   endport: 65535
 |   ip low: ::
-|   ip high: ffff:ffff:f5ff:ffff:ffff:ffff:ffff:ffff
+|   ip high: ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 | printing contents struct traffic_selector
 |   ts_type: IKEv2_TS_IPV6_ADDR_RANGE
 |   ipprotoid: 0
 |   startport: 0
 |   endport: 65535
 |   ip low: ::
-|   ip high: ffff:ffff:f5ff:ffff:ffff:ffff:ffff:ffff
+|   ip high: ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 |    next-payload: ISAKMP_NEXT_v2SA [@1135=0x21]
 | *****emit IKEv2 Security Association Payload:
 |    critical bit: none
@@ -1314,7 +1314,7 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 | emitting 16 raw bytes of ipv6 low into IKEv2 Traffic Selector
 | ipv6 low  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 | emitting 16 raw bytes of ipv6 high into IKEv2 Traffic Selector
-| ipv6 high  ff ff ff ff  f5 ff ff ff  ff ff ff ff  ff ff ff ff
+| ipv6 high  ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
 |    next-payload: ISAKMP_NEXT_v2TSr [@1379=0x2d]
@@ -1329,7 +1329,7 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 | emitting 16 raw bytes of ipv6 low into IKEv2 Traffic Selector
 | ipv6 low  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 | emitting 16 raw bytes of ipv6 high into IKEv2 Traffic Selector
-| ipv6 high  ff ff ff ff  f5 ff ff ff  ff ff ff ff  ff ff ff ff
+| ipv6 high  ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
 | ikev2_derive_child_keys: using prf-hmac-sha2-256 for prf+ (SA #2 cloned from #1)
@@ -1443,10 +1443,10 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |   0e 00 80 03  00 00 08 03  00 00 0c 00  00 00 08 05
 |   00 00 00 2d  00 00 30 01  00 00 00 08  00 00 28 00
 |   00 ff ff 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 ff  ff ff ff f5  ff ff ff ff  ff ff ff ff
+|   00 00 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff 00  00 00 30 01  00 00 00 08  00 00 28 00
 |   00 ff ff 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 ff  ff ff ff f5  ff ff ff ff  ff ff ff ff
+|   00 00 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff 00  01 02 03 04  05 06 07 08  09 0a 0b 0c
 | data after encryption:
 |   3e b5 e9 fd  fb db 7a 65  31 2f fe aa  0a b0 2f 07
@@ -1537,11 +1537,11 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |   3d 75 90 35  a5 c5 38 57  d0 55 25 81  bc 47 d2 c1
 |   22 e3 ea fb  ed 6d 3f a2  ff ec 7f 1c  84 88 3c f9
 |   82 ea e2 90  d0 60 0d d4  82 7b 26 08  2a 47 40 64
-|   dd 6e eb 70  49 43 52 20  cc a9 46 4e  2f 2a f7 2a
-|   da 12 c6 65  22 81 0d 67  bd 32 19 38  df 89 a7 d3
-|   74 78 65 73  db 85 7a 79  94 fc 05 2e  0a 54 d4 be
-|   3c 7c 9e 8f  20 72 34 a0  47 af 62 eb  2b 41 fd f4
-|   9c f6 d8 49  13 64 e5 c1  e7 6c 92 81  11 06 45 5e
+|   01 28 e1 68  29 61 3a 40  b0 ab b3 a8  1a 9d a6 b7
+|   5d 03 4f 3c  87 ec dc d0  28 3d 05 ac  d0 ce 61 c7
+|   7d 40 bd 79  6a 06 6c 15  c8 07 a1 4c  44 61 5f cb
+|   b6 cb da 4a  e7 e0 8b 52  b8 be 18 7b  8f df 2f 1b
+|   3d 8b ca b4  6f ff 31 47  4e 57 50 75  b9 78 04 79
 | data being hmac:  8d 0e 0f 10  11 12 13 14  78 5b 90 fe  dd d1 18 2d
 |   2e 20 23 20  00 00 00 01  00 00 06 10  24 00 05 f4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1633,18 +1633,18 @@ sending 457 bytes for STATE_IKEv2_START through eth0:500 [fe80::ec68:7cff:fe0c:9
 |   3d 75 90 35  a5 c5 38 57  d0 55 25 81  bc 47 d2 c1
 |   22 e3 ea fb  ed 6d 3f a2  ff ec 7f 1c  84 88 3c f9
 |   82 ea e2 90  d0 60 0d d4  82 7b 26 08  2a 47 40 64
-|   dd 6e eb 70  49 43 52 20  cc a9 46 4e  2f 2a f7 2a
-|   da 12 c6 65  22 81 0d 67  bd 32 19 38  df 89 a7 d3
-|   74 78 65 73  db 85 7a 79  94 fc 05 2e  0a 54 d4 be
-|   3c 7c 9e 8f  20 72 34 a0  47 af 62 eb  2b 41 fd f4
-|   9c f6 d8 49  13 64 e5 c1  e7 6c 92 81  11 06 45 5e
+|   01 28 e1 68  29 61 3a 40  b0 ab b3 a8  1a 9d a6 b7
+|   5d 03 4f 3c  87 ec dc d0  28 3d 05 ac  d0 ce 61 c7
+|   7d 40 bd 79  6a 06 6c 15  c8 07 a1 4c  44 61 5f cb
+|   b6 cb da 4a  e7 e0 8b 52  b8 be 18 7b  8f df 2f 1b
+|   3d 8b ca b4  6f ff 31 47  4e 57 50 75  b9 78 04 79
 | out calculated auth:
-|   ff 15 57 9e  1e 7b 3d 82  a2 1a de 2a  37 77 20 79
+|   b1 19 63 b4  99 6c 22 c4  be 18 69 68  19 f7 6d 23
 | #2 complete v2 state transition with STF_OK
 ./peerB-R2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
 ./peerB-R2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fc1 cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
-./peerB-R2 negotiated tunnel [::,ffff:ffff:f5ff:ffff:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [::,ffff:ffff:f5ff:ffff:ffff:ffff:ffff:ffff proto:0 port:0-65535]
+./peerB-R2 negotiated tunnel [::,ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [::,ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff proto:0 port:0-65535]
 ./peerB-R2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc_128-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
 | sending reply packet to fe80::8054:3eff:fe9a:d3f4:500 (from port 500)
 sending 1552 bytes for STATE_PARENT_R1 through eth0:500 [fe80::ec68:7cff:fe0c:9aa4:500] to fe80::8054:3eff:fe9a:d3f4:500 (using #2)
@@ -1739,12 +1739,12 @@ sending 1552 bytes for STATE_PARENT_R1 through eth0:500 [fe80::ec68:7cff:fe0c:9a
 |   3d 75 90 35  a5 c5 38 57  d0 55 25 81  bc 47 d2 c1
 |   22 e3 ea fb  ed 6d 3f a2  ff ec 7f 1c  84 88 3c f9
 |   82 ea e2 90  d0 60 0d d4  82 7b 26 08  2a 47 40 64
-|   dd 6e eb 70  49 43 52 20  cc a9 46 4e  2f 2a f7 2a
-|   da 12 c6 65  22 81 0d 67  bd 32 19 38  df 89 a7 d3
-|   74 78 65 73  db 85 7a 79  94 fc 05 2e  0a 54 d4 be
-|   3c 7c 9e 8f  20 72 34 a0  47 af 62 eb  2b 41 fd f4
-|   9c f6 d8 49  13 64 e5 c1  e7 6c 92 81  11 06 45 5e
-|   ff 15 57 9e  1e 7b 3d 82  a2 1a de 2a  37 77 20 79
+|   01 28 e1 68  29 61 3a 40  b0 ab b3 a8  1a 9d a6 b7
+|   5d 03 4f 3c  87 ec dc d0  28 3d 05 ac  d0 ce 61 c7
+|   7d 40 bd 79  6a 06 6c 15  c8 07 a1 4c  44 61 5f cb
+|   b6 cb da 4a  e7 e0 8b 52  b8 be 18 7b  8f df 2f 1b
+|   3d 8b ca b4  6f ff 31 47  4e 57 50 75  b9 78 04 79
+|   b1 19 63 b4  99 6c 22 c4  be 18 69 68  19 f7 6d 23
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 | freeing state object #1

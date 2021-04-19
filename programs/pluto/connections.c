@@ -735,6 +735,7 @@ extract_end(struct connection *conn
     }
 
     dst->sendcert =  src->sendcert;
+    dst->vtinum   =  src->vtinum;
 
     /* save the originally provided hint */
     dst->saved_hint_addr = dst->host_addr;

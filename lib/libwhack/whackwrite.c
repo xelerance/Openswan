@@ -228,7 +228,7 @@ static void whack_cbor_encode_end(QCBOREncodeContext *qec, struct whack_end *we)
   ADDIntIfNotZero(qec, WHACK_OPT_MODECFG_CLIENT, we->modecfg_client);
   ADDIntIfNotZero(qec, WHACK_OPT_CERTPOLICY, we->sendcert);
   ADDIntIfNotZero(qec, WHACK_OPT_CERTTYPE,   we->certtype);
-  ADDIntIfNotZero(qec, WHACK_OPT_TUNDEV,     we->tundev);
+  ADDIntIfNotZero(qec, WHACK_OPT_VTINUM,     we->vtinum);
 
   /* host_nexthop */
   whack_cbor_encode_some_ipaddress_ToMapN(qec, WHACK_OPT_END_HOST_NEXTHOP

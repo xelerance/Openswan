@@ -469,8 +469,8 @@ void whack_cbor_process_end(QCBORDecodeContext *qdc
       case WHACK_OPT_CERTTYPE:
         end->certtype= item.val.int64;
         break;
-      case WHACK_OPT_TUNDEV:
-        end->tundev= item.val.int64;
+      case WHACK_OPT_VTINUM:
+        end->vtinum= item.val.int64;
         break;
       default:
         whack_cbor_consume_item(qdc, &item);

@@ -394,6 +394,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
     {"sendcert",       kv_conn|kv_auto|kv_leftright, kt_enum,   KNCF_SENDCERT, &kw_sendcert_list},
     {"ca",             kv_conn|kv_auto|kv_leftright, kt_string, KSCF_CA,NOT_ENUM},
+    {"vtinum",         kv_conn|kv_auto|kv_leftright, kt_number, KNCF_VTINUM,NOT_ENUM},
 
     /* these are conn statements which are not left/right */
     {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
