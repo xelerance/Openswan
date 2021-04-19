@@ -160,9 +160,9 @@ int n;
 	}
 	else {
 		result.s6_addr32[0] = 0;
-		result.s6_addr32[0] = 0;
-		result.s6_addr32[0] = 0;
-		result.s6_addr32[0] = 0;
+		result.s6_addr32[1] = 0;
+		result.s6_addr32[2] = 0;
+		result.s6_addr32[3] = 0;
 	}
 
 	return result;
