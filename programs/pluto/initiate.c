@@ -773,14 +773,18 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	cannot_oppo(NULL, b, "no routed template covers this pair");
 	work = 0;
     }
-    else if (c->kind == CK_TEMPLATE && (c->policy & POLICY_OPPO)==0)
+    else if (c->kind == CK_TEMPLATE
+             && isanyaddr(&c->spd.that.host_addr)
+             && (c->policy & POLICY_OPPO)==0)
     {
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
 	       , ours, ourport, his, hisport, b->transport_proto);
 	work = 0;
     }
-    else if (c->kind != CK_TEMPLATE)
+    else if (c->kind != CK_TEMPLATE
+             || (c->kind == CK_TEMPLATE
+                 && !isanyaddr(&c->spd.that.host_addr)))
     {
 	/* We've found a connection that can serve.
 	 * Do we have to initiate it?
