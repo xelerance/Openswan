@@ -999,8 +999,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         st1->st_ts_this = ikev2_end_to_ts(&bsr->this, pst->st_localaddr);
         st1->st_ts_that = ikev2_end_to_ts(&bsr->that, pst->st_remoteaddr);
-        ikev2_print_ts(&st1->st_ts_this);
-        ikev2_print_ts(&st1->st_ts_that);
+        DBG(DBG_EMITTING,
+            ikev2_print_ts(&st1->st_ts_this);
+            ikev2_print_ts(&st1->st_ts_that););
     }
 
     /* note that st1 starts == st, but a child SA creation can change that */
