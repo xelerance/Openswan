@@ -169,6 +169,8 @@ extern void init_vendorid(void);
 extern void init_fake_vendorid(void);
 
 struct msg_digest;
+struct state;
+typedef struct packet_byte_stream pb_stream;
 void handle_vendorid (struct msg_digest *md, const char *vid, size_t len, struct state *st);
 
 bool out_vendorid (u_int8_t np, pb_stream *outs, enum known_vendorid vid);

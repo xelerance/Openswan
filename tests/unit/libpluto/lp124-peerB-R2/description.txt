@@ -1,0 +1,9 @@
+This test case is an IKEv2 responder -- it uses a certificate with a wildcard
+right= policy that accepts any ID that is properly validated.
+It is otherwise identical to lp24.
+
+In this test case, the policy is to permit an initiator from %any to propose
+a tunnel to that end point (the /32).
+
+
+

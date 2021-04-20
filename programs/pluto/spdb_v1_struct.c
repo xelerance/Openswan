@@ -27,6 +27,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "id.h"
@@ -1747,7 +1748,7 @@ init_am_st_oakley(struct state *st, lset_t policy)
 
     passert(hash->type.oakley == OAKLEY_HASH_ALGORITHM);
     ta.prf_hash = hash->val;               /* OAKLEY_HASH_ALGORITHM */
-    ta.prf_hasher = crypto_get_hasher(ta.prf_hash);
+    ta.prf_hasher = crypto_get_hasher((enum ikev2_trans_type_integ)ta.prf_hash);
     passert(ta.prf_hasher != NULL);
 
     passert(auth->type.oakley == OAKLEY_AUTHENTICATION_METHOD);
@@ -2237,6 +2238,7 @@ parse_ipsec_sa_body(
     bool selection,                    /* if this SA is a selection, only one transform may appear */
     struct state *st)                    /* current state object */
 {
+    const struct osw_conf_options *oco = osw_init_options();
     const struct connection *c = st->st_connection;
     u_int32_t ipsecdoisit;
     pb_stream next_proposal_pbs;
@@ -2656,7 +2658,7 @@ AA                        XXXX;
                     continue;          /* unwanted compression proposal */
               }
 #endif
-              if (!can_do_IPcomp)
+              if (!oco->can_do_IPcomp)
               {
                     openswan_log("compression proposed by %s, but KLIPS is not configured with IPCOMP"
                         , ip_str(&c->spd.that.host_addr));

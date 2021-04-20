@@ -85,6 +85,8 @@ noklips_raw_eroute(const ip_address *this_host UNUSED
 		   , unsigned int op UNUSED
 		   , const char *text_said UNUSED
 		   , char *policy_label UNUSED
+                   , uint32_t vti_mark UNUSED
+                   , uint32_t vti_markmask UNUSED
 		   )
 {
   return TRUE;

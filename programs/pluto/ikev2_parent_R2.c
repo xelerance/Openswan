@@ -294,6 +294,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* good, things checked out!. now create child state */
     DBG(DBG_CONTROL, DBG_log("PARENT SA now authenticated, building child and reply"));
 
+    st->st_vti_mark       = c->spd.this.vtinum;
+    st->st_vti_markmask   = 0xffffffff;
+
     /* now that we now who they are, give them a higher crypto priority! */
     st->st_import = pcim_known_crypto;
 
@@ -324,6 +327,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         pb_stream      e_pbs, e_pbs_cipher;
         stf_status     ret;
         bool send_cert = FALSE;
+        struct ikev2_id r_id;
 
         /* make sure HDR is at start of a clean buffer */
         zero(reply_buffer);
@@ -369,7 +373,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
         /* send out the IDr payload */
         {
-            struct ikev2_id r_id;
             pb_stream r_id_pbs;
             chunk_t id_b;
             struct hmac_ctx id_ctx;
@@ -378,8 +381,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
             hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher
                             , st->st_skey_pr);
-            build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
-                             &c->spd.this);
+            build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b
+                             , &c->spd.this
+                             , &st->ikev2.st_peer_id);
             r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
             r_id.isai_np = 0;
@@ -434,7 +438,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             child_SA_present = FALSE;
             //np = ISAKMP_NEXT_NONE;
         } else {
-            DBG_log("CHILD SA proposals received");
+            openswan_log("received CHILD SA proposal(s) will be processed");
             child_SA_present = TRUE;
             //np = ISAKMP_NEXT_v2SA;
         }

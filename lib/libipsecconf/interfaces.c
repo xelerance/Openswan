@@ -38,16 +38,16 @@
 
 char *starter_find_physical_iface(int sock, char *iface)
 {
-	static char _if[IFNAMSIZ+1];
+	static char _if[IFNAMSIZ];
 	char *b;
 	struct ifreq req;
 	FILE *f;
 	char line[256];
 
-	strncpy(req.ifr_name, iface, IFNAMSIZ);
+	strncpy(req.ifr_name, iface, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)==0) {
 		if (req.ifr_flags & IFF_UP) {
-			strncpy(_if, iface, IFNAMSIZ);
+			strncpy(_if, iface, IFNAMSIZ-1);
 			return _if;
 		}
 	}
@@ -68,19 +68,19 @@ char *starter_find_physical_iface(int sock, char *iface)
 					if ((strncmp(line,"IP_PHYS=\"", 9)==0) &&
 						(line[strlen(line)-2]=='"') &&
 						(line[strlen(line)-1]=='\n')) {
-						strncpy(_if, line+9, MIN(strlen(line)-11,IFNAMSIZ));
+						strncpy(_if, line+9, MIN(strlen(line)-11,IFNAMSIZ-1));
 						break;
 					}
 					else if ((strncmp(line,"IP_PHYS=", 8)==0) &&
 						(line[8]!='"') &&
 						(line[strlen(line)-1]=='\n')) {
-						strncpy(_if, line+8, MIN(strlen(line)-9,IFNAMSIZ));
+						strncpy(_if, line+8, MIN(strlen(line)-9,IFNAMSIZ-1));
 						break;
 					}
 				}
 				fclose(f);
 				if (*_if) {
-					strncpy(req.ifr_name, _if, IFNAMSIZ);
+					strcpy(req.ifr_name, _if);
 					if (ioctl(sock, SIOCGIFFLAGS, &req)==0) {
 						if (req.ifr_flags & IFF_UP) {
 							return _if;
@@ -108,7 +108,7 @@ int starter_iface_find(char *iface, int af, ip_address *dst, ip_address *nh)
 	phys = starter_find_physical_iface(sock, iface);
 	if (!phys) goto failed;
 
-	strncpy(req.ifr_name, phys, IFNAMSIZ);
+	strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)!=0) goto failed;
 	if (!(req.ifr_flags & IFF_UP)) goto failed;
 

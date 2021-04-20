@@ -25,10 +25,8 @@
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
-#include "seam_vendor.c"
 #include "seam_pending.c"
 #include "seam_kernel.c"
-#include "seam_io.c"
 #include "seam_log.c"
 #include "seam_west.c"
 #include "seam_xauth.c"
@@ -47,6 +45,7 @@
 #include "seam_x509.c"
 #include "seam_delete.c"
 #include "seam_ke.c"
+#include "seam_io.c"
 
 const char *progname=NULL;
 int verbose=0;
@@ -118,9 +117,9 @@ int main(int argc, char *argv[])
 
     kick_adns_connection_lookup(c1, &c1->spd.that, TRUE);
 
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

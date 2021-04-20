@@ -172,9 +172,9 @@ int main(int argc, char *argv[])
     process_dns_results();
 
     stop_adns();
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

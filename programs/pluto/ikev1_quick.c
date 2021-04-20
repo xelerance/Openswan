@@ -36,6 +36,8 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
+#include "oswconf.h"
+
 #include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
@@ -810,6 +812,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 		 , struct pluto_crypto_req *r
 		 , struct state *st)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
     struct state *isakmp_sa = state_with_serialno(st->st_clonedfrom);
     struct connection *c = st->st_connection;
@@ -874,7 +877,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
     {
 	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
 
-	if (can_do_IPcomp)
+	if (oco->can_do_IPcomp)
 	    pm |= POLICY_COMPRESS;
 
 	if (!out_sa(&rbody

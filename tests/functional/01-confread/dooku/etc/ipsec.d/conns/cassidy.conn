@@ -1,18 +1,33 @@
-conn dooku--cassidy-net
-	also=dooku-base
-	also=cassidy-base
-
+# this is a connection for an extrustion for a laptop
 conn dooku-base
-	left=%myip
-	leftid=@dooku.sandelman.ca
-        # rsakey AQO7PkzqA
-        leftrsasigkey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
+        leftid=@example.net
+        left=%any
+        # rsakey AQOG4BT7Z
+        leftrsasigkey=0sAQOG4BT7ZQJrG1vedsOqUX0ar5KK7VBG6ElEzMbEyWsqN8EYq9/FuTQoWl8M0C0NBrVGIH/v3SFQT/7pX9wZ2Xl1MDhrSbcEXedmtev5xUJS5ReUQ570gVIXU254DgYRONdjTudvgl07s6zaTLGx0qAXsh8Ls7OqjdfjHLKRvHmM899ZsUlNkZUinUr4xKeLwo6DpnZAVziz+AIwo6cbgpwOMiDClPYE0Xh5CPdKcHZfwIaKHABYdaiY648XYjxat5gu6imG7GG19mh6xAB5rQ1ID67qe3l56y9xE6L/k48aDrU/boArJXvkfzR9vIy1/3wo6iV3khzHRQ+tWmnfgpbOEtOdJu0QgDzQj98Ec5bZv5il
 
 conn cassidy-base
-	right=cassidy.sandelman.ca
-	rightid=@cassidy.sandelman.ca
-        # rsakey AQO05ofzF
-        rightrsasigkey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
+        ikev2=propose
+        right=93.184.216.34
+        rightid=@example.com
+        # rsakey AQNdKx3bw
+        rightrsasigkey=0sAQNdKx3bwSir97QW1ToPFxkPwBZMcA8l0sRjYirZIaus7TkIBBREeV/5dW/231Q7yey3kTlVaigUxC/hGYWPtys60btmYgcKCAkkmUCSJnfRTd8fbkyTW3JwlxF3xgD9deHMjvswbx1gx8aVxZCJz+u3p6jY+1H17fK1mKcw1sVAyrfQQ0m46CRFrHPwKcXFip20/H0RrTICblhbvsM5CA468D9ePDlse39hqp+Tg14mIoFQ7sEm6abJ8eiHHD8WXQY5inT1q+7D26Q0TxISHp8I2mMtoTGRTUu0W450h+EypdQTu4MSmneCZDuYkQFHEADQ7V8fFTfnrGf5CYohX6MZK3zv5IhfbtMoATKmjNEIRalv
+        #
 
+conn dooku--cassidy-net
+        also=dooku-base
+        also=cassidy-base
+        leftsubnet=2607:f0b0:f:6::/64
+        rightsubnet=2607:f0b0:f::/56
 
+conn dooku-net
+        leftsourceip=2607:f0b0:f:6::1
+        leftsubnet=2607:f0b0:f:6::/64
+        also=dooku-base
 
+conn dooku--ipv6
+        also=dooku-base
+        also=cassidy-base
+        leftsourceip=2607:f0b0:f:6::1
+        leftsubnet=2607:f0b0:f:6::/64
+        rightsubnet=2000::/3
+        auto=add

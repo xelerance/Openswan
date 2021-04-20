@@ -16,11 +16,13 @@
 
 #define TESTNAME "v1certN1"
 
-bool no_cr_send = 0;
 #define MORE_DEBUGGING DBG_PARSING
 
 static void init_local_interface(void)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
+    oco->no_cr_send = FALSE;
     nat_traversal_support_non_ike = TRUE;
     nat_traversal_support_port_floating = TRUE;
     nat_traversal_enabled = TRUE;
@@ -32,7 +34,7 @@ static void init_fake_secrets(void)
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
 
-    osw_init_ipsecdir(SAMPLEDIR "moon");
+    osw_init_ipsecdir_str(SAMPLEDIR "moon");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , SAMPLEDIR "moon.secrets"

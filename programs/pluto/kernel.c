@@ -41,6 +41,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "rnd.h"
@@ -71,14 +72,6 @@
 #include "packet.h"  /* for pb_stream in nat_traversal.h */
 #include "nat_traversal.h"
 #endif
-
-/*
- * Global variables: had to go somewhere, might as well be this file.
- */
-
-u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
-u_int16_t pluto_port4500 = NAT_IKE_UDP_PORT;	/* Pluto's port NAT */
-bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 /* test if the routes required for two different connections agree
  * It is assumed that the destination subnets agree; we are only
@@ -359,7 +352,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
-	connmtu_str[sizeof("PLUTO_MTU")+5+1],  
+	connmtu_str[sizeof("PLUTO_MTU")+5+1],
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -612,6 +605,7 @@ could_route(struct connection *c, struct spd_route *dsr)
 {
     struct spd_route *esr, *rosr;
     struct connection *ero, *ro;
+    const struct osw_conf_options *oco = osw_init_options();
 
     /* who, if anyone, owns our eroute? */
     ro = route_owner(c, dsr, &rosr, &ero, &esr); /* who owns our route? */
@@ -658,7 +652,7 @@ could_route(struct connection *c, struct spd_route *dsr)
 #endif
 
     /* if routing would affect IKE messages, reject */
-    if (kern_interface != NO_KERNEL
+    if (oco->kern_interface != NO_KERNEL
 #ifdef NAT_TRAVERSAL
 	&& c->spd.this.host_port != NAT_T_IKE_FLOAT_PORT
 #endif
@@ -978,6 +972,8 @@ raw_eroute(const ip_address *this_host
            , enum pluto_sadb_operations op
            , const char *opname USED_BY_DEBUG
 	   , char *policy_label
+           , uint32_t vti_mark
+           , uint32_t vti_markmask
 	   )
 {
     char text_said[SATOT_BUF];
@@ -998,7 +994,8 @@ raw_eroute(const ip_address *this_host
                                   , transport_proto
                                   , esatype, proto_info
                                   , use_lifetime, op, text_said
-				  , policy_label);
+				  , policy_label
+                                    , vti_mark, vti_markmask);
 
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
         loglog(RC_COMMENT, "%s eroute %s:%d --%d-> %s:%d => %s %s"
@@ -1123,7 +1120,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , transport_proto
                                        , ET_INT, null_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why
-				       , NULL_POLICY))
+				       , NULL_POLICY, 0, 0))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
 
@@ -1152,7 +1149,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , transport_proto
                        , ET_INT, null_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why
-		       , NULL_POLICY))
+		       , NULL_POLICY, 0,0))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
                                                            , transport_proto);
@@ -1175,7 +1172,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
                        , ET_INT, null_proto_info
-                       , SHUNT_PATIENCE, op, why, NULL_POLICY))
+                       , SHUNT_PATIENCE, op, why, NULL_POLICY, 0,0))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
                                                            , &that_client, 0);
@@ -1239,7 +1236,7 @@ delete_bare_shunt_ptr(struct bare_shunt **bs_pp, const char *why)
                    null_host, &that_client
                    , spi, proto, transport_proto
                    , ET_INT, null_proto_info
-                   , SHUNT_PATIENCE, ERO_DELETE, why, NULL_POLICY)) {
+                   , SHUNT_PATIENCE, ERO_DELETE, why, NULL_POLICY, 0,0)) {
         /* delete bare eroute */
         free_bare_shunt(bs_pp);
         return TRUE;
@@ -1294,6 +1291,7 @@ bool eroute_connection(struct state *st
                       , esatype
                       , proto_info, 0, op, buf2
 		      , policy_label
+                      , st->st_vti_mark, st->st_vti_markmask
 		      );
 }
 
@@ -2078,6 +2076,7 @@ setup_half_ipsec_sa(struct state *parent_st
                               , ERO_ADD_INBOUND        /* op */
 			      , "add inbound"        /* opname */
 			      , st->st_connection->policy_label
+                              , st->st_vti_mark, st->st_vti_markmask
 			      );
         }
     }
@@ -2174,6 +2173,7 @@ teardown_half_ipsec_sa(struct state *st, struct end *that, bool inbound)
                           , null_proto_info, 0
                           , ERO_DEL_INBOUND, "delete (half) inbound"
 			  , c->policy_label
+                          , st->st_vti_mark, st->st_vti_markmask
 			  );
     }
 
@@ -2470,18 +2470,6 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     /* look along the chain of policies for one with the same name */
 
 
-#if 0
-    /* XXX - mcr this made sense before, and likely will make sense
-     * again, so I'l leaving this to remind me what is up */
-    if (ero!= NULL && ero->routing == RT_UNROUTED_KEYED)
-        ero = NULL;
-
-    for (ero2 = ero; ero2 != NULL; ero2 = ero->policy_next)
-        if ((ero2->kind == CK_TEMPLATE || ero2->kind==CK_SECONDARY)
-        && streq(ero2->name, c->name))
-            break;
-#endif
-
     bspp = (ero == NULL)
         ? bare_shunt_ptr(&sr->this.client, &sr->that.client, sr->this.protocol)
         : NULL;
@@ -2501,18 +2489,6 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
         else
             eroute_installed = sag_eroute(st, sr, ERO_REPLACE, "replace");
 
-#if 0
-        /* XXX - MCR. I previously felt that this was a bogus check */
-        if (ero != NULL && ero != c && esr != sr)
-        {
-            /* By elimination, we must be eclipsing ero.  Check. */
-            passert(ero->kind == CK_TEMPLATE && streq(ero->name, c->name));
-            passert(LHAS(LELEM(RT_ROUTED_PROSPECTIVE) | LELEM(RT_ROUTED_ECLIPSED)
-                , esr->routing));
-            passert(samesubnet(&esr->this.client, &sr->this.client)
-                && samesubnet(&esr->that.client, &sr->that.client));
-        }
-#endif
         /* remember to free bspp iff we make it out of here alive */
     }
     else
@@ -2700,6 +2676,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore"
 		    , NULL_POLICY /* bare shunt are not associated with any connection so no security label*/
+                                  , 0, 0
 		    );
             }
             else if (ero != NULL)
@@ -2877,8 +2854,9 @@ install_ipsec_sa(struct state *parent_st
 void
 delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct connection *c = st->st_connection;
-    switch (kern_interface) {
+    switch (oco->kern_interface) {
     case USE_MASTKLIPS:
     case USE_KLIPS:
     case USE_NETKEY:
@@ -2930,7 +2908,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 
 #ifdef KLIPS_MAST
 		    /* in mast mode we must also delete the iptables rule */
-		    if (kern_interface == USE_MASTKLIPS)
+		    if (oco->kern_interface == USE_MASTKLIPS)
 			    (void) sag_eroute(st, sr, ERO_DELETE, "delete");
 #endif
 		}

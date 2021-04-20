@@ -176,8 +176,9 @@ int main(int argc, char *argv[])
     free_sa(sadb);
 #endif
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

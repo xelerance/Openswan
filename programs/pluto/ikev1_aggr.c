@@ -33,6 +33,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
+#include "oswconf.h"
 #include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
@@ -218,6 +219,8 @@ static stf_status
 aggr_inI1_outR1_common(struct msg_digest *md
 		       , int authtype)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* With Aggressive Mode, we get an ID payload in this, the first
      * message, so we can use it to index the preshared-secrets
      * when the IP address would not be meaningful (i.e. Road
@@ -256,7 +259,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	/* see if a wildcarded connection can be found */
  	pb_stream pre_sa_pbs = sa_pd->pbs;
  	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs) | POLICY_AGGRESSIVE;
-	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, oco->pluto_port500
 				 , KH_ANY, (ip_address*)NULL, md->sender_port, policy, POLICY_IKEV1_DISABLE, &policy_hint);
 	if (c == NULL || (c->policy & POLICY_AGGRESSIVE) == 0) {
 	    loglog(RC_LOG_SERIOUS, "initial Aggressive Mode message from %s"
@@ -471,7 +474,7 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 	struct isakmp_ipsec_id id_hd;
 	chunk_t id_b;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = auth_payload;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &r_id_pbs)
 	|| !out_chunk(id_b, &r_id_pbs, "my identity"))
@@ -782,7 +785,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 	u_char hash_val[MAX_DIGEST_LEN];
 	size_t hash_len;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	init_pbs(&id_pbs, buffer, sizeof(buffer), "identity payload");
 	id_hd.isaiid_np = ISAKMP_NEXT_NONE;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &id_pbs, NULL)
@@ -897,7 +900,7 @@ aggr_inI2_tail(struct msg_digest *md
 	chunk_t id_b;
 	pb_stream pbs;
 	pb_stream id_pbs;
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.that);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.that, &st->st_connection->spd.that.id);
 	init_pbs(&pbs, buffer, sizeof(buffer), "identity payload");
 	id_hd.isaiid_np = ISAKMP_NEXT_NONE;
 
@@ -1061,7 +1064,7 @@ aggr_outI1(int whack_sock,
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	if(sr->this.xauth_client) {
 	    if(sr->this.xauth_name) {
-		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username));
+		strncpy(st->st_xauth_username, sr->this.xauth_name, sizeof(st->st_xauth_username)-1);
 		break;
 	    }
 	}
@@ -1209,7 +1212,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	chunk_t id_b;
 	pb_stream id_pbs;
 
-	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this);
+	build_id_payload(&id_hd, &id_b, &st->st_connection->spd.this, &st->st_connection->spd.this.id);
 	id_hd.isaiid_np = ISAKMP_NEXT_VID;
 	if (!out_struct(&id_hd, &isakmp_ipsec_identification_desc, &md->rbody, &id_pbs)
 	|| !out_chunk(id_b, &id_pbs, "my identity"))

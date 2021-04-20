@@ -1,4 +1,3 @@
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include <pcap.h>
 
@@ -127,9 +126,9 @@ int main(int argc, char *argv[])
 
     delete_connection(c1, TRUE, FALSE);
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

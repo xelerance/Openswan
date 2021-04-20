@@ -61,8 +61,9 @@ int main(int argc, char *argv[])
     DBG_log("free now");
     free_sa(sadb);
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

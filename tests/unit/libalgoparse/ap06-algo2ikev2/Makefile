@@ -35,6 +35,9 @@ TESTNUMBER=ap06-algo2ikev2
 TESTNAME=algo2ikev2
 UNITTESTARGS=
 
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
+
 programs ${TESTNAME}: ${TESTNAME}.c
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c

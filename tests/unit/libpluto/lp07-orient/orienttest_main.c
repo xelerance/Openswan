@@ -10,7 +10,10 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
-    pluto_shared_secrets_file = "/dev/null";
+
+    struct osw_conf_options *oco = osw_init_options();
+    pfree_z(oco->pluto_shared_secrets_file);
+    oco->pluto_shared_secrets_file = clone_str("/dev/null", "main");
 
     if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
@@ -42,14 +45,14 @@ int main(int argc, char *argv[])
 	}
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
-        assert(orient(c1, pluto_port500));
+        assert(orient(c1, oco->pluto_port500));
     }
 
     delete_connection(c1, TRUE, FALSE);
+    tool_close_log();
 
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

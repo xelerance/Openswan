@@ -290,12 +290,11 @@ void whack_process(int whackfd, struct whack_message msg)
 		/* we do a two-step so that if either old or new would
 		 * cause the message to print, it will be printed.
 		 */
-		set_debugging(cur_debugging | msg.debugging);
+		set_debugging(cur_debugging | msg.added_debugging);
 		DBG(DBG_CONTROL
 		    , DBG_log("base debugging = %s"
-			      , bitnamesof(debug_bit_names, msg.debugging)));
-		base_debugging = msg.debugging;
-		set_debugging(base_debugging);
+			      , bitnamesof(debug_bit_names, cur_debugging)));
+                base_debugging = cur_debugging;
 	    }
 	    else if (!msg.whack_connection)
 	    {
@@ -471,7 +470,7 @@ void whack_process(int whackfd, struct whack_message msg)
 
     if (msg.whack_list & LIST_CRLS)
     {
-	list_crls(msg.whack_utc, strict_crl_policy);
+	list_crls(msg.whack_utc, oco->strict_crl_policy);
 #ifdef HAVE_THREADS
 	list_crl_fetch_requests(msg.whack_utc);
 #endif
@@ -480,7 +479,7 @@ void whack_process(int whackfd, struct whack_message msg)
 #ifdef HAVE_OCSP
     if (msg.whack_list & LIST_OCSP)
     {
-       list_ocsp_cache(msg.whack_utc, strict_crl_policy);
+       list_ocsp_cache(msg.whack_utc, oco->strict_crl_policy);
        list_ocsp_fetch_requests(msg.whack_utc);
     }
 #endif
@@ -577,7 +576,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	terminate_connection(msg.name);
 
     if (msg.whack_status)
-	show_status();
+	show_status(msg.whack_status);
 
     if (msg.whack_shutdown)
     {
@@ -593,15 +592,24 @@ done:
 /*
  * Handle a whack request.
  */
+
+static unsigned char cbor_opsn_magic[] =
+{
+    0xd9,0xd9,0xf8,0xda,
+    0x4f,0x50,0x53,0x4e,
+    0x43,0x42,0x4f,0x52
+};
+
 void
 whack_handle(int whackctlfd)
 {
-    struct whack_message msg, msg_saved;
+    unsigned char msg_buf[4096];
+    struct whack_message msg;
     struct sockaddr_un whackaddr;
     socklen_t whackaddrlen = sizeof(whackaddr);
     int whackfd = accept(whackctlfd, (struct sockaddr *)&whackaddr, &whackaddrlen);
     /* Note: actual value in n should fit in int.  To print, cast to int. */
-    ssize_t n;
+    size_t n;
     /* static int msgnum=0; */
 
     if (whackfd < 0)
@@ -616,7 +624,9 @@ whack_handle(int whackctlfd)
        return;
     }
     memset(&msg, 0, sizeof(msg));
-    n = read(whackfd, &msg, sizeof(msg));
+
+    /* first read the magic sequence */
+    n = read(whackfd, msg_buf, sizeof(msg_buf));
     if (n <= 0)
     {
 	log_errno((e, "read() failed in whack_handle()"));
@@ -626,53 +636,40 @@ whack_handle(int whackctlfd)
 
     whack_log_fd = whackfd;
 
-    msg_saved = msg;
-
-    /* DBG_log("msg %d size=%u\n", ++msgnum, n); */
-
     /* sanity check message */
     {
 	err_t ugh = NULL;
-        struct whackpacker wp;
+        chunk_t emsg;
+        struct legacy_whack_message *lwm = (struct legacy_whack_message *)msg_buf;
 
-        wp.msg = &msg;
-        wp.n   = n;
-        wp.cnt = 0;
-        wp.str_next = msg.string;
-        wp.str_roof = (unsigned char *)&msg + n;
+        if(lwm->magic == WHACK_BASIC_MAGIC) {
+            /* we are dealing with a legacy situation */
+            /* Only basic commands.  Simpler inter-version compatibility. */
+            if (lwm->whack_status) {
+                show_status(~LEMPTY);
+                whack_log_fd = NULL_FD;
+                close(whackfd);
+                return;
+            }
 
-	if ((size_t)n < offsetof(struct whack_message, whack_shutdown) + sizeof(msg.whack_shutdown))
-	{
-	    ugh = builddiag("ignoring runt message from whack: got %d bytes", (int)n);
-	}
-	else if (msg.magic != WHACK_MAGIC)
-	{
-	    if (msg.magic == WHACK_BASIC_MAGIC)
-	    {
-		/* Only basic commands.  Simpler inter-version compatibility. */
-		if (msg.whack_status)
-		    show_status();
-
-		if (msg.whack_shutdown)
-		{
-		    openswan_log("shutting down");
-		    exit_pluto(0);	/* delete lock and leave, with 0 status */
-		}
-		ugh = "";	/* bail early, but without complaint */
-	    }
-	    else
-	    {
-		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and PLUTO code."
-                                , msg.magic, WHACK_MAGIC);
-	    }
-	}
-        else if ((ugh = unpack_whack_msg(&wp)) != NULL)
-        {
-            /* nothing, ugh is already set */
+            if (lwm->whack_shutdown) {
+                openswan_log("shutting down");
+                exit_pluto(0);	/* delete lock and leave, with 0 status */
+            }
         }
-        else
-        {
-            msg.keyval.ptr = wp.str_next;    /* grab chunk */
+
+        emsg.ptr = msg_buf;
+        emsg.len = n;
+
+        /* okay, check for CBOR sequence */
+        if(n <= 12 || memcmp(msg_buf, cbor_opsn_magic, 12) != 0) {
+            u_int32_t *bu32 = (u_int32_t*)msg_buf;
+            ugh = builddiag("ignoring message from whack[size=%ld] with bad magic %08x/%08x/%08x"
+                            , n
+                            , htonl(bu32[0]), htonl(bu32[1]), htonl(bu32[2]));
+	}
+        else {
+            ugh = whack_decode_and_process(whackfd, &emsg);
         }
 
 	if (ugh != NULL)
@@ -685,11 +682,90 @@ whack_handle(int whackctlfd)
 	}
     }
 
+    return;
+}
+
+err_t pluto_set_coredir(struct osw_conf_options *oco)
+{
+    /* if a core dir was set, chdir there */
+    if(oco->coredir) {
+	if(chdir(oco->coredir) == -1) {
+            int e = errno;
+            openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
+                         e, strerror(e));
+        }
+    }
+    return NULL;
+}
+
+static void
+whack_compare_options(struct osw_conf_options *old
+                      , struct osw_conf_options *new
+                      , lset_t old_debugging)
+{
+    /* check for changed core dir */
+    if(old->coredir != new->coredir
+       && ((old->coredir == NULL && new->coredir != NULL)
+           || (old->coredir != NULL && new->coredir == NULL)
+           || strcmp(old->coredir, new->coredir) != 0)) {  /* changed */
+        pluto_set_coredir(new);
+    }
+
+    /* fix up logging interactions */
+    if (new->log_to_stderr_desired) {
+	new->log_to_syslog = FALSE;
+	if (new->log_with_timestamp_desired)
+	   new->log_with_timestamp = TRUE;
+    }
+    else
+	new->log_to_stderr = FALSE;
+
+    /* check for changed control socket */
+    if(old->ctlbase != new->ctlbase
+       && ((old->ctlbase == NULL && new->ctlbase != NULL)
+           || (old->ctlbase != NULL && new->ctlbase == NULL)
+           || strcmp(old->ctlbase, new->ctlbase) != 0)) {  /* changed */
+        update_ctl_socket_name(new);
+        init_ctl_socket(new);
+    }
+
+    /* probably more checks to do */
+    if(old_debugging != base_debugging) {
+        openswan_log("Debugging changed from %s to %s"
+                     , bitnamesof(debug_bit_names, old_debugging)
+                     , bitnamesof(debug_bit_names, base_debugging));
+    }
+}
+
+
+
+err_t whack_decode_and_process(int whackfd, chunk_t *encoded_msg)
+{
+    err_t ugh;
+    struct whack_message msg;
+    struct osw_conf_options *oco = osw_init_options();
+    struct osw_conf_options *old = osw_conf_clone(oco);
+    lset_t old_debugging = base_debugging;
+
+    memset(&msg, 0, sizeof(msg));
+
     /* dump record if necessary */
-    writewhackrecord((char *)&msg_saved, n);
+    writewhackrecord(encoded_msg->ptr, encoded_msg->len);
+
+    ugh = whack_cbor_decode_msg(&msg, encoded_msg->ptr, &encoded_msg->len);
+    if(ugh) return ugh;
 
     whack_process(whackfd, msg);
+    whack_free_msg(&msg);
+
+    /* now, look and see if there are any changes between oco and old */
+
+    whack_compare_options(old, oco, old_debugging);
+    osw_conf_free_oco(old);
+
+    return ugh;
 }
+
 
 /*
  * interactive input from the whack user, using current whack_fd

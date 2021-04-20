@@ -32,8 +32,6 @@
 
 #include "seam_rsasig.c"
 
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
-
 #include "seam_gi_sha256_group14.c"
 #include "seam_finish.c"
 
@@ -132,9 +130,9 @@ int main(int argc, char *argv[])
         free_state(st);
     }
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

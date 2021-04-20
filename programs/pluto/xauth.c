@@ -1115,7 +1115,7 @@ static void * do_authentication(void *varg)
 	  st->st_msgid_phase15 = 0;
 	}
 
-	strncpy(st->st_xauth_username, (char *)arg->name.ptr, sizeof(st->st_xauth_username));
+	strncpy(st->st_xauth_username, (char *)arg->name.ptr, sizeof(st->st_xauth_username)-1);
     } else
     {
 	/** Login attempt failed, display error, send XAUTH status to client

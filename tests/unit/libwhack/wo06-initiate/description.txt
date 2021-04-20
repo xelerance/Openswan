@@ -1,0 +1,5 @@
+This unit tests whack_cbor_decode_msg() to turn CBOR back into a
+whack_message.
+
+
+

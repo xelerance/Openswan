@@ -41,6 +41,7 @@
 #include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "rnd.h"
@@ -235,6 +236,7 @@ find_raw_ifaces4(void)
     struct ifreq *buf;	     /* for list of interfaces -- arbitrary limit */
     struct raw_iface *rifaces = NULL;
     int master_sock = safe_socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);    /* Get a UDP socket */
+    const struct osw_conf_options *oco = osw_init_options();
 
     /* get list of interfaces with assigned IPv4 addresses from system */
 
@@ -250,7 +252,7 @@ find_raw_ifaces4(void)
 	ip_address any;
 
 	happy(anyaddr(AF_INET, &any));
-	setportof(htons(pluto_port500), &any);
+	setportof(htons(oco->pluto_port500), &any);
 	if (bind(master_sock, sockaddrof(&any), sockaddrlenof(&any)) < 0)
 	    exit_log_errno((e, "bind() failed in find_raw_ifaces4()"));
     }
@@ -385,6 +387,7 @@ find_raw_ifaces6(void)
     {
 	for (;;)
 	{
+          const struct osw_conf_options *oco = osw_init_options();
 	    struct raw_iface ri;
 	    unsigned short xb[8];	/* IPv6 address as 8 16-bit chunks */
 	    char sb[8*5];	/* IPv6 address as string-with-colons */
@@ -392,7 +395,10 @@ find_raw_ifaces6(void)
 	    unsigned int plen;	/* proc field, not used */
 	    unsigned int scope;	/* proc field, used to exclude link-local */
 	    unsigned int dad_status;	/* proc field, not used */
-	    /* ??? I hate and distrust scanf -- DHR */
+
+            /* clear out the raw_iface structure, so it can get re-used */
+            zero(&ri);
+
 	    int r = fscanf(proc_sock
 		, "%4hx%4hx%4hx%4hx%4hx%4hx%4hx%4hx"
 		  " %02x %02x %02x %02x %20s\n"
@@ -403,19 +409,27 @@ find_raw_ifaces6(void)
 	    if (r != 13)
 		break;
 
-	    /* ignore addresses with link local scope.
-	     * From linux-2.4.9-13/include/net/ipv6.h:
-	     * IPV6_ADDR_LINKLOCAL	0x0020U
-	     * IPV6_ADDR_SCOPE_MASK	0x00f0U
-	     */
-	    if ((scope & 0x00f0U) == 0x0020U)
-		continue;
-
 	    snprintf(sb, sizeof(sb)
 		, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x"
 		, xb[0], xb[1], xb[2], xb[3], xb[4], xb[5], xb[6], xb[7]);
 
 	    happy(ttoaddr(sb, 0, AF_INET6, &ri.addr));
+
+            ri.addr.u.v6.sin6_scope_id = if_idx;
+
+            if(!oco->pluto_listen_on_link_scope) {
+              /* ignore addresses with link local scope.
+               * From linux-2.4.9-13/include/net/ipv6.h:
+               * IPV6_ADDR_LINKLOCAL	0x0020U
+               * IPV6_ADDR_SCOPE_MASK	0x00f0U
+               */
+              if ((scope & 0x00f0U) == 0x0020U) {
+		DBG(DBG_CONTROL
+		    , DBG_log("ignored %s with address %s"
+			, ri.name, sb));
+		continue;
+              }
+            }
 
 	    if (!isunspecaddr(&ri.addr))
 	    {

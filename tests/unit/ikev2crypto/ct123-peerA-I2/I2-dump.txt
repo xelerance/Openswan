@@ -1,0 +1,2 @@
+IP6 (hlim 64, next-header UDP (17) payload length: 1688) fe80::8054:3eff:fe9a:d3f4.500 > fe80::ec68:7cff:fe0c:9aa4.500: [bad udp cksum 0x0000 -> 0x3651!] isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[I]:
+    (v2e: len=1648)

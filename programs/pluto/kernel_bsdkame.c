@@ -458,6 +458,8 @@ bsdkame_raw_eroute(const ip_address *this_host
 		   , enum pluto_sadb_operations op
 		   , const char *text_said UNUSED
 		   , char *policy_label UNUSED
+                   , uint32_t vti_mark UNUSED
+                   , uint32_t vti_markmask UNUSED
 		   )
 {
     const struct sockaddr *saddr = (const struct sockaddr *)&this_client->addr;

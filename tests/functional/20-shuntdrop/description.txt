@@ -1,0 +1,5 @@
+This test case starts pluto, and then uses addconn to insert a conn
+into pluto that has a shunt policy drop.
+
+
+

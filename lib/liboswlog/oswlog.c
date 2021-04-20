@@ -34,14 +34,8 @@
 
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 #include "openswan/pfkey_debug.h"
-
-bool
-    log_to_stderr = TRUE,	/* should log go to stderr? */
-    log_to_syslog = FALSE;	/* should log go to syslog? */
-
-bool
-    logged_txt_warning = FALSE;  /* should we complain about finding KEY? */
 
 #ifdef DEBUG
 void openswanlib_passert_fail(const char *pred_str, const char *file_str,
@@ -52,9 +46,11 @@ openswan_passert_fail_t openswan_passert_fail = openswanlib_passert_fail;
 void
 tool_init_log(void)
 {
-    if (log_to_stderr)
+    const struct osw_conf_options *oco = osw_init_options();
+
+    if (oco->log_to_stderr)
 	setbuf(stderr, NULL);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	openlog(progname, LOG_CONS | LOG_NDELAY | LOG_PID, LOG_AUTHPRIV);
 
     pfkey_error_func = printf;
@@ -64,8 +60,12 @@ tool_init_log(void)
 void
 tool_close_log(void)
 {
-    if (log_to_syslog)
+    const struct osw_conf_options *oco = osw_init_options();
+
+    if (oco->log_to_syslog)
 	closelog();
+
+    osw_free_options();
 }
 
 /* format a string for the log, with suitable prefixes.
@@ -99,6 +99,7 @@ fmt_log(char *buf, size_t buf_len,
 int
 openswan_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -106,9 +107,9 @@ openswan_log(const char *message, ...)
     fmt_log(m, sizeof(m), message, args);
     va_end(args);
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "%s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
 
     return 0;
@@ -117,6 +118,7 @@ openswan_log(const char *message, ...)
 void
 openswan_loglog(int mess_no, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -124,15 +126,16 @@ openswan_loglog(int mess_no, const char *message, ...)
     fmt_log(m, sizeof(m), message, args);
     va_end(args);
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "%s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
 }
 
 void
 openswan_log_errno_routine(int e, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -140,15 +143,16 @@ openswan_log_errno_routine(int e, const char *message, ...)
     fmt_log(m, sizeof(m), message, args);
     va_end(args);
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "ERROR: %s. Errno %d: %s\n", m, e, strerror(e));
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "ERROR: %s. Errno %d: %s", m, e, strerror(e));
 }
 
 void
 openswan_exit_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -156,9 +160,9 @@ openswan_exit_log(const char *message, ...)
     fmt_log(m, sizeof(m), message, args);
     va_end(args);
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "FATAL ERROR: %s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "FATAL ERROR: %s", m);
 
     exit_tool(1);
@@ -167,6 +171,7 @@ openswan_exit_log(const char *message, ...)
 void
 openswan_exit_log_errno_routine(int e, const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -174,9 +179,9 @@ openswan_exit_log_errno_routine(int e, const char *message, ...)
     fmt_log(m, sizeof(m), message, args);
     va_end(args);
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "FATAL ERROR: %s. Errno %d: %s\n", m, e, strerror(e));
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_ERR, "FATAL ERROR: %s. Errno %d: %s", m, e, strerror(e));
 
     exit_tool(1);
@@ -236,6 +241,7 @@ set_debugging(lset_t deb)
 int
 openswan_DBG_log(const char *message, ...)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
 
@@ -246,9 +252,9 @@ openswan_DBG_log(const char *message, ...)
     /* then sanitize anything else that is left. */
     (void)sanitize_string(m, sizeof(m));
 
-    if (log_to_stderr)
+    if (oco->log_to_stderr)
 	fprintf(stderr, "| %s\n", m);
-    if (log_to_syslog)
+    if (oco->log_to_syslog)
 	syslog(LOG_DEBUG, "| %s", m);
 
     return 0;

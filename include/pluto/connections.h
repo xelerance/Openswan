@@ -114,7 +114,7 @@ typedef uint32_t policy_prio_t;
 	((policy_prio_t)(c)->spd.this.client.maskbits << 16) \
 	| ((policy_prio_t)(c)->spd.that.client.maskbits << 8) \
 	| (policy_prio_t)1; }
-#define POLICY_PRIO_BUF	(3+1+3+1+10) 
+#define POLICY_PRIO_BUF	(3+1+3+1+10)
 extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 
 /* Note that we include this even if not X509, because we do not want the
@@ -197,6 +197,9 @@ struct end {
     struct pubkey *key1, *key2;  /* references to the public key to be used to authenticate this connection */
 
     struct ietfAttrList *groups;/* access control groups */
+
+    /* if a Virtual Interface value should be configured */
+    unsigned int vtinum;
 
 /*#ifdef XAUTH*/
     bool xauth_server;
@@ -333,7 +336,6 @@ struct connection {
 };
 
 #define oriented(c) ((c).interface != NULL)
-extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,

@@ -33,6 +33,7 @@ struct iface_port parker_if1b = {
 struct iface_port parker_if2 = {
 	.ip_dev = &parker_ifd1,
 	.port   = 500,
+        .socktypename = "AF_INET6",
 	.ip_addr.u.v6.sin6_family = AF_INET6,
         /* filled in below */
 	.fd     = -1,

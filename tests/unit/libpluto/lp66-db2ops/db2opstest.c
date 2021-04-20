@@ -82,8 +82,9 @@ int main(int argc, char *argv[])
     db2_print(dc2);
     db2_free(dc2);
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

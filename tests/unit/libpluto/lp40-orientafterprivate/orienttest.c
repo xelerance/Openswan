@@ -40,8 +40,7 @@
 
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
-
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
+#include "seam_io.c"
 
 int main(int argc, char *argv[])
 {
@@ -55,7 +54,8 @@ int main(int argc, char *argv[])
 #endif
 
     progname = argv[0];
-    leak_detective = 1;
+    leak_detective = 1;  /* must occur before osw_init_options */
+    struct osw_conf_options *oco = osw_init_options();
 
     if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
 
     argc--;
     argv++;
-    pluto_shared_secrets_file = "/dev/null";
+    pfree_z(oco->pluto_shared_secrets_file);
+    oco->pluto_shared_secrets_file = clone_str("/dev/null", "main");
 
     for(i=0; i < argc; i++) {
         conn_name = argv[i];
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
         c1 = con_by_name(conn_name, TRUE);
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
-        assert(orient(c1, pluto_port500) == FALSE);
+        assert(orient(c1, oco->pluto_port500) == FALSE);
     }
 
     hostpair_list();
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
     {
         prompt_pass_t pass;
         memset(&pass, 0, sizeof(pass));
-        osw_init_ipsecdir("../samples/parker");
+        osw_init_ipsecdir_str("../samples/parker");
 
         osw_load_preshared_secrets(&pluto_secrets
                                    , TRUE
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
         c1 = con_by_name(conn_name, TRUE);
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
-        assert(orient(c1, pluto_port500) == TRUE);
+        assert(orient(c1, oco->pluto_port500) == TRUE);
     }
     hostpair_list();
 
@@ -120,10 +121,9 @@ int main(int argc, char *argv[])
     }
 
     hostpair_list();
+    tool_close_log();
 
     report_leaks();
-
-    tool_close_log();
     exit(0);
 }
 

@@ -171,8 +171,9 @@ int main(int argc, char *argv[])
     show_states_status();
 
     /* done */
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

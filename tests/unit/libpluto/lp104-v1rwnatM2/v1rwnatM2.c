@@ -24,8 +24,6 @@
 
 #define TESTNAME "v1certM2"
 
-bool no_cr_send = 0;
-
 static void init_local_interface(void)
 {
     nat_traversal_support_non_ike = TRUE;
@@ -39,7 +37,7 @@ static void init_fake_secrets(void)
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
 
-    osw_init_ipsecdir(SAMPLEDIR "alice");
+    osw_init_ipsecdir_str(SAMPLEDIR "alice");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , SAMPLEDIR "alice.secrets"

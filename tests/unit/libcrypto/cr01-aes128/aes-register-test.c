@@ -82,8 +82,9 @@ int main(int argc, char *argv[])
            memcmp(inbuf, outbuf, sizeof(outbuf))==0 ? "matches" : "failed");
     hexdump(stdout, outbuf, 0, sizeof(outbuf));
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

@@ -47,6 +47,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     lset_t policy_hint = LEMPTY;
     struct connection *c;
 
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* if we are already processing a packet on this st, we will be unable
      * to start another crypto operation below */
     if (st && is_suspended(st)) {
@@ -106,7 +108,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
      * TBD set force_busy dynamically
      * Paul: Can we check for STF_TOOMUCHCRYPTO ?
      */
-    if(force_busy == TRUE)
+    if(oco->force_busy == TRUE)
         {
             u_char dcookie[SHA1_DIGEST_SIZE];
             chunk_t dc;

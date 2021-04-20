@@ -65,6 +65,8 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
+#include "oswconf.h"
+
 #include "pluto/connections.h"	/* needs id.h */
 #include "kernel.h"  /* for no_klips; needs connections.h */
 #include "log.h"
@@ -92,12 +94,17 @@
 #include "osw_select.h"
 
 /*
- *  Server main loop and socket initialization routines.
+ * Server main loop and socket initialization routines.
+ *
+ * Also, all global policy settings will migrate to the "osw_conf_options"
+ * structure.
+ *
+ * Changes to Server can occur by whack, and cause pluto to act as if "--listen"
+ * was just called.  Sockets and Logs may get opened/closed, etc.
+ *
  */
 
 static const int on = TRUE;	/* by-reference parameter; constant, we hope */
-
-bool no_retransmits = FALSE;
 
 /* list of interface devices */
 struct iface_list interface_dev;
@@ -118,13 +125,36 @@ struct sockaddr_un info_addr= { .sun_family=AF_UNIX,
 #endif
 				.sun_path  =DEFAULT_CTLBASE INFO_SUFFIX };
 
+err_t update_ctl_socket_name(struct osw_conf_options *oco)
+{
+
+  if(oco->ctlbase == NULL) {
+    oco->ctlbase = clone_str(DEFAULT_CTLBASE, "default");
+  }
+
+  if (snprintf(ctl_addr.sun_path, sizeof(ctl_addr.sun_path)
+               , "%s%s", oco->ctlbase, CTL_SUFFIX) == -1) {
+    return "<path>" CTL_SUFFIX " too long for sun_path";
+  }
+  if (snprintf(info_addr.sun_path, sizeof(info_addr.sun_path)
+               , "%s%s", oco->ctlbase, INFO_SUFFIX) == -1) {
+    return "<path>" INFO_SUFFIX " too long for sun_path";
+  }
+  if (snprintf(oco->pluto_lock, sizeof(oco->pluto_lock)
+               , "%s%s", oco->ctlbase, LOCK_SUFFIX) == -1) {
+    return "<path>" LOCK_SUFFIX " must fit";
+  }
+
+  return NULL;
+}
+
 /* Initialize the control socket.
  * Note: this is called very early, so little infrastructure is available.
  * It is important that the socket is created before the original
  * Pluto process returns.
  */
 err_t
-init_ctl_socket(void)
+init_ctl_socket(struct osw_conf_options *oco UNUSED)
 {
     err_t failed = NULL;
 
@@ -326,6 +356,7 @@ struct raw_iface *static_ifn=NULL;
 int
 create_socket(struct raw_iface *ifp, const char *v_name, int port)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     int fd = socket(addrtypeof(&ifp->addr), SOCK_DGRAM, IPPROTO_UDP);
     int fcntl_flags;
 
@@ -354,6 +385,14 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
     , (const void *)&on, sizeof(on)) < 0)
     {
 	log_errno((e, "setsockopt SO_REUSEADDR in process_raw_ifaces()"));
+	close(fd);
+	return -1;
+    }
+
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT
+    , (const void *)&on, sizeof(on)) < 0)
+    {
+	log_errno((e, "setsockopt SO_REUSEPORT in process_raw_ifaces()"));
 	close(fd);
 	return -1;
     }
@@ -387,7 +426,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 #endif
 
 #if defined(linux) && defined(NETKEY_SUPPORT)
-    if (kern_interface == USE_NETKEY)
+    if (oco->kern_interface == USE_NETKEY)
     {
 	struct sadb_x_policy policy;
 	int level, opt;
@@ -433,13 +472,17 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
     setportof(htons(port), &ifp->addr);
     if (bind(fd, sockaddrof(&ifp->addr), sockaddrlenof(&ifp->addr)) < 0)
     {
-	log_errno((e, "bind() for %s/%s %s:%u in process_raw_ifaces()"
+	log_errno((e, "bind() for %s/%s [%s%%%u]:%u in process_raw_ifaces()"
 	    , ifp->name, v_name
-	    , ip_str(&ifp->addr), (unsigned) port));
+                   , ip_str(&ifp->addr)
+                   , (ifp->addr.u.v6.sin6_family == AF_INET6 ?
+                      ifp->addr.u.v6.sin6_scope_id : 0)
+                   , (unsigned) port);
+                  );
 	close(fd);
 	return -1;
     }
-    setportof(htons(pluto_port500), &ifp->addr);
+    setportof(htons(oco->pluto_port500), &ifp->addr);
 
 #if defined(HAVE_UDPFROMTO)
     /* we are going to use udpfromto.c, so initialize it */
@@ -480,11 +523,18 @@ void
 show_ifaces_status(void)
 {
     struct iface_port *p;
+    const struct osw_conf_options *oco = osw_init_options();
+
+    whack_log(RC_COMMENT, "link-local addresses are: %s"
+              , oco->pluto_listen_on_link_scope ? "included" : "ignored");
 
     for (p = interfaces; p != NULL; p = p->next)
-	whack_log(RC_COMMENT, "interface %s/%s %s (%s)"
+	whack_log(RC_COMMENT, "interface %s/%s [%s%%%u] (%s)"
                   , p->ip_dev->id_vname, p->ip_dev->id_rname
-                  , p->addrname, p->socktypename);
+                  , p->addrname
+                  , (p->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                      p->ip_addr.u.v6.sin6_scope_id : 0)
+                  , p->socktypename);
 }
 
 
@@ -554,6 +604,7 @@ reapchildren(void)
 void
 call_server(void)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct iface_port *ifp;
 
     /* catch SIGHUP and SIGTERM */
@@ -636,7 +687,7 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (kern_interface != NO_KERNEL)
+	    if (oco->kern_interface != NO_KERNEL)
 	    {
 		int fd = *kernel_ops->async_fdp;
 
@@ -663,7 +714,7 @@ call_server(void)
 	    /* see if helpers need attention */
 	    pluto_crypto_helper_sockets(&readfds);
 
-	    if (no_retransmits || next_time < 0)
+	    if (oco->no_retransmits || next_time < 0)
 	    {
 		/* select without timer */
 
@@ -702,7 +753,7 @@ call_server(void)
 	 * we log the time when we are about to do something so that
 	 * we know what time things happened, when not using syslog
 	 */
-	if(log_to_stderr_desired) {
+	if(oco->log_to_stderr_desired) {
 	    time_t n;
 
 	    static time_t lastn = 0;
@@ -744,7 +795,7 @@ call_server(void)
 	    }
 
 #ifdef KLIPS
-	    if (kern_interface != NO_KERNEL
+	    if (oco->kern_interface != NO_KERNEL
 		&& OSW_FD_ISSET(*kernel_ops->async_fdp, &readfds))
 	    {
 		passert(ndes > 0);
@@ -803,7 +854,7 @@ call_server(void)
 
 	    passert(ndes == 0);
 	}
-	if (next_event() == 0 && !no_retransmits)
+	if (next_event() == 0 && !oco->no_retransmits)
 	{
 	    /* timer event ready */
 	    DBG(DBG_CONTROL, DBG_log("*time to handle event"));

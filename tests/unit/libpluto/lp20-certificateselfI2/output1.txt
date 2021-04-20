@@ -18,8 +18,6 @@
 ./certificateselfI2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./certificateselfI2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -36,9 +34,9 @@ processing whack msg time: X size: Y
 |   considering eth0 93.184.216.34 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 93.184.216.34
 |   orient home finished with: 1 [93.184.216.34]
-| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
 | find_ID_host_pair: looking for me=C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org him=@moon.testing.openswan.org (exact)
 |   concluded with <none>
 ./certificateselfI2 adding connection: "home"
@@ -50,7 +48,7 @@ RC=0 "home":     myip=unset; hisip=unset; mycert=carolCert.pem;
 RC=0 "home":   CAs: 'C=CA, ST=ON, L=Ottawa, O=Xelerance, CN=Openswan Unit Testing Root CA'...'%any'
 RC=0 "home":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 | find_phase1_state: no SA found for conn 'home'
 | creating state object #1 at Z
 | orient home checking against if: eth0 (AF_INET:93.184.216.34:500)
@@ -256,7 +254,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 | I did not send a certificate request (CERTREQ) because
 |   no known CA for the other end
 |   no CA certs available for validation
-| I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
 |    critical bit: none
@@ -934,15 +931,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:500] to 13
 ./certificateselfI2 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI2 leak: pubkey, item size: X
 ./certificateselfI2 leak: secret, item size: X
-./certificateselfI2 leak: policies path, item size: X
-./certificateselfI2 leak: ocspcerts path, item size: X
-./certificateselfI2 leak: aacerts path, item size: X
-./certificateselfI2 leak: certs path, item size: X
-./certificateselfI2 leak: private path, item size: X
-./certificateselfI2 leak: crls path, item size: X
-./certificateselfI2 leak: cacert path, item size: X
-./certificateselfI2 leak: acert path, item size: X
-./certificateselfI2 leak: override ipsec.d, item size: X
 ./certificateselfI2 leak: 4 * hasher name, item size: X
 ./certificateselfI2 leak: 10 * group description, item size: X
 ./certificateselfI2 leak: policies path, item size: X
@@ -953,8 +941,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:500] to 13
 ./certificateselfI2 leak: crls path, item size: X
 ./certificateselfI2 leak: cacert path, item size: X
 ./certificateselfI2 leak: acert path, item size: X
-./certificateselfI2 leak: default conf var_dir, item size: X
-./certificateselfI2 leak: default conf conffile, item size: X
-./certificateselfI2 leak: default conf ipsecd_dir, item size: X
-./certificateselfI2 leak: default conf ipsec_conf_dir, item size: X
 ./certificateselfI2 leak detective found Z leaks, total size X

@@ -18,8 +18,6 @@
 ./davecertI2-id registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./davecertI2-id registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -36,9 +34,9 @@ processing whack msg time: X size: Y
 |   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
 |   orient home finished with: 1 [0.0.0.0]
-| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+| connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
 | find_ID_host_pair: looking for me=dave@openswan.org him=@moon.strongswan.org (exact)
 |   concluded with <none>
 ./davecertI2-id adding connection: "home"
@@ -50,7 +48,7 @@ RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
 RC=0 "home":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org/emailAddress=testing@xelerance.com'...'%any'
 RC=0 "home":   keys: 1:71EF 2412 7A30 AD54 C288 FC00 B917 3DAB 8E76 4790 2:none...
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; firstmsgid: 0
-RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 | Changed path to directory '../samples/selfsigned/cacerts'
 | find_phase1_state: no SA found for conn 'home'
 | creating state object #1 at Z
@@ -250,7 +248,6 @@ sending 652 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | I did not send a certificate request (CERTREQ) because
 |   no known CA for the other end
 |   no CA certs available for validation
-| I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
 |    critical bit: none
@@ -920,15 +917,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id leak: rfc3110 format of public key [created], item size: X
 ./davecertI2-id leak: pubkey, item size: X
 ./davecertI2-id leak: secret, item size: X
-./davecertI2-id leak: policies path, item size: X
-./davecertI2-id leak: ocspcerts path, item size: X
-./davecertI2-id leak: aacerts path, item size: X
-./davecertI2-id leak: certs path, item size: X
-./davecertI2-id leak: private path, item size: X
-./davecertI2-id leak: crls path, item size: X
-./davecertI2-id leak: cacert path, item size: X
-./davecertI2-id leak: acert path, item size: X
-./davecertI2-id leak: override ipsec.d, item size: X
 ./davecertI2-id leak: 4 * hasher name, item size: X
 ./davecertI2-id leak: 10 * group description, item size: X
 ./davecertI2-id leak: policies path, item size: X
@@ -939,8 +927,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id leak: crls path, item size: X
 ./davecertI2-id leak: cacert path, item size: X
 ./davecertI2-id leak: acert path, item size: X
-./davecertI2-id leak: default conf var_dir, item size: X
-./davecertI2-id leak: default conf conffile, item size: X
-./davecertI2-id leak: default conf ipsecd_dir, item size: X
-./davecertI2-id leak: default conf ipsec_conf_dir, item size: X
 ./davecertI2-id leak detective found Z leaks, total size X

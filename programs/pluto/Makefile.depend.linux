@@ -2521,20 +2521,6 @@ virtual.o: virtual.c ../../include/openswan.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/virtual.h
-whackinit.o: whackinit.c ../../include/openswan.h \
- ../../include/socketwrapper.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/constants.h \
- ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/whack.h \
- ../../include/openswan/ipsec_policy.h
 x509.o: x509.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \

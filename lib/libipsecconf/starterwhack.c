@@ -181,33 +181,6 @@ int starter_whack_read_reply(int sock,
 	return ret;
 }
 
-/* returns length of result... XXX unit test would be good here */
-int serialize_whack_msg(struct whack_message *msg)
-{
-	struct whackpacker wp;
-	ssize_t len;
-	err_t ugh;
-
-	/**
-	 * Pack strings
-	 */
-        wp.cnt = 0;
-	wp.msg = msg;
-	wp.str_next = (unsigned char *)msg->string;
-	wp.str_roof = (unsigned char *)&msg->string[sizeof(msg->string)];
-
-	ugh = pack_whack_msg(&wp);
-
-	if(ugh)
-	{
-	    starter_log(LOG_LEVEL_ERR, "send_wack_msg(): can't pack strings: %s", ugh);
-	    return -1;
-	}
-
-	len = wp.str_next - (unsigned char *)msg;
-        return len;
-}
-
 static int send_whack_msg(struct starter_config *cfg, struct whack_message *msg)
 {
   if(cfg->send_whack_msg) {
@@ -223,14 +196,20 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	struct sockaddr_un ctl_addr =
 	    { .sun_family = AF_UNIX };
 	int sock;
-	ssize_t len;
+        unsigned char sendbuf[4096];
 	int ret;
+        chunk_t sendchunk;
 
 	/* copy socket location */
-	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
+	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path)-1);
 
-        len = serialize_whack_msg(msg);
-        if(len == -1) return -1;   /* already logged error */
+        sendchunk.ptr = sendbuf;
+        sendchunk.len = sizeof(sendbuf);
+        err_t ugh = whack_cbor_encode_msg(msg, &sendchunk);
+        if(ugh) {
+          starter_log(LOG_LEVEL_ERR, "error encoding: %s", ugh);
+          return -1;
+        }
 
 	/**
 	 * Connect to pluto ctl
@@ -251,7 +230,7 @@ static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_mes
 	/**
 	 * Send message
 	 */
-	if (write(sock, msg, len) != len) {
+	if (write(sock, sendchunk.ptr, sendchunk.len) != sendchunk.len) {
 		starter_log(LOG_LEVEL_ERR, "write(pluto_ctl) failed: %s",
 			strerror(errno));
 		close(sock);
@@ -443,7 +422,9 @@ static int set_whack_end(struct starter_config *cfg
 	w->virt   = NULL;
 	w->protocol = l->protocol;
 	w->port = l->port;
-	w->virt = l->virt;
+        if (l->options_set[KNCF_VTINUM]) {
+          w->vtinum = l->options[KNCF_VTINUM];
+        }
 
 	if(l->options_set[KNCF_XAUTHSERVER]) {
 		w->xauth_server = l->options[KNCF_XAUTHSERVER];

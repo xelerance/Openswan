@@ -17,6 +17,7 @@
 test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 
 me='ipsec _startklips'		# for messages
+orig_args=$@
 
 # KLIPS-related paths
 sysflags=/proc/sys/net/ipsec
@@ -372,7 +373,7 @@ then
 		exit 1
 	else
 		echo "NETKEY support found. Use protostack=netkey in /etc/ipsec.conf to avoid attempts to use KLIPS. Attempting to continue with NETKEY"
-		exec ipsec _startnetkey
+		exec ipsec _startnetkey $orig_args
 	fi
 fi
 

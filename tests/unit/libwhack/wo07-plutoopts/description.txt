@@ -1,0 +1,6 @@
+This unit test case runs the pluto_options_process() through a variety of
+inputs, validating the generated CBOR.
+
+
+
+

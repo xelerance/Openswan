@@ -38,8 +38,8 @@
 #define N_IPSEC_IF      4
 
 struct st_ipsec_if {
-	char name[IFNAMSIZ+1];
-	char phys[IFNAMSIZ+1];
+	char name[IFNAMSIZ];
+	char phys[IFNAMSIZ];
 	int up;
 };
 static struct st_ipsec_if _ipsec_if[N_IPSEC_IF];
@@ -95,13 +95,13 @@ static int _iface_up (int sock,  struct st_ipsec_if *iface, char *phys,
 	short phys_flags;
 	int ret = 0;
 
-	strncpy(req.ifr_name, phys, IFNAMSIZ);
+	strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)!=0) {
 		return ret;
 	}
 	phys_flags = req.ifr_flags;
 
-	strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+	strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)!=0) {
 		return ret;
 	}
@@ -114,40 +114,40 @@ static int _iface_up (int sock,  struct st_ipsec_if *iface, char *phys,
 
 	if ((*iface->phys) && (strcmp(iface->phys, phys)!=0)) {
 		/* tncfg --detach if phys has changed */
-		strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+		strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 		ioctl(sock, IPSEC_DEL_DEV, &req);
 		ret = 1;
 	}
 
 	/* tncfg --attach */
-	strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+	strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 	strncpy(shc->cf_name, phys, sizeof(shc->cf_name));
 	ioctl(sock, IPSEC_SET_DEV, &req);
 
 	/* set ipsec addr = phys addr */
-	strncpy(req.ifr_name, phys, IFNAMSIZ);
+	strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFADDR, &req)==0) {
-		strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+		strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 		ioctl(sock, SIOCSIFADDR, &req);
 	}
 
 	/* set ipsec mask = phys mask */
-	strncpy(req.ifr_name, phys, IFNAMSIZ);
+	strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFNETMASK, &req)==0) {
-		strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+		strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 		ioctl(sock, SIOCSIFNETMASK, &req);
 	}
 
 	/* set other flags & addr */
-	strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+	strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)==0) {
 		if (phys_flags & IFF_POINTOPOINT) {
 			req.ifr_flags |= IFF_POINTOPOINT;
 			req.ifr_flags &= ~IFF_BROADCAST;
 			ioctl(sock, SIOCSIFFLAGS, &req);
-			strncpy(req.ifr_name, phys, IFNAMSIZ);
+			strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 			if (ioctl(sock, SIOCGIFDSTADDR, &req)==0) {
-				strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+				strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 				ioctl(sock, SIOCSIFDSTADDR, &req);
 			}
 		}
@@ -155,9 +155,9 @@ static int _iface_up (int sock,  struct st_ipsec_if *iface, char *phys,
 			req.ifr_flags &= ~IFF_POINTOPOINT;
 			req.ifr_flags |= IFF_BROADCAST;
 			ioctl(sock, SIOCSIFFLAGS, &req);
-			strncpy(req.ifr_name, phys, IFNAMSIZ);
+			strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 			if (ioctl(sock, SIOCGIFBRDADDR, &req)==0) {
-				strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+				strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 				ioctl(sock, SIOCSIFBRDADDR, &req);
 			}
 		}
@@ -175,27 +175,27 @@ static int _iface_up (int sock,  struct st_ipsec_if *iface, char *phys,
 	 * NAT-T overhead : 20
 	 */
 	if (mtu==0) {
-		strncpy(req.ifr_name, phys, IFNAMSIZ);
+		strncpy(req.ifr_name, phys, IFNAMSIZ-1);
 		ioctl(sock, SIOCGIFMTU, &req);
 		mtu = req.ifr_mtu - 60;
 		if (nat_t) mtu -= 20;
 	}
 	/* set MTU */
 	if (mtu) {
-		strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+		strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 		req.ifr_mtu = mtu;
 		ioctl(sock, SIOCSIFMTU, &req);
 	}
 
 	/* ipsec interface UP */
-	strncpy(req.ifr_name, iface->name, IFNAMSIZ);
+	strncpy(req.ifr_name, iface->name, IFNAMSIZ-1);
 	if (ioctl(sock, SIOCGIFFLAGS, &req)==0) {
 		req.ifr_flags |= IFF_UP;
 		ioctl(sock, SIOCSIFFLAGS, &req);
 	}
 
 	iface->up = 1;
-	strncpy(iface->phys, phys, IFNAMSIZ);
+	strncpy(iface->phys, phys, IFNAMSIZ-1);
 	return ret;
 }
 
@@ -238,7 +238,7 @@ void starter_ifaces_init (void)
 
 	memset(_ipsec_if, 0, sizeof(_ipsec_if));
 	for (i=0; i<N_IPSEC_IF; i++) {
-		snprintf(_ipsec_if[i].name, IFNAMSIZ, "ipsec%d", i);
+		snprintf(_ipsec_if[i].name, IFNAMSIZ-1, "ipsec%d", i);
 	}
 }
 

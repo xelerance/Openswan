@@ -1,0 +1,10 @@
+# -*- makefile -*-
+CONNNAME=peerA--peerB
+ENDNAME=acppeers
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+
+TESTNAME=peerA-I1
+
+pcapupdate::
+	@true
+

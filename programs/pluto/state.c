@@ -38,6 +38,8 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "oswconf.h"
+
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -201,6 +203,7 @@ new_state(void)
 
     DBG(DBG_CONTROL, DBG_log("creating state object #%lu at %p"
 			     , st->st_serialno, (void *) st));
+
     return st;
 }
 
@@ -1003,6 +1006,9 @@ duplicate_state(struct state *st)
     nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
+    nst->st_vti_mark     = st->st_vti_mark;
+    nst->st_vti_markmask = st->st_vti_markmask;
+
     nst->st_event      = NULL;
     nst->st_sa_logged  = FALSE;
 
@@ -1870,9 +1876,11 @@ void copy_quirks(struct isakmp_quirks *dq
 void set_state_ike_endpoints(struct state *st
 			     , struct connection *c)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* reset our choice of interface */
     c->interface = NULL;
-    orient(c, pluto_port500);
+    orient(c, oco->pluto_port500);
 
     st->st_localaddr  = c->spd.this.host_addr;
     st->st_localport  = c->spd.this.host_port;

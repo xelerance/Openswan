@@ -1,0 +1,25 @@
+# -*- makefile -*-
+CONNNAME=peerA--peerB
+ENDNAME=acppeers
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+PCAPOUTPUT=${TESTNAME}.pcap
+
+TESTNAME=peerA-I2
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/signatures.o
+
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${PCAPOUTPUT} peerB-R1.pcap
+
+PCAPDEPENDENCIES = ../../libpluto/lp122-peerB-R1/OUTPUT/peerB-R1.pcap
+include ../../libpluto/Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
+	cp ../../libpluto/lp122-peerB-R1/OUTPUT/peerB-R1.pcap .
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#

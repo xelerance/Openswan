@@ -21,6 +21,8 @@
 #include "oswlog.h"
 #include "oswconf.h"
 #include "oswalloc.h"
+#include "secrets.h"
+#include "pluto/log.h"
 
 #ifdef HAVE_LIBNSS
 # include <string.h>
@@ -73,6 +75,64 @@ static void osw_conf_calculate(struct osw_conf_options *oco)
     oco->policies_dir = clone_str(buf, "policies path");
 }
 
+/* this is used to make a copy of options, when changes are processed */
+struct osw_conf_options *osw_conf_clone(struct osw_conf_options *old)
+{
+    struct osw_conf_options *nconf = clone_bytes(old, sizeof(*old), "conf_clone");
+
+    nconf->rootdir = clone_str(old->rootdir, "conf_clone");
+    nconf->confdir = clone_str(old->confdir, "conf_clone");
+    nconf->conffile= clone_str(old->conffile, "conf_clone");
+    nconf->confddir= clone_str(old->confddir, "conf_clone");
+    nconf->vardir  = clone_str(old->vardir, "conf_clone");
+    nconf->policies_dir=clone_str(old->policies_dir, "conf_clone");
+    nconf->acerts_dir = clone_str(old->acerts_dir, "conf_clone");
+    nconf->cacerts_dir= clone_str(old->cacerts_dir, "conf_clone");
+    nconf->crls_dir   = clone_str(old->crls_dir, "conf_clone");
+    nconf->private_dir= clone_str(old->private_dir, "conf_clone");
+    nconf->certs_dir  = clone_str(old->certs_dir, "conf_clone");
+    nconf->aacerts_dir= clone_str(old->aacerts_dir, "conf_clone");
+    nconf->ocspcerts_dir=clone_str(old->ocspcerts_dir, "conf_clone");
+    nconf->ctlbase    = clone_str(old->ctlbase, "conf_clone");
+    nconf->ocspuri    = clone_str(old->ocspuri, "conf_clone");
+    nconf->virtual_private=clone_str(old->virtual_private, "conf_clone");
+    nconf->pluto_shared_secrets_file=clone_str(old->pluto_shared_secrets_file, "conf_clone");
+    nconf->base_perpeer_logdir      =clone_str(old->base_perpeer_logdir, "conf_clone");
+    nconf->coredir    = clone_str(old->coredir, "conf_clone");
+    nconf->pluto_listen = clone_str(old->pluto_listen, "conf_clone");
+
+    osw_conf_calculate(nconf);
+
+    return nconf;
+}
+
+/* no longer just for fun, as conf get cloned above */
+void osw_conf_free_oco(struct osw_conf_options *oco)
+{
+    pfree_z(oco->rootdir);
+    pfree_z(oco->confdir); /* there is one more alloc that did not get freed? */
+    pfree_z(oco->conffile);
+    pfree_z(oco->confddir);
+    pfree_z(oco->vardir);
+    pfree_z(oco->policies_dir);
+    pfree_z(oco->crls_dir);
+    pfree_z(oco->acerts_dir);
+    pfree_z(oco->cacerts_dir);
+    // wrong leak magic? pfree(global_oco.crls_dir);
+    pfree_z(oco->private_dir);
+    pfree_z(oco->certs_dir);
+    pfree_z(oco->aacerts_dir);
+    pfree_z(oco->ocspcerts_dir);
+    pfree_z(oco->ctlbase);
+    pfree_z(oco->ocspuri);
+    pfree_z(oco->virtual_private);
+    pfree_z(oco->pluto_shared_secrets_file);
+    pfree_z(oco->base_perpeer_logdir);
+    pfree_z(oco->coredir);
+    pfree_z(oco->pluto_listen);
+}
+
+
 void osw_conf_setdefault(void)
 {
     char buf[PATH_MAX];
@@ -81,11 +141,6 @@ void osw_conf_setdefault(void)
     char *conffile   = FINALCONFFILE;
     char *var_dir    = FINALVARDIR;
     char *env;
-#if 0
-    char *exec_dir   = FINALLIBEXECDIR;
-    char *lib_dir    = FINALLIBDIR;
-    char *sbin_dir   = FINALSBINDIR;
-#endif
 
     memset(&global_oco, 0, sizeof(global_oco));
 
@@ -117,11 +172,28 @@ void osw_conf_setdefault(void)
 	conffile = clone_str(env, "ipsec.conf");
     }
 
-    global_oco.rootdir = "";
+    global_oco.rootdir = clone_str("", "defaults");
     global_oco.confddir= ipsecd_dir;
     global_oco.vardir  = var_dir;
     global_oco.confdir = ipsec_conf_dir;
     global_oco.conffile = conffile;
+    global_oco.ctlbase  = clone_str(DEFAULT_CTLBASE, "defaults");
+
+    global_oco.fork_desired = TRUE;
+    global_oco.kern_interface = AUTO_PICK;
+    global_oco.nat_t_spf    = TRUE;
+    global_oco.nhelpers     = -1;
+
+    global_oco.log_to_stderr = TRUE;
+    global_oco.log_to_syslog = TRUE;
+
+    global_oco.pluto_port500  = 500;
+    global_oco.pluto_port4500 = 4500;
+
+    strcpy(global_oco.pluto_lock, DEFAULT_CTLBASE LOCK_SUFFIX);
+
+    global_oco.pluto_shared_secrets_file = clone_str(SHARED_SECRETS_FILE, "defaults");
+    global_oco.base_perpeer_logdir = clone_str(PERPEERLOGDIR, "defaults");
 
 #ifdef HAVE_LIBNSS
     /* path to NSS password file */
@@ -132,27 +204,7 @@ void osw_conf_setdefault(void)
     /* DBG_log("default setting of ipsec.d to %s", global_oco.confddir); */
 }
 
-/* mostly estatic value, to surpress within LEAK_DETECTIVE */
-void osw_conf_free_oco(void)
-{
-    /* Must be a nicer way to loop over this? */
-    pfree(global_oco.crls_dir);
-    /* pfree(global_oco.rootdir); */
-    pfree(global_oco.confdir); /* there is one more alloc that did not get freed? */
-    pfree(global_oco.conffile);
-    pfree(global_oco.confddir);
-    pfree(global_oco.vardir);
-    pfree(global_oco.policies_dir);
-    pfree(global_oco.acerts_dir);
-    pfree(global_oco.cacerts_dir);
-    // wrong leak magic? pfree(global_oco.crls_dir);
-    pfree(global_oco.private_dir);
-    pfree(global_oco.certs_dir);
-    pfree(global_oco.aacerts_dir);
-    pfree(global_oco.ocspcerts_dir);
-}
-
-const struct osw_conf_options *osw_init_options(void)
+struct osw_conf_options *osw_init_options(void)
 {
     if(setup) return &global_oco;
     setup = TRUE;
@@ -163,20 +215,51 @@ const struct osw_conf_options *osw_init_options(void)
     return &global_oco;
 }
 
-const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
+void osw_free_options(void)
+{
+    if(setup) osw_conf_free_oco(&global_oco);
+    setup = FALSE;
+}
+
+const struct osw_conf_options *osw_init_rootdir_str(const char *root_dir)
+{
+    struct osw_conf_options *oco = osw_init_options();
+    constchunk_t dir = { (const unsigned char *)root_dir, strlen((const char *)root_dir) };
+    return osw_init_rootdir(oco, dir);
+}
+
+const struct osw_conf_options *osw_init_rootdir(struct osw_conf_options *oco
+                                                , constchunk_t root_dir_chunk)
 {
     if(!setup) osw_conf_setdefault();
-    global_oco.rootdir = clone_str(root_dir, "override /");
+
+    if(global_oco.rootdir) pfree(global_oco.rootdir);
+    global_oco.rootdir = alloc_bytes(root_dir_chunk.len+1, "override /");
+    memcpy(global_oco.rootdir, root_dir_chunk.ptr, root_dir_chunk.len);
+    global_oco.rootdir[root_dir_chunk.len] = '\0';
+
     osw_conf_calculate(&global_oco);
     setup = TRUE;
 
     return &global_oco;
 }
 
-const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir)
+const struct osw_conf_options *osw_init_ipsecdir_str(const char *ipsec_dir)
+{
+    struct osw_conf_options *oco = osw_init_options();
+    constchunk_t dir = { (const unsigned char *)ipsec_dir, strlen((const char *)ipsec_dir) };
+    return osw_init_ipsecdir(oco, dir);
+}
+
+const struct osw_conf_options *osw_init_ipsecdir(struct osw_conf_options *oco
+                                                 , constchunk_t root_dir_chunk)
 {
     if(!setup) osw_conf_setdefault();
-    global_oco.confddir = clone_str(ipsec_dir, "override ipsec.d");
+    pfree_z(global_oco.confddir);
+    global_oco.confddir = alloc_bytes(root_dir_chunk.len+1, "override /");
+    memcpy(global_oco.confddir, root_dir_chunk.ptr, root_dir_chunk.len);
+    global_oco.confddir[root_dir_chunk.len] = '\0';
+
     osw_conf_calculate(&global_oco);
     setup = TRUE;
 

@@ -24,11 +24,11 @@
 
 #define TESTNAME "v1certN3"
 
-bool no_cr_send = TRUE;
-long crl_check_interval = 0;
-
 static void init_local_interface(void)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
+    oco->no_cr_send = TRUE;
     nat_traversal_support_non_ike = TRUE;
     nat_traversal_support_port_floating = TRUE;
     nat_traversal_enabled = TRUE;
@@ -40,7 +40,7 @@ static void init_fake_secrets(void)
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
 
-    osw_init_ipsecdir("../samples/moon");
+    osw_init_ipsecdir_str("../samples/moon");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/moon.secrets"

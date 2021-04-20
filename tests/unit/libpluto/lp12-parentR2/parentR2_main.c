@@ -1,4 +1,3 @@
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 /* this is replicated in the unit test cases since
  * the patching up of the crypto values is case specific */
@@ -148,9 +147,9 @@ int main(int argc, char *argv[])
         free_state(st);
     }
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

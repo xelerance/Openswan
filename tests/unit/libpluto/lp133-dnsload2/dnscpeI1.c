@@ -26,7 +26,7 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 
-unsigned int sort_dns_answers;
+extern unsigned int sort_dns_answers;
 
 int main(int argc, char *argv[])
 {
@@ -119,9 +119,9 @@ int main(int argc, char *argv[])
 
     delete_connection(c1, TRUE, FALSE);
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

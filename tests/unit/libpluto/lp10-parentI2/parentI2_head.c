@@ -29,7 +29,6 @@
 #include "seam_kernelalgs.c"
 #include "seam_exitlog.c"
 
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 #ifndef SAMPLEDIR
 #define SAMPLEDIR "../samples/"
 #endif

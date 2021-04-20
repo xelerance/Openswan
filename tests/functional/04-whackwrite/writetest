@@ -1,0 +1,24 @@
+#!/bin/bash
+
+READWRITE=${READWRITE-readwriteconf}
+OUTPUTS=${OUTPUTS-$6}
+
+REFNAME=$1      # dooku
+CONFFILE=$2     # ${SAMPLEDIR}/dooku.conf
+CONFDIR=$3      # ${SAMPLEDIR}/dooku
+CONNAME=$4      # dooku--cassidy-net dooku--ipv6
+
+RECORD=${OUTPUTS}/${REFNAME}record.whack
+
+#set -x
+rm -f core
+echo processing ${CONFFILE}
+echo >.gdbinit-${REFNAME}  "file ${READWRITE} "
+echo >>.gdbinit-${REFNAME} "set args --verbose --rootdir=${CONFDIR} --config ${CONFFILE} --whackout=${RECORD} ${CONNAME}"
+
+${READWRITE} --verbose --rootdir=${CONFDIR} --config ${CONFFILE} --whackout=${RECORD} ${CONNAME} 2>&1 | \
+             tee ${OUTPUTS}/${REFNAME}load.out | diff - ${REFNAME}load.txt
+
+if [ -r core ]; then echo CORE DUMP; exit 1; fi
+
+cborseq2pretty.rb ${OUTPUTS}/${REFNAME}record.whack | tee ${OUTPUTS}/${REFNAME}record.out | diff - ${REFNAME}record.txt

@@ -35,6 +35,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "id.h"
@@ -62,6 +63,7 @@ extern char *pluto_listen;
 static void
 klips_process_raw_ifaces(struct raw_iface *rifaces)
 {
+    struct osw_conf_options *oco = osw_init_options();
     struct raw_iface *ifp;
 
     /* Find all virtual/real interface pairs.
@@ -76,14 +78,14 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	struct raw_iface *vfp;
 	ip_address lip;
 
-    if(pluto_listen) {
-	err_t e;
-	e = ttoaddr(pluto_listen,0,0,&lip);
-	if (e) {
+        if(oco->pluto_listen) {
+            err_t e;
+            e = ttoaddr(oco->pluto_listen,0,0,&lip);
+            if (e) {
 		DBG_log("invalid listen= option ignored: %s\n", e);
-		pluto_listen = NULL;
-	}
-    }
+		oco->pluto_listen = NULL;
+            }
+        }
 
 	/* ignore if virtual (ipsec*) interface */
 	if (strncmp(ifp->name, IPSECDEVPREFIX, sizeof(IPSECDEVPREFIX)-1) == 0)
@@ -124,7 +126,7 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 		     * "after" allows us to avoid double reporting.
 		     */
 #if defined(linux) && defined(NETKEY_SUPPORT)
-		    if (kern_interface == USE_NETKEY)
+		    if (oco->kern_interface == USE_NETKEY)
 		    {
 			if (after)
 			{
@@ -149,7 +151,7 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	    continue;
 
 #if defined(linux) && defined(NETKEY_SUPPORT)
-	if (kern_interface == USE_NETKEY)
+	if (oco->kern_interface == USE_NETKEY)
 	{
 	    v = ifp;
 	    goto add_entry;
@@ -159,7 +161,7 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	/* what if we didn't find a virtual interface? */
 	if (v == NULL)
 	{
-	    if (kern_interface == NO_KERNEL)
+	    if (oco->kern_interface == NO_KERNEL)
 	    {
 		/* kludge for testing: invent a virtual device */
 		static const char fvp[] = "virtual";
@@ -180,7 +182,7 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	}
 
 	/* ignore if --listen is specified and we do not match */
-	if (pluto_listen!=NULL) {
+	if (oco->pluto_listen!=NULL) {
 	   if (!sameaddr(&lip, &ifp->addr)) {
 		openswan_log("skipping interface %s with %s"
 			, ifp->name , ip_str(&ifp->addr));
@@ -206,7 +208,7 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, v->name, pluto_port500);
+		    int fd = create_socket(ifp, v->name, oco->pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -233,7 +235,7 @@ add_entry:
                     init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port500;
+		    q->port   = oco->pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;
@@ -253,7 +255,7 @@ add_entry:
 		    if (nat_traversal_support_port_floating
 			&& addrtypeof(&ifp->addr) == AF_INET)
 		    {
-			fd = create_socket(ifp, v->name, pluto_port4500);
+			fd = create_socket(ifp, v->name, oco->pluto_port4500);
 			if (fd < 0)
 			    break;
 			nat_traversal_espinudp_socket(fd, "IPv4"
@@ -263,7 +265,7 @@ add_entry:
 			id->id_count++;
 
 			q->ip_addr = ifp->addr;
-			q->port = pluto_port4500;
+			q->port    = oco->pluto_port4500;
 			setportof(htons(q->port), &q->ip_addr);
 			q->fd = fd;
                         init_iface_port(q);

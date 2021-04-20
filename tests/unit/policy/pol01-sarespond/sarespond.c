@@ -58,8 +58,6 @@
 #include "seam_dh_v2.c"
 #include "seam_rsasig.c"
 
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
-
 #include "seam_debug.c"
 
 #define TESTNAME "sarespond"
@@ -153,9 +151,9 @@ int main(int argc, char *argv[])
 
     show_states_status();
 
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

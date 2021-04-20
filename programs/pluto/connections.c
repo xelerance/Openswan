@@ -36,6 +36,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswconf.h"
 #include "oswtime.h"
 #include "id.h"
 #include "pluto/x509lists.h"
@@ -164,6 +165,8 @@ bool compare_end_addr_names(struct end *a, struct end *b)
 bool
 update_host_pairs(struct connection *c)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     if (c->spd.that.host_type != KH_IPHOSTNAME)
 	    return TRUE;
 
@@ -176,7 +179,7 @@ update_host_pairs(struct connection *c)
      * family.
      */
     c->interface = NULL;
-    if(!orient(c, pluto_port500)) {
+    if(!orient(c, oco->pluto_port500)) {
         return FALSE;
     }
 
@@ -349,6 +352,8 @@ delete_every_connection(void)
 void
 check_orientations(void)
 {
+    const struct osw_conf_options *oco = osw_init_options();
+
     /* try to orient all the unoriented connections */
     {
 	struct connection *c = unoriented_connections;
@@ -359,7 +364,7 @@ check_orientations(void)
 	{
 	    struct connection *nxt = c->IPhp_next;
 
-	    bool oriented = orient(c, pluto_port500);
+	    bool oriented = orient(c, oco->pluto_port500);
             if(oriented) {
                 DBG(DBG_CONTROLMORE
                     , DBG_log("connection %s is now oriented"
@@ -386,7 +391,7 @@ check_orientations(void)
 		for (hp = IPhost_pairs; hp != NULL; hp = hp->next)
 		{
 		    if (sameaddr(&hp->him.addr, &i->ip_addr)
-			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port500))
+			&& (oco->kern_interface!=NO_KERNEL || hp->him.host_port == oco->pluto_port500))
 		    {
 			/* bad news: the whole chain of connections
 			 * hanging off this host pair has both sides
@@ -405,7 +410,7 @@ check_orientations(void)
 			    struct connection *nxt = c->IPhp_next;
 
 			    c->interface = NULL;
-			    (void)orient(c, pluto_port500);
+			    (void)orient(c, oco->pluto_port500);
 			    connect_to_IPhost_pair(c);
 			    c = nxt;
 			}
@@ -603,7 +608,7 @@ extract_end(struct connection *conn
     {
 	dst->id.kind = ID_NONE;
     }
-    else if(strcasecmp(src->id, "%cert")==0) {
+    else if(strcasecmp(src->id, "%cert")==0 || strcasecmp(src->id, "%fromcert")==0) {
         dst->id.kind = ID_FROMCERT;
     }
     else
@@ -730,6 +735,7 @@ extract_end(struct connection *conn
     }
 
     dst->sendcert =  src->sendcert;
+    dst->vtinum   =  src->vtinum;
 
     /* save the originally provided hint */
     dst->saved_hint_addr = dst->host_addr;
@@ -762,10 +768,12 @@ static bool
 check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
+    int addr_nexthop = addrtypeof(&this->host_nexthop);
+
     if ((this->host_type == KH_IPADDR || this->host_type == KH_IFACE)
 	&& wm->end_addr_family != 0
 	&& (wm->end_addr_family != addrtypeof(&this->host_addr)
-	    || wm->end_addr_family != addrtypeof(&this->host_nexthop)))
+	    || (wm->end_addr_family != addr_nexthop && addr_nexthop != 0)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
@@ -774,20 +782,26 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
         addr    = aftoinfo(addrtypeof(&this->host_addr));
         nexthop = aftoinfo(addrtypeof(&this->host_nexthop));
 
-	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
+	loglog(RC_CLASH, "%s: address family inconsistency in this connection=%s host=%s/nexthop=%s"
+               , wm->name
 	       , (wm->end_addr_family) ? aftoinfo(wm->end_addr_family)->name             : "NULL"
 	       , (addr)    ? addr->name    : "NULL"
 	       , (nexthop) ? nexthop->name : "NULL");
 	return FALSE;
     }
 
-    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR
-	&& subnettypeof(&this->client) != subnettypeof(&that->client))
+    if ((this->host_type == KH_IPADDR && that->host_type == KH_IPADDR)
+        && (this->has_client
+            && that->has_client
+            && subnettypeof(&this->client) != subnettypeof(&that->client)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
-	loglog(RC_CLASH, "address family inconsistency in this/that connection");
+	loglog(RC_CLASH, "\"%s\" address family inconsistency in connection, this=%d/%d that=%d/%d"
+               , wm->name
+               , this->host_type, subnettypeof(&this->client)
+               , that->host_type, subnettypeof(&that->client));
 	return FALSE;
     }
 
@@ -906,6 +920,7 @@ static bool connection_has_valid_config(const struct whack_message *wm)
 void
 add_connection(const struct whack_message *wm)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
 
@@ -990,7 +1005,7 @@ add_connection(const struct whack_message *wm)
 
 	/* check alg support */
 
-	if ((c->policy & POLICY_COMPRESS) && !can_do_IPcomp)
+	if ((c->policy & POLICY_COMPRESS) && !oco->can_do_IPcomp)
 	    loglog(RC_COMMENT
 		, "ignoring --compress in \"%s\" because KLIPS is not configured to do IPCOMP"
 		, c->name);
@@ -1256,7 +1271,7 @@ add_connection(const struct whack_message *wm)
 
 	unshare_connection_strings(c);
 
-	(void)orient(c, pluto_port500);
+	(void)orient(c, oco->pluto_port500);
 	connect_to_IPhost_pair(c);
         connect_to_IDhost_pair(c);
 
@@ -1915,6 +1930,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 					,const ip_address *our_client
 					,const ip_address *peer_client)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct iface_port *p;
     struct connection *best = NULL;
     struct spd_route *sr, *bestsr;
@@ -1937,10 +1953,10 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * that it is pluto_port (makes debugging easier).
 	 */
 	struct connection *c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, &p->ip_addr
-							  , pluto_port500
+							  , oco->pluto_port500
                                                           , KH_ANY
 							  , (ip_address *)NULL
-							  , pluto_port500);
+							  , oco->pluto_port500);
 
 	for (; c != NULL; c = c->IPhp_next)
 	{
@@ -2016,6 +2032,7 @@ route_owner(struct connection *c
     struct spd_route *srd, *src;
     struct spd_route *best_sr, *best_esr;
     enum routing_t best_routing, best_erouting;
+    const struct osw_conf_options *oco = osw_init_options();
 
     passert(oriented(*c));
     best_sr  = NULL;
@@ -2028,7 +2045,7 @@ route_owner(struct connection *c
 
 #ifdef KLIPS_MAST
 	/* in mast mode we must also delete the iptables rule */
-	if (kern_interface == USE_MASTKLIPS)
+	if (oco->kern_interface == USE_MASTKLIPS)
 	    if (compatible_overlapping_connections(c, d))
 		continue;
 #endif
@@ -2207,6 +2224,7 @@ find_host_connection2(const char *func, bool exact
                       , lset_t policy_set, lset_t policy_clear
                       , lset_t *pPolicy_IkeVersion)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct connection *c;
     struct connection *cWithoutIkePolicy = NULL;
     struct connection *cWithoutIkePolicy_any = NULL;
@@ -2235,7 +2253,7 @@ find_host_connection2(const char *func, bool exact
 
     if(c == NULL) {
         /* look again with right=%any */
-        c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, pluto_port500);
+        c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, oco->pluto_port500);
 
         c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf, &cWithoutIkePolicy_any);
     }

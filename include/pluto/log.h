@@ -21,27 +21,24 @@
 
 #include "oswlog.h"
 
-#ifndef PERPERRLOGDIR
-#define PERPERRLOGDIR "/var/log/pluto/peer"
+#ifndef PERPEERLOGDIR
+#define PERPEERLOGDIR "/var/log/pluto/peer"
 #endif
 
 /* moved common code to library file */
 #include "openswan/passert.h"
 
-extern bool
-    log_to_stderr,	/* should log go to stderr? */
-    log_to_syslog,	/* should log go to syslog? */
-    log_to_perpeer,     /* should log go to per-IP file? */
-    log_with_timestamp; /* prefix timestamp */
-
-extern bool log_did_something;  /* set if we should log time again to debug*/
-
-extern const char *base_perpeer_logdir;
-
 extern char **global_argv; /* pointer to first arguments,
 			    * for setproctitle()-like usage */
 extern int    global_argc;
 extern char debug_prefix;
+extern bool log_did_something;   /* set in server, if we did something */
+extern bool   logged_myid_fqdn_txt_warning;
+extern bool   logged_myid_ip_txt_warning;
+extern bool   logged_myid_fqdn_key_warning;
+extern bool   logged_myid_ip_key_warning;
+extern bool   logged_txt_warning;
+
 
 /* used in some messages to distiguish
  * which pluto is which, when doing
@@ -161,7 +158,7 @@ extern void whack_log(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 extern void loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* show status, usually on whack log */
-extern void show_status(void);
+extern void show_status(lset_t whattoshow);
 extern void show_secrets_status(void);
 
 #define ip_str pluto_ip_str

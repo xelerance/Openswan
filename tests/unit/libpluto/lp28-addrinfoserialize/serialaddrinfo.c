@@ -97,9 +97,9 @@ int main(int argc, char *argv[])
         osw_freeaddrinfo(result2);
     }
 
+    tool_close_log();
     report_leaks();
 
-    tool_close_log();
     exit(0);
 }
 

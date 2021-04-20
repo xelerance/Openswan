@@ -43,8 +43,8 @@ step4:
 	@(${WHACKBIN} ${CTLBASE} --listall; ${WHACKBIN} ${CTLBASE} --listen; ${WHACKBIN} ${CTLBASE} --listall) > ${OUTPUTS}/pluto.whack.raw
 
 check: OUTPUT
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step4; sleep 1; make --no-print-directory step3 )| tee ${OUTPUTS}/pluto.big-key-green.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.big-key-green.out;
-	@sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed ${OUTPUTS}/pluto.whack.raw | diff - pluto.whack.out
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step4; sleep 1; make --no-print-directory step3 )| tee ${OUTPUTS}/pluto.big-key-green.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.big-key-green.out;
+	@sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed ${OUTPUTS}/pluto.whack.raw | diff - pluto.whack.out
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
@@ -52,8 +52,8 @@ OUTPUT:
 	-rm -f OUTPUT/base.pid
 
 update:
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.big-key-green.raw >pluto.big-key-green.out
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed OUTPUT/pluto.whack.raw >pluto.whack.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.big-key-green.raw >pluto.big-key-green.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed OUTPUT/pluto.whack.raw >pluto.whack.out
 
 clean:
 	rm -rf OUTPUT OUTPUT/base.pid

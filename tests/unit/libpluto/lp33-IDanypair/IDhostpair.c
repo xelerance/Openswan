@@ -17,7 +17,6 @@
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
-#include "seam_vendor.c"
 #include "seam_pending.c"
 #include "seam_initiate.c"
 #include "seam_ikev1.c"
@@ -92,9 +91,9 @@ int main(int argc, char *argv[])
     if(readwhackmsg(infile) == 0) exit(11);
 
     hostpair_list();
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

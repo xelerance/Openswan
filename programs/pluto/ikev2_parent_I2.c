@@ -339,7 +339,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
         unsigned char *id_start;
         unsigned int   id_len;
 
-        build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
+        build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this, &c->spd.this.id);
         r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
         if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
             openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");

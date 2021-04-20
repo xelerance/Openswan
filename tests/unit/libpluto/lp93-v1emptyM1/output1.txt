@@ -21,8 +21,6 @@
 ./v1emptyM1    port floating activation criteria nat_t=1/port_float=1
 ./v1emptyM1    NAT-Traversal support  [enabled]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection homeV1empty with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | from whack: got --esp=3des-md5;modp1536
 | esp string values: 3des(3)_192-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
@@ -136,15 +134,6 @@ RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 ./v1emptyM1 leak: rfc3110 format of public key [created], item size: X
 ./v1emptyM1 leak: pubkey, item size: X
 ./v1emptyM1 leak: secret, item size: X
-./v1emptyM1 leak: policies path, item size: X
-./v1emptyM1 leak: ocspcerts path, item size: X
-./v1emptyM1 leak: aacerts path, item size: X
-./v1emptyM1 leak: certs path, item size: X
-./v1emptyM1 leak: private path, item size: X
-./v1emptyM1 leak: crls path, item size: X
-./v1emptyM1 leak: cacert path, item size: X
-./v1emptyM1 leak: acert path, item size: X
-./v1emptyM1 leak: override ipsec.d, item size: X
 ./v1emptyM1 leak: 4 * hasher name, item size: X
 ./v1emptyM1 leak: 10 * group description, item size: X
 ./v1emptyM1 leak: policies path, item size: X
@@ -155,8 +144,4 @@ RC=0 "homeV1empty":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
 ./v1emptyM1 leak: crls path, item size: X
 ./v1emptyM1 leak: cacert path, item size: X
 ./v1emptyM1 leak: acert path, item size: X
-./v1emptyM1 leak: default conf var_dir, item size: X
-./v1emptyM1 leak: default conf conffile, item size: X
-./v1emptyM1 leak: default conf ipsecd_dir, item size: X
-./v1emptyM1 leak: default conf ipsec_conf_dir, item size: X
 ./v1emptyM1 leak detective found Z leaks, total size X

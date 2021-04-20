@@ -1,5 +1,5 @@
 # -*- makefile -*-
-SAMPLEDIR=../../libpluto/samples
+SAMPLEDIR=../../libpluto/samples/
 TESTNAME=cryptoI2
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=parker1--jj2

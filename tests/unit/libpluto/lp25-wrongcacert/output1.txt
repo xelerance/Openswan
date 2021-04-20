@@ -18,8 +18,6 @@
 ./wrongcacert registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./wrongcacert registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -816,7 +814,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./wrongcacert IKEv2 mode peer ID is ID_DER_ASN1_DN: 'C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org'
 | find_ID_host_pair: looking for me=(none) him=C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org (wildcard)
 |                   comparing to me=@moon.testing.openswan.org him=(none) (rw-any)
-|   concluded with rw-any
+|    match_id a=C=CA, ST=ON, O=Xelerance, CN=carol@openswan.org
+|             b=(none)
+|    results  matched
+|   concluded with rw-any [wildcard: 15]
 | parent SA IDi pi verify
 |   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   2e 05 3c 7e  12 87 12 99  2e 05 3c 7e  12 87 12 99
@@ -1081,15 +1082,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: rfc3110 format of public key [created], item size: X
 ./wrongcacert leak: pubkey, item size: X
 ./wrongcacert leak: secret, item size: X
-./wrongcacert leak: policies path, item size: X
-./wrongcacert leak: ocspcerts path, item size: X
-./wrongcacert leak: aacerts path, item size: X
-./wrongcacert leak: certs path, item size: X
-./wrongcacert leak: private path, item size: X
-./wrongcacert leak: crls path, item size: X
-./wrongcacert leak: cacert path, item size: X
-./wrongcacert leak: acert path, item size: X
-./wrongcacert leak: override ipsec.d, item size: X
 ./wrongcacert leak: 4 * hasher name, item size: X
 ./wrongcacert leak: 10 * group description, item size: X
 ./wrongcacert leak: policies path, item size: X
@@ -1100,9 +1092,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 93
 ./wrongcacert leak: crls path, item size: X
 ./wrongcacert leak: cacert path, item size: X
 ./wrongcacert leak: acert path, item size: X
-./wrongcacert leak: default conf var_dir, item size: X
-./wrongcacert leak: default conf conffile, item size: X
-./wrongcacert leak: default conf ipsecd_dir, item size: X
-./wrongcacert leak: default conf ipsec_conf_dir, item size: X
 ./wrongcacert leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

@@ -31,6 +31,7 @@ loading secrets from "ipsec.secrets"
 loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
 000 using secrets file: "ipsec.secrets"
+000 link-local addresses are: ignored
 000 %myid = (none)
 000 debug none
 000  
@@ -62,6 +63,7 @@ loaded private key for keyid: RANDOM
 000  
 000 "green": 2620:120:9000:81::/64===%any[@peel]...%any[@berri.testing.xelerance.com]===2620:120:9000:82::/64; unrouted; eroute owner: #0
 000 "green":     myip=2620:120:9000:81::1; hisip=2620:120:9000:82::1; mycert=peel1.pem; hiscert=berri1.pem;
+000 "green":   CAs: 'DC=Canada, DC=Xelerance, CN=peel'...'DC=Canada, DC=Xelerance, CN=berri'
 000 "green":   keys: 1:KEYID 2:none...
 000 "green":        ....1:KEYID 2:none 
 000 "green":   ike_life: 3600s; ipsec_life: 600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; firstmsgid: 0 

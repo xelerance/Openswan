@@ -63,8 +63,9 @@ int main(int argc, char *argv[])
 
     pfreeany(hash);
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

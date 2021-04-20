@@ -35,6 +35,7 @@
 #include "seam_dnskey.c"
 #include "seam_natt.c"
 #include "seam_rsasig.c"
+#include "seam_io.c"
 
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
@@ -48,13 +49,15 @@ int main(int argc, char *argv[])
     char *conn_name;
     struct connection *c1;
 
+    leak_detective = 1;
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
 #endif
 
+    struct osw_conf_options *oco = osw_init_options();
     progname = argv[0];
-    leak_detective = 1;
-    pluto_shared_secrets_file = "/dev/null";
+    pfree_z(oco->pluto_shared_secrets_file);
+    oco->pluto_shared_secrets_file = clone_str("/dev/null", "main");
 
     if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
@@ -80,7 +83,7 @@ int main(int argc, char *argv[])
         c1 = con_by_name(conn_name, TRUE);
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
-        assert(orient(c1, pluto_port500) == FALSE);
+        assert(orient(c1, oco->pluto_port500) == FALSE);
     }
 
     hostpair_list();
@@ -94,7 +97,7 @@ int main(int argc, char *argv[])
         c1 = con_by_name(conn_name, TRUE);
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
-        assert(orient(c1, pluto_port500) == TRUE);
+        assert(orient(c1, oco->pluto_port500) == TRUE);
     }
     hostpair_list();
 
@@ -104,9 +107,9 @@ int main(int argc, char *argv[])
         delete_connection(c1, TRUE, FALSE);
     }
 
-    report_leaks();
-
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

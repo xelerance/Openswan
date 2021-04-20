@@ -1,5 +1,3 @@
-
-  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)

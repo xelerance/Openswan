@@ -30,9 +30,13 @@ EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
-EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS} -lresolv
+# Remove efence due to bug in Ubuntu 20.04 re: efence and glibc
+# https://answers.launchpad.net/ubuntu/+question/674132
+#EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS} -lresolv
+EXTRALIBS+=-lgmp -lpcap  ${NSS_LIBS} ${FIPS_LIBS} -lresolv
 
-EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
+EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
+#EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf

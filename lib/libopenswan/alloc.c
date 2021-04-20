@@ -180,26 +180,28 @@ report_leaks(void)
 
     while (p != NULL)
     {
-	passert(p->i.magic == LEAK_MAGIC);
-	passert(pprev == p->i.newer);
+        if(p->i.magic != LEAK_MAGIC || pprev != p->i.newer) {
+            fprintf(stderr, "leak detective got corrupted, exiting\n");
+            exit(99);
+        }
 	pprev = p;
 	p = p->i.older;
 	n++;
 	if (p == NULL || pprev->i.name != p->i.name)
 	{
 	    if (n != 1)
-		openswan_log("leak: %lu * %s, item size: %lu", n, pprev->i.name, pprev->i.size);
+		fprintf(stderr, "%s leak: %lu * %s, item size: %lu\n", progname, n, pprev->i.name, pprev->i.size);
 	    else
-		openswan_log("leak: %s, item size: %lu", pprev->i.name, pprev->i.size);
+		fprintf(stderr, "%s leak: %s, item size: %lu\n", progname, pprev->i.name, pprev->i.size);
 	    numleaks += n;
 	    total += pprev->i.size;
 	    n = 0;
 	}
     }
     if(numleaks != 0)
-    	openswan_log("leak detective found %lu leaks, total size %lu",numleaks,total);
+    	fprintf(stderr, "%s leak detective found %lu leaks, total size %lu\n",progname, numleaks,total);
     else
-    	openswan_log("leak detective found no leaks");
+    	fprintf(stderr, "%s leak detective found no leaks\n", progname);
 
 }
 

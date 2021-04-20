@@ -37,6 +37,7 @@
 #include <linux/pfkeyv2.h>
 #include <unistd.h>
 #include <sysqueue.h>
+#include <linux/xfrm.h>
 
 #include "kameipsec.h"
 #include "linux26/rtnetlink.h"
@@ -52,6 +53,8 @@
 #include "defs.h"
 #include "id.h"
 #include "state.h"
+#include "oswconf.h"
+
 #include "pluto/connections.h"
 #include "kernel.h"
 #include "pluto/server.h"
@@ -551,6 +554,8 @@ netlink_raw_eroute(const ip_address *this_host
 		   , enum pluto_sadb_operations sadb_op
 		   , const char *text_said
 		   , char *policy_label UNUSED
+                   , uint32_t vti_mark
+                   , uint32_t vti_markmask
 		   )
 {
     struct {
@@ -576,8 +581,9 @@ netlink_raw_eroute(const ip_address *this_host
         addrtot(this_host, 0, sa_this, sizeof(sa_this));
         addrtot(that_host, 0, sa_that, sizeof(sa_that));
 
-        DBG_log("creating SPD to %s->spi=%08x@%s proto=%u"
-                , sa_this, htonl(spi), sa_that, proto);
+        DBG_log("%s SPD to %s->spi=%08x@%s proto=%u vti mark=%08x"
+                , (sadb_op == ERO_DELETE || sadb_op == ERO_DEL_INBOUND) ? "deleting" : "creating"
+                , sa_this, htonl(spi), sa_that, proto, vti_mark);
     }
 
     policy = IPSEC_POLICY_IPSEC;
@@ -774,6 +780,24 @@ netlink_raw_eroute(const ip_address *this_host
 	req.n.nlmsg_len += attr->rta_len;
     }
 
+    if(vti_mark != 0) {
+        struct rtattr *attr = (struct rtattr *)
+            ((char *)&req + req.n.nlmsg_len);
+        struct xfrm_mark *mark;
+
+        attr->rta_type = XFRMA_MARK;
+
+        DBG(DBG_NETKEY
+            , DBG_log("passing xfrm mark/mask=%08x/%08x"
+                    , vti_mark, vti_markmask));
+        attr->rta_len =
+            RTA_LENGTH(sizeof(struct xfrm_mark));
+        mark = RTA_DATA(attr);
+        mark->v = vti_mark;
+        mark->m = vti_markmask;
+        req.n.nlmsg_len += attr->rta_len;
+    }
+
 #ifdef HAVE_LABELED_IPSEC
     if (policy_label != NULL) {
         size_t len = strlen(policy_label) + 1;
@@ -811,28 +835,28 @@ netlink_raw_eroute(const ip_address *this_host
     }
 
     ok = netlink_policy(&req.n, enoent_ok, text_said);
-    switch (dir)
-    {
-    case XFRM_POLICY_IN:
-	if (req.n.nlmsg_type == XFRM_MSG_DELPOLICY)
-	{
-	    req.u.id.dir = XFRM_POLICY_FWD;
-	}
-	else if (!ok)
-	{
-	    break;
-	}
-	else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
-	&& esatype != ET_INT)
-	{
-	    break;
-	}
-	else
-	{
-	    req.u.p.dir = XFRM_POLICY_FWD;
-	}
-	ok &= netlink_policy(&req.n, enoent_ok, text_said);
-	break;
+    if (!ok) {
+        switch (dir)
+            {
+            case XFRM_POLICY_IN:
+                if (req.n.nlmsg_type == XFRM_MSG_DELPOLICY)
+                    {
+                        req.u.id.dir = XFRM_POLICY_FWD;
+                    }
+                else if (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL
+                         && esatype != ET_INT)
+                    {
+                        openswan_log("not adding FWD policy because Mode is not tunnel");
+                        /* then don't do it */
+                        break;
+                    }
+                else
+                    {
+                        req.u.p.dir = XFRM_POLICY_FWD;
+                    }
+                ok &= netlink_policy(&req.n, enoent_ok, text_said);
+                break;
+            }
     }
 
     return ok;
@@ -1340,6 +1364,8 @@ linux_pfkey_add_aead(void)
 void
 linux_pfkey_register_response(const struct sadb_msg *msg)
 {
+    struct osw_conf_options *oco = osw_init_options();
+
     switch (msg->sadb_msg_satype)
     {
     case SADB_SATYPE_ESP:
@@ -1348,7 +1374,7 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
 	    linux_pfkey_add_aead();
 	    break;
     case SADB_X_SATYPE_IPCOMP:
-	can_do_IPcomp = TRUE;
+	oco->can_do_IPcomp = TRUE;
 	break;
     default:
 	break;
@@ -1930,7 +1956,8 @@ netlink_shunt_eroute(struct connection *c
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
 			      , c->policy_label
-			      ) )
+                               , 0, 0
+                               ) )
       { return FALSE; }
 
       switch (op)
@@ -1957,6 +1984,7 @@ netlink_shunt_eroute(struct connection *c
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
                               , c->policy_label
+                                , 0, 0
 			      );
     }
 }
@@ -1964,14 +1992,15 @@ netlink_shunt_eroute(struct connection *c
 void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
 {
+    struct osw_conf_options *oco = osw_init_options();
     struct raw_iface *ifp;
     ip_address lip; /* --listen filter option */
-    if(pluto_listen) {
+    if(oco->pluto_listen) {
 	err_t e;
-	e = ttoaddr(pluto_listen,0,0,&lip);
+	e = ttoaddr(oco->pluto_listen,0,0,&lip);
 	if (e) {
 		DBG_log("invalid listen= option ignored: %s\n", e);
-		pluto_listen = NULL;
+		oco->pluto_listen = NULL;
 	}
 	DBG(DBG_CONTROL, DBG_log("Only looking to listen on %s\n", ip_str(&lip)));
     }
@@ -2025,7 +2054,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 		    /* ugh: a second real interface with the same IP address
 		     * "after" allows us to avoid double reporting.
 		     */
-		    if (kern_interface == USE_NETKEY)
+		    if (oco->kern_interface == USE_NETKEY)
 		    {
 			if (after)
 			{
@@ -2048,7 +2077,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	if (bad)
 	    continue;
 
-	if (kern_interface == USE_NETKEY)
+	if (oco->kern_interface == USE_NETKEY)
 	{
 	    v = ifp;
 	    goto add_entry;
@@ -2057,7 +2086,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	/* what if we didn't find a virtual interface? */
 	if (v == NULL)
 	{
-	    if (kern_interface == NO_KERNEL)
+	    if (oco->kern_interface == NO_KERNEL)
 	    {
 		/* kludge for testing: invent a virtual device */
 		static const char fvp[] = "virtual";
@@ -2084,7 +2113,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 add_entry:
 	/* last check before we actually add the entry due to ugly goto code */
 	/* ignore if --listen is specified and we do not match */
-	if (pluto_listen!=NULL) {
+	if (oco->pluto_listen!=NULL) {
 	    if (!sameaddr(&lip, &ifp->addr)) {
 		openswan_log("skipping interface %s with %s"
 		, ifp->name , ip_str(&ifp->addr));
@@ -2104,7 +2133,7 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, v->name, pluto_port500);
+		    int fd = create_socket(ifp, v->name, oco->pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -2131,15 +2160,17 @@ add_entry:
                     init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port500;
+		    q->port   = oco->pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d (%s)"
+		    openswan_log("adding interface %s/%s [%s%%%u]:%d (%s)"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
+                                 , (q->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                                    q->ip_addr.u.v6.sin6_scope_id : 0)
 				 , q->port, q->socktypename);
 
 #ifdef NAT_TRAVERSAL
@@ -2169,11 +2200,14 @@ add_entry:
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d"
+			openswan_log("adding nat interface %s/%s [%s%%%u]:%d (%s)"
 				     , q->ip_dev->id_vname, q->ip_dev->id_rname
 				     , ip_str(&q->ip_addr)
-				     , q->port);
-		    }
+                                     , (q->ip_addr.u.v6.sin6_family == AF_INET6 ?
+                                        q->ip_addr.u.v6.sin6_scope_id : 0)
+				     , q->port
+                                     , q->socktypename);
+                    }
 #endif
 		    break;
 		}

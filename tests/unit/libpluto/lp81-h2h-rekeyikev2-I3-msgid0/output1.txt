@@ -16,14 +16,8 @@
 ./rekeyChildSA-msgInI3 loading secrets from "../samples/parker.secrets"
 ./rekeyChildSA-msgInI3 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./rekeyChildSA-msgInI3 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./rekeyChildSA-msgInI3 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./rekeyChildSA-msgInI3 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
@@ -1027,7 +1021,7 @@ sending 416 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
 |   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
 | ikev2 child inCI1: calculated g^{xy}, sending R2
-| CHILD SA proposals received
+./rekeyChildSA-msgInI3 received CHILD SA proposal(s) will be processed
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -1571,18 +1565,6 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./rekeyChildSA-msgInI3 leak: pubkey entry, item size: X
 ./rekeyChildSA-msgInI3 leak: rfc3110 format of public key, item size: X
 ./rekeyChildSA-msgInI3 leak: pubkey, item size: X
-./rekeyChildSA-msgInI3 leak: policies path, item size: X
-./rekeyChildSA-msgInI3 leak: ocspcerts path, item size: X
-./rekeyChildSA-msgInI3 leak: aacerts path, item size: X
-./rekeyChildSA-msgInI3 leak: certs path, item size: X
-./rekeyChildSA-msgInI3 leak: private path, item size: X
-./rekeyChildSA-msgInI3 leak: crls path, item size: X
-./rekeyChildSA-msgInI3 leak: cacert path, item size: X
-./rekeyChildSA-msgInI3 leak: acert path, item size: X
-./rekeyChildSA-msgInI3 leak: default conf var_dir, item size: X
-./rekeyChildSA-msgInI3 leak: default conf conffile, item size: X
-./rekeyChildSA-msgInI3 leak: default conf ipsecd_dir, item size: X
-./rekeyChildSA-msgInI3 leak: default conf ipsec_conf_dir, item size: X
 ./rekeyChildSA-msgInI3 leak: 2 * id list, item size: X
 ./rekeyChildSA-msgInI3 leak: rfc3110 format of public key [created], item size: X
 ./rekeyChildSA-msgInI3 leak: pubkey, item size: X

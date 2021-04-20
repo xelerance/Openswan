@@ -16,14 +16,8 @@
 ./h2hI2 registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./h2hI2 registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./h2hI2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./h2hI2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./h2hI2 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 | counting wild cards for 192.168.1.1 is 0
@@ -559,16 +553,4 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./h2hI2 leak: secret, item size: X
 ./h2hI2 leak: 4 * hasher name, item size: X
 ./h2hI2 leak: 10 * group description, item size: X
-./h2hI2 leak: policies path, item size: X
-./h2hI2 leak: ocspcerts path, item size: X
-./h2hI2 leak: aacerts path, item size: X
-./h2hI2 leak: certs path, item size: X
-./h2hI2 leak: private path, item size: X
-./h2hI2 leak: crls path, item size: X
-./h2hI2 leak: cacert path, item size: X
-./h2hI2 leak: acert path, item size: X
-./h2hI2 leak: default conf var_dir, item size: X
-./h2hI2 leak: default conf conffile, item size: X
-./h2hI2 leak: default conf ipsecd_dir, item size: X
-./h2hI2 leak: default conf ipsec_conf_dir, item size: X
 ./h2hI2 leak detective found Z leaks, total size X

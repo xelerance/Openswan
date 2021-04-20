@@ -13,14 +13,11 @@ static void init_local_interface(void)
     init_jamesjohnson_interface();
 }
 
-bool now_regression;
-time_t regression_time;
-
 static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
-    osw_init_ipsecdir("../samples/selfsigned");
+    osw_init_ipsecdir_str("../samples/selfsigned");
 
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE

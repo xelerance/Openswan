@@ -52,6 +52,7 @@
 #include "constants.h"
 #include "defs.h"
 #include "oswtime.h"
+#include "oswconf.h"
 #include "timer.h"
 #include "id.h"
 #include "oswtime.h"
@@ -102,6 +103,7 @@ bool
 send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 		 , const char *description, const char *text_said)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     struct {
 	struct nlmsghdr n;
 	struct nlmsgerr e;
@@ -112,7 +114,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
     struct sockaddr_nl addr;
     static uint32_t seq;
 
-    if (kern_interface == NO_KERNEL)
+    if (oco->kern_interface == NO_KERNEL)
     {
 	return TRUE;
     }
@@ -376,13 +378,14 @@ netkey_do_command(struct connection *c, const struct spd_route *sr
 
 int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 {
+    const struct osw_conf_options *oco = osw_init_options();
     int r = -1;
     struct ifreq ifr;
     int *fdp = (int *) &ifr.ifr_data;
 
     DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying new style NAT-T"));
     memset(&ifr, 0, sizeof(ifr));
-    switch(kern_interface) {
+    switch(oco->kern_interface) {
     case USE_MASTKLIPS:
         strcpy(ifr.ifr_name, "ipsec0"); /* using mast0 will break it! */
         break;

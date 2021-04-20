@@ -36,6 +36,7 @@
 #include "oswalloc.h"
 #include "oswtime.h"
 #include "oswlog.h"
+#include "oswconf.h"
 #include "pluto/keys.h"
 
 #include "pluto/server.h"
@@ -47,8 +48,6 @@
  * at other times, including regression testing.
  *
  */
-bool orient_same_addr_ok = FALSE;
-
 static void swap_ends(struct spd_route *sr)
 {
     struct end t = sr->this;
@@ -205,6 +204,7 @@ orient(struct connection *c, unsigned int pluto_port)
     struct spd_route *sr;
     bool result;
     unsigned int family = c->end_addr_family;
+    const struct osw_conf_options *oco = osw_init_options();
 
     if (!oriented(*c))
     {
@@ -242,7 +242,7 @@ orient(struct connection *c, unsigned int pluto_port)
 		{
 		    /* check if this interface matches this end */
 		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
-			&& (orient_same_addr_ok
+			&& (oco->orient_same_addr_ok
                             || sr->this.host_port == p->port))
 		    {
 			if (oriented(*c))
@@ -266,7 +266,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
 		    /* done with this interface if it doesn't match that end */
 		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
-			  && (orient_same_addr_ok
+			  && (oco->orient_same_addr_ok
 			      || sr->that.host_port == p->port)))
 			break;
 

@@ -42,6 +42,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
+#include "oswconf.h"
 
 #include "defs.h"
 #include "rnd.h"
@@ -71,6 +72,7 @@ char kversion[256];
 void
 init_kernel(void)
 {
+    struct osw_conf_options *oco = osw_init_options();
     struct utsname un;
 #if defined(NETKEY_SUPPORT) || defined(KLIPS) || defined(KLIPS_MAST)
     struct stat buf;
@@ -80,7 +82,7 @@ init_kernel(void)
     uname(&un);
     strncpy(kversion, un.release, sizeof(kversion));
 
-    switch(kern_interface) {
+    switch(oco->kern_interface) {
     case AUTO_PICK:
 #if defined(NETKEY_SUPPORT) || defined(KLIPS) || defined(KLIPS_MAST)
 	/* If we detect NETKEY and KLIPS, we can't continue */
@@ -100,7 +102,7 @@ init_kernel(void)
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
 	if (stat("/proc/net/pfkey", &buf) == 0) {
-	    kern_interface = USE_NETKEY;
+	    oco->kern_interface = USE_NETKEY;
 	    openswan_log("Using Linux XFRM/NETKEY IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &netkey_kernel_ops;
@@ -113,7 +115,7 @@ init_kernel(void)
 #if defined(KLIPS)
     case USE_KLIPS:
 	if (stat("/proc/net/ipsec/spi/all", &buf) == 0) {
-	    kern_interface = USE_KLIPS;
+	    oco->kern_interface = USE_KLIPS;
 	    openswan_log("Using KLIPS IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &klips_kernel_ops;
@@ -126,7 +128,7 @@ init_kernel(void)
 #if defined(KLIPS_MAST)
     case USE_MASTKLIPS:
         if (stat("/proc/sys/net/ipsec/debug_mast", &buf) == 0) {
-	    kern_interface = USE_MASTKLIPS;
+	    oco->kern_interface = USE_MASTKLIPS;
 	    openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &mast_kernel_ops;
@@ -155,18 +157,18 @@ init_kernel(void)
 #endif
 
     case NO_KERNEL:
-	kern_interface = NO_KERNEL;
+	oco->kern_interface = NO_KERNEL;
 	openswan_log("Using 'no_kernel' interface code on %s"
 		     , kversion);
 	kernel_ops = &noklips_kernel_ops;
 	break;
 
     default:
-	if(kern_interface == AUTO_PICK)
+	if(oco->kern_interface == AUTO_PICK)
 		openswan_log("kernel interface auto-pick failed - no suitable kernel stack found");
 	else
 		openswan_log("kernel interface '%s' not available"
-		     , enum_name(&kern_interface_names, kern_interface));
+		     , enum_name(&kern_interface_names, oco->kern_interface));
 	exit_pluto(5);
     }
 
@@ -176,7 +178,7 @@ init_kernel(void)
     }
 
     /* register SA types that we can negotiate */
-    can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
+    oco->can_do_IPcomp = FALSE;  /* until we get a response from KLIPS */
     if (kernel_ops->pfkey_register)
     {
 	kernel_ops->pfkey_register();

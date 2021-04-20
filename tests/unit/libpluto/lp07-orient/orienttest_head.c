@@ -35,6 +35,7 @@
 #include "seam_dnskey.c"
 #include "seam_natt.c"
 #include "seam_rsasig.c"
+#include "seam_io.c"
 
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"

@@ -63,8 +63,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 	moduleclean mod24clean module24clean mod26clean module26clean \
 	backup unpatch uninstall install_file_list \
 	snapready relready ready buildready devready uml check taroldinstall \
-	umluserland
-
+	umluserland updatecddl
 
 kpatch: unapplypatch applypatch klipsdefaults
 npatch: unapplynpatch applynpatch
@@ -170,8 +169,12 @@ klipsdefaults:
 
 # programs
 
+submodules:
+	git submodule init && git submodule update
+
 ifeq ($(strip $(OBJDIR)),.) # If OBJDIR is OPENSWANSRCDIR (ie dot) then the simple case:
 programs install clean::
+	@if [ ! -d lib/libwhack/qcbor/inc ]; then echo Please run "make submodule" first; exit 1; fi
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
@@ -183,6 +186,7 @@ export OBJDIRTOP
 
 programs install clean:: ${OBJDIR}/Makefile
 	@echo OBJDIR: ${OBJDIR}
+	@if [ ! -d lib/libwhack/qcbor/inc ]; then echo Please run "make submodule" first; exit 1; fi
 	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} ${MAKE} $@ )
 
 ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
@@ -547,6 +551,7 @@ tarpkg:
 	@rm /var/tmp/openswan-${USER}/etc/ipsec.conf
 	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz
 	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
+	@ln -f openswan${VENDOR}-${IPSECVERSION}.tgz openswan.tgz
 	@rm -rf /var/tmp/openswan-${USER}
 
 
@@ -558,4 +563,10 @@ env:
 war:
 	@echo "Not Love?"
 
+# needs "cddlc" from "gem install cddlc"
+updatecddl:
+	printf "/* generated from whack.cddl */\n" >include/whack_values.h
+	printf "#ifndef WHACKVALUES_H\n#define WHACKVALUES_H\n" >>include/whack_values.h
+	cddlc -tenum docs/whack.cddl             >>include/whack_values.h
+	printf "#endif /* WHACKVALUES_H */\n"    >>include/whack_values.h
 

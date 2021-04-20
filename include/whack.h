@@ -20,6 +20,8 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "whack_values.h"
+
 /* Since the message remains on one host, native representation is used.
  * Think of this as horizontal microcode: all selected operations are
  * to be done (in the order declared here).
@@ -84,7 +86,7 @@ struct whack_end {
     char *xauth_name;
     bool modecfg_server;        /* for MODECFG */
     bool modecfg_client;
-    unsigned int tundev;
+    unsigned int vtinum;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
 
@@ -101,12 +103,39 @@ enum whack_opt_set {
     WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
+#define CborSequenceTag  55800
+#define CborOpenSwanTag  0x4f50534e
+#define CborIPv4Tag      '4'
+#define CborIPv6Tag      '6'
+
+/* The following enums are in whack_values.h, and are generated from CDDL.
+ *
+ * enum whack_message_keys
+ * enum publickey_keys
+ * enum connection_keys
+ * enum connectionend_keys
+ * enum optionscommand_keys
+ * enum initiateoppo_keys
+ *
+ */
+
+/* this is the historic message from Openswan < 3.1 */
+struct legacy_whack_message {
+    u_int32_t magic;
+
+    /* for WHACK_STATUS: */
+    bool whack_status;
+
+    /* for WHACK_SHUTDOWN */
+    bool whack_shutdown;
+};
+
 /* whack message should be size independant, but it is in host-endian format */
 struct whack_message {
     u_int32_t magic;
 
     /* for WHACK_STATUS: */
-    bool whack_status;
+    lset_t whack_status;
 
     /* for WHACK_SHUTDOWN */
     bool whack_shutdown;
@@ -123,7 +152,8 @@ struct whack_message {
 
     bool whack_options;
 
-    lset_t debugging;	/* only used #ifdef DEBUG, but don't want layout to change */
+    lset_t debugging;
+    lset_t added_debugging;
 
     /* for WHACK_CONNECTION */
 
@@ -138,10 +168,10 @@ struct whack_message {
     u_int32_t sa_keying_tries;
 
     /* For DPD 3706 - Dead Peer Detection */
-    time_t dpd_delay;
-    time_t dpd_timeout;
-    enum dpd_action dpd_action;
-    u_int32_t dpd_count;
+    time_t dpd_delay;              /* time between DPD messages */
+    time_t dpd_timeout;            /* timeout at which to give up */
+    enum dpd_action dpd_action;    /* what to do when it fails */
+    u_int32_t dpd_count;           /* how many attempts before failure */
 
     /*Cisco interop:  remote peer type*/
     enum keyword_remotepeertype remotepeertype;
@@ -214,6 +244,7 @@ struct whack_message {
 
     /* for WHACK_LISTEN: */
     bool whack_listen, whack_unlisten;
+    bool on_link_scope;
 
     /* for WHACK_CRASH - note if a remote peer is known to have rebooted */
     bool whack_crash;
@@ -250,43 +281,7 @@ struct whack_message {
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
-    char *string1;
-    char *string2;
-    char *string3;
-
-    /* space for strings (hope there is enough room):
-     * Note that pointers don't travel on wire.
-     *  1 connection name [name_len]
-     *  2 left's name [left.host.name.len]
-     *  3 left's cert
-     *  4 left's ca
-     *  5 left's groups
-     *  6 left's updown
-     *  7 left's virt
-     *  8 right's name [left.host.name.len]
-     *  9 right's cert
-     * 10 right's ca
-     * 11 right's groups
-     * 12 right's updown
-     * 13 right's virt
-     * 14 keyid
-     * 15 myid
-     * 16 ike
-     * 17 esp
-     * 18 tpmeval
-     * 19 left.xauth_name
-     * 20 right.xauth_name
-     * 21 connalias
-     * 22 left.host_addr_name
-     * 23 right.host_addr_name
-     * 24 genstring1  - used with opt_set
-     * 25 genstring2
-     * 26 genstring3
-     * 27 genstring4
-     * plus keyval (limit: 8K bits + overhead), a chunk.
-     */
-    u_int32_t str_size;
-    unsigned char string[4096];
+    char *string1;               /* for whackrecord file */
 };
 
 /* options of whack --list*** command */
@@ -320,18 +315,15 @@ struct whack_message {
 #define REREAD_ALL	LRANGES(REREAD_SECRETS, REREAD_CRLS)  /* all reread options */
 #define REREAD_TPMEVAL    0x40  /* evaluate in Tcl */
 
-
-struct whackpacker {
-    struct whack_message *msg;
-    unsigned char        *str_roof;
-    unsigned char        *str_next;
-    int                   n;
-    int                   cnt;
-};
+struct whackpacker;
 
 extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
 extern void clear_end(struct whack_end *e);
+
+extern err_t whack_cbor_encode_msg(struct whack_message *wm, chunk_t *encode_opts);
+extern err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern void  whack_free_msg(struct whack_message *wm);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);

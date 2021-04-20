@@ -18,8 +18,6 @@
 ./davecert-R1-id registered kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 ./davecert-R1-id registered kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
 | processing whack message of size: A
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
@@ -405,15 +403,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
 ./davecert-R1-id leak: pubkey, item size: X
 ./davecert-R1-id leak: secret, item size: X
-./davecert-R1-id leak: policies path, item size: X
-./davecert-R1-id leak: ocspcerts path, item size: X
-./davecert-R1-id leak: aacerts path, item size: X
-./davecert-R1-id leak: certs path, item size: X
-./davecert-R1-id leak: private path, item size: X
-./davecert-R1-id leak: crls path, item size: X
-./davecert-R1-id leak: cacert path, item size: X
-./davecert-R1-id leak: acert path, item size: X
-./davecert-R1-id leak: override ipsec.d, item size: X
 ./davecert-R1-id leak: 4 * hasher name, item size: X
 ./davecert-R1-id leak: 10 * group description, item size: X
 ./davecert-R1-id leak: policies path, item size: X
@@ -424,9 +413,4 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: crls path, item size: X
 ./davecert-R1-id leak: cacert path, item size: X
 ./davecert-R1-id leak: acert path, item size: X
-./davecert-R1-id leak: default conf var_dir, item size: X
-./davecert-R1-id leak: default conf conffile, item size: X
-./davecert-R1-id leak: default conf ipsecd_dir, item size: X
-./davecert-R1-id leak: default conf ipsec_conf_dir, item size: X
 ./davecert-R1-id leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

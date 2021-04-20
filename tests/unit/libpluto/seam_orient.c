@@ -3,6 +3,7 @@
 
 bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 {
+        struct osw_conf_options *oco = osw_init_options();
 	struct spd_route *sr;
 
 	for (sr = &c->spd; sr; sr = sr->next)
@@ -36,7 +37,7 @@ bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 			/* done with this interface if it doesn't match that end */
 			if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
 			      && (kern_interface!=NO_KERNEL
-				  || sr->that.host_port == pluto_port)))
+				  || sr->that.host_port == oco->pluto_port)))
 				break;
 
 			/* swap ends and try again.

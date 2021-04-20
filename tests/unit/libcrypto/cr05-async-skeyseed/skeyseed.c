@@ -72,8 +72,9 @@ int main(int argc, char *argv[])
 
     calc_dh_v2(&r);
 
-    report_leaks();
     tool_close_log();
+
+    report_leaks();
     exit(0);
 }
 

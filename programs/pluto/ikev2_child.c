@@ -999,8 +999,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         st1->st_ts_this = ikev2_end_to_ts(&bsr->this, pst->st_localaddr);
         st1->st_ts_that = ikev2_end_to_ts(&bsr->that, pst->st_remoteaddr);
-        ikev2_print_ts(&st1->st_ts_this);
-        ikev2_print_ts(&st1->st_ts_that);
+        DBG(DBG_EMITTING,
+            ikev2_print_ts(&st1->st_ts_this);
+            ikev2_print_ts(&st1->st_ts_that););
     }
 
     /* note that st1 starts == st, but a child SA creation can change that */
@@ -1738,7 +1739,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             openswan_log("No CHILD SA proposals received.");
             e.isag_np = ISAKMP_NEXT_NONE;
         } else {
-            DBG_log("CHILD SA proposals received");
+            openswan_log("received CHILD SA proposal(s) will be processed");
             e.isag_np = ISAKMP_NEXT_v2Nr;
         }
 

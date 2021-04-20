@@ -1,0 +1,3 @@
+[submodule "lib/libwhack/qcbor"]
+	path = lib/libwhack/qcbor
+	url = https://github.com/AnimaGUS-minerva/QCBOR.git
