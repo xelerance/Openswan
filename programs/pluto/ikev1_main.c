@@ -2292,7 +2292,7 @@ main_inR3_tail(struct msg_digest *md
      * between the end of phase 1 and the start of phase 2 ie mode config
      * payloads etc will not loose our IV
      */
-    memcpy(st->st_ph1_iv, st->st_new_iv, st->st_new_iv_len);
+    memcpy(st->st_ph1_iv, st->st_new_iv, MIN(st->st_new_iv_len, MAX_DIGEST_LEN));
     st->st_ph1_iv_len = st->st_new_iv_len;
 
     update_iv(st);	/* finalize our Phase 1 IV */

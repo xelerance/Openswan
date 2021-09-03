@@ -5,6 +5,10 @@
 000        ID_IPV6_ADDR '2600:3c02::f03c:91ff:fe70:af83'
 000 DATE, 4096 RSA localf key AQO2qSgCX/9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA (no private key), until --- -- --:--:-- ---- ok (expires never)
 000        ID_IPV6_ADDR '2607:f0b0:c:200:5054:ff:fe53:93d7'
+000 DATE, 4096 RSA localf key AQN7GCjMk/170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051 (no private key), until --- -- --:--:-- ---- ok (expires never)
+000        ID_IPV6_ADDR '2600:3c02::f03c:91ff:fe70:af83'
+000 DATE, 4096 RSA localf key AQO2qSgCX/9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA (no private key), until --- -- --:--:-- ---- ok (expires never)
+000        ID_IPV6_ADDR '2607:f0b0:c:200:5054:ff:fe53:93d7'
 000 DATE, 2192 RSA localf key AQObyWTfI/A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3 (no private key), until --- -- --:--:-- ---- ok (expires never)
 000        ID_FQDN '@peel'
 000 DATE, 4096 RSA localf key AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462 (no private key), until --- -- --:--:-- ---- ok (expires never)
@@ -17,6 +21,10 @@
 000  
 000 List of Public Keys:
 000  
+000 DATE, 4096 RSA localf key AQN7GCjMk/170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051 (no private key), until --- -- --:--:-- ---- ok (expires never)
+000        ID_IPV6_ADDR '2600:3c02::f03c:91ff:fe70:af83'
+000 DATE, 4096 RSA localf key AQO2qSgCX/9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA (no private key), until --- -- --:--:-- ---- ok (expires never)
+000        ID_IPV6_ADDR '2607:f0b0:c:200:5054:ff:fe53:93d7'
 000 DATE, 4096 RSA localf key AQN7GCjMk/170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051 (no private key), until --- -- --:--:-- ---- ok (expires never)
 000        ID_IPV6_ADDR '2600:3c02::f03c:91ff:fe70:af83'
 000 DATE, 4096 RSA localf key AQO2qSgCX/9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA (no private key), until --- -- --:--:-- ---- ok (expires never)

@@ -17,6 +17,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 testlist clean check programs:
+	@${MAKE} -C libwhack    $@
 	@${MAKE} -C libopenswan $@
 	@${MAKE} -C libalgoparse $@
 	@${MAKE} -C libcrypto   $@

@@ -22,7 +22,7 @@ git log --oneline ${startingcommit}.. | tac | \
     do
         echo Working on $commit "(${stuff})"
         rm -rf ${BUILDTMP}/code
-        if git clone -q -n --shared . ${BUILDTMP}/code && (cd $BUILDTMP/code && git checkout -q ${commit} && make programs >/dev/null)
+        if git clone -q -n --shared . ${BUILDTMP}/code && (cd $BUILDTMP/code && git checkout -q ${commit} && git submodule init && git submodule update && make programs >/dev/null)
         then
             echo success
         else

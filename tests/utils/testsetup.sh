@@ -2,7 +2,7 @@
 
 # this script sets up the travis cache.
 
-mkdir -p $HOME/stuff
+mkdir -p $HOME/stuff/sbin
 BUILDTOP=$(cd $HOME/stuff; pwd)
 
 if [ ! -x $HOME/stuff/sbin/tcpdump ]

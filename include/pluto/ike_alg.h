@@ -10,8 +10,8 @@ struct ike_alg {
     const char *name;
     const char *officname;
     enum ikev2_trans_type algo_type;
-    u_int16_t                  ikev1_algo_id;  /* IKEv1 number */
-    enum ikev2_trans_type_encr algo_v2id;
+    u_int16_t ikev1_algo_id;  /* IKEv1 number */
+    unsigned algo_v2id;
     struct ike_alg *algo_next;
 };
 
@@ -115,7 +115,7 @@ int ike_alg_register_enc(struct ike_encr_desc *e);
 int ike_alg_register_integ(struct ike_integ_desc *a);
 int ike_alg_register_prf(struct ike_prf_desc *a);
 struct ike_alg *ike_alg_ikev2_find(enum ikev2_trans_type algo_type
-				   , enum ikev2_trans_type_encr algo_v2id
+				   , unsigned algo_v2id
 				   , unsigned keysize);
 
 static __inline__ struct ike_encr_desc *ike_alg_get_encr(int alg)

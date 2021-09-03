@@ -101,6 +101,105 @@ enum whack_opt_set {
     WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
+enum whack_CBOR_actions {
+    WHACK_STATUS =  1,
+    WHACK_SHUTDOWN =2,
+    WHACK_OPTIONS  =3,
+    WHACK_CONNECTION=4,
+    WHACK_ROUTE    =5,
+    WHACK_UNROUTE  =6,
+    WHACK_INITIATE =7,
+    WHACK_INITIATE_OPPO=8,
+    WHACK_TERMINATE=9,
+    WHACK_ADD_KEY  =10,
+    WHACK_NOOP     =23,
+};
+
+#define CborSignatureTag 55799
+#define CborOpenSwanTag  0x4f50534e
+#define CborIPv4Tag      260            /* squatted */
+#define CborIPv6Tag      261
+
+/* values < 24 get encoded in one byte, < 256 in two bytes */
+enum whack_cbor_attributes {
+      WHACK_OPT_NAME = 1,
+      WHACK_OPT_DEBUGGING = 2,
+      WHACK_OPT_ASYNC = 128,
+      WHACK_OPT_SET   = 129,
+      WHACK_OPT_RECORDFILE=130,
+      WHACK_OPT_MYID  = 131,
+      WHACK_OPT_DELETE= 27,
+      WHACK_OPT_CRASHPEER=132,
+      WHACK_OPT_LISTEN   =133,
+      WHACK_OPT_UNLISTEN =134,
+      WHACK_OPT_REREAD   =135,
+      WHACK_OPT_LIST     =136,
+      WHACK_OPT_PURGE_OCSP=137,
+      WHACK_OPT_IKE      = 139,
+      WHACK_OPT_ESP      = 140,
+      WHACK_OPT_CONNALIAS= 141,
+      WHACK_OPT_POLICYLABEL=142,
+      WHACK_OPT_OPPO_MY_CLIENT = 143,
+      WHACK_OPT_OPPO_PEER_CLIENT=144,
+      WHACK_OPT_DELETESTATE=145,
+
+      WHACK_OPT_LEFT     = 3,
+      WHACK_OPT_RIGHT    = 4,
+
+      WHACK_OPT_LIFETIME_IKE = 146,
+      WHACK_OPT_LIFETIME_IPSEC=147,
+      WHACK_OPT_LIFETIME_REKEY_MARGIN=148,
+      WHACK_OPT_LIFETIME_REKEY_FUZZ=149,
+      WHACK_OPT_LIFETIME_REKEY_TRIES=150,
+      WHACK_OPT_POLICY        = 151,
+      WHACK_OPT_KEYVAL        = 15,
+      WHACK_OPT_KEYID         = 16,
+      WHACK_OPT_KEYALG        = 17,
+      WHACK_OPT_END_ADDR_FAMILY=18,
+};
+
+enum whack_cbor_end_attr {
+      WHACK_OPT_END_ID   = 5,
+      WHACK_OPT_END_CERT = 6,
+      WHACK_OPT_END_CA   = 7,
+      WHACK_OPT_END_GROUPS =8,
+      WHACK_OPT_END_VIRT = 9,
+      WHACK_OPT_END_XAUTH_NAME =137,       /* uncommon */
+      WHACK_OPT_END_HOST_ADDRNAME = 10,
+      WHACK_OPT_END_HOST_ADDR     = 11,
+      WHACK_OPT_END_HOST_NEXTHOP  = 12,
+      WHACK_OPT_END_HOST_SRCIP    = 13,
+      WHACK_OPT_END_CLIENT        = 14,
+
+      WHACK_OPT_HOST_TYPE = 15,
+      WHACK_OPT_KEYTYPE   = 16,
+      WHACK_OPT_HAS_CLIENT= 17,
+      WHACK_OPT_HAS_CLIENT_WILDCARD=18,
+      WHACK_OPT_HAS_PORT_WILDCARD=19,
+      WHACK_OPT_HOST_PORT=20,
+      WHACK_OPT_PORT=138,
+      WHACK_OPT_XAUTH_SERVER=139,
+      WHACK_OPT_XAUTH_CLIENT=140,
+      WHACK_OPT_MODECFG_SERVER=141,
+      WHACK_OPT_MODECFG_CLIENT=142,
+      WHACK_OPT_CERTPOLICY=143,
+      WHACK_OPT_CERTTYPE=144,
+      WHACK_OPT_TUNDEV=145
+};
+
+
+
+/* this is the historic message from Openswan < 3.1 */
+struct legacy_whack_message {
+    u_int32_t magic;
+
+    /* for WHACK_STATUS: */
+    bool whack_status;
+
+    /* for WHACK_SHUTDOWN */
+    bool whack_shutdown;
+};
+
 /* whack message should be size independant, but it is in host-endian format */
 struct whack_message {
     u_int32_t magic;
@@ -250,43 +349,7 @@ struct whack_message {
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
-    char *string1;
-    char *string2;
-    char *string3;
-
-    /* space for strings (hope there is enough room):
-     * Note that pointers don't travel on wire.
-     *  1 connection name [name_len]
-     *  2 left's name [left.host.name.len]
-     *  3 left's cert
-     *  4 left's ca
-     *  5 left's groups
-     *  6 left's updown
-     *  7 left's virt
-     *  8 right's name [left.host.name.len]
-     *  9 right's cert
-     * 10 right's ca
-     * 11 right's groups
-     * 12 right's updown
-     * 13 right's virt
-     * 14 keyid
-     * 15 myid
-     * 16 ike
-     * 17 esp
-     * 18 tpmeval
-     * 19 left.xauth_name
-     * 20 right.xauth_name
-     * 21 connalias
-     * 22 left.host_addr_name
-     * 23 right.host_addr_name
-     * 24 genstring1  - used with opt_set
-     * 25 genstring2
-     * 26 genstring3
-     * 27 genstring4
-     * plus keyval (limit: 8K bits + overhead), a chunk.
-     */
-    u_int32_t str_size;
-    unsigned char string[4096];
+    char *string1;               /* for whackrecord file */
 };
 
 /* options of whack --list*** command */
@@ -320,18 +383,15 @@ struct whack_message {
 #define REREAD_ALL	LRANGES(REREAD_SECRETS, REREAD_CRLS)  /* all reread options */
 #define REREAD_TPMEVAL    0x40  /* evaluate in Tcl */
 
-
-struct whackpacker {
-    struct whack_message *msg;
-    unsigned char        *str_roof;
-    unsigned char        *str_next;
-    int                   n;
-    int                   cnt;
-};
+struct whackpacker;
 
 extern err_t pack_whack_msg(struct whackpacker *wp);
 extern err_t unpack_whack_msg (struct whackpacker *wp);
 extern void clear_end(struct whack_end *e);
+
+extern err_t whack_cbor_encode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern err_t whack_cbor_decode_msg(struct whack_message *wm, unsigned char *buf, size_t *buf_len);
+extern void  whack_free_msg(struct whack_message *wm);
 
 extern size_t whack_get_secret(char *buf, size_t bufsize);
 extern int whack_get_value(char *buf, size_t bufsize);

@@ -1041,7 +1041,7 @@ void ikev2_log_parentSA(struct state *st)
 	snprintf(encalgo, sizeof(encalgo), "%s%u", st->st_oakley.encrypter->common.officname
 		, st->st_oakley.enckeylen);
     } else {
-	strncpy(encalgo, st->st_oakley.encrypter->common.officname, sizeof(encalgo));
+	strncpy(encalgo, st->st_oakley.encrypter->common.officname, sizeof(encalgo)-1);
     }
 
 

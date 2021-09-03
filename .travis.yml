@@ -17,6 +17,7 @@ addons:
       - make
       - flex
       - bison
+      - git
       - python-minimal
       - libgmp-dev
       - libpcap0.8-dev
@@ -52,6 +53,7 @@ before_script:
   - tests/utils/testsetup.sh
   - "PATH=$HOME/stuff/sbin:$PATH export PATH"
   - which tcpdump
+  - gem install cbor-diag
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
@@ -59,11 +61,12 @@ install:
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi
+  - mkdir -p $HOME/stuff/sbin
+  - cp tests/utils/cborseq2pretty.rb $HOME/stuff/sbin
 
 script:
   - export PATH=$PATH:$HOME/stuff/bin
   - "cat Makefile.inc.local"
   - "make env | sort -f"
-  - git --version
   - ./tests/utils/$TEST_JOB
 

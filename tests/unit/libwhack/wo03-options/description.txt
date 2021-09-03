@@ -1,0 +1,2 @@
+This creates a whack message with the OPTIONS bit set.
+

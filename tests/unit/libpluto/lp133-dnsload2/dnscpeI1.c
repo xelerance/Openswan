@@ -26,7 +26,7 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 
-unsigned int sort_dns_answers;
+extern unsigned int sort_dns_answers;
 
 int main(int argc, char *argv[])
 {
