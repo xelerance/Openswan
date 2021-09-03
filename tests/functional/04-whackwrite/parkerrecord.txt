@@ -2,8 +2,6 @@ d9 d9f7         # tag(55799)
    da 4f50534e  # tag(1330664270)
       43        # bytes(3)
          424f52 # "BOR"
-
-,
 a1                                      # map(1)
    0a                                   # unsigned(10)
    a3                                   # map(3)
@@ -15,14 +13,10 @@ a1                                      # map(1)
          0103a98335b2681b0110e4f69f5b51890013ad29fe191f6fb1f5ef327fb857bc4dd938ea8da1673644cd3e6befec8093c344fead1d89e7b0fdd593e34270254f2f9444249d7d123d43712ac29aa2dae0fa580bacd6253b70441e0b67135fc6f2db1be3ac75d1bbd435198e4e0330b3793d479cd77ebdf66fd22a72e70939cea99fc5ce4107111fe1b56c498444df13326accf15d34124271141f28299db0f12da550ba5e675de48770162dda50d1cc148e66e1dde466f25762bb385928c6da7aab2432a53011d383b27faf7bd2a8fa59fc681544df266e276c9e1de12cced372890f1ed0f90bece6eebe1b9b6fa9cf6514c1cc3c118b26fc4238913e5a94a9eab896f476487672e08885351bd9472cf66ff3107d # "\x01\x03\xA9\x835\xB2h\e\x01\x10\xE4\xF6\x9F[Q\x89\x00\x13\xAD)\xFE\x19\x1Fo\xB1\xF5\xEF2\x7F\xB8W\xBCM\xD98\xEA\x8D\xA1g6D\xCD>k\xEF\xEC\x80\x93\xC3D\xFE\xAD\x1D\x89\xE7\xB0\xFD\xD5\x93\xE3Bp%O/\x94D$\x9D}\x12=Cq*\xC2\x9A\xA2\xDA\xE0\xFAX\v\xAC\xD6%;pD\x1E\vg\x13_\xC6\xF2\xDB\e\xE3\xACu\xD1\xBB\xD45\x19\x8EN\x030\xB3y=G\x9C\xD7~\xBD\xF6o\xD2*r\xE7\t9\xCE\xA9\x9F\xC5\xCEA\a\x11\x1F\xE1\xB5lI\x84D\xDF\x132j\xCC\xF1]4\x12Bq\x14\x1F()\x9D\xB0\xF1-\xA5P\xBA^g]\xE4\x87p\x16-\xDAP\xD1\xCC\x14\x8Ef\xE1\xDD\xE4f\xF2Wb\xBB8Y(\xC6\xDAz\xAB$2\xA50\x11\xD3\x83\xB2\x7F\xAF{\xD2\xA8\xFAY\xFCh\x15D\xDF&n'l\x9E\x1D\xE1,\xCE\xD3r\x89\x0F\x1E\xD0\xF9\v\xEC\xE6\xEE\xBE\e\x9Bo\xA9\xCFe\x14\xC1\xCC<\x11\x8B&\xFCB8\x91>Z\x94\xA9\xEA\xB8\x96\xF4vHvr\xE0\x88\x855\e\xD9G,\xF6o\xF3\x10}"
       11                                # unsigned(17)
       01                                # unsigned(1)
-
-,
 d9 d9f7         # tag(55799)
    da 4f50534e  # tag(1330664270)
       43        # bytes(3)
          424f52 # "BOR"
-
-,
 a1                                      # map(1)
    0a                                   # unsigned(10)
    a3                                   # map(3)
